@@ -1,0 +1,13 @@
+-cp src
+-main Main
+-swf out/xadrez-switch.swf
+-swf-version 11
+-D swf-header=1280:720:30:0B0D10
+-dce full
+-resource res/content.json@content
+-resource res/lpuzzles.txt@lpuzzles
+-resource res/openings.txt@openings
+-resource res/explorer.txt@explorer
+-resource res/models.txt@models
+-resource media/intro_sw.swf@intro
+-resource media/menu_bg.jpg@menubg

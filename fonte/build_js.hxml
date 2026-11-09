@@ -1,0 +1,5 @@
+-cp src
+-main Main
+-js out/app.js
+-dce full
+-D js-es=5

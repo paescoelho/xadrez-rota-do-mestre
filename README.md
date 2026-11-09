@@ -1,0 +1,95 @@
+# Xadrez · Rota do Mestre
+
+Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
+Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
+
+## Estrutura do repositório
+
+| Pasta | O que tem |
+|---|---|
+| `docs/` | **O site pronto** (é o que o GitHub Pages publica). Não precisa compilar nada. |
+| `docs/baixar/` | O jogo inteiro em um só arquivo `.html` (completo e leve), para jogar offline sem instalar. |
+| `fonte/` | Código-fonte (Haxe + JavaScript), dados, motor e mídia usados para gerar o site e as versões Flash. |
+
+## Publicar no GitHub Pages (uma vez)
+
+1. Envie todo o conteúdo deste pacote para o repositório. O upload pela página do GitHub aceita até 100 arquivos por vez; com o **GitHub Desktop** vai tudo de uma vez.
+2. No repositório: **Settings › Pages › Build and deployment**.
+3. Em *Source*, escolha **Deploy from a branch**. Em *Branch*, escolha **main** e a pasta **/docs**. Salve.
+4. Em 1 ou 2 minutos o site fica em `https://SEU-USUARIO.github.io/NOME-DO-REPOSITORIO/`.
+
+O arquivo `docs/.nojekyll` já está incluído: ele faz o GitHub publicar os arquivos como estão.
+
+## Como o site funciona
+
+- **Primeira visita:** baixa uns 12 MB (o GitHub entrega os textos compactados, então na prática vem bem menos) e mostra uma barra de progresso.
+- **Depois:** um *service worker* guarda tudo no aparelho. O jogo abre na hora e funciona sem internet, inclusive o Stockfish.
+- **Atualizações:** cada arquivo de dados tem uma marca de versão. Quando você publica uma versão nova, cada aparelho baixa só o que mudou.
+- **Instalar:** em *Painel de evolução › Conta e backup › Instalar o app* (Android e computador). No iPhone, é por *Compartilhar › Adicionar à Tela de Início*.
+- **Onde ficam os dados do jogador:**
+  - o perfil, no `localStorage`;
+  - as partidas sem limite e o registro lance a lance do Raio-X, no `IndexedDB`;
+  - tudo também no backup em arquivo e, com login Google, na nuvem.
+- **Conexão lenta ou economia de dados:** em 2G/3G, ou com economia de dados ativa, o site pula a abertura em vídeo.
+
+## Ativar o login com Google (opcional)
+
+O jogo nunca vê nem guarda a senha do Gmail: quem autentica é o Google. Vai no jogo só a configuração **pública** do Firebase.
+
+1. Em https://console.firebase.google.com crie um projeto (plano gratuito Spark).
+2. Em **Authentication › Sign-in method**, ative **Google**.
+3. Em **Authentication › Settings › Authorized domains**, adicione `SEU-USUARIO.github.io`.
+4. Em **Firestore Database**, crie o banco e cole as regras de `fonte/firestore.rules`.
+5. Em **Configurações do projeto › Seus apps › Web**, copie o `firebaseConfig`.
+6. Salve esse objeto como `fonte/web/firebase-config.json` (modelo em `fonte/web/firebase-config.example.json`), compile de novo e substitua a pasta `docs/`.
+
+## Compilar (só para quem for mexer no código)
+
+Requisitos: [Haxe 4.3](https://haxe.org) e [Node.js](https://nodejs.org).
+
+```
+cd fonte
+haxe build_js.hxml        # gera out/app.js
+node web/build.js         # gera out/*.html (arquivo único) e site/ (PWA)
+haxe build_celular.hxml   # Flash 390x780 (opcional)
+haxe build_switch.hxml    # Flash 1280x720 (opcional)
+```
+
+Depois, copie o conteúdo de `fonte/site/` para `docs/`.
+
+## O que há de novo
+
+**v24: Raio-X do pensamento e site instalável**
+- **Revisão de fundo:** depois de cada partida, o Stockfish revisa os seus lances em segundo plano. Isso só acontece quando não há partida em andamento.
+- **Registro por lance:** guarda a perda de chance de vitória, a agudeza da posição (chance de resultado decisivo segundo o modelo vitória/empate/derrota do Stockfish), o tempo gasto, as peças tocadas e a fase.
+- **Computador:** o mouse parado por meio segundo sobre uma peça sua conta como "olhar", e o perfil registra se foi toque ou mouse.
+- **Raio-X** (Painel de evolução, Mapa do pensamento e fim de partida):
+  - calma sob fogo e pressa em posições abertas;
+  - estilo (você complica ou simplifica) e sorte (gafes não punidas);
+  - calibração da certeza;
+  - domínio por tema;
+  - tilt com teste de embaralhamento (1.000 sorteios).
+- **Aposta de certeza nos problemas** (50%, 70% ou 90%): mostra se a sua certeza bate com os acertos (nota de Brier).
+- **Domínio por tema:** rastreamento bayesiano de conhecimento. O chute e o escorregão dependem da dificuldade do problema em relação ao seu rating; o tema conta como dominado acima de 95%. Aparece também em *Táticas › Trilhas por tema*.
+- **Pergunte ao seu histórico:** erros, precisão, tempo ou sorte, separados por agudeza, fase, tempo gasto, peça, cor, "depois de um erro", relógio ou tipo de entrada.
+- **Treino sugerido:** o ponto mais fraco vira um botão no Centro de Treino e no topo do Mapa do pensamento.
+- **Pausa recomendada:** aparece depois de duas derrotas seguidas com queda de precisão.
+- **Site PWA:** carregador com barra de progresso, cache offline, atualização só do que mudou e instalação.
+
+**v23:** veja `fonte/LEIA-ME-v23.md`.
+- Stockfish 19 no jogo e lances brilhantes.
+- Banco de 17.618 problemas em 60 temas.
+- Woodpecker por tema, revisão espaçada FSRS e trilha de padrões de mate.
+- Treino de visão, relógio de estudo e conta/backup.
+
+## Licença
+
+Este projeto inclui o **Stockfish 19** (stockfish.js), que é **GPLv3**. Por isso o jogo é distribuído sob a GPLv3 (arquivo `LICENSE`).
+
+Créditos de terceiros:
+- **Problemas** (database.lichess.org): domínio público (CC0). A seleção por tema veio do projeto Lichesspecker.
+- **FSRS:** algoritmo do projeto open-spaced-repetition (MIT), com implementação própria.
+- **Fontes Cinzel:** SIL Open Font License.
+- **Firebase JS SDK:** Apache 2.0, carregado do CDN do Google só quando o login está ativado.
+
+Doações por Pix são compatíveis com a GPL.
