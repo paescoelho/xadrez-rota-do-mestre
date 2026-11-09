@@ -96,4 +96,4 @@ Doações por Pix são compatíveis com a GPL.
 
 ## Apoiar o projeto (Pix)
 
-O botão **♥ Apoiar o projeto** (canto superior direito do menu e tela *Conta e backup*) gera um Pix estático (BR Code do Banco Central) dentro do próprio jogo, com a mensagem "Xadrez GitHub". A chave, o nome e a cidade ficam em `fonte/web/extras_v25.js` (`V25.PIX`). O QR Code usa o *QR Code Generator* de Kazuhiko Arase (licença MIT).
+O botão **♥ Apoiar o projeto** (botão no menu principal, no lugar de "Jogar com amigo", e tela *Conta e backup*) gera um Pix estático (BR Code do Banco Central) dentro do próprio jogo, com a mensagem "Xadrez GitHub". A chave, o nome e a cidade ficam em `fonte/web/extras_v25.js` (`V25.PIX`). O QR Code usa o *QR Code Generator* de Kazuhiko Arase (licença MIT).
