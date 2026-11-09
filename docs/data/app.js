@@ -24137,11 +24137,11 @@ V25.endNudge=function(){
 };
 
 if(V25_UI){(function(){
- /* menu principal: link discreto no canto do rodapé, espelhando a versão */
+ /* menu principal: pílula no canto superior direito, ao lado do título */
  var oMenu=UiJs.menu;
  UiJs.menu=function(items,info){
   var r=oMenu.apply(this,arguments);
-  try{var ft=UiJs.root.querySelector('.menu .mfoot');if(ft&&!ft.querySelector('.v25-foot')){var b=UiJs.el('button','v25-foot',ft);b.innerHTML='<span aria-hidden="true">♥</span> Apoiar';b.setAttribute('aria-label','Apoiar o projeto com Pix');b.onclick=function(e){e.stopPropagation();V25.page(App.menu);};}}catch(e){}
+  try{var ft=UiJs.root.querySelector('.menu');if(ft&&!ft.querySelector('.v25-foot')){var b=UiJs.el('button','v25-foot',ft);b.innerHTML='<span aria-hidden="true">♥</span> Apoiar o projeto';b.setAttribute('aria-label','Apoiar o projeto com Pix');b.onclick=function(e){e.stopPropagation();V25.page(App.menu);};}}catch(e){}
   return r;
  };
  /* Conta e backup: seção no fim */
