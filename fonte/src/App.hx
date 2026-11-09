@@ -178,10 +178,10 @@ class App {
     Ui.page("Nova partida", menu);
     var o:Dynamic = opts;
     var ad:Int = Profile.d.adapt;
-    var opps:Array<Array<Dynamic>> = [["Aprendiz", 0, Std.string(ad)]];
+    var opps:Array<Array<Dynamic>> = [["Mentor", 0, Std.string(ad)]];
     for (lv in 1...5) opps.push([Engine.LEVEL_NAMES[lv], lv, Std.string(Engine.LEVEL_ELO[lv])]);
     Ui.seg("Adversário", [for (x in opps) [x[0], function() { o.opp = x[1]; setupGame(); }, o.opp == x[1], x[2]]], 5,
-      o.opp == 0 ? "Aprendiz: o treinador explica as decisões do computador em três momentos — reflexão imediata, orientação aos 10s e análise aos 20s. A força se adapta ao seu desempenho." : "Força fixa: bom para medir o seu progresso.");
+      o.opp == 0 ? "Mentor: depois de cada lance do computador, toque na peça que ele moveu para ver o motivo da jogada. A força se adapta ao seu desempenho." : "Força fixa: bom para medir o seu progresso.");
     Ui.seg("Ritmo · cada um tem sua pontuação", [for (c in ["std", "rapid", "classic"]) [c == "std" ? "Sem relógio" : (c == "rapid" ? "Rápida 10+5" : "Clássica 30+20"), function() { o.cat = c; setupGame(); }, o.cat == c, ratingShort(c)]], 3);
     Ui.seg("Cor", [["Brancas", function() { o.color = 1; setupGame(); }, o.color == 1], ["Pretas", function() { o.color = -1; setupGame(); }, o.color == -1], ["Sorteio", function() { o.color = 0; setupGame(); }, o.color == 0]], 3);
     Ui.seg("Treinador", [["Comenta cada lance", function() { o.coach = true; setupGame(); }, o.coach], ["Só no fim", function() { o.coach = false; setupGame(); }, !o.coach],
@@ -193,7 +193,7 @@ class App {
     Evo.applyTheme();
     Ui.btns([["Começar partida", o.opp == 0 ? beginnerIntro : newGame, "pri wide"]]);
   }
-  /* v21: regras básicas antes de jogar contra o Aprendiz */
+  /* v21: regras básicas antes de jogar contra o Mentor */
   public static function beginnerIntro() {
     Ui.page("Aprenda antes de jogar", setupGame);
     Ui.p("Seu primeiro jogo de xadrez", "gold big");
@@ -206,7 +206,7 @@ class App {
     }
     #end
     Ui.p("Como jogar: toque numa peça sua. O tabuleiro marca os destinos permitidos; toque na casa destacada para mover. As peças não podem atravessar outras, exceto o cavalo.", "gold");
-    Ui.p("Dica mostra sugestões; Ameaça? indica riscos; Desequilíbrios ajuda a comparar os lados. Você pode usar essas ferramentas enquanto aprende.", "muted");
+    Ui.p("Dica mostra sugestões de lance, as ameaças do adversário e os desequilíbrios da posição. Depois de cada lance do computador, toque na peça que ele moveu para entender o motivo.", "muted");
     Ui.p("Regras especiais: roque protege o rei, en passant é uma captura especial de peão e promoção troca um peão ao alcançar a última fileira.", "muted small");
     Ui.btns([["Entendi · começar partida", newGame, "pri wide"], ["Voltar às opções", setupGame]]);
   }
@@ -221,7 +221,7 @@ class App {
     g.human = o.color == 0 ? (Math.random() < 0.5 ? 1 : -1) : o.color;
     g.adaptive = o.opp == 0; g.level = o.opp == 0 ? 0 : o.opp;
     g.elo = g.adaptive ? Profile.d.adapt : Engine.LEVEL_ELO[g.level];
-    g.oppName = g.adaptive ? "Aprendiz" : Engine.LEVEL_NAMES[g.level];
+    g.oppName = g.adaptive ? "Mentor" : Engine.LEVEL_NAMES[g.level];
     g.cat = o.cat; g.coach = o.coach; g.process = o.process;
     if (g.cat == "rapid") { g.base = 600000; g.inc = 5000; }
     if (g.cat == "classic") { g.base = 1800000; g.inc = 20000; }
@@ -583,7 +583,7 @@ class App {
         Ui.p(CAT_LABEL.get(g.cat) + ": " + (g.rc[0] == 0 ? "" : g.rc[0] + " → ") + g.rc[1] + (g.rc[0] == 0 ? "" : " (" + (d >= 0 ? "+" : "") + d + ")") + (Profile.isProvisional(g.cat) ? "  · provisória (" + r.games + " de " + Profile.PROVISIONAL + " partidas)" : ""), "gold");
       } else if (g.unrated != null) Ui.p(g.unrated, "muted");
       if (g.acc >= 0) Ui.p("Sua precisão na partida: " + Math.round(g.acc) + "%", "");
-      if (g.adaptive) Ui.p("Próxima força do Aprendiz: " + Profile.d.adapt, "muted");
+      if (g.adaptive) Ui.p("Próxima força do Mentor: " + Profile.d.adapt, "muted");
       #if js
       if (g.ghost != null) Ui.p("Placar contra " + g.oppName + ": " + Dna.scoreTxt(g.gKey), "gold");
       var contadorMapa = Mind.games().length;

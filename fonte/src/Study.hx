@@ -141,7 +141,7 @@ class Study {
     if (rep.w != null || rep.b1 != null) out.push({ id: "opening", t: "Repertório", d: "Revise as linhas do seu repertório que vencem hoje.", min: 4 });
     else if (mins >= 30) out.push({ id: "opening", t: "Escolha seu repertório", d: "Monte seu repertório (1 abertura de Brancas + 2 defesas) e treine a primeira linha.", min: 4 });
     if (mins >= 60) out.push({ id: "model", t: "Partida de mestre", d: lvl >= 1600 ? "Adivinhe os lances de um campeão mundial." : "Adivinhe os lances de uma partida-modelo.", min: 10 });
-    out.push({ id: "game", t: mins >= 60 ? "Uma partida clássica" : "Uma partida", d: (mins >= 60 ? "Partida 30+20" : "Partida rápida 10+5") + " contra o Aprendiz, com revisão ativa no fim.", min: mins >= 60 ? 20 : (mins >= 30 ? 10 : 6) });
+    out.push({ id: "game", t: mins >= 60 ? "Uma partida clássica" : "Uma partida", d: (mins >= 60 ? "Partida 30+20" : "Partida rápida 10+5") + " contra o Mentor, com revisão ativa no fim.", min: mins >= 60 ? 20 : (mins >= 30 ? 10 : 6) });
     return out;
   }
 

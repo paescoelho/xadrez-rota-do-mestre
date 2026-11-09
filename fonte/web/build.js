@@ -53,9 +53,12 @@ const fonts=`@font-face{font-family:"Cinzel Decorative";font-weight:900;font-dis
 const fdir=__dirname+'/../media/stills/';
 const frames=fs.readdirSync(fdir).filter(f=>f.endsWith('.webp')).sort().map(f=>fs.readFileSync(fdir+f).toString('base64'));
 const aud=fs.readFileSync(__dirname+'/../media/intro_audio.mp3').toString('base64');
+/* v25: narração do menu História do xadrez */
+const histau=fs.readFileSync(__dirname+'/../media/historia_audio.mp3');
 const hdx=fs.readFileSync(__dirname+'/../media/intro_hd.json','utf8');
 let res='';
 for(const n of ['content','lpuzzles','openings','explorer','models']){const ext=n==='content'?'json':'txt';const txt=fs.readFileSync(__dirname+'/../res/'+n+'.'+ext,'utf8');if(/<\/script|<!--/i.test(txt))throw new Error('texto proibido em '+n);res+='<script type="text/plain" id="res_'+n+'">'+txt+'</script>\n';}
+res+='<script type="text/plain" id="res_histau">'+histau.toString('base64')+'</script>\n';
 const hd=fs.readFileSync(__dirname+'/../media/intro_hd.bin').toString('base64');
 /* Stockfish 19 lite (GPLv3, nmrugg/stockfish.js): só na versão completa; a leve usa o motor do jogo */
 const sfjs=fs.readFileSync(__dirname+'/../sf/bin/stockfish-19-lite-single.js','utf8');
@@ -85,18 +88,19 @@ put('introfr.json',Buffer.from(JSON.stringify(frames),'utf8'));
 put('introau.txt',Buffer.from(aud,'utf8'));
 put('introhdx.json',Buffer.from(hdx,'utf8'));
 put('intro_hd.bin',fs.readFileSync(__dirname+'/../media/intro_hd.bin'));
+put('historia.mp3',histau);
 const U=n=>'data/'+n+'?v='+files[n];
 const loader=`<script>
 /* carregador do site: baixa (ou pega do cache offline) os arquivos do jogo, mostra o progresso e inicia o app */
 (function(){
- var F=${JSON.stringify({res:[['res_content',U('content.json')],['res_lpuzzles',U('lpuzzles.txt')],['res_openings',U('openings.txt')],['res_explorer',U('explorer.txt')],['res_models',U('models.txt')],['res_sfjs',U('sf.js')]],intro:[['introfr',U('introfr.json')],['introau',U('introau.txt')],['introhdx',U('introhdx.json')]],hd:U('intro_hd.bin'),wasm:U('sf.wasm'),app:U('app.js')})};
+ var F=${JSON.stringify({res:[['res_content',U('content.json')],['res_lpuzzles',U('lpuzzles.txt')],['res_openings',U('openings.txt')],['res_explorer',U('explorer.txt')],['res_models',U('models.txt')],['res_sfjs',U('sf.js')]],intro:[['introfr',U('introfr.json')],['introau',U('introau.txt')],['introhdx',U('introhdx.json')]],hd:U('intro_hd.bin'),histau:U('historia.mp3'),wasm:U('sf.wasm'),app:U('app.js')})};
  var c=navigator.connection||{},slow=!!(c.saveData||/(^|-)2g|3g/.test(c.effectiveType||''));
  var box=document.createElement('div');box.id='boot';box.innerHTML='<div class="bt">Rota do Mestre</div><div class="bb"><i></i></div><div class="bs">Preparando o tabuleiro…</div>';document.body.appendChild(box);
  var bar=box.querySelector('i'),msg=box.querySelector('.bs'),done=0,total=F.res.length+(slow?0:F.intro.length+1)+1;
  function step(){done++;bar.style.width=Math.round(done*100/total)+'%';}
  function txt(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u);return r.text();}).then(function(t){step();return t;});}
  function tag(id,t,type){var e=document.getElementById(id);if(!e){e=document.createElement('script');e.type=type||'text/plain';e.id=id;document.body.appendChild(e);}e.textContent=t;}
- window.XSFURL=new URL(F.wasm,location.href).href;
+ window.XSFURL=new URL(F.wasm,location.href).href;window.XHISTAU=new URL(F.histau,location.href).href;
  var jobs=F.res.map(function(x){return txt(x[1]).then(function(t){tag(x[0],t);});});
  if(slow){window.XLITE=true;tag('introfr','[]','application/json');tag('introhdx','null','application/json');}
  else{jobs=jobs.concat(F.intro.map(function(x){return txt(x[1]).then(function(t){tag(x[0],t,x[0]==='introau'?'text/plain':'application/json');});}));

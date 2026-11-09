@@ -91,7 +91,7 @@ App.promoteRecentGameInfo = function(g) {
 		group.nodes.push(el);
 	}
 	var kind = function(title) {
-		if(/^Aprendiz ·/i.test(title)) return "learner";
+		if(/^(Aprendiz|Mentor) ·/i.test(title)) return "learner";
 		if(/^Dica(?:\s|$)/i.test(title)) return "hint";
 		if(/^Ameaça do adversário/i.test(title)) return "threat";
 		if(/^Desequilíbrios/i.test(title)) return "imbalance";
@@ -770,7 +770,7 @@ var EliteDesktopLayout=(function(){
    batches[type].sort(function(a,b){return (+a.dataset.eliteIndex)-(+b.dataset.eliteIndex);});
    batches[type].forEach(function(el){left.appendChild(el);});
   });
-  if(!candidates.length){left.appendChild(make('p','elite-left-empty','Use Dica para desenvolver seu raciocínio em três etapas. Consulte Ameaça? para identificar riscos e Desequilíbrios para descobrir planos estratégicos.'));}
+  if(!candidates.length){left.appendChild(make('p','elite-left-empty','Toque em Dica para ver uma sugestão de lance, a ameaça do adversário ou os desequilíbrios da posição. No modo Mentor, toque na peça que o computador moveu para entender o motivo.'));}
   if(!feed.children.length){feed.appendChild(make('p','elite-right-empty','As explicações das jogadas, avaliações do treinador e histórico da partida aparecerão aqui conforme você jogar.'));}
   left.scrollTop=0;
   // Messages and previous snapshots remain preserved by the original feed, on the right.
@@ -817,11 +817,11 @@ AprendizCoach=(function(){
  };
  api.render=function(g){
   var a=g.learner;if(!a)return;
-  var h=UiJs.h('Aprendiz · '+(a.phase===1?'PENSE':a.phase===2?'INVESTIGUE':'COMPREENDA'));
+  var h=UiJs.h('Mentor · '+(a.phase===1?'PENSE':a.phase===2?'INVESTIGUE':'COMPREENDA'));
   if(h)h.classList.add('learner-head');
   var box=UiJs.el('div','learner-prompt',UiJs.cur);box.setAttribute('role','status');
   UiJs.el('div','learner-phase',box,a.phase===1?'Primeiros 10 segundos · reflita':a.phase===2?'10–20 segundos · pista gradual':'Após 20 segundos · análise do lance');
-  UiJs.el('h3','',box,'Aprendiz jogou '+a.move);
+  UiJs.el('h3','',box,'Mentor jogou '+a.move);
   if(a.phase===1){
    UiJs.el('p','learner-advice',box,'Por que o computador escolheu esse lance? Qual ameaça, casa importante ou peça ele tentou influenciar?');
    UiJs.el('p','learner-advice',box,'Antes de mover, encontre duas possíveis respostas e imagine o melhor contrajogo dele. Você pode jogar a qualquer momento.');
@@ -850,5 +850,5 @@ App.undo=function(){if(App.G&&App.G.learner)AprendizCoach.stop(App.G);return _ap
 var _aprendizOriginalNewGame=App.newGame;
 App.newGame=function(){if(App.G&&App.G.learner)AprendizCoach.stop(App.G);return _aprendizOriginalNewGame();};
 var _aprendizOriginalShowGame=App.showGame;
-App.showGame=function(){if(App.G&&App.G.adaptive)App.G.oppName='Aprendiz';return _aprendizOriginalShowGame();};
+App.showGame=function(){if(App.G&&App.G.adaptive)App.G.oppName='Mentor';return _aprendizOriginalShowGame();};
 }

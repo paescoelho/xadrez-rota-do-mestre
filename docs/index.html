@@ -716,6 +716,37 @@ svg.arrows{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;
 .v25-inf em{color:var(--mu);font-style:normal}
 .v25-nudge{display:block;width:100%;margin:2px 0 8px;background:none;border:1px dashed rgba(220,181,92,.35);border-radius:12px;padding:8px 10px;color:var(--gold2);font-size:12.5px;cursor:pointer;text-align:center}
 .v25-nudge span{color:#e3605a}
+
+/* v25: menu — divisória do Painel alinhada ao rolo do pergaminho da História; versão centralizada sob a assinatura */
+.mitem.pnl .pn-tx{flex:0 0 calc(40% - .8px)!important;padding-right:6px}
+.mitem.pnl .pn-sky{border-left:0;box-shadow:inset 1px 0 0 rgba(220,181,92,.35)}
+.menu .menu-version{left:50%!important;right:auto!important;transform:translateX(-50%);bottom:5px!important;text-align:center}
+/* v25: barra da partida em uma linha (Dica · Virar · Abandonar) */
+.game-actions{position:relative}
+.game-actions .btns{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.game-actions .btn .v25-car{display:inline-block;margin-left:5px;font-size:.8em;opacity:.75;transform:translateY(-1px)}
+.v25-pop{position:absolute;z-index:30;min-width:min(260px,92vw);background:linear-gradient(180deg,#1f252e,#13171d);border:1px solid rgba(220,181,92,.55);border-radius:12px;padding:5px;box-shadow:0 10px 30px rgba(0,0,0,.6);display:flex;flex-direction:column;gap:3px;animation:v25pop .16s ease-out}
+@keyframes v25pop{from{opacity:0;transform:translateY(-4px)}}
+.v25-pi{display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left;background:none;border:0;border-radius:9px;padding:8px 10px;color:var(--tx);cursor:pointer;font:inherit}
+.v25-pi:hover,.v25-pi:focus-visible{background:rgba(220,181,92,.12)}
+.v25-pi b{font-size:13.5px;color:var(--gold2);font-weight:600}
+.v25-pi span{font-size:11.5px;color:var(--mu)}
+.v25-pi.off{opacity:.45;cursor:default}
+/* v25: Mentor — marcador e balão sobre a peça do computador */
+.sq .v25-q{position:absolute;top:3%;right:3%;width:30%;height:30%;max-width:20px;max-height:20px;min-width:14px;min-height:14px;border-radius:50%;background:#f3d98c;color:#1a1408;font:700 clamp(9px,1.6vw,12px)/1 system-ui,sans-serif;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px rgba(0,0,0,.35),0 0 10px rgba(243,217,140,.8);z-index:4;pointer-events:none;animation:v25q 2.2s ease-in-out infinite}
+@keyframes v25q{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.v25-tip{position:absolute;z-index:20;max-width:min(66%,300px);background:rgba(16,19,24,.94);border:1px solid rgba(220,181,92,.7);border-radius:12px;padding:8px 11px;color:var(--tx);font:12.5px/1.35 system-ui,-apple-system,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.55);text-align:left;animation:v25pop .16s ease-out;cursor:pointer}
+.v25-tip b{display:block;color:var(--gold2);font-size:13px;margin-bottom:3px}
+.v25-tip ul{margin:0;padding-left:16px}.v25-tip li{margin:1px 0}
+.v25-tip p{margin:2px 0 0}.v25-tip p.al{color:var(--warn)}
+.v25-tip:after{content:"";position:absolute;left:var(--ax);width:12px;height:12px;margin-left:-6px;background:inherit;border:inherit;border-width:0 1px 1px 0;transform:rotate(45deg)}
+.v25-tip.up:after{bottom:-7px}
+.v25-tip.dn:after{top:-7px;transform:rotate(225deg)}
+@media (prefers-reduced-motion:reduce){.sq .v25-q,.v25-tip,.v25-pop{animation:none}}
+/* v25: narração da História */
+.v25-narr{display:inline-flex;align-items:center;gap:7px;margin-top:8px;background:rgba(10,12,15,.5);border:1px solid rgba(220,181,92,.6);border-radius:999px;padding:6px 13px;color:var(--gold2);font:600 12.5px system-ui,-apple-system,sans-serif;cursor:pointer}
+.v25-narr span{font-size:11px}
+.v25-narr.on{background:rgba(220,181,92,.16)}
 </style>
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0d10"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" href="icons/icon-192.png"><link rel="icon" type="image/png" href="icons/icon-192.png">
 <style>#boot{position:fixed;inset:0;z-index:99;background:#050606;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#f3d98c;font-family:Georgia,serif}#boot .bt{font-size:26px;letter-spacing:2px}#boot .bb{width:min(70vw,320px);height:6px;border-radius:4px;background:#262c35;overflow:hidden}#boot .bb i{display:block;width:0;height:100%;background:linear-gradient(90deg,#b8852f,#f3d98c);transition:width .25s}#boot .bs{font:13px system-ui,sans-serif;color:#98a1ab}</style>
@@ -778,14 +809,14 @@ window.XHD=(function(){
 <script>
 /* carregador do site: baixa (ou pega do cache offline) os arquivos do jogo, mostra o progresso e inicia o app */
 (function(){
- var F={"res":[["res_content","data/content.json?v=facebd0421"],["res_lpuzzles","data/lpuzzles.txt?v=6a7f7438c2"],["res_openings","data/openings.txt?v=0433d98604"],["res_explorer","data/explorer.txt?v=a49e3a075b"],["res_models","data/models.txt?v=d4b717e2fe"],["res_sfjs","data/sf.js?v=81cc4511ff"]],"intro":[["introfr","data/introfr.json?v=361b412139"],["introau","data/introau.txt?v=ce6089d3a7"],["introhdx","data/introhdx.json?v=efe43de4ba"]],"hd":"data/intro_hd.bin?v=2f137ab566","wasm":"data/sf.wasm?v=c56761eebb","app":"data/app.js?v=261ffdfc0e"};
+ var F={"res":[["res_content","data/content.json?v=facebd0421"],["res_lpuzzles","data/lpuzzles.txt?v=6a7f7438c2"],["res_openings","data/openings.txt?v=0433d98604"],["res_explorer","data/explorer.txt?v=a49e3a075b"],["res_models","data/models.txt?v=d4b717e2fe"],["res_sfjs","data/sf.js?v=81cc4511ff"]],"intro":[["introfr","data/introfr.json?v=361b412139"],["introau","data/introau.txt?v=ce6089d3a7"],["introhdx","data/introhdx.json?v=efe43de4ba"]],"hd":"data/intro_hd.bin?v=2f137ab566","histau":"data/historia.mp3?v=96a5aca958","wasm":"data/sf.wasm?v=c56761eebb","app":"data/app.js?v=3a00aaa9ae"};
  var c=navigator.connection||{},slow=!!(c.saveData||/(^|-)2g|3g/.test(c.effectiveType||''));
  var box=document.createElement('div');box.id='boot';box.innerHTML='<div class="bt">Rota do Mestre</div><div class="bb"><i></i></div><div class="bs">Preparando o tabuleiro…</div>';document.body.appendChild(box);
  var bar=box.querySelector('i'),msg=box.querySelector('.bs'),done=0,total=F.res.length+(slow?0:F.intro.length+1)+1;
  function step(){done++;bar.style.width=Math.round(done*100/total)+'%';}
  function txt(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u);return r.text();}).then(function(t){step();return t;});}
  function tag(id,t,type){var e=document.getElementById(id);if(!e){e=document.createElement('script');e.type=type||'text/plain';e.id=id;document.body.appendChild(e);}e.textContent=t;}
- window.XSFURL=new URL(F.wasm,location.href).href;
+ window.XSFURL=new URL(F.wasm,location.href).href;window.XHISTAU=new URL(F.histau,location.href).href;
  var jobs=F.res.map(function(x){return txt(x[1]).then(function(t){tag(x[0],t);});});
  if(slow){window.XLITE=true;tag('introfr','[]','application/json');tag('introhdx','null','application/json');}
  else{jobs=jobs.concat(F.intro.map(function(x){return txt(x[1]).then(function(t){tag(x[0],t,x[0]==='introau'?'text/plain':'application/json');});}));

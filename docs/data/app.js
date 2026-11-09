@@ -1343,7 +1343,7 @@ App.setupGame = function() {
 	UiJs.page("Nova partida",App.menu);
 	var o = App.opts;
 	var ad = Profile.d.adapt;
-	var opps = [["Aprendiz",0,ad == null ? "null" : "" + ad]];
+	var opps = [["Mentor",0,ad == null ? "null" : "" + ad]];
 	opps.push([Engine.LEVEL_NAMES[1],1,Std.string(Engine.LEVEL_ELO[1])]);
 	opps.push([Engine.LEVEL_NAMES[2],2,Std.string(Engine.LEVEL_ELO[2])]);
 	opps.push([Engine.LEVEL_NAMES[3],3,Std.string(Engine.LEVEL_ELO[3])]);
@@ -1360,7 +1360,7 @@ App.setupGame = function() {
 			};
 		})(x),o.opp == x[0][1],x[0][2]]);
 	}
-	UiJs.seg("Adversário",_g,5,o.opp == 0 ? "Aprendiz: o treinador explica as decisões do computador em três momentos — reflexão imediata, orientação aos 10s e análise aos 20s. A força se adapta ao seu desempenho." : "Força fixa: bom para medir o seu progresso.");
+	UiJs.seg("Adversário",_g,5,o.opp == 0 ? "Mentor: depois de cada lance do computador, toque na peça que ele moveu para ver o motivo da jogada. A força se adapta ao seu desempenho." : "Força fixa: bom para medir o seu progresso.");
 	var _g = [];
 	var c = "std";
 	_g.push([c == "std" ? "Sem relógio" : c == "rapid" ? "Rápida 10+5" : "Clássica 30+20",function() {
@@ -1428,7 +1428,7 @@ App.beginnerIntro = function() {
 		UiJs.el("div","muted small",t,x[2]);
 	}
 	UiJs.p("Como jogar: toque numa peça sua. O tabuleiro marca os destinos permitidos; toque na casa destacada para mover. As peças não podem atravessar outras, exceto o cavalo.","gold");
-	UiJs.p("Dica mostra sugestões; Ameaça? indica riscos; Desequilíbrios ajuda a comparar os lados. Você pode usar essas ferramentas enquanto aprende.","muted");
+	UiJs.p("Dica mostra sugestões de lance, as ameaças do adversário e os desequilíbrios da posição. Depois de cada lance do computador, toque na peça que ele moveu para entender o motivo.","muted");
 	UiJs.p("Regras especiais: roque protege o rei, en passant é uma captura especial de peão e promoção troca um peão ao alcançar a última fileira.","muted small");
 	UiJs.btns([["Entendi · começar partida",App.newGame,"pri wide"],["Voltar às opções",App.setupGame]]);
 };
@@ -1447,7 +1447,7 @@ App.newGame = function() {
 	g.adaptive = o.opp == 0;
 	g.level = o.opp == 0 ? 0 : o.opp;
 	g.elo = g.adaptive ? Profile.d.adapt : Engine.LEVEL_ELO[g.level];
-	g.oppName = g.adaptive ? "Aprendiz" : Engine.LEVEL_NAMES[g.level];
+	g.oppName = g.adaptive ? "Mentor" : Engine.LEVEL_NAMES[g.level];
 	g.cat = o.cat;
 	g.coach = o.coach;
 	g.process = o.process;
@@ -2112,7 +2112,7 @@ App.drawGame = function() {
 			UiJs.p("Sua precisão na partida: " + Math.round(g.acc) + "%","");
 		}
 		if(g.adaptive) {
-			UiJs.p("Próxima força do Aprendiz: " + Std.string(Profile.d.adapt),"muted");
+			UiJs.p("Próxima força do Mentor: " + Std.string(Profile.d.adapt),"muted");
 		}
 		if(g.ghost != null) {
 			UiJs.p("Placar contra " + g.oppName + ": " + Dna.scoreTxt(g.gKey),"gold");
@@ -13800,7 +13800,7 @@ Study.dailyPlan = function() {
 	if(mins >= 60) {
 		out.push({ id : "model", t : "Partida de mestre", d : lvl >= 1600 ? "Adivinhe os lances de um campeão mundial." : "Adivinhe os lances de uma partida-modelo.", min : 10});
 	}
-	out.push({ id : "game", t : mins >= 60 ? "Uma partida clássica" : "Uma partida", d : (mins >= 60 ? "Partida 30+20" : "Partida rápida 10+5") + " contra o Aprendiz, com revisão ativa no fim.", min : mins >= 60 ? 20 : mins >= 30 ? 10 : 6});
+	out.push({ id : "game", t : mins >= 60 ? "Uma partida clássica" : "Uma partida", d : (mins >= 60 ? "Partida 30+20" : "Partida rápida 10+5") + " contra o Mentor, com revisão ativa no fim.", min : mins >= 60 ? 20 : mins >= 30 ? 10 : 6});
 	return out;
 };
 Study.srsTasks = function(limit) {
@@ -20113,7 +20113,7 @@ App.promoteRecentGameInfo = function(g) {
 		group.nodes.push(el);
 	}
 	var kind = function(title) {
-		if(/^Aprendiz ·/i.test(title)) return "learner";
+		if(/^(Aprendiz|Mentor) ·/i.test(title)) return "learner";
 		if(/^Dica(?:\s|$)/i.test(title)) return "hint";
 		if(/^Ameaça do adversário/i.test(title)) return "threat";
 		if(/^Desequilíbrios/i.test(title)) return "imbalance";
@@ -20792,7 +20792,7 @@ var EliteDesktopLayout=(function(){
    batches[type].sort(function(a,b){return (+a.dataset.eliteIndex)-(+b.dataset.eliteIndex);});
    batches[type].forEach(function(el){left.appendChild(el);});
   });
-  if(!candidates.length){left.appendChild(make('p','elite-left-empty','Use Dica para desenvolver seu raciocínio em três etapas. Consulte Ameaça? para identificar riscos e Desequilíbrios para descobrir planos estratégicos.'));}
+  if(!candidates.length){left.appendChild(make('p','elite-left-empty','Toque em Dica para ver uma sugestão de lance, a ameaça do adversário ou os desequilíbrios da posição. No modo Mentor, toque na peça que o computador moveu para entender o motivo.'));}
   if(!feed.children.length){feed.appendChild(make('p','elite-right-empty','As explicações das jogadas, avaliações do treinador e histórico da partida aparecerão aqui conforme você jogar.'));}
   left.scrollTop=0;
   // Messages and previous snapshots remain preserved by the original feed, on the right.
@@ -20839,11 +20839,11 @@ AprendizCoach=(function(){
  };
  api.render=function(g){
   var a=g.learner;if(!a)return;
-  var h=UiJs.h('Aprendiz · '+(a.phase===1?'PENSE':a.phase===2?'INVESTIGUE':'COMPREENDA'));
+  var h=UiJs.h('Mentor · '+(a.phase===1?'PENSE':a.phase===2?'INVESTIGUE':'COMPREENDA'));
   if(h)h.classList.add('learner-head');
   var box=UiJs.el('div','learner-prompt',UiJs.cur);box.setAttribute('role','status');
   UiJs.el('div','learner-phase',box,a.phase===1?'Primeiros 10 segundos · reflita':a.phase===2?'10–20 segundos · pista gradual':'Após 20 segundos · análise do lance');
-  UiJs.el('h3','',box,'Aprendiz jogou '+a.move);
+  UiJs.el('h3','',box,'Mentor jogou '+a.move);
   if(a.phase===1){
    UiJs.el('p','learner-advice',box,'Por que o computador escolheu esse lance? Qual ameaça, casa importante ou peça ele tentou influenciar?');
    UiJs.el('p','learner-advice',box,'Antes de mover, encontre duas possíveis respostas e imagine o melhor contrajogo dele. Você pode jogar a qualquer momento.');
@@ -20872,7 +20872,7 @@ App.undo=function(){if(App.G&&App.G.learner)AprendizCoach.stop(App.G);return _ap
 var _aprendizOriginalNewGame=App.newGame;
 App.newGame=function(){if(App.G&&App.G.learner)AprendizCoach.stop(App.G);return _aprendizOriginalNewGame();};
 var _aprendizOriginalShowGame=App.showGame;
-App.showGame=function(){if(App.G&&App.G.adaptive)App.G.oppName='Aprendiz';return _aprendizOriginalShowGame();};
+App.showGame=function(){if(App.G&&App.G.adaptive)App.G.oppName='Mentor';return _aprendizOriginalShowGame();};
 }
 
 var V23_FIREBASE=null;
@@ -24153,6 +24153,153 @@ if(V25_UI){(function(){
  Pages.sync=V23.account;
  /* fim de partida */
  var oDraw=App.drawGame;App.drawGame=function(){var r=oDraw.apply(this,arguments);try{V25.endNudge();}catch(e){}return r;};
+})();}
+
+/* ======================= v25: narração da História do xadrez ======================= */
+V25.hist={a:null,url:null,on:false};
+V25.histSrc=function(cb){
+ var H=V25.hist;if(H.url){cb(H.url);return;}
+ if(typeof window!=='undefined'&&window.XHISTAU){fetch(window.XHISTAU).then(function(r){if(!r.ok)throw 0;return r.blob();}).then(function(b){H.url=URL.createObjectURL(b);cb(H.url);}).catch(function(){cb(null);});return;}
+ var e=document.getElementById('res_histau');if(!e||!e.textContent){cb(null);return;}
+ try{var bin=atob(e.textContent.trim()),u=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);H.url=URL.createObjectURL(new Blob([u],{type:'audio/mpeg'}));cb(H.url);}catch(err){cb(null);}
+};
+V25.histPlay=function(){
+ var H=V25.hist;
+ V25.histSrc(function(u){
+  if(!u||!H.on)return;
+  if(!H.a){H.a=new Audio();H.a.preload='auto';H.a.onended=function(){V25.histBtn();};H.a.onpause=function(){V25.histBtn();};H.a.onplay=function(){V25.histBtn();};}
+  if(H.a.src!==u)H.a.src=u;
+  try{H.a.currentTime=0;}catch(e){}
+  var p=H.a.play();if(p&&p.catch)p.catch(function(){V25.histBtn();});
+ });
+};
+V25.histStop=function(){var H=V25.hist;H.on=false;if(H.a){try{H.a.pause();H.a.currentTime=0;}catch(e){}}};
+V25.histBtn=function(){
+ var b=document.querySelector('.v25-narr');if(!b)return;
+ var a=V25.hist.a,playing=!!(a&&!a.paused&&!a.ended);
+ b.innerHTML=playing?'<span aria-hidden="true">❚❚</span> Pausar narração':'<span aria-hidden="true">▶</span> Ouvir a narração';
+ b.classList.toggle('on',playing);
+};
+V25.histPage=function(){
+ var cur=UiJs.cur;if(!cur||cur.querySelector('.v25-narr'))return;
+ var call=cur.querySelector('.callout')||cur.firstChild;
+ var b=document.createElement('button');b.className='v25-narr';b.type='button';
+ b.onclick=function(){var a=V25.hist.a;if(a&&!a.paused&&!a.ended){a.pause();V25.d().histMute=true;}else{V25.d().histMute=false;V25.hist.on=true;V25.histPlay();}Profile.save();V25.histBtn();};
+ if(call&&call.parentNode===cur)call.appendChild(b);else cur.insertBefore(b,cur.firstChild);
+ V25.histBtn();
+};
+
+/* ======================= v25: modo Mentor — balão com o motivo do lance do computador ======================= */
+/* motivo simples quando a análise não aponta um tema tático */
+V25.why=function(san,uci,ply){
+ var p=/^[KQRBN]/.test(san)?san[0]:(/^O-O/.test(san)?'O':'P'),f=uci.charAt(2),early=ply<=16;
+ if(p==='O')return 'Roque: coloca o rei em segurança e liga as torres.';
+ if(/#/.test(san))return 'Xeque-mate.';
+ if(/x/.test(san))return 'Captura material. Confira se a troca foi justa e se ficou alguma peça sua sem defesa.';
+ if(/\+/.test(san))return 'Xeque: obriga você a cuidar do rei antes de qualquer outro plano.';
+ if(/=/.test(san))return 'Promove o peão: ganha uma peça nova.';
+ if(p==='P')return early?('cdef'.indexOf(f)>=0?'Disputa o centro com um peão e abre caminho para as peças.':'Ganha espaço na lateral e prepara o desenvolvimento.'):'Avança o peão para ganhar espaço ou mudar a estrutura. Veja que casas ele deixou de proteger.';
+ if((p==='N'||p==='B')&&early)return 'Desenvolve uma peça para uma casa mais ativa, de onde ela controla o centro.';
+ if(p==='Q'&&early)return 'A dama entra no jogo cedo: veja quais peças suas ela passa a atacar.';
+ if(p==='K')return 'O rei muda de casa para ficar mais seguro ou mais ativo.';
+ if(p==='R')return 'A torre busca uma coluna aberta ou uma fileira mais ativa.';
+ return 'Reposiciona a peça para uma casa melhor: veja o que ela passou a atacar e o que deixou de defender.';
+};
+V25.tipOk=function(g){var t=g&&g.mentorTip;return !!(t&&App.G===g&&g.adaptive&&g.over==null&&g.peek==null&&g.pos.turn===g.human&&g.ucis.length===t.n);};
+V25.tipIdx=function(b,sq){for(var i=0;i<64;i++){var r=i>>3,c=i&7,v=b.flip?(r*8+7-c):((7-r)*8+c);if(v===sq)return i;}return -1;};
+V25.tipClose=function(){V25.tipOpen=false;var e=document.querySelector('.v25-tip');if(e)e.remove();};
+V25.esc=function(t){return String(t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+V25.tipShow=function(b){
+ var g=App.G;if(!V25.tipOk(g)||!b||!b.root)return;
+ var t=g.mentorTip,i=V25.tipIdx(b,t.sq);if(i<0)return;
+ var old=b.root.querySelector('.v25-tip');if(old)old.remove();
+ var note=t.note||{},rs=(Array.isArray(note.reasons)?note.reasons:[]).filter(Boolean).slice(0,2),al=(Array.isArray(note.alerts)?note.alerts:[]).filter(Boolean).slice(0,1);
+ var h='<b>Por que '+V25.esc(t.san)+'?</b>';
+ if(rs.length)h+='<ul>'+rs.map(function(x){return '<li>'+V25.esc(x)+'</li>';}).join('')+'</ul>';
+ else h+='<p>'+V25.esc(t.why||'O lance melhora a posição: veja quais casas a peça passou a controlar e o que deixou de proteger.')+'</p>';
+ if(al.length)h+='<p class="al">'+V25.esc(al[0])+'</p>';
+ var e=document.createElement('div');e.className='v25-tip';e.setAttribute('role','status');e.innerHTML=h;
+ b.root.appendChild(e);
+ var W=b.root.clientWidth,S=W/8,r=i>>3,c=i&7,w=e.offsetWidth,hh=e.offsetHeight;
+ var cx=(c+.5)*S,x=Math.max(4,Math.min(W-w-4,cx-w/2));
+ var below=r*S-hh-10<2,y=below?(r+1)*S+10:r*S-hh-10;
+ e.style.left=x+'px';e.style.top=y+'px';e.classList.add(below?'dn':'up');
+ e.style.setProperty('--ax',(cx-x)+'px');
+ V25.tipOpen=true;
+};
+V25.tipDecor=function(b){
+ var g=App.G;if(!b||b!==UiJs.board||!b.sqs)return;
+ if(!V25.tipOk(g)){if(b.root&&b.root.querySelector('.v25-tip'))V25.tipClose();return;}
+ var i=V25.tipIdx(b,g.mentorTip.sq);if(i<0)return;
+ var s=b.sqs[i];if(s&&!s.querySelector('.v25-q')){var q=document.createElement('span');q.className='v25-q';q.textContent='?';q.setAttribute('aria-label','Toque para ver o motivo do lance');s.appendChild(q);}
+ if(V25.tipOpen&&!b.root.querySelector('.v25-tip'))V25.tipShow(b);
+ if(!b.__v25){b.__v25=true;var pre=-1;
+  var preSq=null;
+  b.root.addEventListener('click',function(ev){pre=b.sel;preSq=ev.target&&ev.target.closest?ev.target.closest('.sq'):null;},true);
+  b.root.addEventListener('click',function(ev){
+   var gg=App.G,sq=preSq;preSq=null;
+   if(!sq||!V25.tipOk(gg)){V25.tipClose();return;}
+   var k=b.sqs.indexOf(sq),r=k>>3,c=k&7,v=b.flip?(r*8+7-c):((7-r)*8+c);
+   if(v===gg.mentorTip.sq&&pre<0&&!V25.tipOpen)V25.tipShow(b);else V25.tipClose();
+  });
+ }
+};
+
+/* ======================= v25: barra da partida — Dica reúne sugestão, ameaça e desequilíbrios ======================= */
+V25.actions=function(){
+ var bar=UiJs.actionBar,g=App.G;if(!bar||!g)return;
+ var bs=[].slice.call(bar.querySelectorAll('.btns .btn,.btns button'));if(!bs.length)return;
+ var find=function(re){for(var i=0;i<bs.length;i++)if(re.test(bs[i].textContent.trim()))return bs[i];return null;};
+ var dica=find(/^Dica/),ame=find(/^Amea/),des=find(/^Desfazer/),imb=find(/^(Desequil|Ocultar)/);
+ if(!dica||dica.__v25)return;
+ var mk=function(b){return b?{f:b.onclick,off:b.classList.contains('off'),t:b.textContent.trim()}:null;};
+ var H=mk(dica),A=mk(ame),I=mk(imb);
+ [ame,des,imb].forEach(function(b){if(b)b.remove();});
+ dica.__v25=true;
+ var more=/\+$/.test(H.t);
+ dica.innerHTML='Dica<span class="v25-car" aria-hidden="true">▾</span>';
+ dica.setAttribute('aria-haspopup','menu');
+ dica.classList.toggle('off',H.off&&(!A||A.off)&&(!I||I.off));
+ dica.onclick=function(ev){
+  ev.stopPropagation();
+  var open=bar.querySelector('.v25-pop');if(open){open.remove();return;}
+  var p=document.createElement('div');p.className='v25-pop';p.setAttribute('role','menu');
+  var add=function(o,lab,sub){if(!o)return;var x=document.createElement('button');x.type='button';x.className='v25-pi'+(o.off?' off':'');x.setAttribute('role','menuitem');x.innerHTML='<b>'+lab+'</b><span>'+sub+'</span>';x.onclick=function(e){e.stopPropagation();p.remove();if(!o.off&&o.f)o.f.call(this,e);};p.appendChild(x);};
+  add(H,'Sugestão de lance',g.hint==null?'Uma pista de cada vez, até o lance':(more?'Mais uma pista':'Lance já revelado'));
+  add(A,'Ameaça do adversário',A&&A.off&&g.threat!=null?'Já mostrada abaixo':'O que ele faria se fosse a vez dele');
+  add(I,/^Ocultar/.test(I?I.t:'')?'Ocultar desequilíbrios':'Desequilíbrios','Material, peças, estrutura e rei');
+  bar.appendChild(p);
+  var r=dica.getBoundingClientRect(),br=bar.getBoundingClientRect();
+  p.style.left=Math.max(0,r.left-br.left)+'px';p.style.top=(r.bottom-br.top+4)+'px';
+  setTimeout(function(){var close=function(e){if(!p.contains(e.target)){p.remove();document.removeEventListener('click',close,true);}};document.addEventListener('click',close,true);},0);
+ };
+};
+
+if(V25_UI){(function(){
+ /* Mentor: em vez do painel a cada lance, guarda o motivo para o balão */
+ if(typeof AprendizCoach!=='undefined'&&AprendizCoach){
+  var oStop=AprendizCoach.stop;
+  AprendizCoach.stop=function(g){if(g){g.mentorTip=null;}V25.tipClose();return oStop.apply(this,arguments);};
+  AprendizCoach.start=function(g,r){
+   oStop(g);if(g)g.mentorTip=null;V25.tipClose();
+   if(!g||!r||!r.uci||g.over!=null||g.pos.turn!==g.human)return;
+   g.mentorTip={sq:Engine.nameSq(r.uci.slice(2,4)),san:r.san||r.uci,note:g.note||r.note||{},n:g.ucis.length,why:V25.why(r.san||'',r.uci,g.ucis.length)};
+   App.drawGame();
+  };
+ }
+ var oBD=BoardJ.prototype.draw;
+ BoardJ.prototype.draw=function(){var r=oBD.apply(this,arguments);try{V25.tipDecor(this);}catch(e){}return r;};
+ var oDG=App.drawGame;App.drawGame=function(){var r=oDG.apply(this,arguments);try{V25.actions();}catch(e){}return r;};
+ document.addEventListener('click',function(e){if(V25.tipOpen&&!(e.target.closest&&e.target.closest('.board')))V25.tipClose();},true);
+ /* narração: começa ao entrar na História pelo menu e para ao voltar ao menu principal */
+ var oHist=History.page;
+ History.page=function(){
+  var r=oHist.apply(this,arguments);
+  try{var H=V25.hist;if(!H.visit){H.visit=true;if(!V25.d().histMute){H.on=true;V25.histPlay();}}V25.histPage();}catch(e){}
+  return r;
+ };
+ var oMenu2=UiJs.menu;
+ UiJs.menu=function(){V25.hist.visit=false;V25.histStop();return oMenu2.apply(this,arguments);};
 })();}
 
 Main.main();
