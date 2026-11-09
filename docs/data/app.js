@@ -24131,7 +24131,7 @@ V25.endNudge=function(){
  if(hist.length<8)return;
  if(d.nudgeG===g.__v24t&&g.__v24t){}else{if(d.nudge&&now-d.nudge<14*864e5)return;if(d.seen&&now-d.seen<30*864e5)return;d.nudge=now;d.nudgeG=g.__v24t||now;Profile.save();}
  var end=UiJs.cur.querySelector('.v24-end');if(!end)return;
- var n=UiJs.el('button','v25-nudge',null);n.innerHTML='<span aria-hidden="true">♥</span> Curtindo o treino? Apoie o projeto com um Pix';
+ var n=UiJs.el('button','v25-nudge',null);n.innerHTML='<span aria-hidden="true">♥</span> Curtindo o treino? Apoie o projeto';
  n.onclick=function(){V25.page(App.menu);};
  end.parentNode.insertBefore(n,end.nextSibling);
 };
@@ -24142,14 +24142,14 @@ if(V25_UI){(function(){
  var oMenu=UiJs.menu;
  UiJs.menu=function(items,info){
   var main=false;
-  if(items&&items.length){for(var i=0;i<items.length;i++)if(items[i]&&items[i].t==='Jogar com amigo'){var o=items[i];items[i]={t:'Apoiar o projeto',d:'Ajude o jogo com um Pix',f:function(){V25.page(App.menu);},ico:'v25heart',lone:o.lone};main=true;}}
+  if(items&&items.length){for(var i=0;i<items.length;i++)if(items[i]&&items[i].t==='Jogar com amigo'){var o=items[i];items[i]={t:'Apoiar o projeto',d:'Ajude o jogo a evoluir',f:function(){V25.page(App.menu);},ico:'v25heart',lone:o.lone};main=true;}}
   var r=oMenu.apply(this,arguments);
   if(main)try{[].forEach.call(UiJs.root.querySelectorAll('.menu .mitem'),function(b){var t=b.querySelector('.mtx');if(t&&t.textContent.indexOf('Apoiar o projeto')===0&&!b.querySelector('.v25-mic')){var ic=document.createElement('span');ic.className='mic v25-mic';ic.innerHTML=HEART;b.insertBefore(ic,b.firstChild);b.classList.add('v25-item');}});}catch(e){}
   return r;
  };
  /* Conta e backup: seção no fim */
  var oAcc=V23.account;
- V23.account=function(){var r=oAcc.apply(this,arguments);try{UiJs.h('Apoiar o projeto');UiJs.p('O jogo é gratuito e de código aberto. Se quiser ajudar a melhorá-lo, contribua com um Pix de qualquer valor.','muted');UiJs.btns([['♥ Apoiar com Pix',function(){V25.page(V23.account);},'pri']]);}catch(e){}return r;};
+ V23.account=function(){var r=oAcc.apply(this,arguments);try{UiJs.h('Apoiar o projeto');UiJs.p('O jogo é gratuito e de código aberto. Se quiser ajudar a melhorá-lo, qualquer contribuição faz diferença.','muted');UiJs.btns([['♥ Apoiar o projeto',function(){V25.page(V23.account);},'pri']]);}catch(e){}return r;};
  Pages.sync=V23.account;
  /* fim de partida */
  var oDraw=App.drawGame;App.drawGame=function(){var r=oDraw.apply(this,arguments);try{V25.endNudge();}catch(e){}return r;};
