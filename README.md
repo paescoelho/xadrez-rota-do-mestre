@@ -93,3 +93,7 @@ Créditos de terceiros:
 - **Firebase JS SDK:** Apache 2.0, carregado do CDN do Google só quando o login está ativado.
 
 Doações por Pix são compatíveis com a GPL.
+
+## Apoiar o projeto (Pix)
+
+O botão **♥ Apoiar** (rodapé do menu e tela *Conta e backup*) gera um Pix estático (BR Code do Banco Central) dentro do próprio jogo, com a mensagem "Xadrez GitHub". A chave, o nome e a cidade ficam em `fonte/web/extras_v25.js` (`V25.PIX`). O QR Code usa o *QR Code Generator* de Kazuhiko Arase (licença MIT).
