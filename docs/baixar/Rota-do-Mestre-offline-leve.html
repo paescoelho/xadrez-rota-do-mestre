@@ -73753,7 +73753,7 @@ if(typeof document!=='undefined'){(function(){
  *      vários lances pesam metade;
  *    - mostra a faixa provável (incerteza) junto do número.
  * 3) O Elo combinado só usa partidas reais com peso alto; problemas e "adivinhe o lance" entram convertidos e com peso menor. */
-var V28={};
+var V28={EASY:2.5};
 V28.toGame=function(p){return Math.round(Math.max(100,Math.min(2700,0.8*p-250)));};
 V28.fromGame=function(g){return Math.round((g+250)/0.8);};
 V28.E=function(r,d){return 1/(1+Math.pow(10,(d-r)/400));};
@@ -73761,7 +73761,10 @@ V28.credit=function(x){if(!x.ok)return 0;var s=x.ms||0;if(x.attempts>1||x.hints>
 /* estimativa mais provável (escala dos problemas), com suposição inicial de iniciante: média 800, desvio 350 */
 V28.map=function(res,mu,sd){
  mu=mu||800;sd=sd||350;var best=mu,bl=-1e18,L=function(R){var s=-(R-mu)*(R-mu)/(2*sd*sd);
-  for(var i=0;i<res.length;i++){var x=res[i];if(x.rating==null)continue;var w=x.k==='q'?0.5:1,c=V28.credit(x),e=Math.min(0.999,Math.max(0.001,V28.E(R,x.rating)));s+=w*(c*Math.log(e)+(1-c)*Math.log(1-e));}return s;};
+  for(var i=0;i<res.length;i++){var x=res[i];if(x.rating==null)continue;var w=x.k==='q'?0.5:1,c=V28.credit(x),e=Math.min(0.999,Math.max(0.001,V28.E(R,x.rating)));
+  /* errar um problema bem abaixo do nível estimado pesa 2,5 vezes: erro em coisa simples é sinal forte */
+  if(c===0&&x.rating<R-150)w*=V28.EASY;
+  s+=w*(c*Math.log(e)+(1-c)*Math.log(1-e));}return s;};
  for(var R=100;R<=3000;R+=5){var l=L(R);if(l>bl){bl=l;best=R;}}
  /* incerteza pela curvatura (informação de Fisher) */
  var info=1/(sd*sd);for(var i=0;i<res.length;i++){var x=res[i];if(x.rating==null)continue;var w=x.k==='q'?0.5:1,e=V28.E(best,x.rating),k=Math.LN10/400;info+=w*k*k*e*(1-e);}
@@ -73772,11 +73775,12 @@ if(typeof Mestre!=='undefined'){
  /* começa mais fácil: sem histórico, o primeiro problema fica perto de 850 na escala dos problemas */
  Mestre.initialEstimate=function(){var p=Profile.d.place;if(p&&p.method==='critico-v28'&&p.pz)return Mestre.clamp(p.pz,600,2650);return Mestre.clamp(Profile.d.pzN>30?Math.min(Profile.d.pzElo,1400):850,600,2200);};
  /* passo que diminui: 260 no início, ~70 no fim (antes: 330 fixo) */
- Mestre.ratingStep=function(rating,task,answer){var r=Drills.R,n=r&&r.res?r.res.length:0,K=Math.max(70,260-n*6);var p=Mestre.expected(rating,task.rating||1000);var y=V28.credit(answer);return Mestre.clamp(Math.round(rating+K*(y-p)),400,2900);};
+ Mestre.ratingStep=function(rating,task,answer){var r=Drills.R,n=r&&r.res?r.res.length:0,K=Math.max(70,260-n*6);var p=Mestre.expected(rating,task.rating||1000);var y=V28.credit(answer);if(y===0&&(task.rating||1000)<rating-150)K*=1.6;return Mestre.clamp(Math.round(rating+K*(y-p)),400,2900);};
  var oldPR=Mestre.placementResult;
  Mestre.placementResult=function(res){
   var base=oldPR(res),m=V28.map(res,800,350),g=V28.toGame(m.r),lo=V28.toGame(m.r-2*m.se),hi=V28.toGame(m.r+2*m.se);
   base.est=g;base.pz=m.r;base.lo=lo;base.hi=hi;base.method='critico-v28';
+  base.easyMiss=res.filter(function(x){return V28.credit(x)===0&&x.rating!=null&&x.rating<m.r-150;}).length;
   base.step=g<850?1:g<1050?2:g<1250?3:g<1450?4:g<1650?5:g<1800?6:g<1950?7:g<2100?8:g<2250?9:10;
   return base;
  };
@@ -73790,7 +73794,7 @@ if(typeof Mestre!=='undefined'){
   oldRes(r);
   if(r&&r.method==='critico-v28'&&UiJs.cur){
    var box=UiJs.el('div','v28-note',UiJs.cur);
-   box.innerHTML='<b>Faixa provável: '+r.lo+' a '+r.hi+'</b><span>Avaliação crítica: parte da suposição de iniciante e só sobe com acertos consistentes, de primeira e sem demorar. Os problemas usam a escala de dificuldade do Lichess, que fica acima da força em partidas; por isso o número é convertido para a escala de partidas. É uma estimativa interna, não um rating oficial. Jogar partidas contra o computador é o que mais deixa o número preciso.</span>';
+   box.innerHTML='<b>Faixa provável: '+r.lo+' a '+r.hi+'</b>'+(r.easyMiss?'<span class="warn">'+r.easyMiss+(r.easyMiss===1?' erro em posição bem abaixo do seu nível':' erros em posições bem abaixo do seu nível')+': cada um pesa 2,5 vezes mais na nota.</span>':'')+'<span>Avaliação crítica: parte da suposição de iniciante e só sobe com acertos consistentes, de primeira e sem demorar. Os problemas usam a escala de dificuldade do Lichess, que fica acima da força em partidas; por isso o número é convertido para a escala de partidas. É uma estimativa interna, não um rating oficial. Jogar partidas contra o computador é o que mais deixa o número preciso.</span>';
   }
  };
 })();

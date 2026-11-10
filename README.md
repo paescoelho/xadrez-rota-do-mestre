@@ -149,5 +149,5 @@ pelo próprio vídeo desfocado. No celular em pé continua a versão vertical 10
   problemas é convertida para a escala de partidas: partida ≈ 0,8 × problema − 250 (conservador, não calibrado contra rating oficial).
 - Nivelamento: as mesmas 36 posições adaptativas, mas começa mais fácil, o passo de adaptação diminui ao longo do teste e o
   resultado é a estimativa mais provável com todas as respostas (suposição inicial de iniciante). Acerto lento vale menos
-  (mais de 90 s: 60%; mais de 3 min: 30%); perguntas de abertura com várias respostas aceitas pesam metade. Mostra a faixa provável.
+  (mais de 90 s: 60%; mais de 3 min: 30%); errar uma posição bem abaixo do nível estimado pesa 2,5 vezes; perguntas de abertura com várias respostas aceitas pesam metade. Mostra a faixa provável.
 - Elo combinado: partidas reais pesam mais; sem 10 partidas, o número fica limitado a 1000 + 20 por partida jogada.
