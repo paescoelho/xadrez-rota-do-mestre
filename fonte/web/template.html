@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v25</title>
+<title>Xadrez · Rota do Mestre — v26</title>
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
 <meta name="description" content="Treinador de xadrez offline e partidas com amigos pelo WhatsApp.">
@@ -708,6 +708,45 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .board.sit .sq.x:after{inset:0;background:none}
 .board.sit .sq.x:nth-child(9n+1):after{background:linear-gradient(45deg,transparent 49.2%,rgba(110,62,20,.6) 49.2%,rgba(110,62,20,.6) 50.8%,transparent 50.8%)}
 .board.sit .sq.x:nth-child(7n+8):not(:nth-child(64)):after{background:linear-gradient(-45deg,transparent 49.2%,rgba(110,62,20,.6) 49.2%,rgba(110,62,20,.6) 50.8%,transparent 50.8%)}
+
+/* v26: Laboratório do Pensamento */
+.v26-hero{background:linear-gradient(160deg,rgba(28,34,43,.95),rgba(16,19,24,.95));border:1px solid rgba(220,181,92,.45);border-radius:14px;padding:12px 14px;margin:4px 0 10px}
+.v26-hero b{display:block;font-family:Georgia,serif;font-weight:normal;color:var(--gold2);font-size:17px;margin-bottom:4px}
+.v26-hero span{display:block;font-size:13px;line-height:1.4;color:var(--tx)}
+.v26-stat{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0 0 8px;font-size:11px;color:var(--mu);text-align:center}
+.v26-stat span{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:7px 2px}
+.v26-stat b{display:block;font-size:18px;color:var(--gold2);font-family:Georgia,serif}
+.v26-prog{font-size:12px;color:var(--mu);margin:0 0 8px;min-height:0}
+.v26-prog.on{position:relative;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:7px 10px;overflow:hidden}
+.v26-prog.on i{position:absolute;left:0;top:0;bottom:0;background:rgba(220,181,92,.16);transition:width .4s}
+.v26-prog.on span{position:relative}
+.v26-prog.warn{color:var(--warn)}
+.v26-imp{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;margin:6px 0 8px}
+.v26-ta{width:100%;box-sizing:border-box;background:#0d1015;color:var(--tx);border:1px solid var(--line);border-radius:9px;padding:8px;font:12.5px/1.4 ui-monospace,Menlo,Consolas,monospace;resize:vertical}
+.v26-imp .btns{margin:6px 0 4px}
+.v26-user{display:flex;gap:6px;margin:6px 0}
+.v26-in{flex:1;min-width:0;background:#0d1015;color:var(--tx);border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:14px}
+.v26-user .btn{flex:0 0 auto;margin:0}
+.v26-sum,.v26-who{background:linear-gradient(180deg,rgba(28,34,43,.95),rgba(16,19,24,.95));border:1px solid rgba(220,181,92,.45);border-radius:12px;padding:10px 12px;margin:6px 0 8px}
+.v26-sum b,.v26-who b{display:block;color:var(--gold2);margin-bottom:3px}
+.v26-sum span,.v26-who span{display:block;font-size:12.5px;line-height:1.35;color:var(--tx);margin:2px 0}
+.v26-sum span.bad{color:#f0a19c}
+.v26-sum a.btn{display:inline-block;margin-top:8px;text-decoration:none;color:var(--gold2)}
+.v26-moves{font-size:13px;line-height:1.7;color:var(--tx);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:4px 0 8px;word-spacing:2px}
+.v26-moves .v26-bad{color:#f0a19c}
+.v26-steps{display:flex;gap:4px;flex-wrap:wrap;margin:2px 0 6px}
+.v26-steps span{font-size:11px;padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--mu)}
+.v26-steps span.on{border-color:var(--gold);color:#1a1408;background:var(--gold);font-weight:600}
+.v26-steps span.ok{color:var(--good);border-color:rgba(76,184,113,.5)}
+.v26-ctx{font-size:11.5px;color:var(--mu);margin:0 0 4px}
+.v26-cmp{display:grid;gap:6px;margin:6px 0}
+.v26-cmp div{display:grid;grid-template-columns:12px 1fr;column-gap:8px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:7px 10px}
+.v26-cmp i{grid-row:span 2;width:10px;height:10px;border-radius:50%;margin-top:4px}
+.v26-cmp i.c0{background:#3aa35b}.v26-cmp i.c1{background:#d9534f}.v26-cmp i.c2{background:#3b82c4}
+.v26-cmp b{font-size:13.5px;color:var(--tx)}
+.v26-cmp span{font-size:12px;color:var(--mu)}
+.v26-cmp span.good{color:var(--good)}.v26-cmp span.warn{color:var(--warn)}.v26-cmp span.bad{color:#f0a19c}
+.bar .barf.warn{background:linear-gradient(90deg,#c8963a,#e7a53c)}
 </style>
 </head>
 <body>

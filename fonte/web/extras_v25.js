@@ -164,7 +164,7 @@ V25.tipShow=function(b){
  V25.tipOpen=true;
 };
 V25.tipDecor=function(b){
- var g=App.G;if(!b||b!==UiJs.board||!b.sqs)return;
+ var g=App.G;if(!b||b!==UiJs.board||b!==V25.gameBoard||!b.sqs)return;
  if(!V25.tipOk(g)){if(b.root&&b.root.querySelector('.v25-tip'))V25.tipClose();return;}
  var i=V25.tipIdx(b,g.mentorTip.sq);if(i<0)return;
  var s=b.sqs[i];if(s&&!s.querySelector('.v25-q')){var q=document.createElement('span');q.className='v25-q';q.textContent='?';q.setAttribute('aria-label','Toque para ver o motivo do lance');s.appendChild(q);}
@@ -225,7 +225,7 @@ if(V25_UI){(function(){
  }
  var oBD=BoardJ.prototype.draw;
  BoardJ.prototype.draw=function(){var r=oBD.apply(this,arguments);try{V25.tipDecor(this);}catch(e){}return r;};
- var oDG=App.drawGame;App.drawGame=function(){var r=oDG.apply(this,arguments);try{V25.actions();}catch(e){}return r;};
+ var oDG=App.drawGame;App.drawGame=function(){V25.gameBoard=UiJs.board;var r=oDG.apply(this,arguments);try{V25.actions();}catch(e){}return r;};
  document.addEventListener('click',function(e){if(V25.tipOpen&&!(e.target.closest&&e.target.closest('.board')))V25.tipClose();},true);
  /* narração: começa ao entrar na História pelo menu e para ao voltar ao menu principal */
  var oHist=History.page;

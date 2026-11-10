@@ -24,12 +24,15 @@ V24.DB=(function(){
   if(api.p)return api.p;
   api.p=new Promise(function(res,rej){
    if(!api.ok){rej(new Error('sem IndexedDB'));return;}
-   var rq=indexedDB.open('rota-do-mestre',1);
+   /* versão 2 (v26): só acrescenta a gaveta 'imp' (partidas importadas); nada do que já existe é apagado */
+   var rq=indexedDB.open('rota-do-mestre',2);
    rq.onupgradeneeded=function(){var db=rq.result;
     if(!db.objectStoreNames.contains('games'))db.createObjectStore('games',{keyPath:'t'});
     if(!db.objectStoreNames.contains('moves'))db.createObjectStore('moves',{keyPath:'t'});
-    if(!db.objectStoreNames.contains('kv'))db.createObjectStore('kv');};
-   rq.onsuccess=function(){api.db=rq.result;res(api.db);};
+    if(!db.objectStoreNames.contains('kv'))db.createObjectStore('kv');
+    if(!db.objectStoreNames.contains('imp'))db.createObjectStore('imp',{keyPath:'id'});};
+   rq.onblocked=function(){try{UiJs.toast('Feche as outras abas do Rota do Mestre para concluir a atualização.');}catch(e){}};
+   rq.onsuccess=function(){api.db=rq.result;api.db.onversionchange=function(){try{api.db.close();}catch(e){}api.p=null;};res(api.db);};
    rq.onerror=function(){api.ok=false;rej(rq.error);};
   });
   return api.p;
@@ -40,6 +43,8 @@ V24.DB=(function(){
  api.get=function(store,key){return tx(store,'readonly',function(st){return st.get(key);});};
  api.all=function(store){return tx(store,'readonly',function(st){return st.getAll();});};
  api.count=function(store){return tx(store,'readonly',function(st){return st.count();});};
+ api.del=function(store,key){return tx(store,'readwrite',function(st){return st.delete(key);});};
+ api.clear=function(store){return tx(store,'readwrite',function(st){return st.clear();});};
  return api;
 })();
 

@@ -105,3 +105,23 @@ chaturanga, shatranj, xadrez medieval, makruk, sittuyin, xiangqi, janggi, shogi,
 pachisi, senet, tafl, tablut, alquerque, fierges e damas brasileiras (no modo mestre), além do xadrez moderno.
 Os jogos modernos (Catan, Carcassonne, Scotland Yard, Terra Mystica) aparecem só como história, porque são marcas registradas
 com direitos autorais dos seus autores.
+
+## Laboratório do Pensamento (v26 · Fase A)
+
+No menu, o **Laboratório do Pensamento** ocupa o lugar do "Mapa do seu pensamento" (o Mapa e o Raio-X continuam dentro dele).
+
+- **Minhas partidas:** importa partidas terminadas por PGN colado, arquivo `.pgn`, ou pelo nome de usuário no Lichess e no Chess.com
+  (últimas 30 partidas públicas). Valida cada lance (inclui roque, promoção, en passant, posição inicial por FEN, variantes entre parênteses,
+  comentários com relógio `[%clk]`, notação longa e letras em português), recusa partidas inválidas com o motivo, ignora partidas sem resultado
+  e não duplica partidas. Se a busca online for bloqueada pelo site, o jogo mostra o link para baixar o PGN e importar o arquivo.
+- **Análise em segundo plano** com o Stockfish (só os seus lances), sem travar a tela; pausa enquanto o tabuleiro da partida está aberto.
+- **Posições críticas:** até 3 por partida, onde a chance de vitória caiu 12 pontos ou mais. Cada uma recebe uma competência provável
+  (peças sem defesa, ameaças do adversário, golpes táticos, mates, finais, conversão de vantagem, abertura, decisões posicionais),
+  apresentada como hipótese automática, separada dos fatos medidos.
+- **Reconstrua seu Pensamento:** Observe → Investigue (candidatos) → Decida (com justificativa opcional) → Compreenda (sua escolha,
+  o lance da partida, o melhor lance verificado, a resposta crítica do adversário e a lição) → Comprove numa posição nova do mesmo tema.
+  Só a posição nova conta como evidência de aprendizado.
+- **Primeiras observações:** contagem por competência com o nível de confiança (menos de 5, 5, 10, 20 e 50 partidas analisadas)
+  e a distinção entre erro isolado e padrão que se repete (3 partidas ou mais).
+- Os dados ficam no aparelho (IndexedDB, banco `rota-do-mestre` versão 2, gaveta `imp`); a atualização do banco não apaga nada.
+  Há botões para exportar as partidas em PGN e para apagar as importadas.
