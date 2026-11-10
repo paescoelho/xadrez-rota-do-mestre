@@ -131,3 +131,14 @@ No menu, o **Laboratório do Pensamento** ocupa o lugar do "Mapa do seu pensamen
 Em tela larga (computador), a abertura usa uma versão 1920 × 1080 feita para o formato (`media/intro_hd16.*`):
 as legendas aparecem em tamanho original sobre o preto e as cenas de xadrez ficam no centro com as laterais preenchidas
 pelo próprio vídeo desfocado. No celular em pé continua a versão vertical 1080 × 1920. O site baixa só a versão da tela de quem acessa.
+
+## Contagem de acessos e Painel do criador (v27)
+
+- O site conta acessos de forma anônima pelo GoatCounter (sem cookies, sem dados pessoais). Fica desligado até
+  `V27.GC` (em `fonte/web/extras_v27.js`) receber o código do site no GoatCounter. No GoatCounter, ligue também
+  "Allow adding visitor counts on your website" (é o que permite ao painel ler os totais).
+- **Painel do criador:** 5 toques seguidos na "Versão" do rodapé do menu. Mostra visitantes (hoje, 7 dias, 30 dias,
+  12 meses, desde o início), histórico por dia (31 dias) e por mês (13 meses), sessões por tipo de aparelho e o que é usado
+  no jogo (partidas, treino, laboratório, história, Pix). País, navegador e origem ficam no painel completo do GoatCounter.
+- O aparelho em que o painel é aberto deixa de ser contado (botão para voltar a contar). O atalho só esconde o painel:
+  como o código é público, os totais não são secretos; os detalhes ficam no painel do GoatCounter, que exige login.

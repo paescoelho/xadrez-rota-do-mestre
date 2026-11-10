@@ -307,7 +307,7 @@ V26.lab=function(){
    {t:'Mapa do seu pensamento',d:'O que você olhou e o que deixou de ver nas partidas daqui',r:'›',f:function(){Mind.page();V26.reback(V26.lab);}},
    {t:'Raio-X das partidas',d:'Calma sob pressão, pressa, certeza e domínio por tema',r:'›',f:function(){if(V24.xray){V24.xray();V26.reback(V26.lab);}}}
   ]);
-  UiJs.p('Privacidade: as partidas e as análises ficam neste aparelho. A internet só é usada quando você pede a busca no Lichess ou no Chess.com, e o Rota do Mestre nunca analisa partidas em andamento.','muted small');
+  UiJs.p('Privacidade: as partidas e as análises ficam neste aparelho. A internet só é usada quando você pede a busca no Lichess ou no Chess.com, e o Rota do Mestre nunca analisa partidas em andamento.'+(typeof V27!=='undefined'&&V27.GC?' No site, os acessos são contados de forma anônima, sem cookies e sem dados pessoais.':''),'muted small');
  });});
  V26.timer=V26.timer||setInterval(function(){var e=document.querySelector('.v26-prog');if(e)V26.progLine(e);},1500);
 };
