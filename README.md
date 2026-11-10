@@ -151,3 +151,17 @@ pelo próprio vídeo desfocado. No celular em pé continua a versão vertical 10
   resultado é a estimativa mais provável com todas as respostas (suposição inicial de iniciante). Acerto lento vale menos
   (mais de 90 s: 60%; mais de 3 min: 30%); errar uma posição bem abaixo do nível estimado pesa 2,5 vezes; perguntas de abertura com várias respostas aceitas pesam metade. Mostra a faixa provável.
 - Elo combinado: partidas reais pesam mais; sem 10 partidas, o número fica limitado a 1000 + 20 por partida jogada.
+
+## Avaliação ainda mais precisa (v29 · versão 10.11.2026)
+
+- **Precisão nas partidas:** a precisão média dos seus lances (partidas do app analisadas no Raio-X e partidas importadas
+  no Laboratório do Pensamento) vira uma estimativa de força por uma tabela conservadora (70% ≈ 750 · 78% ≈ 1050 ·
+  84% ≈ 1400 · 89% ≈ 1750). Entra no Elo a partir de 3 partidas e, com 10 ou mais, passa a ser a parte de maior peso.
+- **Sorte não conta:** problema de um lance só vale 70% do acerto; o Nivelamento prefere problemas de dois ou mais lances.
+- **Revalidação:** nas questões 12, 24 e 33 entra um problema "gêmeo" de um acerto anterior (mesmo tema, ±80 de
+  dificuldade). Errar o gêmeo faz o acerto original valer metade.
+- **Tempo proporcional:** limite = 30 s + (dificuldade − 600)/10 s. Dentro do limite vale 100%, até o dobro 60%, acima 30%.
+- **Inatividade:** depois de 21 dias sem treinar, −2 pontos por dia (máximo 150) e faixa provável mais larga.
+  Recupera com 5 partidas ou um novo Nivelamento.
+- **Notas por área:** tática, cálculo, finais e abertura. A nota geral do Nivelamento é 70% da estimativa com todas as
+  respostas + 30% da pior área com pelo menos 5 questões. Aparecem no resultado do Nivelamento e no Painel.
