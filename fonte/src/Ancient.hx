@@ -77,6 +77,22 @@ class Ancient {
         "Met: uma casa na diagonal. Khon: uma casa na diagonal ou uma casa para a frente.",
         "O bia anda uma casa para a frente, captura na diagonal e vira met ao chegar à sexta fileira.",
         "No final, a regra de contagem tailandesa dá empate a quem resiste; aqui ela foi simplificada: 64 lances de cada lado sem captura nem lance de peão terminam empatados."
+      ] },
+    { id: "sittuyin", name: "Sittuyin (xadrez birmanês)", era: "Mianmar (Birmânia) · jogo tradicional birmanês", board: "anc sit", marks: true,
+      setup: "r6r/1nsfksn1/4pppp/pppp4/4PPPP/PPPP4/1NSKFSN1/R6R", disp: "kfsnrp", promo: -1, promoDiag: true, stale: "draw", bare: false, count: 0,
+      names: ["", "Ne (soldado)", "Myin (cavalo)", "", "Yahhta (carro)", "Sit-ke (general)", "Min-gyi (rei)", "Sin (elefante)"],
+      story: [
+        "O sittuyin é o xadrez tradicional de Mianmar, a antiga Birmânia. Como o makruk tailandês, descende do chaturanga que viajou da Índia para o Sudeste Asiático, e conserva peças fracas e de passo curto, bem parecidas com as originais.",
+        "Duas marcas o tornam único. Os soldados começam escalonados: metade na terceira fileira e metade na quarta, já quase se tocando no centro. E, no jogo tradicional, cada jogador arruma as suas peças como quiser atrás dos soldados antes da partida começar; aqui elas começam numa arrumação fixa, para você jogar na hora.",
+        "As duas grandes diagonais do tabuleiro são riscadas. Elas marcam as casas onde um soldado pode virar general, e só quando o seu general já foi capturado.",
+        "Com a chegada do xadrez internacional, o sittuyin ficou raro, mas continua lembrado como parte da cultura birmanesa."
+      ],
+      rules: [
+        "Vence quem der xeque-mate no min-gyi (rei). Afogamento é empate.",
+        "Sit-ke (general): uma casa na diagonal. Sin (elefante): uma casa na diagonal ou uma casa para a frente. Myin: salta em L. Yahhta: anda quantas casas quiser em linha reta.",
+        "Os soldados começam escalonados (fileiras 3 e 4) e andam uma casa para a frente, capturando na diagonal.",
+        "Promoção: o soldado que chega a uma casa das diagonais marcadas, no campo do adversário, vira sit-ke, mas só se o seu sit-ke já tiver sido capturado.",
+        "Aqui as peças começam numa arrumação fixa; no jogo tradicional, cada um arruma as suas antes de começar."
       ] }
   ];
   public static var MARKS = [0, 3, 4, 7, 24, 31, 32, 39, 27, 28, 35, 36, 56, 59, 60, 63];
@@ -109,6 +125,16 @@ class Ancient {
   static var DG = [[1, 1], [1, -1], [-1, 1], [-1, -1]];
   static var OR = [[1, 0], [-1, 0], [0, 1], [0, -1]];
   static inline function sqAt(f:Int, r:Int):Int return (f < 0 || f > 7 || r < 0 || r > 7) ? -1 : r * 8 + f;
+  /* casas das duas grandes diagonais (promoção do sittuyin) */
+  public static var DIAG = [for (q in 0...64) if ((q & 7) == (q >> 3) || (q & 7) == 7 - (q >> 3)) q];
+  static function promoOf(b:Array<Int>, to:Int, side:Int):Int {
+    if (v.promoDiag == true) {
+      if (relRank(to, side) < 4 || DIAG.indexOf(to) < 0) return 0;
+      for (q in 0...64) if (b[q] == side * F) return 0;
+      return F;
+    }
+    return relRank(to, side) == (v.promo : Int) ? F : 0;
+  }
   public static function gen(b:Array<Int>, side:Int):Array<Int> {
     var out:Array<Int> = [];
     for (s in 0...64) {
@@ -118,8 +144,8 @@ class Ancient {
       switch (t) {
         case 1:
           var to = sqAt(f, r + side);
-          if (to >= 0 && b[to] == 0) out.push(s | (to << 6) | ((relRank(to, side) == (v.promo : Int) ? F : 0) << 12));
-          for (df in [-1, 1]) { var c = sqAt(f + df, r + side); if (c >= 0 && b[c] != 0 && col(b[c]) == -side) out.push(s | (c << 6) | ((relRank(c, side) == (v.promo : Int) ? F : 0) << 12)); }
+          if (to >= 0 && b[to] == 0) out.push(s | (to << 6) | (promoOf(b, to, side) << 12));
+          for (df in [-1, 1]) { var c = sqAt(f + df, r + side); if (c >= 0 && b[c] != 0 && col(b[c]) == -side) out.push(s | (c << 6) | (promoOf(b, c, side) << 12)); }
         case 2: for (d in KN) add(sqAt(f + d[0], r + d[1]));
         case 3: for (d in DG) add(sqAt(f + 2 * d[0], r + 2 * d[1]));
         case 5: for (d in DG) add(sqAt(f + d[0], r + d[1]));
@@ -322,7 +348,7 @@ class Ancient {
     Ui.h("Como se joga");
     Ui.ul(x.rules);
     Ui.h("As peças");
-    var types = [K, F, x.id == "makruk" ? S : E, N, R, P];
+    var types = [K, F, x.id == "makruk" || x.id == "sittuyin" ? S : E, N, R, P];
     var names:Array<String> = x.names;
     Ui.items([for (t in types) { t: names[t], d: moveText(t), r: "ver", f: function() demo(id, t) }]);
     Ui.h("Jogar contra o computador");
@@ -338,13 +364,13 @@ class Ancient {
       case 7: "Uma casa na diagonal ou uma casa para a frente.";
       case 2: "Em L, saltando por cima das peças. Igual ao cavalo de hoje.";
       case 4: "Quantas casas quiser na horizontal ou na vertical. Era a peça mais forte.";
-      case 1: v.id == "makruk" ? "Uma casa para a frente; captura na diagonal; vira met na sexta fileira." : "Uma casa para a frente (sem avanço duplo); captura na diagonal; promove na última fileira.";
+      case 1: v.id == "sittuyin" ? "Uma casa para a frente; captura na diagonal; vira sit-ke numa casa das diagonais marcadas, se o seu sit-ke já foi capturado." : v.id == "makruk" ? "Uma casa para a frente; captura na diagonal; vira met na sexta fileira." : "Uma casa para a frente (sem avanço duplo); captura na diagonal; promove na última fileira.";
       default: "";
     };
   }
   static function setBoard(fen:String, flip:Bool) {
     var b = Ui.board;
-    b.theme = v.board; b.special = v.marks == true ? MARKS : [];
+    b.theme = v.board; b.special = v.marks == true ? (v.id == "sittuyin" ? DIAG : MARKS) : [];
     b.fen = fen; b.flip = flip; b.arrows = []; b.blind = false;
   }
   static function demo(id:String, t:Int) {
@@ -364,7 +390,7 @@ class Ancient {
     Ui.panel();
     Ui.p(names[t], "gold big");
     Ui.p(moveText(t), "");
-    var types = [K, F, x.id == "makruk" ? S : E, N, R, P];
+    var types = [K, F, x.id == "makruk" || x.id == "sittuyin" ? S : E, N, R, P];
     var i = types.indexOf(t);
     Ui.btns([["Próxima peça", function() demo(id, types[(i + 1) % types.length]), "pri"], ["Voltar", function() info(id)]]);
   }

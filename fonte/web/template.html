@@ -678,6 +678,36 @@ PIECES_CSS
 .v25-narr{display:inline-flex;align-items:center;gap:7px;margin-top:8px;background:rgba(10,12,15,.5);border:1px solid rgba(220,181,92,.6);border-radius:999px;padding:6px 13px;color:var(--gold2);font:600 12.5px system-ui,-apple-system,sans-serif;cursor:pointer}
 .v25-narr span{font-size:11px}
 .v25-narr.on{background:rgba(220,181,92,.16)}
+
+/* v25: Painel e História ocupam exatamente a linha da grade (sem altura em vh): o espaço entre eles fica igual ao dos outros botões, inclusive no Safari do iPhone */
+.mgrid>.mitem.pnl,.mgrid>.mitem.hstb{height:auto!important;min-height:0!important;align-self:stretch}
+.mgrid.hasbig{grid-template-rows:repeat(var(--r2),minmax(0,1fr)) repeat(var(--rb),minmax(84px,1.5fr))}
+@media (min-width:700px){.mgrid.hasbig{grid-template-rows:repeat(var(--r3),minmax(0,1fr)) repeat(var(--rb),minmax(96px,1.35fr))}}
+
+/* v25: jogos da árvore genealógica (World) */
+.wgb{width:100%;max-width:min(620px,calc(100dvh - 250px));margin:4px auto 8px;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+.wgb svg{display:block;width:100%;height:auto;border-radius:10px;filter:drop-shadow(0 6px 16px rgba(0,0,0,.45))}
+.wgb.wg-senet,.wgb.wg-mancala{max-width:900px}
+.wgb [data-c]{cursor:pointer}
+.fig.wgthumb{max-width:300px;margin:10px auto}
+.fig.wgthumb svg{display:block;width:100%;height:auto;border-radius:10px}
+.fig.wgroll{display:flex;justify-content:center;margin:4px 0}
+.fig.wgroll svg{height:44px;width:auto}
+.gcard .gthumb svg{max-width:100%;max-height:100%}
+/* árvore: botões duplos e jogos menores clicáveis */
+.genealogy-plays{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+.genealogy-play.sm{margin-top:0;padding:3px 6px;font-size:9.5px;white-space:nowrap}
+.genealogy-plays{flex-wrap:nowrap!important}
+button.genealogy-mini{background:none;border:0;padding:0;cursor:pointer;touch-action:manipulation}
+.genealogy-mini .mini-icon{position:relative}
+.genealogy-mini .mini-icon i{position:absolute;right:-6px;bottom:-4px;width:20px;height:20px;border-radius:50%;background:linear-gradient(#fce29b,#c9993c);color:#2b1b09;font:bold 10px/20px system-ui,sans-serif;font-style:normal}
+.genealogy-mini.info .mini-icon i{font:italic bold 12px/20px Georgia,serif}
+button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini-icon{border-color:#fce29b;box-shadow:0 0 12px rgba(252,226,155,.5)}
+
+/* v25: sittuyin — as duas grandes diagonais riscadas de ponta a ponta */
+.board.sit .sq.x:after{inset:0;background:none}
+.board.sit .sq.x:nth-child(9n+1):after{background:linear-gradient(45deg,transparent 49.2%,rgba(110,62,20,.6) 49.2%,rgba(110,62,20,.6) 50.8%,transparent 50.8%)}
+.board.sit .sq.x:nth-child(7n+8):not(:nth-child(64)):after{background:linear-gradient(-45deg,transparent 49.2%,rgba(110,62,20,.6) 49.2%,rgba(110,62,20,.6) 50.8%,transparent 50.8%)}
 </style>
 </head>
 <body>

@@ -124,7 +124,7 @@ class Pachisi extends WGame {
     var p:Array<Int> = s.p; var size = 20 + 19 * Q;
     var sb = new StringBuf();
     sb.add('<svg viewBox="0 0 ' + size + ' ' + size + '">' + World.DEFS);
-    var arms = [[8, 11, 3, 8, "#7d1d16"], [11, 8, 8, 3, "#7d5a16"], [8, 0, 3, 8, "#1d5a2a"], [0, 8, 8, 3, "#20304f"]];
+    var arms:Array<Array<Dynamic>> = [[8, 11, 3, 8, "#7d1d16"], [11, 8, 8, 3, "#7d5a16"], [8, 0, 3, 8, "#1d5a2a"], [0, 8, 8, 3, "#20304f"]];
     for (a in arms) sb.add('<rect x="' + (10 + (a[0] : Int) * Q - 6) + '" y="' + (10 + (a[1] : Int) * Q - 6) + '" width="' + ((a[2] : Int) * Q + 12) + '" height="' + ((a[3] : Int) * Q + 12) + '" rx="8" fill="' + a[4] + '"/>');
     var cells:Array<Int> = LOOP.copy(); for (pp in PATH) for (c in pp) if (cells.indexOf(c) < 0) cells.push(c);
     for (c in cells) {

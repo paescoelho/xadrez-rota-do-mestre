@@ -67,6 +67,26 @@ Ancient.relRank = function(s,side) {
 		return 7 - (s >> 3);
 	}
 };
+Ancient.promoOf = function(b,to,side) {
+	if(Ancient.v.promoDiag == true) {
+		if(Ancient.relRank(to,side) < 4 || Ancient.DIAG.indexOf(to) < 0) {
+			return 0;
+		}
+		var _g = 0;
+		while(_g < 64) {
+			var q = _g++;
+			if(b[q] == side * 5) {
+				return 0;
+			}
+		}
+		return 5;
+	}
+	if(Ancient.relRank(to,side) == Ancient.v.promo) {
+		return 5;
+	} else {
+		return 0;
+	}
+};
 Ancient.gen = function(b,side) {
 	var out = [];
 	var _g = 0;
@@ -96,7 +116,7 @@ Ancient.gen = function(b,side) {
 			var r1 = r + side;
 			var to = f < 0 || f > 7 || r1 < 0 || r1 > 7 ? -1 : r1 * 8 + f;
 			if(to >= 0 && b[to] == 0) {
-				out.push(s[0] | to << 6 | (Ancient.relRank(to,side) == Ancient.v.promo ? 5 : 0) << 12);
+				out.push(s[0] | to << 6 | Ancient.promoOf(b,to,side) << 12);
 			}
 			var df = -1;
 			var f1 = f + df;
@@ -110,7 +130,7 @@ Ancient.gen = function(b,side) {
 				tmp = false;
 			}
 			if(tmp) {
-				out.push(s[0] | c << 6 | (Ancient.relRank(c,side) == Ancient.v.promo ? 5 : 0) << 12);
+				out.push(s[0] | c << 6 | Ancient.promoOf(b,c,side) << 12);
 			}
 			var df1 = 1;
 			var f2 = f + df1;
@@ -124,7 +144,7 @@ Ancient.gen = function(b,side) {
 				tmp1 = false;
 			}
 			if(tmp1) {
-				out.push(s[0] | c1 << 6 | (Ancient.relRank(c1,side) == Ancient.v.promo ? 5 : 0) << 12);
+				out.push(s[0] | c1 << 6 | Ancient.promoOf(b,c1,side) << 12);
 			}
 			break;
 		case 2:
@@ -663,7 +683,7 @@ Ancient.info = function(id) {
 	UiJs.h("Como se joga");
 	UiJs.ul(x.rules);
 	UiJs.h("As peças");
-	var types = [6,5,x.id == "makruk" ? 7 : 3,2,4,1];
+	var types = [6,5,x.id == "makruk" || x.id == "sittuyin" ? 7 : 3,2,4,1];
 	var names = x.names;
 	var _g = [];
 	var _g1 = 0;
@@ -699,7 +719,9 @@ Ancient.quick = function(id) {
 Ancient.moveText = function(t) {
 	switch(t) {
 	case 1:
-		if(Ancient.v.id == "makruk") {
+		if(Ancient.v.id == "sittuyin") {
+			return "Uma casa para a frente; captura na diagonal; vira sit-ke numa casa das diagonais marcadas, se o seu sit-ke já foi capturado.";
+		} else if(Ancient.v.id == "makruk") {
 			return "Uma casa para a frente; captura na diagonal; vira met na sexta fileira.";
 		} else {
 			return "Uma casa para a frente (sem avanço duplo); captura na diagonal; promove na última fileira.";
@@ -724,7 +746,7 @@ Ancient.moveText = function(t) {
 Ancient.setBoard = function(fen,flip) {
 	var b = UiJs.board;
 	b.theme = Ancient.v.board;
-	b.special = Ancient.v.marks == true ? Ancient.MARKS : [];
+	b.special = Ancient.v.marks == true ? Ancient.v.id == "sittuyin" ? Ancient.DIAG : Ancient.MARKS : [];
 	b.fen = fen;
 	b.flip = flip;
 	b.arrows = [];
@@ -774,7 +796,7 @@ Ancient.demo = function(id,t) {
 	UiJs.panel();
 	UiJs.p(names[t],"gold big");
 	UiJs.p(Ancient.moveText(t),"");
-	var types = [6,5,x.id == "makruk" ? 7 : 3,2,4,1];
+	var types = [6,5,x.id == "makruk" || x.id == "sittuyin" ? 7 : 3,2,4,1];
 	var i = types.indexOf(t);
 	UiJs.btns([["Próxima peça",function() {
 		Ancient.demo(id,types[(i + 1) % types.length]);
@@ -1273,7 +1295,7 @@ App.menu = function() {
 		it.push(r);
 	}
 	it.push({ t : "Painel de evolução", d : "Perfil em teia, evolução mês a mês e dicas", f : Pages.profile, wide : true, ico : "pnl", pnl : App.panelData()});
-	it.push({ t : "História do xadrez", d : "1.500 anos · 6 jogos para jogar", f : Pages.history, wide : true, ico : "hist"});
+	it.push({ t : "História do xadrez", d : "1.500 anos · 18 jogos para jogar", f : Pages.history, wide : true, ico : "hist"});
 	var cb = Profile.combined();
 	var v = cb[0];
 	var info = v > 0 ? "Elo estimado " + v + " · meta " + Profile.nextGoal(v) : "Comece pelo Nivelamento";
@@ -14052,6 +14074,20 @@ Reflect.deleteField = function(o,field) {
 	delete(o[field]);
 	return true;
 };
+Reflect.copy = function(o) {
+	if(o == null) {
+		return null;
+	}
+	var o2 = { };
+	var _g = 0;
+	var _g1 = Reflect.fields(o);
+	while(_g < _g1.length) {
+		var f = _g1[_g];
+		++_g;
+		o2[f] = Reflect.field(o,f);
+	}
+	return o2;
+};
 var Res = function() { };
 Res.__name__ = true;
 Res.get = function(name) {
@@ -16653,8 +16689,8 @@ History.disc = function(x,y,r,light) {
 History.board8 = function(kind) {
 	var s_b = "";
 	s_b += "<svg viewBox=\"0 0 80 80\">";
-	var plain = kind == "chaturanga" || kind == "shatranj" || kind == "makruk";
-	var base = kind == "shatranj" ? "#c9a36a" : kind == "makruk" ? "#dcb877" : "#e3c792";
+	var plain = kind == "chaturanga" || kind == "shatranj" || kind == "makruk" || kind == "sittuyin";
+	var base = kind == "shatranj" ? "#c9a36a" : kind == "makruk" ? "#dcb877" : kind == "sittuyin" ? "#d8b07a" : "#e3c792";
 	var _g = 0;
 	while(_g < 8) {
 		var r = _g++;
@@ -16677,15 +16713,33 @@ History.board8 = function(kind) {
 			s_b += Std.string("<path d=\"M" + (x + 2) + " " + (y + 2) + "l6 6M" + (x + 8) + " " + (y + 2) + "l-6 6\" stroke=\"#7a4e22\" stroke-width=\".7\" opacity=\".7\"/>");
 		}
 	}
-	var pawnW = kind == "makruk" ? 5 : 6;
-	var pawnB = kind == "makruk" ? 2 : 1;
-	var _g = 0;
-	while(_g < 8) {
-		var f = _g++;
-		s_b += Std.string(History.disc(f * 10 + 5,75,3.6,true));
-		s_b += Std.string(History.disc(f * 10 + 5,5,3.6,false));
-		s_b += Std.string(History.disc(f * 10 + 5,pawnW * 10 + 5,2.5,true));
-		s_b += Std.string(History.disc(f * 10 + 5,pawnB * 10 + 5,2.5,false));
+	if(kind == "sittuyin") {
+		s_b += "<path d=\"M0 80L80 0M0 0L80 80\" stroke=\"#7a4e22\" stroke-width=\".8\" opacity=\".75\"/>";
+		var _g = 0;
+		while(_g < 8) {
+			var f = _g++;
+			var low = f < 4;
+			s_b += Std.string(History.disc(f * 10 + 5,(low ? 5 : 4) * 10 + 5,2.5,true));
+			s_b += Std.string(History.disc(f * 10 + 5,(low ? 3 : 2) * 10 + 5,2.5,false));
+			if(f == 0 || f == 7) {
+				s_b += Std.string(History.disc(f * 10 + 5,75,3.6,true));
+				s_b += Std.string(History.disc(f * 10 + 5,5,3.6,false));
+			} else {
+				s_b += Std.string(History.disc(f * 10 + 5,65,3.6,true));
+				s_b += Std.string(History.disc(f * 10 + 5,15,3.6,false));
+			}
+		}
+	} else {
+		var pawnW = kind == "makruk" ? 5 : 6;
+		var pawnB = kind == "makruk" ? 2 : 1;
+		var _g = 0;
+		while(_g < 8) {
+			var f = _g++;
+			s_b += Std.string(History.disc(f * 10 + 5,75,3.6,true));
+			s_b += Std.string(History.disc(f * 10 + 5,5,3.6,false));
+			s_b += Std.string(History.disc(f * 10 + 5,pawnW * 10 + 5,2.5,true));
+			s_b += Std.string(History.disc(f * 10 + 5,pawnB * 10 + 5,2.5,false));
+		}
 	}
 	s_b += "<rect x=\"0\" y=\"0\" width=\"80\" height=\"80\" fill=\"none\" stroke=\"#3a2510\" stroke-width=\"2\"/></svg>";
 	return s_b;
@@ -16864,6 +16918,9 @@ History.card = function(id) {
 		case "shatranj":
 			sub = "Pérsia e mundo árabe · séculos VII a XV";
 			break;
+		case "sittuyin":
+			sub = "Mianmar · soldados escalonados e promoção nas diagonais";
+			break;
 		default:
 			sub = "Tailândia · o parente vivo mais próximo do chaturanga";
 		}
@@ -16874,23 +16931,44 @@ History.card = function(id) {
 		});
 	}
 };
+History.wcard = function(id) {
+	var x = World.get(id);
+	if(x == null) {
+		return;
+	}
+	UiJs.gameCard(World.thumb(id),x.name,x.era,function() {
+		World.info(id);
+	},function() {
+		World.quick(id);
+	});
+};
 History.treePlay = function(id) {
 	switch(id) {
+	case "eurogames":
+		World.euro();
+		break;
 	case "janggi":
 		Xiangqi.quick(true);
 		break;
 	case "moderno":
 		App.setupGame();
 		break;
+	case "chaturanga":case "makruk":case "medieval":case "shatranj":case "sittuyin":
+		Ancient.quick(id);
+		break;
 	case "xiangqi":
 		Xiangqi.quick(false);
 		break;
 	default:
-		Ancient.quick(id);
+		if(World.get(id) != null) {
+			World.quick(id);
+		} else {
+			World.info(id);
+		}
 	}
 };
 History.genealogy = function() {
-	var nodes = [["mancala","Mancala","África · Antiguidade",24,155,150,135,"",false],["chaturanga","Chaturanga","Índia · séc. VI d.C.",275,145,210,160,"main",true],["xiangqi","Xiangqi","China · séc. X d.C.",14,390,140,142,"",true],["janggi","Janggi","Coreia",165,390,140,142,"",true],["shatranj","Shatranj","Pérsia · séc. VII d.C.",316,390,140,142,"",true],["makruk","Makruk","Tailândia · séc. X d.C.",467,390,140,142,"",true],["shogi","Shogi","Japão · séc. X–XV d.C.",618,390,128,142,"",false],["chineses","Origens chinesas antigas","Go · Weiqi / Liubo",15,680,145,192,"",false],["medieval","Xadrez medieval","Europa · séc. VIII–XV",220,710,165,150,"",true],["alquerque","Alquerque","Norte da África · Espanha",425,710,145,150,"",false],["fierges","Fierges","Precursor das damas",600,710,145,150,"",false],["damas","Damas","Oriente Médio · Europa · séc. XIII",600,918,145,135,"",false],["moderno","Xadrez moderno","Internacional · séc. XV d.C.",275,1110,210,165,"modern",true]];
+	var nodes = [["mancala","Mancala","África · Antiguidade",24,155,150,135,"",true],["chaturanga","Chaturanga","Índia · séc. VI d.C.",275,145,210,160,"main",true],["xiangqi","Xiangqi","China · séc. X d.C.",14,390,140,142,"",true],["janggi","Janggi","Coreia",165,390,140,142,"",true],["shatranj","Shatranj","Pérsia · séc. VII d.C.",316,390,140,142,"",true],["makruk","Makruk","Tailândia · Mianmar",467,390,140,142,"",[["makruk","makruk"],["sittuyin","sittuyin"]]],["shogi","Shogi","Japão · séc. X–XV d.C.",618,390,128,142,"",true],["chineses","Origens chinesas antigas","Go · Weiqi / Liubo",15,680,145,192,"",[["go","go"],["liubo","liubo"]]],["medieval","Xadrez medieval","Europa · séc. VIII–XV",220,710,165,150,"",true],["alquerque","Alquerque","Norte da África · Espanha",425,710,145,150,"",true],["fierges","Fierges","Precursor das damas",600,710,145,150,"",true],["damas","Damas","Modo mestre · desafio",600,918,145,135,"",true],["moderno","Xadrez moderno","Internacional · séc. XV d.C.",275,1110,210,165,"modern",true]];
 	var paths = ["M99 290 V350 H84 V390","M150 290 V350 H235 V390","M380 305 V365 H386 V390","M380 305 V345 H531 V390","M485 200 H720 Q738 200 738 218 V365 H682 V390","M84 532 V680","M235 532 V600 H87 V680","M386 532 C386 620 302 625 302 710","M386 532 C386 620 497 625 497 710","M537 532 V640 H680 V710","M680 860 V918","M302 860 V1110","M497 860 C497 985 405 1015 405 1110","M672 1053 V1080 H634 V1094","M87 872 V1072 H110 V1094"];
 	var out = "<div class=\"genealogy\" aria-label=\"Árvore genealógica dos jogos de tabuleiro de estratégia\">";
 	out += "<div class=\"genealogy-title\">ÁRVORE GENEALÓGICA</div><div class=\"genealogy-sub\">DOS JOGOS DE TABULEIRO DE ESTRATÉGIA</div><div class=\"genealogy-legend\">━ ligação histórica ou afinidade &nbsp; <b>▶ jogar</b> partida no aplicativo</div>";
@@ -16908,8 +16986,19 @@ History.genealogy = function() {
 		++_g;
 		out += "<div class=\"genealogy-node " + Std.string(n[7]) + "\" style=\"left:" + Std.string(n[3]) + "px;top:" + Std.string(n[4]) + "px;width:" + Std.string(n[5]) + "px;height:" + Std.string(n[6]) + "px\">";
 		out += "<div class=\"genealogy-board\" aria-hidden=\"true\"></div><div class=\"genealogy-name\">" + Std.string(n[1]) + "</div><div class=\"genealogy-desc\">" + Std.string(n[2]) + "</div>";
-		if(n[8] == true) {
+		var bt = n[8];
+		if(bt == true) {
 			out += "<button class=\"genealogy-play\" type=\"button\" data-game=\"" + Std.string(n[0]) + "\">▶ jogar</button>";
+		} else if(bt != false && bt != null) {
+			var arr = bt;
+			out += "<div class=\"genealogy-plays\">";
+			var _g1 = 0;
+			while(_g1 < arr.length) {
+				var x = arr[_g1];
+				++_g1;
+				out += "<button class=\"genealogy-play sm\" type=\"button\" data-game=\"" + x[0] + "\">▶ " + x[1] + "</button>";
+			}
+			out += "</div>";
 		}
 		out += "</div>";
 	}
@@ -16923,30 +17012,34 @@ History.genealogy = function() {
 	out += "<div class=\"genealogy-group\" style=\"left:15px;top:1100px;width:190px;height:285px\">PRIMOS ANTIGOS<div class=\"genealogy-small\">";
 	var x_0 = "Pachisi";
 	var x_1 = "▦";
-	out += "<div class=\"genealogy-mini\"><span class=\"mini-icon\">" + x_1 + "</span>" + x_0 + "</div>";
+	var x_2 = "pachisi";
+	out += "<button type=\"button\" class=\"genealogy-mini genealogy-go\" data-game=\"" + x_2 + "\"><span class=\"mini-icon\">" + x_1 + "<i>▶</i></span>" + x_0 + "</button>";
 	var x_0 = "Senet";
 	var x_1 = "▤";
-	out += "<div class=\"genealogy-mini\"><span class=\"mini-icon\">" + x_1 + "</span>" + x_0 + "</div>";
+	var x_2 = "senet";
+	out += "<button type=\"button\" class=\"genealogy-mini genealogy-go\" data-game=\"" + x_2 + "\"><span class=\"mini-icon\">" + x_1 + "<i>▶</i></span>" + x_0 + "</button>";
 	var x_0 = "Tafl";
 	var x_1 = "♜";
-	out += "<div class=\"genealogy-mini\"><span class=\"mini-icon\">" + x_1 + "</span>" + x_0 + "</div>";
+	var x_2 = "tafl";
+	out += "<button type=\"button\" class=\"genealogy-mini genealogy-go\" data-game=\"" + x_2 + "\"><span class=\"mini-icon\">" + x_1 + "<i>▶</i></span>" + x_0 + "</button>";
 	var x_0 = "Tablut";
 	var x_1 = "♟";
-	out += "<div class=\"genealogy-mini\"><span class=\"mini-icon\">" + x_1 + "</span>" + x_0 + "</div>";
+	var x_2 = "tablut";
+	out += "<button type=\"button\" class=\"genealogy-mini genealogy-go\" data-game=\"" + x_2 + "\"><span class=\"mini-icon\">" + x_1 + "<i>▶</i></span>" + x_0 + "</button>";
 	out += "</div></div>";
 	out += "<div class=\"genealogy-group\" style=\"left:530px;top:1100px;width:215px;height:285px\">JOGOS MODERNOS<div class=\"genealogy-small\">";
 	var x_0 = "Scotland Yard";
 	var x_1 = "◎";
-	out += "<div class=\"genealogy-mini\"><span class=\"mini-icon\">" + x_1 + "</span>" + x_0 + "</div>";
+	out += "<button type=\"button\" class=\"genealogy-mini genealogy-go info\" data-game=\"eurogames\"><span class=\"mini-icon\">" + x_1 + "<i>i</i></span>" + x_0 + "</button>";
 	var x_0 = "Carcassonne";
 	var x_1 = "▣";
-	out += "<div class=\"genealogy-mini\"><span class=\"mini-icon\">" + x_1 + "</span>" + x_0 + "</div>";
+	out += "<button type=\"button\" class=\"genealogy-mini genealogy-go info\" data-game=\"eurogames\"><span class=\"mini-icon\">" + x_1 + "<i>i</i></span>" + x_0 + "</button>";
 	var x_0 = "Catan";
 	var x_1 = "⬡";
-	out += "<div class=\"genealogy-mini\"><span class=\"mini-icon\">" + x_1 + "</span>" + x_0 + "</div>";
+	out += "<button type=\"button\" class=\"genealogy-mini genealogy-go info\" data-game=\"eurogames\"><span class=\"mini-icon\">" + x_1 + "<i>i</i></span>" + x_0 + "</button>";
 	var x_0 = "Terra Mystica";
 	var x_1 = "✥";
-	out += "<div class=\"genealogy-mini\"><span class=\"mini-icon\">" + x_1 + "</span>" + x_0 + "</div>";
+	out += "<button type=\"button\" class=\"genealogy-mini genealogy-go info\" data-game=\"eurogames\"><span class=\"mini-icon\">" + x_1 + "<i>i</i></span>" + x_0 + "</button>";
 	out += "</div></div></div>";
 	return out;
 };
@@ -17010,11 +17103,11 @@ History.page = function() {
 	UiJs.page("História do xadrez",App.menu);
 	UiJs.group("callout",function() {
 		UiJs.p("Uma história que se joga","gold big");
-		UiJs.p("Os ancestrais e os primos do xadrez estão aqui com regras, peças e partidas contra o computador: chaturanga, shatranj, xadrez medieval, makruk, xiangqi e janggi.","");
+		UiJs.p("Os ancestrais e os primos do xadrez estão aqui com regras, peças e partidas contra o computador: 18 jogos, do senet dos faraós às damas, passando por chaturanga, shatranj, xiangqi, shogi e go.","");
 		UiJs.p("Toque no tabuleiro para conhecer o jogo ou em Jogar para começar uma partida na hora.","muted small");
 	});
 	UiJs.html(History.genealogy(),"genealogy-figure");
-	var pl = UiJs.cur.querySelectorAll(".genealogy-play");
+	var pl = UiJs.cur.querySelectorAll(".genealogy-play,.genealogy-go");
 	var _g = 0;
 	var _g1 = pl.length;
 	while(_g < _g1) {
@@ -17028,6 +17121,7 @@ History.page = function() {
 		})(id);
 	}
 	History.chap("Antes do xadrez",["Jogos de tabuleiro são muito mais antigos que o xadrez. O senet egípcio e o Jogo Real de Ur, da Mesopotâmia, têm mais de 4.500 anos, mas eram corridas decididas por dados.","Na Índia, o ashtapada, um tabuleiro de 8 x 8 casas sem cores, também servia a jogos de corrida. A grande invenção foi trocar a sorte dos dados por um exército em miniatura, em que cada peça tem um movimento próprio e a vitória depende só do raciocínio."]);
+	History.wcard("senet");
 	History.chap("Índia: o chaturanga (século VI)",["O chaturanga nasceu no norte da Índia, na época do Império Gupta. Em sânscrito, o nome quer dizer \"quatro partes\": as divisões do exército, infantaria, cavalaria, elefantes e carros de guerra. Delas vieram o peão, o cavalo, o bispo e a torre.","O rei (raja) tinha ao lado um conselheiro (mantri) fraco, que andava só uma casa na diagonal. Mais tarde surgiu uma versão para quatro jogadores com dados, o chaturaji, descrita pelo sábio al-Biruni por volta do ano 1030."]);
 	History.card("chaturanga");
 	History.chap("Pérsia: o chatrang e o desafio do rei",["O jogo chegou à Pérsia dos sassânidas no século VI e virou chatrang. Um texto persa da época e, séculos depois, o Livro dos Reis de Ferdowsi contam que um rei indiano mandou o jogo como desafio: se os sábios persas não descobrissem as regras, a Pérsia pagaria tributo.","O sábio Bozorgmehr decifrou o jogo e respondeu inventando o nard, ancestral do gamão."]);
@@ -17037,10 +17131,24 @@ History.page = function() {
 	UiJs.html(History.piecesTable());
 	History.chap("Rumo ao Oriente: os primos asiáticos",["O chaturanga também foi para o leste e deu origem a uma família inteira de jogos. No Sudeste Asiático virou o makruk tailandês e o sittuyin birmanês. Na China surgiu o xiangqi, jogado nas intersecções das linhas, com rio, palácio e canhões.","Do xiangqi nasceu o janggi coreano, sem rio e com as diagonais do palácio. No Japão, o shogi trouxe uma ideia única: as peças capturadas voltam ao jogo do lado de quem capturou."]);
 	History.card("makruk");
+	History.card("sittuyin");
 	History.card("xiangqi");
 	History.card("janggi");
+	History.wcard("shogi");
+	History.chap("China antiga: go e liubo",["Na China, bem antes do xiangqi, já se jogava o go (weiqi), com pedras pretas e brancas disputando território nas intersecções de uma grade. Tem mais de 2.500 anos e é jogado até hoje; aqui ele aparece no tabuleiro pequeno, de 9 x 9.","O liubo foi muito popular na época da dinastia Han, jogado com varetas no lugar de dados. As regras completas se perderam: o que se joga é uma reconstrução a partir de tabuleiros e textos antigos."]);
+	History.wcard("go");
+	History.wcard("liubo");
+	History.chap("África, Índia e Escandinávia: outros jogos de estratégia",["A mancala é uma família de jogos de semear sementes em covas, jogada em toda a África há milhares de anos; o oware, da África Ocidental, é uma das versões mais conhecidas.","Na Índia, o pachisi é um jogo de corrida em cruz com búzios no lugar de dados, avô do ludo. No norte da Europa, os vikings jogavam o tafl: um rei cercado tenta fugir para um canto enquanto os atacantes tentam capturá-lo. O tablut, a versão da Lapônia, foi registrado pelo naturalista Lineu em 1732."]);
+	History.wcard("mancala");
+	History.wcard("pachisi");
+	History.wcard("tafl");
+	History.wcard("tablut");
 	History.chap("Europa medieval",["O xadrez entrou na Europa por volta do ano 1000, pela Ibéria e pela Itália. Um poema latino do mosteiro de Einsiedeln, na Suíça, escrito por volta de 997, é uma das primeiras descrições do jogo no continente.","Foram os europeus que pintaram o tabuleiro com casas claras e escuras, por volta do século XII. Dessa época são as famosas peças de Lewis, esculpidas em marfim de morsa e encontradas numa ilha da Escócia em 1831.","Em 1283, o rei Afonso X de Castela mandou fazer o Libro de los juegos, com mais de cem problemas de xadrez ilustrados. O jogo virou parte da educação dos nobres e até tema de sermões sobre a sociedade."]);
 	History.card("medieval");
+	History.chap("Do alquerque às damas",["O alquerque, jogo de saltos sobre uma grade de linhas, veio do mundo árabe para a Espanha e aparece no Libro de los juegos de Afonso X, ao lado do xadrez.","Por volta do século XII, no sul da França, alguém pôs as peças do alquerque num tabuleiro de xadrez: nasceu o fierges. Quando a captura passou a ser obrigatória, no século XVI, surgiram as damas modernas. Aqui as damas brasileiras jogam no modo mestre: o computador não alivia."]);
+	History.wcard("alquerque");
+	History.wcard("fierges");
+	History.wcard("damas");
 	History.chap("1475: a dama louca",["No fim do século XV, provavelmente em Valência, a dama e o bispo ganharam o alcance de hoje. O jogo ficou muito mais rápido e agressivo, e na época foi chamado de \"xadrez da dama louca\".","Em 1497, Luis Ramírez de Lucena publicou em Salamanca um dos primeiros livros de xadrez impressos. Em 1512, o português Pedro Damiano publicou em Roma um manual de sucesso, que deu nome à Defesa Damiano.","O roque e a captura en passant se firmaram nos séculos seguintes: a Itália só adotou o en passant em 1880."]);
 	UiJs.html(History.fersSvg());
 	History.card("moderno");
@@ -17050,9 +17158,853 @@ History.page = function() {
 	History.chap("Guerra Fria no tabuleiro",["Em 1972, em Reykjavik, o americano Bobby Fischer venceu o soviético Boris Spassky e quebrou décadas de domínio soviético. O match virou notícia no mundo inteiro e levou milhões de pessoas a aprender xadrez."]);
 	History.chap("Máquinas e inteligência artificial",["Em 1997, o computador Deep Blue, da IBM, venceu o campeão mundial Garry Kasparov num match. Em 2017, o AlphaZero, da DeepMind, aprendeu xadrez sozinho, jogando contra si mesmo, e venceu os melhores programas da época.","Hoje os motores são muito mais fortes que qualquer humano e viraram ferramenta de estudo. O treinador deste jogo usa um motor para avaliar cada lance."]);
 	History.chap("Xadrez para todos",["Com a internet, qualquer pessoa pode jogar a qualquer hora contra adversários do mundo todo. Em 2020, a pandemia e a série \"O Gambito da Rainha\" levaram milhões de novos jogadores ao xadrez online."]);
+	History.chap("Jogos de tabuleiro modernos",["Dos tabuleiros como território nasceu, nos anos 1980 e 1990, uma família nova: os eurogames, como Scotland Yard, Catan, Carcassonne e Terra Mystica. Eles trocaram a eliminação por economia, construção e pontos, e premiam o planejamento, como o xadrez."]);
+	UiJs.btns([["Conhecer os jogos modernos",World.euro]]);
 	History.chap("O Brasil no xadrez",["Henrique Mecking, o Mequinho, gaúcho, tornou-se o primeiro grande mestre brasileiro em 1972, aos 20 anos. Nos anos 1970 esteve entre os melhores do mundo e disputou o Torneio de Candidatos ao título mundial."]);
 	UiJs.h("Curiosidades");
 	UiJs.ul(Content.curios());
+};
+var World = function() { };
+World.__name__ = true;
+World.all = function() {
+	if(World.LIST == null) {
+		World.LIST = [new Jump("alquerque"),new Jump("fierges"),new Jump("damas"),new Shogi(),new GoGame(),new Liubo(),new Oware(),new Pachisi(),new Senet(),new Tafl(true),new Tafl(false)];
+	}
+	return World.LIST;
+};
+World.get = function(id) {
+	var _g = 0;
+	var _g1 = World.all();
+	while(_g < _g1.length) {
+		var x = _g1[_g];
+		++_g;
+		if(x.id == id) {
+			return x;
+		}
+	}
+	return null;
+};
+World.now = function() {
+	return HxOverrides.now() / 1000 * 1000;
+};
+World.term = function(r,turn,ply) {
+	var w = r.w;
+	if(w == 0) {
+		return 0;
+	} else if(w == turn) {
+		return 1000000.0 - ply;
+	} else {
+		return -1000000. + ply;
+	}
+};
+World.search = function(gm,s,level) {
+	var ms = gm.moves(s);
+	if(ms.length == 0) {
+		return null;
+	}
+	if(ms.length == 1) {
+		return ms[0];
+	}
+	var c = gm.cfg(level);
+	World.deadline = World.now() + c[1];
+	World.stopped = false;
+	World.nodes = 0;
+	ms = gm.order(s,ms);
+	var best = ms[0];
+	var noise = c[2];
+	var maxD = c[0] | 0;
+	var _g = 1;
+	var _g1 = maxD + 1;
+	while(_g < _g1) {
+		var d = _g++;
+		var scores = [];
+		var alpha = -2000000.;
+		var bD = null;
+		var bS = -2000000.;
+		var _g2 = 0;
+		while(_g2 < ms.length) {
+			var m = ms[_g2];
+			++_g2;
+			var v = -World.negamax(gm,gm.apply(s,m),d - 1,-2000000.,noise > 0 ? 2000000. : -alpha,1);
+			if(World.stopped) {
+				break;
+			}
+			scores.push(v);
+			if(v > bS) {
+				bS = v;
+				bD = m;
+			}
+			if(v > alpha) {
+				alpha = v;
+			}
+		}
+		if(World.stopped && d > 1) {
+			break;
+		}
+		if(bD == null) {
+			break;
+		}
+		best = bD;
+		if(noise > 0 && scores.length == ms.length) {
+			var _g3 = [];
+			var _g4 = 0;
+			var _g5 = ms.length;
+			while(_g4 < _g5) {
+				var i = _g4++;
+				if(scores[i] >= bS - noise) {
+					_g3.push(ms[i]);
+				}
+			}
+			var near = _g3;
+			best = near[Std.random(near.length)];
+		}
+		var o = ms.slice();
+		HxOverrides.remove(o,bD);
+		o.unshift(bD);
+		ms = o;
+		if(bS >= 999000. || World.stopped) {
+			break;
+		}
+	}
+	return best;
+};
+World.negamax = function(gm,s,depth,alpha,beta,ply) {
+	World.nodes++;
+	if((World.nodes & 127) == 0 && World.now() > World.deadline) {
+		World.stopped = true;
+	}
+	if(World.stopped) {
+		return 0;
+	}
+	var ms = gm.moves(s);
+	var r = gm.over(s,ms);
+	if(r != null) {
+		return World.term(r,s.turn,ply);
+	}
+	if(depth <= 0) {
+		return World.quiesce(gm,s,ms,alpha,beta,ply,0);
+	}
+	ms = gm.order(s,ms);
+	var best = -2000000.;
+	var _g = 0;
+	while(_g < ms.length) {
+		var m = ms[_g];
+		++_g;
+		var v = -World.negamax(gm,gm.apply(s,m),depth - 1,-beta,-alpha,ply + 1);
+		if(World.stopped) {
+			return 0;
+		}
+		if(v > best) {
+			best = v;
+		}
+		if(v > alpha) {
+			alpha = v;
+		}
+		if(alpha >= beta) {
+			break;
+		}
+	}
+	return best;
+};
+World.quiesce = function(gm,s,ms,alpha,beta,ply,qd) {
+	var turn = s.turn;
+	var forced = gm.forced(s,ms);
+	var stand = gm.eval(s) * turn;
+	if(!forced) {
+		if(stand >= beta) {
+			return stand;
+		}
+		if(stand > alpha) {
+			alpha = stand;
+		}
+	}
+	if(qd >= 8) {
+		return stand;
+	}
+	var best = forced ? -2000000. : stand;
+	var any = false;
+	var _g = 0;
+	var _g1 = gm.order(s,ms);
+	while(_g < _g1.length) {
+		var m = _g1[_g];
+		++_g;
+		if(!forced && !gm.tactical(s,m)) {
+			continue;
+		}
+		any = true;
+		var s2 = gm.apply(s,m);
+		var ms2 = gm.moves(s2);
+		var r = gm.over(s2,ms2);
+		var v = r != null ? -World.term(r,s2.turn,ply + 1) : -World.quiesce(gm,s2,ms2,-beta,-alpha,ply + 1,qd + 1);
+		if(World.stopped) {
+			return 0;
+		}
+		if(v > best) {
+			best = v;
+		}
+		if(v > alpha) {
+			alpha = v;
+		}
+		if(alpha >= beta) {
+			break;
+		}
+	}
+	if(any) {
+		return best;
+	} else {
+		return stand;
+	}
+};
+World.diceAI = function(gm,s,level) {
+	var ms = gm.moves(s);
+	if(ms.length == 0) {
+		return null;
+	}
+	if(ms.length == 1) {
+		return ms[0];
+	}
+	var me = s.turn;
+	var sc = [];
+	var _g = 0;
+	while(_g < ms.length) {
+		var m = ms[_g];
+		++_g;
+		var s2 = gm.apply(s,m);
+		sc.push(level >= 3 ? World.expect(gm,s2,me) : World.val(gm,s2,me));
+	}
+	var _g = [];
+	var _g1 = 0;
+	var _g2 = ms.length;
+	while(_g1 < _g2) {
+		var i = _g1++;
+		_g.push(i);
+	}
+	var idx = _g;
+	idx.sort(function(a,b) {
+		return Reflect.compare(sc[b],sc[a]);
+	});
+	if(level == 1) {
+		var k = Math.max(1,Math.ceil(ms.length / 2)) | 0;
+		return ms[idx[Std.random(Math.min(k,3) | 0)]];
+	}
+	return ms[idx[0]];
+};
+World.val = function(gm,s,me) {
+	var r = gm.over(s,[]);
+	if(r != null) {
+		return r.w * me * 1000000.0;
+	}
+	return gm.eval(s) * me;
+};
+World.expect = function(gm,s2,me) {
+	var r = gm.over(s2,[]);
+	if(r != null) {
+		return r.w * me * 1000000.0;
+	}
+	if(s2.turn == me) {
+		return gm.eval(s2) * me + 4;
+	}
+	var tot = 0.0;
+	var _g = 0;
+	var _g1 = gm.rolls(s2);
+	while(_g < _g1.length) {
+		var rl = _g1[_g];
+		++_g;
+		var s3 = gm.withRoll(s2,rl);
+		var ms3 = gm.moves(s3);
+		var worst = 2000000.;
+		if(ms3.length == 0) {
+			worst = gm.eval(gm.pass(s3)) * me;
+		} else {
+			var _g2 = 0;
+			while(_g2 < ms3.length) {
+				var m3 = ms3[_g2];
+				++_g2;
+				var v = World.val(gm,gm.apply(s3,m3),me);
+				if(v < worst) {
+					worst = v;
+				}
+			}
+		}
+		tot += rl[1] * worst;
+	}
+	return tot;
+};
+World.humanSide = function() {
+	if(World.g != null) {
+		return World.g.human;
+	} else {
+		return 1;
+	}
+};
+World.info = function(id) {
+	if(id == "eurogames") {
+		World.euro();
+		return;
+	}
+	World.gm = World.get(id);
+	World.g = null;
+	UiJs.page(World.gm.name,Pages.history);
+	UiJs.p(World.gm.era,"gold");
+	if(World.gm.note != null) {
+		UiJs.p(World.gm.note,"warn small");
+	}
+	var _g = 0;
+	var _g1 = World.gm.story;
+	while(_g < _g1.length) {
+		var p = _g1[_g];
+		++_g;
+		UiJs.p(p,"");
+	}
+	UiJs.html(World.gm.svg(World.gm.init(),{ thumb : true, sel : -1, targets : [], srcs : [], last : null, flip : false}),"wgthumb");
+	UiJs.h("Como se joga");
+	UiJs.ul(World.gm.rules);
+	if(World.gm.pieces.length > 0) {
+		UiJs.h("As peças");
+		var _g = [];
+		var _g1 = 0;
+		var _g2 = World.gm.pieces;
+		while(_g1 < _g2.length) {
+			var x = _g2[_g1];
+			++_g1;
+			_g.push({ t : x[0], d : x[1]});
+		}
+		UiJs.items(_g);
+	}
+	UiJs.h("Jogar contra o computador");
+	if(World.gm.id == "damas") {
+		UiJs.p("Modo mestre: o computador pensa mais fundo e não alivia. Um desafio de verdade.","gold small");
+	}
+	var side = World.gm.first;
+	var nm = World.gm.sides[side == 1 ? 0 : 1];
+	var _g = [];
+	var _g1 = 0;
+	var _g2 = World.gm.levels;
+	while(_g1 < _g2.length) {
+		var lv = [_g2[_g1]];
+		++_g1;
+		_g.push([nm + " · " + World.LV[lv[0]],(function(lv) {
+			return function() {
+				World.start(id,side,lv[0]);
+			};
+		})(lv),lv[0] == World.gm.levels[0] ? "pri" : ""]);
+	}
+	UiJs.btns(_g);
+	var side1 = -World.gm.first;
+	var nm = World.gm.sides[side1 == 1 ? 0 : 1];
+	var _g = [];
+	var _g1 = 0;
+	var _g2 = World.gm.levels;
+	while(_g1 < _g2.length) {
+		var lv1 = [_g2[_g1]];
+		++_g1;
+		_g.push([nm + " · " + World.LV[lv1[0]],(function(lv) {
+			return function() {
+				World.start(id,side1,lv[0]);
+			};
+		})(lv1),""]);
+	}
+	UiJs.btns(_g);
+	if(World.gm.first == 1) {
+		UiJs.p(World.gm.sides[0] + " começam.","muted small");
+	} else {
+		UiJs.p(World.gm.sides[1] + " começam.","muted small");
+	}
+};
+World.quick = function(id) {
+	var x = World.get(id);
+	if(x == null) {
+		World.info(id);
+		return;
+	}
+	World.start(id,x.first,x.levels.length > 1 ? x.levels[1] : x.levels[0]);
+};
+World.thumb = function(id) {
+	var x = World.get(id);
+	return x.svg(x.init(),{ thumb : true, sel : -1, targets : [], srcs : [], last : null, flip : false});
+};
+World.start = function(id,human,level) {
+	World.gm = World.get(id);
+	var s = World.gm.init();
+	World.g = { s : s, human : human, level : level, hist : [], log : [], over : null, busy : false, sel : -1, flip : human == -1 && World.gm.flipOk, keys : [], last : null, msg : null, end : null};
+	var k = World.gm.key(s);
+	if(k != null) {
+		World.g.keys.push(k);
+	}
+	World.draw();
+	World.next();
+};
+World.who = function(side) {
+	if(side == World.g.human) {
+		return "Você";
+	} else {
+		return "PC";
+	}
+};
+World.next = function() {
+	if(World.g == null || World.g.over != null) {
+		return;
+	}
+	var s = World.g.s;
+	if(s.turn != World.g.human) {
+		World.cpu();
+		return;
+	}
+	if(World.gm.dice && s.roll != null) {
+		var ms = World.gm.moves(s);
+		var cur = World.g;
+		if(ms.length == 0) {
+			var tmp = "Nenhum lance possível com " + World.gm.rollText(s);
+			World.g.msg = tmp + ": a vez passa.";
+			World.draw();
+			UiJs.later(1300,function() {
+				if(World.g == cur && World.g.over == null) {
+					World.passTurn();
+				}
+			});
+		} else if(ms.length == 1) {
+			World.g.msg = "Só um lance possível: jogado automaticamente.";
+			World.draw();
+			UiJs.later(800,function() {
+				if(World.g == cur && World.g.over == null && World.g.s == s) {
+					World.play(ms[0]);
+				}
+			});
+		}
+	}
+};
+World.toss = function() {
+	if(World.g == null || World.g.over != null || World.g.busy || World.g.s.turn != World.g.human || World.g.s.roll != null) {
+		return;
+	}
+	var tmp = World.gm;
+	var tmp1 = World.g.s;
+	var tmp2 = World.gm.toss();
+	World.g.s = tmp.withRoll(tmp1,tmp2);
+	World.g.msg = null;
+	World.g.sel = -1;
+	World.draw();
+	World.next();
+};
+World.passTurn = function() {
+	World.g.log.push(World.who(World.g.s.turn) + ": sem lance" + (World.gm.dice ? " (" + World.gm.rollText(World.g.s) + ")" : " (passou)"));
+	World.g.s = World.gm.pass(World.g.s);
+	World.g.msg = null;
+	var r = World.gm.over(World.g.s,World.gm.dice ? [] : World.gm.moves(World.g.s));
+	if(r != null) {
+		World.finish(r);
+	}
+	World.draw();
+	World.next();
+};
+World.cpu = function() {
+	World.g.busy = true;
+	World.draw();
+	var cur = World.g;
+	UiJs.later(World.gm.dice ? 500 : 80,function() {
+		if(World.g != cur || World.g.over != null) {
+			return;
+		}
+		if(World.gm.dice && World.g.s.roll == null) {
+			var tmp = World.gm;
+			var tmp1 = World.g.s;
+			var tmp2 = World.gm.toss();
+			World.g.s = tmp.withRoll(tmp1,tmp2);
+			World.draw();
+			UiJs.later(750,function() {
+				if(World.g != cur || World.g.over != null) {
+					return;
+				}
+				World.decide();
+			});
+		} else {
+			World.decide();
+		}
+	});
+};
+World.decide = function() {
+	var m = World.gm.dice ? World.diceAI(World.gm,World.g.s,World.g.level) : World.gm.ai(World.g.s,World.g.level);
+	World.g.busy = false;
+	if(m == null) {
+		World.passTurn();
+	} else {
+		World.play(m);
+	}
+};
+World.play = function(m) {
+	var s = World.g.s;
+	World.g.hist.push({ s : s, log : World.g.log.slice(), keys : World.g.keys.slice(), last : World.g.last});
+	var lab = World.gm.label(s,m);
+	World.g.log.push(World.who(s.turn) + ": " + lab + (World.gm.dice ? " (" + World.gm.rollText(s) + ")" : ""));
+	var s2 = World.gm.apply(s,m);
+	var _g = [];
+	var _g1 = 0;
+	var _g2 = World.gm.lastCells(s,m);
+	while(_g1 < _g2.length) {
+		var c = _g2[_g1];
+		++_g1;
+		if(c >= 0) {
+			_g.push(c);
+		}
+	}
+	World.g.last = _g;
+	World.g.s = s2;
+	World.g.sel = -1;
+	World.g.msg = null;
+	var r = World.gm.over(s2,World.gm.dice ? [] : World.gm.moves(s2));
+	if(r == null) {
+		var k = World.gm.key(s2);
+		if(k != null) {
+			var n = 1;
+			var _g = 0;
+			var _g1 = World.g.keys;
+			while(_g < _g1.length) {
+				var x = _g1[_g];
+				++_g;
+				if(x == k) {
+					++n;
+				}
+			}
+			World.g.keys.push(k);
+			if(n >= World.gm.repLimit) {
+				r = { w : 0, why : "repetição de posição"};
+			}
+		}
+	}
+	if(r != null) {
+		World.finish(r);
+	}
+	World.draw();
+	World.next();
+};
+World.finish = function(r) {
+	var w = r.w;
+	World.g.over = (w == 0 ? "Empate" : w == World.g.human ? "Você venceu!" : "O computador venceu.") + " (" + Std.string(r.why) + ")";
+	if(r.end != null) {
+		World.g.end = r.end;
+	}
+	try {
+		if(w != 0) {
+			UiJs.sfx(w == World.g.human ? "chk" : "cap");
+		}
+	} catch( _g ) {
+	}
+};
+World.pick = function(c) {
+	if(World.g == null || World.g.over != null || World.g.busy || World.g.s.turn != World.g.human) {
+		return;
+	}
+	if(World.gm.dice && World.g.s.roll == null) {
+		UiJs.toast("Primeiro toque em Lançar " + World.gm.tossName + ".");
+		return;
+	}
+	var ms = World.gm.moves(World.g.s);
+	if(World.g.sel != -1) {
+		var _g = [];
+		var _g1 = 0;
+		while(_g1 < ms.length) {
+			var m = ms[_g1];
+			++_g1;
+			if(World.gm.src(m) == World.g.sel && World.gm.dst(m) == c) {
+				_g.push(m);
+			}
+		}
+		var cand = _g;
+		if(cand.length > 0) {
+			World.humanChoose(cand);
+			return;
+		}
+	}
+	var _g = [];
+	var _g1 = 0;
+	while(_g1 < ms.length) {
+		var m = ms[_g1];
+		++_g1;
+		if(World.gm.src(m) == -1 && World.gm.dst(m) == c) {
+			_g.push(m);
+		}
+	}
+	var direct = _g;
+	if(direct.length > 0) {
+		World.humanChoose(direct);
+		return;
+	}
+	var has = false;
+	var _g = 0;
+	while(_g < ms.length) {
+		var m = ms[_g];
+		++_g;
+		if(World.gm.src(m) == c) {
+			has = true;
+		}
+	}
+	World.g.sel = has && World.g.sel != c ? c : -1;
+	World.draw();
+};
+World.humanChoose = function(cand) {
+	if(cand.length == 1) {
+		World.play(cand[0]);
+		return;
+	}
+	var cur = World.g;
+	World.gm.choose(cand,function(m) {
+		if(World.g == cur && World.g.over == null) {
+			World.play(m);
+		}
+	});
+};
+World.undo = function() {
+	var h = World.g.hist;
+	if(h.length == 0 || World.g.busy) {
+		return;
+	}
+	var st = h.pop();
+	while(st.s.turn != World.g.human && h.length > 0) st = h.pop();
+	World.g.s = st.s;
+	World.g.log = st.log;
+	World.g.keys = st.keys;
+	World.g.last = st.last;
+	World.g.over = null;
+	World.g.sel = -1;
+	World.g.msg = null;
+	World.g.end = null;
+	World.draw();
+	World.next();
+};
+World.draw = function() {
+	if(World.g == null) {
+		return;
+	}
+	var s = World.g.s;
+	var my = World.g.over == null && !World.g.busy && s.turn == World.g.human;
+	var ms = my && (!World.gm.dice || s.roll != null) ? World.gm.moves(s) : [];
+	var targets;
+	if(World.g.sel != -1) {
+		var _g = [];
+		var _g1 = 0;
+		while(_g1 < ms.length) {
+			var m = ms[_g1];
+			++_g1;
+			if(World.gm.src(m) == World.g.sel) {
+				_g.push(World.gm.dst(m));
+			}
+		}
+		targets = _g;
+	} else {
+		targets = [];
+	}
+	var srcs = [];
+	if(World.g.sel == -1) {
+		var _g = 0;
+		while(_g < ms.length) {
+			var m = ms[_g];
+			++_g;
+			var c = World.gm.src(m);
+			if(c >= 0 && srcs.indexOf(c) < 0) {
+				srcs.push(c);
+			}
+			var d = World.gm.dst(m);
+			if(c == -1 && srcs.indexOf(d) < 0 && World.gm.dice) {
+				srcs.push(d);
+			}
+		}
+	}
+	var ui = { sel : World.g.sel, targets : targets, srcs : srcs, last : World.g.last, flip : World.g.flip, my : my, human : World.g.human, end : World.g.end, thumb : false};
+	var cur = World.g;
+	UiJs.page(World.gm.name,function() {
+		World.g = null;
+		World.info(World.gm.id);
+	});
+	var d = UiJs.node("div","wgb wg-" + World.gm.id);
+	d.innerHTML = World.gm.svg(s,ui);
+	d.onclick = function(e) {
+		var el = e.target.closest != null ? e.target.closest("[data-c]") : null;
+		if(el == null || World.g != cur) {
+			return;
+		}
+		World.pick(Std.parseInt(el.getAttribute("data-c")));
+	};
+	var human = World.g.human;
+	var cpuSide = -human;
+	var mine = World.gm.sides[human == 1 ? 0 : 1];
+	var theirs = World.gm.sides[human == 1 ? 1 : 0];
+	UiJs.p("Computador (" + World.LV[World.g.level] + ") · " + theirs + (s.turn == cpuSide && World.g.over == null ? World.g.busy && !(World.gm.dice && s.roll != null) ? " · pensando…" : " · vez dele" : ""),s.turn == cpuSide ? "gold small" : "muted small");
+	UiJs.p("Você · " + mine + (my ? " · sua vez" : ""),my ? "gold small" : "muted small");
+	if(World.gm.dice && s.roll != null) {
+		UiJs.html(World.gm.rollSvg(s),"wgroll");
+		UiJs.p((s.turn == human ? "Você tirou " : "O computador tirou ") + World.gm.rollText(s) + (s.ex == true ? " · joga de novo depois" : ""),"small");
+	}
+	var st = World.gm.status(s);
+	if(st != null) {
+		UiJs.p(st,"muted small");
+	}
+	if(World.g.over != null) {
+		UiJs.p(World.g.over,"big gold");
+	} else if(World.g.msg != null) {
+		UiJs.p(World.g.msg,"warn small");
+	} else if(my && !World.gm.dice && ms.length > 0 && World.gm.forced(s,ms)) {
+		UiJs.p("Captura obrigatória: as peças que podem capturar estão marcadas.","warn small");
+	}
+	var bs = [];
+	if(my && World.gm.dice && s.roll == null) {
+		bs.push(["Lançar " + World.gm.tossName,World.toss,"pri wide"]);
+	}
+	if(my && World.gm.passOk) {
+		bs.push(["Passar",function() {
+			var m = { pass : true, f : -1, t : -2};
+			World.play(m);
+		},""]);
+	}
+	if(World.g.over == null && !World.gm.dice) {
+		bs.push(["Desfazer",World.undo,World.g.hist.length > 0 && !World.g.busy ? "" : "off"]);
+	}
+	if(World.gm.flipOk) {
+		bs.push(["Virar",function() {
+			World.g.flip = !World.g.flip;
+			World.draw();
+		}]);
+	}
+	if(World.gm.altOk) {
+		bs.push([World.gm.alt ? "Ideogramas" : "Letras",function() {
+			World.gm.alt = !World.gm.alt;
+			World.draw();
+		}]);
+	}
+	bs.push(["Regras",function() {
+		UiJs.modal(World.gm.name,World.gm.rules.join("\n\n"),[["Entendi",null,"pri"]]);
+	}]);
+	bs.push(["Nova partida",function() {
+		World.start(World.gm.id,World.g.human,World.g.level);
+	},World.g.over != null ? "pri" : ""]);
+	UiJs.btns(bs);
+	var log = World.g.log;
+	if(log.length > 0) {
+		UiJs.h("Lances");
+		UiJs.ul(log.slice(-8),"small");
+	}
+};
+World.euro = function() {
+	UiJs.page("Jogos de tabuleiro modernos",Pages.history);
+	UiJs.p("Alemanha e mundo · desde 1983","gold");
+	var _g = 0;
+	var _g1 = World.EURO;
+	while(_g < _g1.length) {
+		var p = _g1[_g];
+		++_g;
+		UiJs.p(p,"");
+	}
+	UiJs.h("Os quatro da árvore");
+	UiJs.items([{ t : "Scotland Yard (1983)", d : "Dedução e perseguição: um jogador é o fugitivo Mr. X, escondido nos táxis, ônibus e metrô de Londres; os outros, juntos, tentam cercá-lo. Venceu o prêmio Spiel des Jahres de 1983."},{ t : "Catan (1995)", d : "De Klaus Teuber: colonos produzem e trocam madeira, tijolo, lã, trigo e minério num mapa de hexágonos que muda a cada partida. Popularizou os eurogames no mundo."},{ t : "Carcassonne (2000)", d : "De Klaus-Jürgen Wrede: cada um coloca uma peça quadrada de paisagem e forma estradas, cidades e campos medievais, marcando território com os seus meeples."},{ t : "Terra Mystica (2012)", d : "Estratégia profunda e sem sorte: cada facção transforma o terreno de um mapa hexagonal para poder construir, numa disputa de economia e espaço."}]);
+	UiJs.p("Estes jogos são marcas registradas e têm direitos autorais dos seus autores e editoras. Por isso ficam aqui como história, para você conhecer e procurar a versão original.","muted small");
+};
+World.hit = function(c,x,y,w,h) {
+	return "<rect data-c=\"" + c + "\" x=\"" + x + "\" y=\"" + y + "\" width=\"" + w + "\" height=\"" + h + "\" fill=\"#000\" fill-opacity=\"0\" style=\"cursor:pointer\"/>";
+};
+World.hitC = function(c,x,y,r) {
+	return "<circle data-c=\"" + c + "\" cx=\"" + x + "\" cy=\"" + y + "\" r=\"" + r + "\" fill=\"#000\" fill-opacity=\"0\" style=\"cursor:pointer\"/>";
+};
+World.disc = function(x,y,r,light,king,fill) {
+	var s = "<circle cx=\"" + x + "\" cy=\"" + (y + r * 0.14) + "\" r=\"" + r + "\" fill=\"rgba(0,0,0,.35)\"/>";
+	if(king) {
+		s += "<circle cx=\"" + x + "\" cy=\"" + (y + r * 0.1) + "\" r=\"" + r + "\" fill=\"" + (fill != null ? fill : light ? "url(#wgL)" : "url(#wgD)") + "\" stroke=\"" + (light ? "#6b4a22" : "#c8963a") + "\" stroke-width=\"" + r * 0.07 + "\"/>";
+	}
+	var yy = king ? y - r * 0.16 : y;
+	s += "<circle cx=\"" + x + "\" cy=\"" + yy + "\" r=\"" + r + "\" fill=\"" + (fill != null ? fill : light ? "url(#wgL)" : "url(#wgD)") + "\" stroke=\"" + (light ? "#6b4a22" : "#c8963a") + "\" stroke-width=\"" + r * 0.07 + "\"/>";
+	s += "<circle cx=\"" + x + "\" cy=\"" + yy + "\" r=\"" + r * 0.66 + "\" fill=\"none\" stroke=\"" + (light ? "rgba(107,74,34,.45)" : "rgba(200,150,58,.55)") + "\" stroke-width=\"" + r * 0.05 + "\"/>";
+	if(king) {
+		s += World.crown(x,yy,r * 0.5,light ? "#b07d2c" : "#f3d98c");
+	}
+	return s;
+};
+World.crown = function(x,y,k,c) {
+	return "<path d=\"M" + (x - k) + "," + (y + k * .5) + " L" + (x - k) + "," + (y - k * .45) + " L" + (x - k * .5) + "," + (y + k * .05) + " L" + x + "," + (y - k * .7) + " L" + (x + k * .5) + "," + (y + k * .05) + " L" + (x + k) + "," + (y - k * .45) + " L" + (x + k) + "," + (y + k * .5) + " Z\" fill=\"" + c + "\"/>";
+};
+World.marks = function(ui,pos,r) {
+	if(ui.thumb == true) {
+		return "";
+	}
+	var s = "";
+	var last = ui.last;
+	if(last != null) {
+		var _g = 0;
+		while(_g < last.length) {
+			var c = last[_g];
+			++_g;
+			var p = pos(c);
+			if(p != null) {
+				s += "<circle cx=\"" + p[0] + "\" cy=\"" + p[1] + "\" r=\"" + r * 1.08 + "\" fill=\"rgba(240,200,60,.32)\"/>";
+			}
+		}
+	}
+	var sel = ui.sel;
+	if(sel >= 0) {
+		var p = pos(sel);
+		if(p != null) {
+			s += "<circle cx=\"" + p[0] + "\" cy=\"" + p[1] + "\" r=\"" + r * 1.08 + "\" fill=\"none\" stroke=\"#2e9d4c\" stroke-width=\"" + r * 0.16 + "\"/>";
+		}
+	}
+	var srcs = ui.srcs;
+	if(sel < 0 && srcs != null && ui.my == true) {
+		var _g = 0;
+		while(_g < srcs.length) {
+			var c = srcs[_g];
+			++_g;
+			var p = pos(c);
+			if(p != null) {
+				s += "<circle cx=\"" + p[0] + "\" cy=\"" + p[1] + "\" r=\"" + r * 1.04 + "\" fill=\"none\" stroke=\"rgba(46,157,76,.55)\" stroke-width=\"" + r * 0.07 + "\" stroke-dasharray=\"" + r * 0.2 + " " + r * 0.14 + "\"/>";
+			}
+		}
+	}
+	return s;
+};
+World.targetMarks = function(ui,pos,r) {
+	var s = "";
+	var t = ui.targets;
+	if(t != null) {
+		var _g = 0;
+		while(_g < t.length) {
+			var c = t[_g];
+			++_g;
+			var p = pos(c);
+			if(p != null) {
+				s += "<circle cx=\"" + p[0] + "\" cy=\"" + p[1] + "\" r=\"" + r * 0.32 + "\" fill=\"rgba(30,130,55,.85)\" stroke=\"#fff\" stroke-width=\"" + r * 0.05 + "\"/>";
+			}
+		}
+	}
+	return s;
+};
+World.sticks = function(n,k,kind) {
+	var s_b = "";
+	var w = n * 34 + 10;
+	s_b += Std.string("<svg viewBox=\"0 0 " + w + " 60\" height=\"44\">");
+	var _g = 0;
+	var _g1 = n;
+	while(_g < _g1) {
+		var i = _g++;
+		var up = i < k;
+		var x = 10 + i * 34;
+		if(kind == "cowrie") {
+			s_b += Std.string("<ellipse cx=\"" + (x + 12) + "\" cy=\"30\" rx=\"12\" ry=\"17\" fill=\"" + (up ? "#fbf3e2" : "#e4d2ad") + "\" stroke=\"#8a6a3a\" stroke-width=\"1.5\"/>");
+			if(up) {
+				var _g2 = [];
+				_g2.push("<path d=\"M" + (x + 9) + "," + 19 + " h6\" stroke=\"#5b3a17\" stroke-width=\"1\"/>");
+				_g2.push("<path d=\"M" + (x + 9) + "," + 24 + " h6\" stroke=\"#5b3a17\" stroke-width=\"1\"/>");
+				_g2.push("<path d=\"M" + (x + 9) + "," + 29 + " h6\" stroke=\"#5b3a17\" stroke-width=\"1\"/>");
+				_g2.push("<path d=\"M" + (x + 9) + "," + 34 + " h6\" stroke=\"#5b3a17\" stroke-width=\"1\"/>");
+				_g2.push("<path d=\"M" + (x + 9) + "," + 39 + " h6\" stroke=\"#5b3a17\" stroke-width=\"1\"/>");
+				s_b += Std.string("<path d=\"M" + (x + 12) + ",16 L" + (x + 12) + ",44\" stroke=\"#5b3a17\" stroke-width=\"2.4\"/>" + _g2.join(""));
+			} else {
+				s_b += Std.string("<ellipse cx=\"" + (x + 9) + "\" cy=\"25\" rx=\"4\" ry=\"5\" fill=\"#f6ead0\" opacity=\".7\"/>");
+			}
+		} else {
+			s_b += Std.string("<rect x=\"" + x + "\" y=\"6\" width=\"24\" height=\"48\" rx=\"10\" fill=\"" + (up ? "#f6ead0" : "#5b3a17") + "\" stroke=\"#3a2410\" stroke-width=\"1.5\"/>");
+			if(up) {
+				s_b += Std.string("<path d=\"M" + (x + 6) + ",18 h12 M" + (x + 6) + ",30 h12 M" + (x + 6) + ",42 h12\" stroke=\"#a87a3a\" stroke-width=\"1.5\"/>");
+			}
+		}
+	}
+	s_b += "</svg>";
+	return s_b;
 };
 var Xiangqi = function() { };
 Xiangqi.__name__ = true;
@@ -18451,6 +19403,4328 @@ Xiangqi.undo = function() {
 		Xiangqi.cpu();
 	}
 };
+var WGame = function() {
+	this.alt = false;
+	this.altOk = false;
+	this.repLimit = 3;
+	this.note = null;
+	this.levels = [1,2,3];
+	this.passOk = false;
+	this.flipOk = true;
+	this.tossName = "varetas";
+	this.dice = false;
+	this.first = 1;
+	this.sides = ["Brancas","Pretas"];
+	this.pieces = [];
+	this.rules = [];
+	this.story = [];
+	this.era = "";
+	this.name = "";
+	this.id = "";
+};
+WGame.__name__ = true;
+WGame.prototype = {
+	init: function() {
+		return null;
+	}
+	,moves: function(s) {
+		return [];
+	}
+	,apply: function(s,m) {
+		return s;
+	}
+	,over: function(s,ms) {
+		return null;
+	}
+	,'eval': function(s) {
+		return 0;
+	}
+	,forced: function(s,ms) {
+		return false;
+	}
+	,tactical: function(s,m) {
+		return false;
+	}
+	,order: function(s,ms) {
+		return ms;
+	}
+	,cfg: function(level) {
+		return [[0.0,0,0],[2.0,300,60],[4.0,1000,0],[8.0,2500,0],[40.0,4500,0]][level];
+	}
+	,src: function(m) {
+		return m.f;
+	}
+	,dst: function(m) {
+		return m.t;
+	}
+	,lastCells: function(s,m) {
+		return [this.src(m),this.dst(m)];
+	}
+	,label: function(s,m) {
+		return "";
+	}
+	,key: function(s) {
+		return null;
+	}
+	,svg: function(s,ui) {
+		return "";
+	}
+	,ai: function(s,level) {
+		return World.search(this,s,level);
+	}
+	,status: function(s) {
+		return null;
+	}
+	,choose: function(cands,done) {
+		done(cands[0]);
+	}
+	,toss: function() {
+		return [1,1,0,0];
+	}
+	,rolls: function(s) {
+		return [];
+	}
+	,rollText: function(s) {
+		return "";
+	}
+	,rollSvg: function(s) {
+		return "";
+	}
+	,withRoll: function(s,r) {
+		var c = Reflect.copy(s);
+		c.roll = r[0];
+		c.ex = r[2] == 1;
+		c.k = r[3];
+		return c;
+	}
+	,pass: function(s) {
+		var c = Reflect.copy(s);
+		c.roll = null;
+		c.ex = false;
+		c.turn = -s.turn;
+		return c;
+	}
+};
+var Jump = function(k) {
+	this.at = [];
+	this.nb = [];
+	this.Y = [];
+	this.X = [];
+	this.N = 0;
+	this.H = 8;
+	this.W = 8;
+	WGame.call(this);
+	this.kind = k;
+	this.id = k;
+	if(k == "alquerque") {
+		this.W = 5;
+		this.H = 5;
+	}
+	var _g = 0;
+	var _g1 = this.H;
+	while(_g < _g1) {
+		var y = _g++;
+		var _g2 = 0;
+		var _g3 = this.W;
+		while(_g2 < _g3) {
+			var x = _g2++;
+			if(k != "alquerque" && (x + y) % 2 == 0) {
+				this.at.push(-1);
+				continue;
+			}
+			this.at.push(this.N);
+			this.X.push(x);
+			this.Y.push(y);
+			this.N++;
+		}
+	}
+	var _g = 0;
+	var _g1 = this.N;
+	while(_g < _g1) {
+		var n = _g++;
+		var row = [];
+		var _g2 = 0;
+		while(_g2 < 8) {
+			var d = _g2++;
+			var x = this.X[n] + Jump.DX[d];
+			var y = this.Y[n] + Jump.DY[d];
+			var ok = x >= 0 && y >= 0 && x < this.W && y < this.H;
+			if(ok && k == "alquerque" && d % 2 == 1 && (this.X[n] + this.Y[n]) % 2 == 1) {
+				ok = false;
+			}
+			if(ok && k != "alquerque" && d % 2 == 0) {
+				ok = false;
+			}
+			row.push(ok ? this.at[y * this.W + x] : -1);
+		}
+		this.nb.push(row);
+	}
+	this.sides = ["Brancas","Pretas"];
+	if(k == "alquerque") {
+		this.name = "Alquerque";
+		this.era = "Oriente Médio e Espanha · descrito no Libro de los juegos (1283)";
+		this.story = ["O alquerque é um dos jogos de captura mais antigos que se conhecem. O nome vem do árabe al-qirq, e o tabuleiro de 5 x 5 pontos ligados por linhas aparece riscado em pedras muito antigas do Oriente Médio.","Os árabes o levaram à Península Ibérica, e em 1283 o rei Afonso X de Castela registrou as regras no Libro de los juegos, o mesmo livro que guardou problemas de xadrez medieval.","Na árvore, o alquerque é o elo entre o shatranj e as damas: quando alguém pôs as peças do alquerque num tabuleiro de xadrez, nasceu o fierges, o avô das damas."];
+		this.rules = ["Cada um tem 12 peças. As peças andam um ponto ao longo das linhas, para a frente, para o lado ou na diagonal (onde houver linha), nunca para trás.","Captura: salte uma peça adversária vizinha, ao longo de uma linha, para o ponto vazio logo depois dela. Pode encadear vários saltos, inclusive para trás.","Capturar é obrigatório (a regra do Libro de los juegos).","Vence quem capturar todas as peças do outro ou deixá-lo sem lances. 60 lances seguidos sem captura terminam empatados."];
+		this.pieces = [["Peça","Anda um ponto pelas linhas, para a frente ou para o lado; captura saltando em qualquer direção."]];
+	} else if(k == "fierges") {
+		this.name = "Fierges";
+		this.era = "França · por volta de 1100";
+		this.story = ["Por volta do século XII, no sul da França, alguém pôs as peças do alquerque num tabuleiro de xadrez e passou a usar só as casas escuras. Nasceu o fierges, o primeiro jogo de damas.","O nome vem da fers, a peça do xadrez medieval que andava uma casa na diagonal (o futuro bispo e a futura dama tiveram ancestrais assim). A peça que chegava ao fim do tabuleiro virava fers e passava a andar como ela: uma casa na diagonal, para qualquer lado.","Capturar ainda não era obrigatório. A regra do \"jogo forçado\" só apareceu no século XVI, e com ela nasceram as damas modernas."];
+		this.rules = ["12 peças para cada lado, nas casas escuras. As peças andam uma casa na diagonal para a frente e capturam saltando para a frente.","A peça que chega à última fileira vira fers (dama), marcada com coroa: anda e captura uma casa na diagonal, para a frente ou para trás.","Capturar não é obrigatório, e você pode parar uma sequência de saltos quando quiser.","Vence quem capturar todas as peças do outro ou deixá-lo sem lances."];
+		this.pieces = [["Peça","Uma casa na diagonal para a frente; captura saltando para a frente."],["Fers (dama)","Uma casa na diagonal em qualquer direção; captura saltando uma peça vizinha."]];
+	} else {
+		this.name = "Damas";
+		this.era = "Europa desde o século XVI · aqui, as damas brasileiras";
+		this.levels = [4];
+		this.story = ["Quando a captura se tornou obrigatória, por volta de 1535, o fierges virou o jeu forcé, as damas modernas. Na Espanha, o jogo ganhou a dama que voa pela diagonal inteira, e essa versão se espalhou por Portugal, Brasil e boa parte do mundo.","As damas brasileiras usam o tabuleiro de 8 x 8 com as regras das damas internacionais: peças capturam para trás, a dama anda e captura à distância e é obrigatório tomar o maior número possível de peças.","Na árvore, as damas são o ponto de onde partem os jogos de tabuleiro modernos: territórios, capturas e estratégia sem sorte."];
+		this.rules = ["12 peças para cada lado nas casas escuras. As Brancas começam. As peças andam uma casa na diagonal para a frente.","Capturar é obrigatório: salte uma peça adversária vizinha (para a frente ou para trás) caindo na casa vazia depois dela. Se puder continuar saltando, continue.","Lei da maioria: entre as capturas possíveis, é obrigatório escolher a que toma mais peças.","A peça que termina o lance na última fileira vira dama. A dama anda quantas casas quiser na diagonal e captura à distância.","Vence quem capturar todas as peças do outro ou deixá-lo sem lances. Só damas por 20 lances de cada lado, sem captura, é empate."];
+		this.pieces = [["Peça","Uma casa na diagonal para a frente; captura para a frente e para trás."],["Dama","Voa pela diagonal; captura à distância, caindo em qualquer casa vazia depois da peça tomada."]];
+	}
+};
+Jump.__name__ = true;
+Jump.__super__ = WGame;
+Jump.prototype = $extend(WGame.prototype,{
+	init: function() {
+		var _g = [];
+		var _g1 = 0;
+		var _g2 = this.N;
+		while(_g1 < _g2) {
+			var n = _g1++;
+			_g.push(0);
+		}
+		var b = _g;
+		var _g = 0;
+		var _g1 = this.N;
+		while(_g < _g1) {
+			var n = _g++;
+			if(this.kind == "alquerque") {
+				if(this.Y[n] <= 1 || this.Y[n] == 2 && this.X[n] <= 1) {
+					b[n] = -1;
+				}
+				if(this.Y[n] >= 3 || this.Y[n] == 2 && this.X[n] >= 3) {
+					b[n] = 1;
+				}
+			} else {
+				if(this.Y[n] <= 2) {
+					b[n] = -1;
+				}
+				if(this.Y[n] >= 5) {
+					b[n] = 1;
+				}
+			}
+		}
+		return { b : b, turn : 1, q : 0};
+	}
+	,cap: function(b,origin,cur,king,side,taken,path,out) {
+		var found = false;
+		var _g = 0;
+		while(_g < 8) {
+			var d = _g++;
+			if(this.nb[cur][d] < 0) {
+				continue;
+			}
+			if(!king || this.kind == "fierges") {
+				if(this.kind == "fierges" && !king && Jump.DY[d] != (side == 1 ? -1 : 1)) {
+					continue;
+				}
+				var q = this.nb[cur][d];
+				if(b[q] * side >= 0 || taken.indexOf(q) >= 0) {
+					continue;
+				}
+				var r = this.nb[q][d];
+				if(r < 0) {
+					continue;
+				}
+				if(b[r] != 0 && r != origin) {
+					continue;
+				}
+				found = true;
+				var t2 = taken.concat([q]);
+				var p2 = path.concat([r]);
+				if(this.kind == "fierges") {
+					out.push({ f : origin, t : r, c : t2, p : p2});
+				}
+				this.cap(b,origin,r,king,side,t2,p2,out);
+			} else {
+				var q1 = this.nb[cur][d];
+				while(q1 >= 0 && (b[q1] == 0 || q1 == origin)) q1 = this.nb[q1][d];
+				if(q1 < 0 || b[q1] * side >= 0 || taken.indexOf(q1) >= 0) {
+					continue;
+				}
+				var r1 = this.nb[q1][d];
+				while(r1 >= 0 && (b[r1] == 0 || r1 == origin)) {
+					found = true;
+					this.cap(b,origin,r1,king,side,taken.concat([q1]),path.concat([r1]),out);
+					r1 = this.nb[r1][d];
+				}
+			}
+		}
+		if(!found && taken.length > 0 && this.kind != "fierges") {
+			out.push({ f : origin, t : cur, c : taken, p : path});
+		}
+	}
+	,moves: function(s) {
+		var b = s.b;
+		var side = s.turn;
+		var caps = [];
+		var _g = 0;
+		var _g1 = this.N;
+		while(_g < _g1) {
+			var n = _g++;
+			if(b[n] * side > 0) {
+				this.cap(b,n,n,b[n] * side == 2,side,[],[n],caps);
+			}
+		}
+		if(caps.length > 0 && this.kind == "damas") {
+			var mx = 0;
+			var _g = 0;
+			while(_g < caps.length) {
+				var m = caps[_g];
+				++_g;
+				if(m.c.length > mx) {
+					mx = m.c.length;
+				}
+			}
+			var _g = [];
+			var _g1 = 0;
+			while(_g1 < caps.length) {
+				var m = caps[_g1];
+				++_g1;
+				if(m.c.length == mx) {
+					_g.push(m);
+				}
+			}
+			caps = _g;
+		}
+		if(caps.length > 0 && this.kind != "fierges") {
+			return caps;
+		}
+		var out = caps;
+		var _g = 0;
+		var _g1 = this.N;
+		while(_g < _g1) {
+			var n = _g++;
+			var p = b[n];
+			if(p * side <= 0) {
+				continue;
+			}
+			var king = p * side == 2;
+			var _g2 = 0;
+			while(_g2 < 8) {
+				var d = _g2++;
+				var t = this.nb[n][d];
+				if(t < 0) {
+					continue;
+				}
+				if(this.kind == "alquerque") {
+					if(Jump.DY[d] == -(side == 1 ? -1 : 1)) {
+						continue;
+					}
+					if(b[t] == 0) {
+						out.push({ f : n, t : t, c : [], p : [n,t]});
+					}
+				} else if(this.kind == "damas" && king) {
+					while(t >= 0 && b[t] == 0) {
+						out.push({ f : n, t : t, c : [], p : [n,t]});
+						t = this.nb[t][d];
+					}
+				} else {
+					if(!king && Jump.DY[d] != (side == 1 ? -1 : 1)) {
+						continue;
+					}
+					if(b[t] == 0) {
+						out.push({ f : n, t : t, c : [], p : [n,t]});
+					}
+				}
+			}
+		}
+		return out;
+	}
+	,apply: function(s,m) {
+		var b = s.b.slice();
+		var f = m.f;
+		var t = m.t;
+		var p = b[f];
+		b[f] = 0;
+		var cs = m.c;
+		var _g = 0;
+		while(_g < cs.length) {
+			var c = cs[_g];
+			++_g;
+			b[c] = 0;
+		}
+		b[t] = p;
+		if(this.kind != "alquerque" && (p == 1 || p == -1) && (p == 1 && this.Y[t] == 0 || p == -1 && this.Y[t] == this.H - 1)) {
+			b[t] = 2 * p;
+		}
+		var man = p == 1 || p == -1;
+		var q = cs.length > 0 || man && this.kind != "alquerque" ? 0 : s.q + 1;
+		return { b : b, turn : -s.turn, q : q};
+	}
+	,over: function(s,ms) {
+		if(ms.length == 0) {
+			var b = s.b;
+			var side = s.turn;
+			var any = false;
+			var _g = 0;
+			while(_g < b.length) {
+				var p = b[_g];
+				++_g;
+				if(p * side > 0) {
+					any = true;
+				}
+			}
+			return { w : -side, why : any ? "sem lances" : "todas as peças capturadas"};
+		}
+		var q = s.q;
+		if(this.kind == "damas" && q >= 40) {
+			return { w : 0, why : "20 lances de cada lado só com damas"};
+		}
+		if(this.kind == "fierges" && q >= 50) {
+			return { w : 0, why : "25 lances de cada lado só com damas"};
+		}
+		if(this.kind == "alquerque" && q >= 60) {
+			return { w : 0, why : "60 lances sem captura"};
+		}
+		return null;
+	}
+	,'eval': function(s) {
+		var b = s.b;
+		var sc = 0.0;
+		var cnt = [0,0];
+		var _g = 0;
+		var _g1 = this.N;
+		while(_g < _g1) {
+			var n = _g++;
+			var p = b[n];
+			if(p == 0) {
+				continue;
+			}
+			var side = p > 0 ? 1 : -1;
+			var king = p * side == 2;
+			cnt[side == 1 ? 0 : 1]++;
+			var adv = side == 1 ? this.H - 1 - this.Y[n] : this.Y[n];
+			var v = 0.0;
+			if(this.kind == "damas") {
+				v = king ? 330 : 100 + adv * 5 + (adv == 0 ? 6 : 0);
+				if(this.X[n] >= 2 && this.X[n] <= 5 && this.Y[n] >= 2 && this.Y[n] <= 5) {
+					v += 4;
+				}
+				if(!king && (this.X[n] == 0 || this.X[n] == 7)) {
+					v -= 3;
+				}
+			} else if(this.kind == "fierges") {
+				v = king ? 175 : 100 + adv * 4;
+			} else {
+				v = 100 + adv * 2;
+				if(this.X[n] == 2 && this.Y[n] == 2) {
+					v += 4;
+				}
+			}
+			sc += side * v;
+		}
+		if(cnt[0] > cnt[1] && cnt[1] > 0) {
+			sc += 6 * (12 - cnt[1]);
+		}
+		if(cnt[1] > cnt[0] && cnt[0] > 0) {
+			sc -= 6 * (12 - cnt[0]);
+		}
+		return sc;
+	}
+	,forced: function(s,ms) {
+		if(this.kind != "fierges" && ms.length > 0) {
+			return ms[0].c.length > 0;
+		} else {
+			return false;
+		}
+	}
+	,tactical: function(s,m) {
+		return m.c.length > 0;
+	}
+	,order: function(s,ms) {
+		var _gthis = this;
+		var b = s.b;
+		var o = ms.slice();
+		o.sort(function(a,c) {
+			var x = a.c.length * 10 + (b[a.f] * s.turn == 1 && (_gthis.Y[a.t] == 0 || _gthis.Y[a.t] == _gthis.H - 1) ? 5 : 0);
+			var y = c.c.length * 10 + (b[c.f] * s.turn == 1 && (_gthis.Y[c.t] == 0 || _gthis.Y[c.t] == _gthis.H - 1) ? 5 : 0);
+			return y - x;
+		});
+		return o;
+	}
+	,cfg: function(level) {
+		if(this.kind == "damas") {
+			return [[0.0,0,0],[2.0,300,40],[4.0,900,0],[10.0,2500,0],[60.0,5000,0]][level];
+		} else {
+			return [[0.0,0,0],[2.0,300,50],[4.0,900,0],[9.0,2500,0],[40.0,4500,0]][level];
+		}
+	}
+	,sqName: function(n) {
+		if(this.kind == "alquerque") {
+			return "abcde".charAt(this.X[n]) + (5 - this.Y[n]);
+		} else {
+			return "abcdefgh".charAt(this.X[n]) + (8 - this.Y[n]);
+		}
+	}
+	,label: function(s,m) {
+		var p = m.p;
+		var cs = m.c;
+		if(cs.length == 0) {
+			return this.sqName(m.f) + "-" + this.sqName(m.t);
+		} else {
+			var _g = [];
+			var _g1 = 0;
+			while(_g1 < p.length) {
+				var x = p[_g1];
+				++_g1;
+				_g.push(this.sqName(x));
+			}
+			return _g.join("x") + (cs.length > 1 ? " (" + cs.length + " peças)" : "");
+		}
+	}
+	,lastCells: function(s,m) {
+		return m.p.slice();
+	}
+	,key: function(s) {
+		return s.b.join(",") + "|" + Std.string(s.turn);
+	}
+	,status: function(s) {
+		var b = s.b;
+		var w = 0;
+		var k = 0;
+		var _g = 0;
+		while(_g < b.length) {
+			var p = b[_g];
+			++_g;
+			if(p > 0) {
+				++w;
+			}
+			if(p < 0) {
+				++k;
+			}
+		}
+		return "Peças: Brancas " + w + " · Pretas " + k;
+	}
+	,svg: function(s,ui) {
+		var _gthis = this;
+		var b = s.b;
+		var flip = ui.flip == true;
+		var sb_b = "";
+		if(this.kind == "alquerque") {
+			var step = 170.0;
+			var m0 = 90.0;
+			var size = m0 * 2 + step * 4;
+			var P = function(n) {
+				var x = flip ? 4 - _gthis.X[n] : _gthis.X[n];
+				var y = flip ? 4 - _gthis.Y[n] : _gthis.Y[n];
+				return [m0 + x * step,m0 + y * step];
+			};
+			sb_b += Std.string("<svg viewBox=\"0 0 " + size + " " + size + "\">" + World.DEFS);
+			sb_b += Std.string("<rect x=\"6\" y=\"6\" width=\"" + (size - 12) + "\" height=\"" + (size - 12) + "\" rx=\"26\" fill=\"url(#wgW)\" stroke=\"#5b3714\" stroke-width=\"10\"/>");
+			sb_b += Std.string("<rect x=\"22\" y=\"22\" width=\"" + (size - 44) + "\" height=\"" + (size - 44) + "\" rx=\"16\" fill=\"none\" stroke=\"rgba(91,55,20,.35)\" stroke-width=\"2\"/>");
+			sb_b += "<g stroke=\"#4a2c0e\" stroke-width=\"7\" stroke-linecap=\"round\">";
+			var _g = 0;
+			var _g1 = this.N;
+			while(_g < _g1) {
+				var n = _g++;
+				var d = 2;
+				var t = this.nb[n][d];
+				if(t >= 0) {
+					var a = P(n);
+					var c = P(t);
+					sb_b += Std.string("<line x1=\"" + a[0] + "\" y1=\"" + a[1] + "\" x2=\"" + c[0] + "\" y2=\"" + c[1] + "\"/>");
+				}
+				var d1 = 3;
+				var t1 = this.nb[n][d1];
+				if(t1 >= 0) {
+					var a1 = P(n);
+					var c1 = P(t1);
+					sb_b += Std.string("<line x1=\"" + a1[0] + "\" y1=\"" + a1[1] + "\" x2=\"" + c1[0] + "\" y2=\"" + c1[1] + "\"/>");
+				}
+				var d2 = 4;
+				var t2 = this.nb[n][d2];
+				if(t2 >= 0) {
+					var a2 = P(n);
+					var c2 = P(t2);
+					sb_b += Std.string("<line x1=\"" + a2[0] + "\" y1=\"" + a2[1] + "\" x2=\"" + c2[0] + "\" y2=\"" + c2[1] + "\"/>");
+				}
+				var d3 = 5;
+				var t3 = this.nb[n][d3];
+				if(t3 >= 0) {
+					var a3 = P(n);
+					var c3 = P(t3);
+					sb_b += Std.string("<line x1=\"" + a3[0] + "\" y1=\"" + a3[1] + "\" x2=\"" + c3[0] + "\" y2=\"" + c3[1] + "\"/>");
+				}
+			}
+			sb_b += "</g>";
+			var _g = 0;
+			var _g1 = this.N;
+			while(_g < _g1) {
+				var n = _g++;
+				var a = P(n);
+				sb_b += Std.string("<circle cx=\"" + a[0] + "\" cy=\"" + a[1] + "\" r=\"11\" fill=\"#4a2c0e\"/>");
+			}
+			sb_b += Std.string(World.marks(ui,P,62));
+			var _g = 0;
+			var _g1 = this.N;
+			while(_g < _g1) {
+				var n = _g++;
+				if(b[n] != 0) {
+					var a = P(n);
+					sb_b += Std.string(World.disc(a[0],a[1],58,b[n] > 0,false));
+				}
+			}
+			sb_b += Std.string(World.targetMarks(ui,P,62));
+			if(ui.thumb != true) {
+				var _g = 0;
+				var _g1 = this.N;
+				while(_g < _g1) {
+					var n = _g++;
+					var a = P(n);
+					sb_b += Std.string(World.hitC(n,a[0],a[1],82));
+				}
+			}
+			sb_b += "</svg>";
+			return sb_b;
+		}
+		var c = 100.0;
+		var o = 34.0;
+		var size = o * 2 + c * 8;
+		var P1 = function(n) {
+			var x = flip ? 7 - _gthis.X[n] : _gthis.X[n];
+			var y = flip ? 7 - _gthis.Y[n] : _gthis.Y[n];
+			return [o + x * c + c / 2,o + y * c + c / 2];
+		};
+		var lt = this.kind == "fierges" ? "#ead6ab" : "#f1dfba";
+		var dk = this.kind == "fierges" ? "#7d5330" : "#8a5b2e";
+		sb_b += Std.string("<svg viewBox=\"0 0 " + size + " " + size + "\">" + World.DEFS);
+		sb_b += Std.string("<rect x=\"0\" y=\"0\" width=\"" + size + "\" height=\"" + size + "\" rx=\"18\" fill=\"#3a2410\"/><rect x=\"10\" y=\"10\" width=\"" + (size - 20) + "\" height=\"" + (size - 20) + "\" rx=\"12\" fill=\"url(#wgW)\" opacity=\".35\"/>");
+		var _g = 0;
+		while(_g < 8) {
+			var y = _g++;
+			var _g1 = 0;
+			while(_g1 < 8) {
+				var x = _g1++;
+				sb_b += Std.string("<rect x=\"" + (o + x * c) + "\" y=\"" + (o + y * c) + "\" width=\"" + c + "\" height=\"" + c + "\" fill=\"" + ((x + y) % 2 == 1 ? dk : lt) + "\"/>");
+			}
+		}
+		sb_b += Std.string("<rect x=\"" + o + "\" y=\"" + o + "\" width=\"" + c * 8 + "\" height=\"" + c * 8 + "\" fill=\"none\" stroke=\"#2a170a\" stroke-width=\"3\"/>");
+		if(ui.thumb != true) {
+			var _g = 0;
+			while(_g < 8) {
+				var x = _g++;
+				var fx = flip ? 7 - x : x;
+				var fy = flip ? 7 - x : x;
+				sb_b += Std.string("<text x=\"" + (o + x * c + c / 2) + "\" y=\"" + (size - 9) + "\" text-anchor=\"middle\" font-size=\"20\" fill=\"#e9cf8c\" font-family=\"Georgia,serif\">" + "abcdefgh".charAt(fx) + "</text>");
+				sb_b += Std.string("<text x=\"17\" y=\"" + (o + x * c + c / 2 + 7) + "\" text-anchor=\"middle\" font-size=\"20\" fill=\"#e9cf8c\" font-family=\"Georgia,serif\">" + (8 - fy) + "</text>");
+			}
+		}
+		sb_b += Std.string(World.marks(ui,P1,44));
+		var _g = 0;
+		var _g1 = this.N;
+		while(_g < _g1) {
+			var n = _g++;
+			if(b[n] != 0) {
+				var a = P1(n);
+				sb_b += Std.string(World.disc(a[0],a[1],38,b[n] > 0,b[n] == 2 || b[n] == -2));
+			}
+		}
+		sb_b += Std.string(World.targetMarks(ui,P1,44));
+		if(ui.thumb != true) {
+			var _g = 0;
+			var _g1 = this.N;
+			while(_g < _g1) {
+				var n = _g++;
+				var a = P1(n);
+				sb_b += Std.string(World.hit(n,a[0] - c / 2,a[1] - c / 2,c,c));
+			}
+		}
+		sb_b += "</svg>";
+		return sb_b;
+	}
+});
+var Shogi = function() {
+	WGame.call(this);
+	this.id = "shogi";
+	this.name = "Shogi";
+	this.era = "Japão · forma atual por volta do século XVI";
+	this.sides = ["Sente (você embaixo)","Gote"];
+	this.altOk = true;
+	this.repLimit = 4;
+	if(Shogi.OK == null) {
+		Shogi.OK = [];
+		var _g = 0;
+		while(_g < 15) {
+			var t = _g++;
+			var _g1 = [];
+			_g1.push(false);
+			_g1.push(false);
+			_g1.push(false);
+			_g1.push(false);
+			_g1.push(false);
+			_g1.push(false);
+			_g1.push(false);
+			_g1.push(false);
+			_g1.push(false);
+			_g1.push(false);
+			_g1.push(false);
+			_g1.push(false);
+			_g1.push(false);
+			_g1.push(false);
+			_g1.push(false);
+			_g1.push(false);
+			var a = _g1;
+			var _g2 = 0;
+			var _g3 = Shogi.STEPS[t];
+			while(_g2 < _g3.length) {
+				var st = _g3[_g2];
+				++_g2;
+				a[(st[0] + 1) * 4 + st[1] + 1] = true;
+			}
+			Shogi.OK.push(a);
+		}
+	}
+	this.story = ["O shogi chegou ao Japão vindo da China ou do Sudeste Asiático, por volta dos séculos X a XII, e é primo do xiangqi e do makruk. Peças de shogi do século XI foram encontradas no templo Kofuku-ji, em Nara.","A forma atual, de 9 x 9 casas, se firmou por volta do século XVI. A grande novidade é única no mundo: a peça capturada muda de lado e pode voltar ao tabuleiro como sua, em qualquer casa vazia. Por isso as peças não têm cor; a direção da ponta mostra o dono.","No período Edo, o xogunato patrocinava os melhores jogadores, e o título de Meijin passava de mestre para mestre. Hoje o shogi tem milhões de jogadores e profissionais famosos no Japão, como Sota Fujii."];
+	this.rules = ["O objetivo é dar xeque-mate no rei. Sente (você, embaixo) começa.","As peças andam como mostrado em \"As peças\". A ponta de cada peça aponta para o adversário.","Promoção: ao entrar, sair ou andar dentro das três últimas fileiras, a peça pode promover (vira, com o ideograma em vermelho). Peão, lança e cavalo são obrigados a promover onde não poderiam mais andar.","Peças capturadas vão para a sua mão. Na sua vez, em vez de mover, você pode colocar uma delas em qualquer casa vazia (toque nela e depois na casa).","Não pode ter dois peões não promovidos na mesma coluna, nem dar xeque-mate colocando um peão da mão.","Repetir a mesma posição quatro vezes é empate (sennichite)."];
+	this.pieces = [["Rei (玉/王)","Uma casa em qualquer direção."],["Torre (飛)","Quantas casas quiser na horizontal ou vertical. Promovida (龍): também uma casa na diagonal."],["Bispo (角)","Quantas casas quiser na diagonal. Promovido (馬): também uma casa na horizontal ou vertical."],["General de ouro (金)","Uma casa para a frente, nas diagonais da frente, para os lados ou para trás. Não promove."],["General de prata (銀)","Uma casa para a frente ou em qualquer diagonal. Promovido, anda como o ouro."],["Cavalo (桂)","Salta duas casas para a frente e uma para o lado; só para a frente. Promovido, anda como o ouro."],["Lança (香)","Quantas casas quiser só para a frente. Promovida, anda como o ouro."],["Peão (歩)","Uma casa para a frente, e captura assim também. Promovido (と, tokin), anda como o ouro."]];
+};
+Shogi.__name__ = true;
+Shogi.__super__ = WGame;
+Shogi.prototype = $extend(WGame.prototype,{
+	init: function() {
+		var _g = [];
+		var _g1 = 0;
+		while(_g1 < 81) {
+			var i = _g1++;
+			_g.push(0);
+		}
+		var b = _g;
+		var back = [2,3,4,5,8,5,4,3,2];
+		var _g = 0;
+		while(_g < 9) {
+			var x = _g++;
+			b[x < 0 || x > 8 ? -1 : x] = back[x];
+			b[x < 0 || x > 8 ? -1 : 18 + x] = 1;
+			b[x < 0 || x > 8 ? -1 : 72 + x] = -back[x];
+			b[x < 0 || x > 8 ? -1 : 54 + x] = -1;
+		}
+		b[10] = 6;
+		b[16] = 7;
+		b[64] = -7;
+		b[70] = -6;
+		var _g = [];
+		_g.push(0);
+		_g.push(0);
+		_g.push(0);
+		_g.push(0);
+		_g.push(0);
+		_g.push(0);
+		_g.push(0);
+		_g.push(0);
+		_g.push(0);
+		_g.push(0);
+		_g.push(0);
+		_g.push(0);
+		_g.push(0);
+		_g.push(0);
+		_g.push(0);
+		_g.push(0);
+		return { b : b, h : _g, turn : 1};
+	}
+	,attacked: function(b,sq,by) {
+		var x0 = sq % 9;
+		var y0 = sq / 9 | 0;
+		var _g = 0;
+		var _g1 = Shogi.K8;
+		while(_g < _g1.length) {
+			var st = _g1[_g];
+			++_g;
+			var x = x0 - st[0];
+			var y = y0 - st[1] * by;
+			var a = x < 0 || y < 0 || x > 8 || y > 8 ? -1 : y * 9 + x;
+			if(a >= 0 && b[a] * by > 0 && Shogi.OK[b[a] * by][(st[0] + 1) * 4 + st[1] + 1]) {
+				return true;
+			}
+		}
+		var dx = -1;
+		var x = x0 - dx;
+		var y = y0 - 2 * by;
+		var a = x < 0 || y < 0 || x > 8 || y > 8 ? -1 : y * 9 + x;
+		if(a >= 0 && b[a] == 3 * by) {
+			return true;
+		}
+		var dx = 1;
+		var x = x0 - dx;
+		var y = y0 - 2 * by;
+		var a = x < 0 || y < 0 || x > 8 || y > 8 ? -1 : y * 9 + x;
+		if(a >= 0 && b[a] == 3 * by) {
+			return true;
+		}
+		var _g = 0;
+		var _g1 = Shogi.DG;
+		while(_g < _g1.length) {
+			var dd = _g1[_g];
+			++_g;
+			var x = x0 - dd[0];
+			var y = y0 - dd[1] * by;
+			while(true) {
+				var a = x < 0 || y < 0 || x > 8 || y > 8 ? -1 : y * 9 + x;
+				if(a < 0) {
+					break;
+				}
+				if(b[a] != 0) {
+					var t = b[a] * by;
+					if(t == 6 || t == 13) {
+						return true;
+					}
+					break;
+				}
+				x -= dd[0];
+				y -= dd[1] * by;
+			}
+		}
+		var _g = 0;
+		var _g1 = Shogi.OR;
+		while(_g < _g1.length) {
+			var dd = _g1[_g];
+			++_g;
+			var x = x0 - dd[0];
+			var y = y0 - dd[1] * by;
+			while(true) {
+				var a = x < 0 || y < 0 || x > 8 || y > 8 ? -1 : y * 9 + x;
+				if(a < 0) {
+					break;
+				}
+				if(b[a] != 0) {
+					var t = b[a] * by;
+					if(t == 7 || t == 14 || t == 2 && dd[0] == 0 && dd[1] == 1) {
+						return true;
+					}
+					break;
+				}
+				x -= dd[0];
+				y -= dd[1] * by;
+			}
+		}
+		return false;
+	}
+	,king: function(b,side) {
+		var _g = 0;
+		while(_g < 81) {
+			var q = _g++;
+			if(b[q] == 8 * side) {
+				return q;
+			}
+		}
+		return -1;
+	}
+	,inCheck: function(b,side) {
+		var k = this.king(b,side);
+		if(k >= 0) {
+			return this.attacked(b,k,-side);
+		} else {
+			return false;
+		}
+	}
+	,pseudo: function(s) {
+		var _gthis = this;
+		var b = s.b;
+		var h = s.h;
+		var side = s.turn;
+		var out = [];
+		var add = function(fr,to,t) {
+			var ty = to / 9 | 0;
+			var promo = t <= 7 && t != 5;
+			var last = side == 1 ? ty == 8 : ty == 0;
+			var last2 = side == 1 ? ty >= 7 : ty <= 1;
+			var must = (t == 1 || t == 2) && last || t == 3 && last2;
+			var add;
+			if(promo) {
+				var y = fr / 9 | 0;
+				add = (side == 1 ? y >= 6 : y <= 2) || (side == 1 ? ty >= 6 : ty <= 2);
+			} else {
+				add = false;
+			}
+			if(add) {
+				out.push({ f : fr, t : to, pr : true, d : 0});
+				if(!must) {
+					out.push({ f : fr, t : to, pr : false, d : 0});
+				}
+			} else if(!must) {
+				out.push({ f : fr, t : to, pr : false, d : 0});
+			}
+		};
+		var _g = 0;
+		while(_g < 81) {
+			var q = _g++;
+			var p = b[q];
+			if(p * side <= 0) {
+				continue;
+			}
+			var t = p * side;
+			var x = q % 9;
+			var y = q / 9 | 0;
+			var _g1 = 0;
+			var _g2 = Shogi.STEPS[t];
+			while(_g1 < _g2.length) {
+				var st = _g2[_g1];
+				++_g1;
+				var x1 = x + st[0];
+				var y1 = y + st[1] * side;
+				var to = x1 < 0 || y1 < 0 || x1 > 8 || y1 > 8 ? -1 : y1 * 9 + x1;
+				if(to >= 0 && b[to] * side <= 0) {
+					add(q,to,t);
+				}
+			}
+			var _g3 = 0;
+			var _g4 = Shogi.SLIDES[t];
+			while(_g3 < _g4.length) {
+				var dd = _g4[_g3];
+				++_g3;
+				var xx = x + dd[0];
+				var yy = y + dd[1] * side;
+				while(true) {
+					var to1 = xx < 0 || yy < 0 || xx > 8 || yy > 8 ? -1 : yy * 9 + xx;
+					if(to1 < 0) {
+						break;
+					}
+					if(b[to1] * side > 0) {
+						break;
+					}
+					add(q,to1,t);
+					if(b[to1] != 0) {
+						break;
+					}
+					xx += dd[0];
+					yy += dd[1] * side;
+				}
+			}
+		}
+		var base = side == 1 ? 0 : 8;
+		var _g = [];
+		_g.push(false);
+		_g.push(false);
+		_g.push(false);
+		_g.push(false);
+		_g.push(false);
+		_g.push(false);
+		_g.push(false);
+		_g.push(false);
+		_g.push(false);
+		var pawnFile = _g;
+		var _g = 0;
+		while(_g < 81) {
+			var q = _g++;
+			if(b[q] == side) {
+				pawnFile[q % 9] = true;
+			}
+		}
+		var _g = 1;
+		while(_g < 8) {
+			var t = _g++;
+			if(h[base + t] == 0) {
+				continue;
+			}
+			var _g1 = 0;
+			while(_g1 < 81) {
+				var q = _g1++;
+				if(b[q] != 0) {
+					continue;
+				}
+				var y = q / 9 | 0;
+				var rel = side == 1 ? y : 8 - y;
+				if((t == 1 || t == 2) && rel == 8) {
+					continue;
+				}
+				if(t == 3 && rel >= 7) {
+					continue;
+				}
+				if(t == 1 && pawnFile[q % 9]) {
+					continue;
+				}
+				out.push({ f : -1, t : q, pr : false, d : t});
+			}
+		}
+		return out;
+	}
+	,make: function(s,m) {
+		var b = s.b.slice();
+		var h = s.h.slice();
+		var side = s.turn;
+		var base = side == 1 ? 0 : 8;
+		var t = m.t;
+		if(m.d > 0) {
+			b[t] = side * m.d;
+			h[base + m.d]--;
+		} else {
+			var c = b[t];
+			if(c != 0) {
+				var ct = c < 0 ? -c : c;
+				if(ct >= 9 && ct <= 12) {
+					ct -= 8;
+				} else if(ct == 13) {
+					ct = 6;
+				} else if(ct == 14) {
+					ct = 7;
+				}
+				h[base + ct]++;
+			}
+			var p = b[m.f];
+			b[m.f] = 0;
+			var pt = p * side;
+			if(m.pr == true) {
+				if(pt <= 4) {
+					pt += 8;
+				} else {
+					pt = pt == 6 ? 13 : 14;
+				}
+			}
+			b[t] = pt * side;
+		}
+		return { b : b, h : h, turn : -side};
+	}
+	,moves: function(s) {
+		var side = s.turn;
+		var out = [];
+		var _g = 0;
+		var _g1 = this.pseudo(s);
+		while(_g < _g1.length) {
+			var m = _g1[_g];
+			++_g;
+			var s2 = this.make(s,m);
+			if(this.inCheck(s2.b,side)) {
+				continue;
+			}
+			if(m.d == 1 && this.inCheck(s2.b,-side)) {
+				var any = false;
+				var _g2 = 0;
+				var _g3 = this.pseudo(s2);
+				while(_g2 < _g3.length) {
+					var m2 = _g3[_g2];
+					++_g2;
+					if(!this.inCheck(this.make(s2,m2).b,-side)) {
+						any = true;
+						break;
+					}
+				}
+				if(!any) {
+					continue;
+				}
+			}
+			out.push(m);
+		}
+		return out;
+	}
+	,apply: function(s,m) {
+		return this.make(s,m);
+	}
+	,over: function(s,ms) {
+		if(ms.length == 0) {
+			return { w : -s.turn, why : this.inCheck(s.b,s.turn) ? "xeque-mate" : "sem lances"};
+		}
+		return null;
+	}
+	,'eval': function(s) {
+		var b = s.b;
+		var h = s.h;
+		var v = 0.0;
+		var _g = 0;
+		while(_g < 81) {
+			var q = _g++;
+			var p = b[q];
+			if(p == 0) {
+				continue;
+			}
+			var sd = p > 0 ? 1 : -1;
+			var t = p * sd;
+			var x = Shogi.VAL[t];
+			if(t == 1) {
+				x += (sd == 1 ? q / 9 | 0 : 8 - (q / 9 | 0)) * 3;
+			}
+			v += sd * x;
+		}
+		v += h[1] * Shogi.VAL[1] * 1.12;
+		v -= h[9] * Shogi.VAL[1] * 1.12;
+		v += h[2] * Shogi.VAL[2] * 1.12;
+		v -= h[10] * Shogi.VAL[2] * 1.12;
+		v += h[3] * Shogi.VAL[3] * 1.12;
+		v -= h[11] * Shogi.VAL[3] * 1.12;
+		v += h[4] * Shogi.VAL[4] * 1.12;
+		v -= h[12] * Shogi.VAL[4] * 1.12;
+		v += h[5] * Shogi.VAL[5] * 1.12;
+		v -= h[13] * Shogi.VAL[5] * 1.12;
+		v += h[6] * Shogi.VAL[6] * 1.12;
+		v -= h[14] * Shogi.VAL[6] * 1.12;
+		v += h[7] * Shogi.VAL[7] * 1.12;
+		v -= h[15] * Shogi.VAL[7] * 1.12;
+		var _g = 0;
+		var _g1 = [1,-1];
+		while(_g < _g1.length) {
+			var sd = _g1[_g];
+			++_g;
+			var k = this.king(b,sd);
+			if(k < 0) {
+				continue;
+			}
+			var guard = 0;
+			var att = 0;
+			var _g2 = 0;
+			var _g3 = Shogi.K8;
+			while(_g2 < _g3.length) {
+				var st = _g3[_g2];
+				++_g2;
+				var x = k % 9 + st[0];
+				var y = (k / 9 | 0) + st[1];
+				var a = x < 0 || y < 0 || x > 8 || y > 8 ? -1 : y * 9 + x;
+				if(a < 0) {
+					continue;
+				}
+				if(b[a] * sd > 0) {
+					++guard;
+				}
+				if(this.attacked(b,a,-sd)) {
+					++att;
+				}
+			}
+			v += sd * (guard * 14 - att * 22);
+		}
+		return v;
+	}
+	,tactical: function(s,m) {
+		var b = s.b;
+		if(m.d == 0) {
+			return b[m.t] != 0;
+		} else {
+			return false;
+		}
+	}
+	,order: function(s,ms) {
+		var b = s.b;
+		var _g = [];
+		var _g1 = 0;
+		while(_g1 < ms.length) {
+			var m = ms[_g1];
+			++_g1;
+			var t = m.t;
+			var c = b[t];
+			var v = 0;
+			if(m.d == 0) {
+				if(c != 0) {
+					v += Shogi.VAL[c < 0 ? -c : c] * 10 - Shogi.VAL[b[m.f] < 0 ? -b[m.f] : b[m.f]];
+				}
+				if(m.pr == true) {
+					v += 400;
+				}
+			} else {
+				v -= 50;
+			}
+			_g.push(v);
+		}
+		var sc = _g;
+		var _g = [];
+		var _g1 = 0;
+		var _g2 = ms.length;
+		while(_g1 < _g2) {
+			var i = _g1++;
+			_g.push(i);
+		}
+		var idx = _g;
+		idx.sort(function(a,c) {
+			return sc[c] - sc[a];
+		});
+		var _g = [];
+		var _g1 = 0;
+		while(_g1 < idx.length) {
+			var i = idx[_g1];
+			++_g1;
+			_g.push(ms[i]);
+		}
+		return _g;
+	}
+	,cfg: function(level) {
+		return [[0.0,0,0],[1.0,400,90],[2.0,1500,0],[4.0,3500,0],[5.0,5000,0]][level];
+	}
+	,src: function(m) {
+		if(m.d > 0) {
+			return 1000 + m.d;
+		} else {
+			return m.f;
+		}
+	}
+	,lastCells: function(s,m) {
+		if(m.d > 0) {
+			return [m.t];
+		} else {
+			return [m.f,m.t];
+		}
+	}
+	,sqn: function(q) {
+		return 9 - q % 9 + "abcdefghi".charAt(8 - (q / 9 | 0));
+	}
+	,label: function(s,m) {
+		var b = s.b;
+		if(m.d > 0) {
+			return Shogi.PT[m.d] + " da mão em " + this.sqn(m.t);
+		}
+		var t = b[m.f] < 0 ? -b[m.f] : b[m.f];
+		return Shogi.PT[t] + " " + this.sqn(m.f) + (b[m.t] != 0 ? "x" : "-") + this.sqn(m.t) + (m.pr == true ? " (promove)" : "");
+	}
+	,key: function(s) {
+		return s.b.join(",") + "|" + s.h.join("") + Std.string(s.turn);
+	}
+	,choose: function(cands,done) {
+		var yes = null;
+		var no = null;
+		var _g = 0;
+		while(_g < cands.length) {
+			var m = cands[_g];
+			++_g;
+			if(m.pr == true) {
+				yes = m;
+			} else {
+				no = m;
+			}
+		}
+		if(yes == null || no == null) {
+			done(cands[0]);
+			return;
+		}
+		UiJs.modal("Promover a peça?","A peça entrou na zona de promoção.",[["Promover",function() {
+			done(yes);
+		},"pri"],["Não promover",function() {
+			done(no);
+		}]]);
+	}
+	,status: function(s) {
+		if(this.inCheck(s.b,s.turn)) {
+			if(s.turn == World.humanSide()) {
+				return "Seu rei está em xeque!";
+			} else {
+				return "Xeque!";
+			}
+		} else {
+			return null;
+		}
+	}
+	,piece: function(x,y,t,up,k,sel) {
+		var sc = t == 8 ? 1.06 : t == 1 || t == 9 ? 0.86 : t == 2 || t == 3 || t == 10 || t == 11 ? 0.92 : 0.98;
+		var kk = k * sc;
+		var rot = up ? 0 : 180;
+		var s = "<g transform=\"translate(" + x + " " + y + ") rotate(" + rot + ")\">";
+		s += "<path d=\"M0," + -46 * kk + " L" + 31 * kk + "," + -31 * kk + " L" + 39 * kk + "," + 42 * kk + " L" + -39 * kk + "," + 42 * kk + " L" + -31 * kk + "," + -31 * kk + " Z\" fill=\"rgba(0,0,0,.3)\" transform=\"translate(2 4)\"/>";
+		s += "<path d=\"M0," + -46 * kk + " L" + 31 * kk + "," + -31 * kk + " L" + 39 * kk + "," + 42 * kk + " L" + -39 * kk + "," + 42 * kk + " L" + -31 * kk + "," + -31 * kk + " Z\" fill=\"#f4dfae\" stroke=\"" + (sel ? "#2e9d4c" : "#7a5426") + "\" stroke-width=\"" + (sel ? 6 : 2.5) + "\"/>";
+		var red = t >= 9;
+		if(this.alt) {
+			s += "<text x=\"0\" y=\"" + 12 * kk + "\" text-anchor=\"middle\" font-size=\"" + (t >= 9 ? 30 : 38) * kk + "\" font-weight=\"700\" fill=\"" + (red ? "#b3261e" : "#1b1209") + "\" font-family=\"Georgia,serif\">" + Shogi.LT[t] + "</text>";
+		} else {
+			s += "<text x=\"0\" y=\"" + 16 * kk + "\" text-anchor=\"middle\" font-size=\"" + 46 * kk + "\" font-weight=\"700\" fill=\"" + (red ? "#b3261e" : "#1b1209") + "\" font-family=\"'Hiragino Mincho ProN','Yu Mincho','Noto Serif CJK JP','Noto Serif CJK SC',serif\">" + Shogi.KJ[t] + "</text>";
+		}
+		return s + "</g>";
+	}
+	,svg: function(s,ui) {
+		var _gthis = this;
+		var b = s.b;
+		var h = s.h;
+		var flip = ui.flip == true;
+		var c = 100.0;
+		var ox = 30.0;
+		var oy = 120.0;
+		var W = ox * 2 + 900;
+		var H = oy * 2 + 900;
+		var P = function(q) {
+			if(q < 0 || q >= 81) {
+				return null;
+			}
+			var x = flip ? 8 - q % 9 : q % 9;
+			var y = flip ? q / 9 | 0 : 8 - (q / 9 | 0);
+			return [ox + x * c + c / 2,oy + y * c + c / 2];
+		};
+		var sb_b = "";
+		sb_b += Std.string("<svg viewBox=\"0 0 " + W + " " + H + "\">" + World.DEFS);
+		sb_b += Std.string("<rect x=\"" + (ox - 16) + "\" y=\"" + (oy - 16) + "\" width=\"932\" height=\"932\" rx=\"10\" fill=\"#c99a52\"/><rect x=\"" + ox + "\" y=\"" + oy + "\" width=\"900\" height=\"900\" fill=\"#e8c27a\"/>");
+		sb_b += "<g stroke=\"#4a2c0e\" stroke-width=\"2.5\">";
+		var _g = 0;
+		while(_g < 10) {
+			var i = _g++;
+			sb_b += Std.string("<line x1=\"" + (ox + i * c) + "\" y1=\"" + oy + "\" x2=\"" + (ox + i * c) + "\" y2=\"" + (oy + 900) + "\"/><line x1=\"" + ox + "\" y1=\"" + (oy + i * c) + "\" x2=\"" + (ox + 900) + "\" y2=\"" + (oy + i * c) + "\"/>");
+		}
+		sb_b += "</g>";
+		var pp_0 = 3;
+		var pp_1 = 3;
+		sb_b += Std.string("<circle cx=\"" + (ox + pp_0 * c) + "\" cy=\"" + (oy + pp_1 * c) + "\" r=\"7\" fill=\"#4a2c0e\"/>");
+		var pp_0 = 6;
+		var pp_1 = 3;
+		sb_b += Std.string("<circle cx=\"" + (ox + pp_0 * c) + "\" cy=\"" + (oy + pp_1 * c) + "\" r=\"7\" fill=\"#4a2c0e\"/>");
+		var pp_0 = 3;
+		var pp_1 = 6;
+		sb_b += Std.string("<circle cx=\"" + (ox + pp_0 * c) + "\" cy=\"" + (oy + pp_1 * c) + "\" r=\"7\" fill=\"#4a2c0e\"/>");
+		var pp_0 = 6;
+		var pp_1 = 6;
+		sb_b += Std.string("<circle cx=\"" + (ox + pp_0 * c) + "\" cy=\"" + (oy + pp_1 * c) + "\" r=\"7\" fill=\"#4a2c0e\"/>");
+		if(ui.thumb != true) {
+			var last = ui.last;
+			if(last != null) {
+				var _g = 0;
+				while(_g < last.length) {
+					var q = last[_g];
+					++_g;
+					var a = P(q);
+					if(a != null) {
+						sb_b += Std.string("<rect x=\"" + (a[0] - 49) + "\" y=\"" + (a[1] - 49) + "\" width=\"98\" height=\"98\" fill=\"rgba(240,190,60,.35)\"/>");
+					}
+				}
+			}
+			var k = this.king(b,s.turn);
+			if(k >= 0 && this.inCheck(b,s.turn)) {
+				var a = P(k);
+				sb_b += Std.string("<rect x=\"" + (a[0] - 49) + "\" y=\"" + (a[1] - 49) + "\" width=\"98\" height=\"98\" fill=\"rgba(230,0,0,.4)\"/>");
+			}
+			var srcs = ui.srcs;
+			if(ui.sel < 0 && srcs != null && ui.my == true) {
+				var _g = 0;
+				while(_g < srcs.length) {
+					var q = srcs[_g];
+					++_g;
+					var a = P(q);
+					if(a != null) {
+						sb_b += Std.string("<rect x=\"" + (a[0] - 46) + "\" y=\"" + (a[1] - 46) + "\" width=\"92\" height=\"92\" fill=\"none\" stroke=\"rgba(46,157,76,.6)\" stroke-width=\"3\" stroke-dasharray=\"9 6\"/>");
+					}
+				}
+			}
+		}
+		var sel = ui.sel;
+		var _g = 0;
+		while(_g < 81) {
+			var q = _g++;
+			if(b[q] != 0) {
+				var a = P(q);
+				var p = b[q];
+				sb_b += Std.string(this.piece(a[0],a[1],p < 0 ? -p : p,p > 0 != flip,0.98,q == sel));
+			}
+		}
+		var tg = ui.targets;
+		if(tg != null) {
+			var _g = 0;
+			while(_g < tg.length) {
+				var q = tg[_g];
+				++_g;
+				var a = P(q);
+				if(a != null) {
+					sb_b += Std.string("<circle cx=\"" + a[0] + "\" cy=\"" + a[1] + "\" r=\"15\" fill=\"rgba(30,130,55,.85)\" stroke=\"#fff\" stroke-width=\"3\"/>");
+				}
+			}
+		}
+		var _g = 0;
+		while(_g < 2) {
+			var k = _g++;
+			var side = k == 0 != flip ? 1 : -1;
+			var base = side == 1 ? 0 : 8;
+			var y = k == 0 ? oy + 900 + 62 : oy - 62;
+			var bottom = k == 0;
+			sb_b += Std.string("<rect x=\"" + ox + "\" y=\"" + (y - 50) + "\" width=\"900\" height=\"100\" rx=\"14\" fill=\"rgba(0,0,0,.25)\" stroke=\"rgba(220,181,92,.35)\" stroke-width=\"2\"/>");
+			var xi = 0;
+			var _g1 = 0;
+			var _g2 = [7,6,5,4,3,2,1];
+			while(_g1 < _g2.length) {
+				var t = _g2[_g1];
+				++_g1;
+				var n = h[base + t];
+				if(n == 0) {
+					continue;
+				}
+				var x = ox + 64 + xi * 126;
+				var isSel = bottom && sel == 1000 + t;
+				sb_b += Std.string(this.piece(x,y,t,bottom,0.8,isSel));
+				if(n > 1) {
+					sb_b += Std.string("<circle cx=\"" + (x + 40) + "\" cy=\"" + (y + 26) + "\" r=\"18\" fill=\"#2a1a0c\" stroke=\"#f3d98c\" stroke-width=\"2\"/><text x=\"" + (x + 40) + "\" y=\"" + (y + 34) + "\" text-anchor=\"middle\" font-size=\"22\" font-weight=\"700\" fill=\"#f3d98c\">" + n + "</text>");
+				}
+				if(bottom && ui.thumb != true) {
+					if(ui.sel < 0 && ui.my == true && ui.srcs != null && ui.srcs.indexOf(1000 + t) >= 0) {
+						sb_b += Std.string("<rect x=\"" + (x - 46) + "\" y=\"" + (y - 48) + "\" width=\"92\" height=\"96\" fill=\"none\" stroke=\"rgba(46,157,76,.6)\" stroke-width=\"3\" stroke-dasharray=\"9 6\"/>");
+					}
+					sb_b += Std.string(World.hit(1000 + t,x - 55,y - 50,110,100));
+				}
+				++xi;
+			}
+			if(xi == 0) {
+				sb_b += Std.string("<text x=\"" + (ox + 450) + "\" y=\"" + (y + 9) + "\" text-anchor=\"middle\" font-size=\"26\" fill=\"rgba(233,207,140,.55)\" font-family=\"Georgia,serif\">" + (bottom ? "sua mão" : "mão do adversário") + "</text>");
+			}
+		}
+		if(ui.thumb != true) {
+			var _g = 0;
+			while(_g < 81) {
+				var q = _g++;
+				var a = P(q);
+				sb_b += Std.string(World.hit(q,a[0] - 50,a[1] - 50,100,100));
+			}
+		}
+		sb_b += "</svg>";
+		return sb_b;
+	}
+});
+var GoGame = function() {
+	WGame.call(this);
+	this.id = "go";
+	this.name = "Go (weiqi)";
+	this.era = "China · mais de 2.500 anos";
+	this.sides = ["Pretas","Brancas"];
+	this.passOk = true;
+	this.flipOk = false;
+	this.repLimit = 99;
+	if(GoGame.NB == null) {
+		GoGame.NB = [];
+		var _g = 0;
+		while(_g < 81) {
+			var p = _g++;
+			var x = p % 9;
+			var y = p / 9 | 0;
+			var a = [];
+			if(x > 0) {
+				a.push(p - 1);
+			}
+			if(x < 8) {
+				a.push(p + 1);
+			}
+			if(y > 0) {
+				a.push(p - 9);
+			}
+			if(y < 8) {
+				a.push(p + 9);
+			}
+			GoGame.NB.push(a);
+		}
+	}
+	this.story = ["O go, chamado weiqi na China, igo no Japão e baduk na Coreia, é o jogo de tabuleiro mais antigo que ainda se joga com regras quase iguais às originais. Textos chineses já o citam por volta do século IV a.C.","Na árvore ele aparece entre as origens chinesas antigas, ao lado do liubo: não é ancestral do xadrez, mas é o grande primo de estratégia da Ásia. Era uma das quatro artes do cavalheiro chinês, com a música, a caligrafia e a pintura.","As regras cabem em poucas linhas, mas o jogo é tão profundo que os computadores só venceram os melhores humanos em 2016, com o AlphaGo, quase vinte anos depois de o Deep Blue vencer Kasparov no xadrez.","O tabuleiro oficial tem 19 x 19 linhas. Aqui você joga no 9 x 9, o tabuleiro de quem está aprendendo."];
+	this.rules = ["As Pretas começam. Na sua vez, coloque uma pedra num ponto vazio (uma interseção das linhas). As pedras não se movem.","Pedras da mesma cor ligadas pelas linhas formam um grupo. Os pontos vazios vizinhos são as liberdades. Um grupo sem liberdades é capturado e sai do tabuleiro.","Não pode jogar onde o seu grupo ficaria sem liberdades (suicídio), a não ser que capture. Ko: não pode recapturar uma pedra na hora se isso repetir a posição anterior.","Você pode passar. Dois passes seguidos terminam a partida.","Pontuação por área: suas pedras vivas mais os pontos vazios cercados só por você. As Brancas recebem 7 pontos de compensação (komi) por jogarem em segundo. As pedras mortas são retiradas na contagem."];
+	this.pieces = [["Pedra","Fica onde foi colocada. Vive em grupo enquanto tiver liberdades."],["Hoshi","Os pontos marcados no tabuleiro: só referência para os olhos."]];
+};
+GoGame.__name__ = true;
+GoGame.libsOf = function(b,p,group) {
+	GoGame.stamp++;
+	var c = b[p];
+	var sp = 0;
+	GoGame.stack[sp++] = p;
+	GoGame.mark[p] = GoGame.stamp;
+	var libs = 0;
+	var lstamp = GoGame.stamp;
+	group.length = 0;
+	while(sp > 0) {
+		var q = GoGame.stack[--sp];
+		group.push(q);
+		var _g = 0;
+		var _g1 = GoGame.NB[q];
+		while(_g < _g1.length) {
+			var n = _g1[_g];
+			++_g;
+			if(GoGame.mark[n] == lstamp) {
+				continue;
+			}
+			if(b[n] == 0) {
+				GoGame.mark[n] = lstamp;
+				++libs;
+			} else if(b[n] == c) {
+				GoGame.mark[n] = lstamp;
+				GoGame.stack[sp++] = n;
+			}
+		}
+	}
+	return libs;
+};
+GoGame.place = function(b,p,color,ko) {
+	if(b[p] != 0 || p == ko) {
+		return null;
+	}
+	b[p] = color;
+	var taken = 0;
+	var lastCap = -1;
+	var _g = 0;
+	var _g1 = GoGame.NB[p];
+	while(_g < _g1.length) {
+		var n = _g1[_g];
+		++_g;
+		if(b[n] == -color) {
+			if(GoGame.libsOf(b,n,GoGame.grp) == 0) {
+				taken += GoGame.grp.length;
+				if(GoGame.grp.length == 1) {
+					lastCap = GoGame.grp[0];
+				}
+				var _g2 = 0;
+				var _g3 = GoGame.grp;
+				while(_g2 < _g3.length) {
+					var q = _g3[_g2];
+					++_g2;
+					b[q] = 0;
+				}
+			}
+		}
+	}
+	if(GoGame.libsOf(b,p,GoGame.grp) == 0) {
+		b[p] = 0;
+		return null;
+	}
+	var newKo = -1;
+	if(taken == 1 && GoGame.grp.length == 1) {
+		var single = true;
+		var _g = 0;
+		var _g1 = GoGame.NB[p];
+		while(_g < _g1.length) {
+			var n = _g1[_g];
+			++_g;
+			if(b[n] == color) {
+				single = false;
+			}
+		}
+		if(single) {
+			newKo = lastCap;
+		}
+	}
+	return [taken,newKo];
+};
+GoGame.area = function(b) {
+	var sc = [0.0,0.0];
+	var _g = [];
+	var _g1 = 0;
+	while(_g1 < 81) {
+		var i = _g1++;
+		_g.push(false);
+	}
+	var seen = _g;
+	var _g = 0;
+	while(_g < 81) {
+		var p = _g++;
+		if(b[p] == 1) {
+			sc[0]++;
+		} else if(b[p] == -1) {
+			sc[1]++;
+		} else if(!seen[p]) {
+			var reg = [];
+			var st = [p];
+			seen[p] = true;
+			var bw = 0;
+			while(st.length > 0) {
+				var q = st.pop();
+				reg.push(q);
+				var _g1 = 0;
+				var _g2 = GoGame.NB[q];
+				while(_g1 < _g2.length) {
+					var n = _g2[_g1];
+					++_g1;
+					if(b[n] == 0 && !seen[n]) {
+						seen[n] = true;
+						st.push(n);
+					} else if(b[n] == 1) {
+						bw |= 1;
+					} else if(b[n] == -1) {
+						bw |= 2;
+					}
+				}
+			}
+			if(bw == 1) {
+				sc[0] += reg.length;
+			} else if(bw == 2) {
+				sc[1] += reg.length;
+			}
+		}
+	}
+	return sc;
+};
+GoGame.isEye = function(b,p,color) {
+	var _g = 0;
+	var _g1 = GoGame.NB[p];
+	while(_g < _g1.length) {
+		var n = _g1[_g];
+		++_g;
+		if(b[n] != color) {
+			return false;
+		}
+	}
+	return true;
+};
+GoGame.playout = function(b,turn,ko) {
+	var passes = 0;
+	var moves = 0;
+	var empt = [];
+	while(passes < 2 && moves < 200) {
+		empt.length = 0;
+		var _g = 0;
+		while(_g < 81) {
+			var p = _g++;
+			if(b[p] == 0) {
+				empt.push(p);
+			}
+		}
+		var played = false;
+		while(empt.length > 0) {
+			var i = Std.random(empt.length);
+			var p1 = empt[i];
+			empt[i] = empt[empt.length - 1];
+			empt.pop();
+			if(GoGame.isEye(b,p1,turn)) {
+				continue;
+			}
+			var r = GoGame.place(b,p1,turn,ko);
+			if(r != null) {
+				ko = r[1];
+				played = true;
+				break;
+			}
+		}
+		if(played) {
+			passes = 0;
+		} else {
+			++passes;
+			ko = -1;
+		}
+		turn = -turn;
+		++moves;
+	}
+	var a = GoGame.area(b);
+	if(a[0] - a[1] - GoGame.KOMI > 0) {
+		return 1;
+	} else {
+		return -1;
+	}
+};
+GoGame.finalScore = function(b) {
+	var _g = [];
+	var _g1 = 0;
+	while(_g1 < 81) {
+		var i = _g1++;
+		_g.push(0.0);
+	}
+	var own = _g;
+	var R = 160;
+	var _g = 0;
+	var _g1 = R;
+	while(_g < _g1) {
+		var k = _g++;
+		var c = b.slice();
+		GoGame.playout(c,k % 2 == 0 ? 1 : -1,-1);
+		var _g2 = 0;
+		while(_g2 < 81) {
+			var p = _g2++;
+			own[p] += c[p] != 0 ? c[p] : 0;
+		}
+	}
+	var clean = b.slice();
+	var dead = 0;
+	var _g = 0;
+	while(_g < 81) {
+		var p = _g++;
+		if(b[p] != 0 && own[p] / R * b[p] < -0.35) {
+			clean[p] = 0;
+			++dead;
+		}
+	}
+	var a = GoGame.area(clean);
+	return { a : a, b : clean, dead : dead};
+};
+GoGame.__super__ = WGame;
+GoGame.prototype = $extend(WGame.prototype,{
+	init: function() {
+		var _g = [];
+		var _g1 = 0;
+		while(_g1 < 81) {
+			var i = _g1++;
+			_g.push(0);
+		}
+		return { b : _g, turn : 1, ko : -1, passes : 0, cap : [0,0], mv : 0};
+	}
+	,moves: function(s) {
+		var b = s.b;
+		var out = [];
+		var _g = 0;
+		while(_g < 81) {
+			var p = _g++;
+			if(b[p] == 0 && p != s.ko) {
+				var c = b.slice();
+				if(GoGame.place(c,p,s.turn,s.ko) != null) {
+					out.push({ f : -1, t : p});
+				}
+			}
+		}
+		return out;
+	}
+	,apply: function(s,m) {
+		var side = s.turn;
+		if(m.pass == true) {
+			return { b : s.b, turn : -side, ko : -1, passes : s.passes + 1, cap : s.cap, mv : s.mv + 1};
+		}
+		var b = s.b.slice();
+		var cap = s.cap.slice();
+		var r = GoGame.place(b,m.t,side,s.ko);
+		if(r == null) {
+			return s;
+		}
+		cap[side == 1 ? 0 : 1] += r[0];
+		return { b : b, turn : -side, ko : r[1], passes : 0, cap : cap, mv : s.mv + 1};
+	}
+	,over: function(s,ms) {
+		if(s.passes < 2) {
+			return null;
+		}
+		var fs = GoGame.finalScore(s.b);
+		var a = fs.a;
+		var bl = a[0];
+		var wh = a[1] + GoGame.KOMI;
+		return { w : bl > wh ? 1 : -1, why : "Pretas " + bl + " × Brancas " + wh + " (com komi " + GoGame.KOMI + ")" + (fs.dead > 0 ? "; pedras mortas retiradas: " + fs.dead : ""), end : fs.b};
+	}
+	,'eval': function(s) {
+		var a = GoGame.area(s.b);
+		return a[0] - a[1] - GoGame.KOMI;
+	}
+	,ai: function(s,level) {
+		var me = s.turn;
+		var b0 = s.b;
+		var empties = 0;
+		var _g = 0;
+		while(_g < b0.length) {
+			var p = b0[_g];
+			++_g;
+			if(p == 0) {
+				++empties;
+			}
+		}
+		var ms = this.moves(s);
+		var _g = [];
+		var _g1 = 0;
+		while(_g1 < ms.length) {
+			var m = ms[_g1];
+			++_g1;
+			if(!GoGame.isEye(b0,m.t,me)) {
+				_g.push(m);
+			}
+		}
+		var cand = _g;
+		if(cand.length == 0) {
+			return { pass : true, f : -1, t : -2};
+		}
+		var budget = [0.0,450,1600,3600,5000][level];
+		var t0 = World.now();
+		var _g = [];
+		var _g1 = 0;
+		while(_g1 < cand.length) {
+			var m = cand[_g1];
+			++_g1;
+			_g.push({ m : m, n : 0, w : 0.0});
+		}
+		var nodes = _g;
+		var total = 0;
+		while(World.now() - t0 < budget && total < 60000) {
+			var best = null;
+			var bv = -1.0;
+			var _g = 0;
+			while(_g < nodes.length) {
+				var nd = nodes[_g];
+				++_g;
+				var v = nd.n == 0 ? 1e9 : nd.w / nd.n + 1.1 * Math.sqrt(Math.log(total + 1) / nd.n);
+				if(v > bv) {
+					bv = v;
+					best = nd;
+				}
+			}
+			var c = b0.slice();
+			var r = GoGame.place(c,best.m.t,me,s.ko);
+			var res = GoGame.playout(c,-me,r[1]);
+			best.n = best.n + 1;
+			if(res == me) {
+				best.w = best.w + 1;
+			}
+			++total;
+		}
+		var pick = nodes[0];
+		var _g = 0;
+		while(_g < nodes.length) {
+			var nd = nodes[_g];
+			++_g;
+			if(nd.n > pick.n) {
+				pick = nd;
+			}
+		}
+		var rate = pick.n > 0 ? pick.w / pick.n : 0.5;
+		if(s.passes >= 1) {
+			var fs = GoGame.finalScore(b0);
+			var a = fs.a;
+			var lead = me == 1 ? a[0] - a[1] - GoGame.KOMI : a[1] + GoGame.KOMI - a[0];
+			if(lead > 0) {
+				return { pass : true, f : -1, t : -2};
+			}
+		}
+		if(rate < 0.04 && s.mv > 30) {
+			return { pass : true, f : -1, t : -2};
+		}
+		if(level == 1 && Math.random() < 0.25) {
+			return cand[Std.random(cand.length)];
+		}
+		return pick.m;
+	}
+	,src: function(m) {
+		return -1;
+	}
+	,lastCells: function(s,m) {
+		if(m.pass == true) {
+			return [];
+		} else {
+			return [m.t];
+		}
+	}
+	,nm: function(p) {
+		return "ABCDEFGHJ".charAt(p % 9) + (9 - (p / 9 | 0));
+	}
+	,label: function(s,m) {
+		if(m.pass == true) {
+			return "passou";
+		} else {
+			return this.nm(m.t);
+		}
+	}
+	,status: function(s) {
+		var c = s.cap;
+		return "Capturadas: Pretas " + c[0] + " · Brancas " + c[1] + " · komi " + GoGame.KOMI + (s.passes == 1 ? " · o outro lado passou" : "");
+	}
+	,svg: function(s,ui) {
+		var b = s.b;
+		var c = 100.0;
+		var o = 70.0;
+		var size = o * 2 + c * 8;
+		var P = function(p) {
+			if(p < 0) {
+				return null;
+			} else {
+				return [o + p % 9 * c,o + (p / 9 | 0) * c];
+			}
+		};
+		var sb_b = "";
+		sb_b += Std.string("<svg viewBox=\"0 0 " + size + " " + size + "\">" + World.DEFS);
+		sb_b += Std.string("<rect width=\"" + size + "\" height=\"" + size + "\" rx=\"18\" fill=\"#dcb46c\"/><rect width=\"" + size + "\" height=\"" + size + "\" rx=\"18\" fill=\"url(#wgW)\" opacity=\".35\"/>");
+		sb_b += "<g stroke=\"#3a2410\" stroke-width=\"3\">";
+		var _g = 0;
+		while(_g < 9) {
+			var i = _g++;
+			sb_b += Std.string("<line x1=\"" + o + "\" y1=\"" + (o + i * c) + "\" x2=\"" + (o + 8 * c) + "\" y2=\"" + (o + i * c) + "\"/><line x1=\"" + (o + i * c) + "\" y1=\"" + o + "\" x2=\"" + (o + i * c) + "\" y2=\"" + (o + 8 * c) + "\"/>");
+		}
+		sb_b += "</g>";
+		var pp_0 = 2;
+		var pp_1 = 2;
+		sb_b += Std.string("<circle cx=\"" + (o + pp_0 * c) + "\" cy=\"" + (o + pp_1 * c) + "\" r=\"9\" fill=\"#3a2410\"/>");
+		var pp_0 = 6;
+		var pp_1 = 2;
+		sb_b += Std.string("<circle cx=\"" + (o + pp_0 * c) + "\" cy=\"" + (o + pp_1 * c) + "\" r=\"9\" fill=\"#3a2410\"/>");
+		var pp_0 = 4;
+		var pp_1 = 4;
+		sb_b += Std.string("<circle cx=\"" + (o + pp_0 * c) + "\" cy=\"" + (o + pp_1 * c) + "\" r=\"9\" fill=\"#3a2410\"/>");
+		var pp_0 = 2;
+		var pp_1 = 6;
+		sb_b += Std.string("<circle cx=\"" + (o + pp_0 * c) + "\" cy=\"" + (o + pp_1 * c) + "\" r=\"9\" fill=\"#3a2410\"/>");
+		var pp_0 = 6;
+		var pp_1 = 6;
+		sb_b += Std.string("<circle cx=\"" + (o + pp_0 * c) + "\" cy=\"" + (o + pp_1 * c) + "\" r=\"9\" fill=\"#3a2410\"/>");
+		if(ui.thumb != true) {
+			var _g = 0;
+			while(_g < 9) {
+				var i = _g++;
+				sb_b += Std.string("<text x=\"" + (o + i * c) + "\" y=\"38\" text-anchor=\"middle\" font-size=\"24\" fill=\"#5b3714\" font-family=\"Georgia,serif\">" + "ABCDEFGHJ".charAt(i) + "</text>");
+				sb_b += Std.string("<text x=\"30\" y=\"" + (o + i * c + 8) + "\" text-anchor=\"middle\" font-size=\"24\" fill=\"#5b3714\" font-family=\"Georgia,serif\">" + (9 - i) + "</text>");
+			}
+		}
+		var end = ui.end;
+		var _g = 0;
+		while(_g < 81) {
+			var p = _g++;
+			if(b[p] != 0) {
+				var a = P(p);
+				var dead = end != null && end[p] == 0;
+				sb_b += Std.string("<circle cx=\"" + (a[0] + 3) + "\" cy=\"" + (a[1] + 6) + "\" r=\"46\" fill=\"rgba(0,0,0,.3)\"/><circle cx=\"" + a[0] + "\" cy=\"" + a[1] + "\" r=\"46\" fill=\"" + (b[p] == 1 ? "url(#wgD)" : "url(#wgL)") + "\" stroke=\"" + (b[p] == 1 ? "#000" : "#9a8a6a") + "\" stroke-width=\"1.5\"" + (dead ? " opacity=\".4\"" : "") + "/>");
+			}
+		}
+		if(end != null) {
+			var _g = [];
+			var _g1 = 0;
+			while(_g1 < 81) {
+				var i = _g1++;
+				_g.push(false);
+			}
+			var seen = _g;
+			var _g = 0;
+			while(_g < 81) {
+				var p = _g++;
+				if(end[p] == 0 && !seen[p]) {
+					var reg = [];
+					var st = [p];
+					seen[p] = true;
+					var bw = 0;
+					while(st.length > 0) {
+						var q = st.pop();
+						reg.push(q);
+						var _g1 = 0;
+						var _g2 = GoGame.NB[q];
+						while(_g1 < _g2.length) {
+							var n = _g2[_g1];
+							++_g1;
+							if(end[n] == 0 && !seen[n]) {
+								seen[n] = true;
+								st.push(n);
+							} else if(end[n] == 1) {
+								bw |= 1;
+							} else if(end[n] == -1) {
+								bw |= 2;
+							}
+						}
+					}
+					if(bw == 1 || bw == 2) {
+						var _g3 = 0;
+						while(_g3 < reg.length) {
+							var q1 = reg[_g3];
+							++_g3;
+							var a = P(q1);
+							sb_b += Std.string("<rect x=\"" + (a[0] - 14) + "\" y=\"" + (a[1] - 14) + "\" width=\"28\" height=\"28\" fill=\"" + (bw == 1 ? "#1b1209" : "#f6ead0") + "\" stroke=\"#5b3714\" stroke-width=\"2\"/>");
+						}
+					}
+				}
+			}
+		}
+		if(ui.thumb != true && ui.last != null) {
+			var _g = 0;
+			var _g1 = ui.last;
+			while(_g < _g1.length) {
+				var p = _g1[_g];
+				++_g;
+				var a = P(p);
+				if(a != null && b[p] != 0) {
+					sb_b += Std.string("<circle cx=\"" + a[0] + "\" cy=\"" + a[1] + "\" r=\"15\" fill=\"none\" stroke=\"" + (b[p] == 1 ? "#f3d98c" : "#b3261e") + "\" stroke-width=\"5\"/>");
+				}
+			}
+		}
+		if(ui.thumb != true) {
+			var _g = 0;
+			while(_g < 81) {
+				var p = _g++;
+				var a = P(p);
+				sb_b += Std.string(World.hit(p,a[0] - c / 2,a[1] - c / 2,c,c));
+			}
+		}
+		sb_b += "</svg>";
+		return sb_b;
+	}
+});
+var Liubo = function() {
+	WGame.call(this);
+	this.id = "liubo";
+	this.name = "Liubo";
+	this.era = "China · por volta de 1500 a.C. a 220 d.C.";
+	this.sides = ["Marfim","Laca"];
+	this.dice = true;
+	this.flipOk = false;
+	this.tossName = "varetas";
+	this.note = "Ninguém sabe mais as regras do liubo. Esta é uma reconstrução livre para jogar, baseada no tabuleiro, nas varetas e na coruja descritos nas fontes antigas.";
+	this.story = ["O liubo, \"seis varetas\", foi um dos jogos mais populares da China antiga, da dinastia Shang até o fim da dinastia Han, em 220 d.C. Imperadores jogavam liubo, e os imortais aparecem jogando em relevos de túmulos.","Os tabuleiros tinham um desenho característico de marcas em forma de T, L e V, o padrão TLV, que também enfeita os espelhos de bronze da época. Cada jogador tinha seis peças, e uma delas podia virar a coruja (xiao), a peça mais forte. No centro ficava a água, onde se \"pescavam\" peixes.","Depois da dinastia Han o jogo foi esquecido, e as regras se perderam. Na árvore, ele aparece com o go entre as origens chinesas antigas: jogos de tabuleiro muito anteriores ao xiangqi."];
+	this.rules = ["Cada um tem 6 peças, que esperam fora do tabuleiro. As suas (marfim) entram pela marca T de baixo; as do adversário (laca), pela de cima.","Lance as 6 varetas: o número de faces lisas para cima é quanto você anda; nenhuma lisa vale 6. Com 6 você joga de novo.","As peças dão uma volta inteira no tabuleiro, no sentido anti-horário, e depois entram na água, no centro, com o número exato.","Caindo sobre uma peça adversária sozinha, você a captura (ela volta para fora) e a sua peça vira coruja: daí em diante ninguém pode capturá-la. As quatro marcas T são seguras.","Vence quem levar primeiro 3 peças até a água (pescar 3 peixes)."];
+	this.pieces = [["Peça","Bloco retangular que anda o valor das varetas."],["Coruja (xiao)","A peça que já capturou. Não pode ser capturada."],["Varetas","Seis varetas de bambu, lisas de um lado, fazem o papel dos dados."]];
+};
+Liubo.__name__ = true;
+Liubo.xy = function(c) {
+	if(c == 24) {
+		return [400,400];
+	}
+	if(c == 31) {
+		return [400,790];
+	}
+	if(c == 32) {
+		return [400,10];
+	}
+	if(c < 0 || c >= 24) {
+		return null;
+	}
+	return [130 + Liubo.RING[c][0] * 90,130 + Liubo.RING[c][1] * 90];
+};
+Liubo.block = function(x,y,light,owl,k) {
+	var s = "<rect x=\"" + (x - 22 * k + 3) + "\" y=\"" + (y - 14 * k + 5) + "\" width=\"" + 44 * k + "\" height=\"" + 28 * k + "\" rx=\"" + 5 * k + "\" fill=\"rgba(0,0,0,.35)\"/>";
+	s += "<rect x=\"" + (x - 22 * k) + "\" y=\"" + (y - 14 * k) + "\" width=\"" + 44 * k + "\" height=\"" + 28 * k + "\" rx=\"" + 5 * k + "\" fill=\"" + (light ? "url(#wgL)" : "url(#wgD)") + "\" stroke=\"" + (light ? "#6b4a22" : "#e2b961") + "\" stroke-width=\"2.5\"/>";
+	if(owl) {
+		s += "<circle cx=\"" + (x - 8 * k) + "\" cy=\"" + y + "\" r=\"" + 6 * k + "\" fill=\"#f3d98c\" stroke=\"#5b3714\" stroke-width=\"1.5\"/><circle cx=\"" + (x + 8 * k) + "\" cy=\"" + y + "\" r=\"" + 6 * k + "\" fill=\"#f3d98c\" stroke=\"#5b3714\" stroke-width=\"1.5\"/><circle cx=\"" + (x - 8 * k) + "\" cy=\"" + y + "\" r=\"" + 2.4 * k + "\" fill=\"#1b1209\"/><circle cx=\"" + (x + 8 * k) + "\" cy=\"" + y + "\" r=\"" + 2.4 * k + "\" fill=\"#1b1209\"/>";
+	}
+	return s;
+};
+Liubo.__super__ = WGame;
+Liubo.prototype = $extend(WGame.prototype,{
+	init: function() {
+		var _g = [];
+		_g.push(-1);
+		_g.push(-1);
+		_g.push(-1);
+		_g.push(-1);
+		_g.push(-1);
+		_g.push(-1);
+		_g.push(-1);
+		_g.push(-1);
+		_g.push(-1);
+		_g.push(-1);
+		_g.push(-1);
+		_g.push(-1);
+		var _g1 = [];
+		_g1.push(0);
+		_g1.push(0);
+		_g1.push(0);
+		_g1.push(0);
+		_g1.push(0);
+		_g1.push(0);
+		_g1.push(0);
+		_g1.push(0);
+		_g1.push(0);
+		_g1.push(0);
+		_g1.push(0);
+		_g1.push(0);
+		return { p : _g, o : _g1, turn : 1, roll : null, ex : false, k : 0};
+	}
+	,ringOf: function(i,pos) {
+		if(pos < 0 || pos >= 24) {
+			return -1;
+		} else {
+			return (((i < 6 ? 1 : -1) == 1 ? 0 : 12) + pos) % 24;
+		}
+	}
+	,moves: function(s) {
+		if(s.roll == null) {
+			return [];
+		}
+		var p = s.p;
+		var o = s.o;
+		var me = s.turn;
+		var v = s.roll;
+		var lo = me == 1 ? 0 : 6;
+		var out = [];
+		var seen = [];
+		var _g = lo;
+		var _g1 = lo + 6;
+		while(_g < _g1) {
+			var i = _g++;
+			var from = p[i];
+			if(from >= 24 || seen.indexOf(from) >= 0) {
+				continue;
+			}
+			seen.push(from);
+			var to = from < 0 ? v - 1 : from + v;
+			if(to > 24) {
+				continue;
+			}
+			if(to < 24) {
+				var cell = ((me == 1 ? 0 : 12) + to) % 24;
+				var mine = 0;
+				var them = 0;
+				var owl = false;
+				var _g2 = 0;
+				while(_g2 < 12) {
+					var j = _g2++;
+					if(p[j] >= 0 && p[j] < 24 && this.ringOf(j,p[j]) == cell) {
+						if(j < 6 == (me == 1)) {
+							++mine;
+						} else {
+							++them;
+							if(o[j] == 1) {
+								owl = true;
+							}
+						}
+					}
+				}
+				if(mine > 0) {
+					continue;
+				}
+				if(them > 0 && (them > 1 || owl || Liubo.SAFE.indexOf(cell) >= 0)) {
+					continue;
+				}
+			}
+			out.push({ f : from < 0 ? 30 + (me == 1 ? 1 : 2) : ((me == 1 ? 0 : 12) + from) % 24, t : to >= 24 ? 24 : ((me == 1 ? 0 : 12) + to) % 24, i : i, to : to});
+		}
+		return out;
+	}
+	,apply: function(s,m) {
+		var p = s.p.slice();
+		var o = s.o.slice();
+		var me = s.turn;
+		var i = m.i;
+		var to = m.to;
+		p[i] = to;
+		if(to < 24) {
+			var cell = ((me == 1 ? 0 : 12) + to) % 24;
+			var _g = 0;
+			while(_g < 12) {
+				var j = _g++;
+				if(j < 6 != (me == 1) && p[j] >= 0 && p[j] < 24 && this.ringOf(j,p[j]) == cell) {
+					p[j] = -1;
+					o[j] = 0;
+					o[i] = 1;
+				}
+			}
+		}
+		return { p : p, o : o, turn : s.ex == true ? me : -me, roll : null, ex : false, k : 0};
+	}
+	,over: function(s,ms) {
+		var p = s.p;
+		var a = 0;
+		var b = 0;
+		if(p[0] >= 24) {
+			++a;
+		}
+		if(p[1] >= 24) {
+			++a;
+		}
+		if(p[2] >= 24) {
+			++a;
+		}
+		if(p[3] >= 24) {
+			++a;
+		}
+		if(p[4] >= 24) {
+			++a;
+		}
+		if(p[5] >= 24) {
+			++a;
+		}
+		if(p[6] >= 24) {
+			++b;
+		}
+		if(p[7] >= 24) {
+			++b;
+		}
+		if(p[8] >= 24) {
+			++b;
+		}
+		if(p[9] >= 24) {
+			++b;
+		}
+		if(p[10] >= 24) {
+			++b;
+		}
+		if(p[11] >= 24) {
+			++b;
+		}
+		if(a >= 3) {
+			return { w : 1, why : "3 peixes pescados pelo marfim"};
+		}
+		if(b >= 3) {
+			return { w : -1, why : "3 peixes pescados pela laca"};
+		}
+		return null;
+	}
+	,'eval': function(s) {
+		var p = s.p;
+		var o = s.o;
+		var v = 0.0;
+		var fin = [0,0];
+		var _g = 0;
+		while(_g < 12) {
+			var i = _g++;
+			var sd = i < 6 ? 1 : -1;
+			var x = p[i];
+			if(x >= 24) {
+				fin[i < 6 ? 0 : 1]++;
+				continue;
+			}
+			var val = x < 0 ? 0.0 : x + 4.0 + (o[i] == 1 ? 6 : 0);
+			v += sd * val;
+		}
+		v += (Math.min(fin[0],3) - Math.min(fin[1],3)) * 45;
+		return v;
+	}
+	,rolls: function(s) {
+		var out = [];
+		var pr = Liubo.BIN[1] / 64;
+		out.push([1,pr,0,1]);
+		var pr = Liubo.BIN[2] / 64;
+		out.push([2,pr,0,2]);
+		var pr = Liubo.BIN[3] / 64;
+		out.push([3,pr,0,3]);
+		var pr = Liubo.BIN[4] / 64;
+		out.push([4,pr,0,4]);
+		var pr = Liubo.BIN[5] / 64;
+		out.push([5,pr,0,5]);
+		var pr = (Liubo.BIN[6] + Liubo.BIN[0]) / 64;
+		out.push([6,pr,1,6]);
+		return out;
+	}
+	,toss: function() {
+		var k = 0;
+		if(Math.random() < 0.5) {
+			++k;
+		}
+		if(Math.random() < 0.5) {
+			++k;
+		}
+		if(Math.random() < 0.5) {
+			++k;
+		}
+		if(Math.random() < 0.5) {
+			++k;
+		}
+		if(Math.random() < 0.5) {
+			++k;
+		}
+		if(Math.random() < 0.5) {
+			++k;
+		}
+		var v = k == 0 ? 6 : k;
+		return [v,0,v == 6 ? 1 : 0,k];
+	}
+	,rollText: function(s) {
+		var k = s.k;
+		return Std.string(s.roll) + (k == 0 ? " (nenhuma face lisa)" : " (" + k + (k == 1 ? " face lisa)" : " faces lisas)"));
+	}
+	,rollSvg: function(s) {
+		return World.sticks(6,s.k,"stick");
+	}
+	,label: function(s,m) {
+		var p = s.p;
+		var from = p[m.i];
+		var to = m.to;
+		if(from < 0) {
+			return "peça entra no tabuleiro";
+		}
+		if(to >= 24) {
+			return "peça chega à água: peixe pescado!";
+		}
+		var o = s.o;
+		return "peça anda " + (to - from) + (o[m.i] == 1 ? " (coruja)" : "");
+	}
+	,status: function(s) {
+		var p = s.p;
+		var a = 0;
+		var b = 0;
+		if(p[0] >= 24) {
+			++a;
+		}
+		if(p[1] >= 24) {
+			++a;
+		}
+		if(p[2] >= 24) {
+			++a;
+		}
+		if(p[3] >= 24) {
+			++a;
+		}
+		if(p[4] >= 24) {
+			++a;
+		}
+		if(p[5] >= 24) {
+			++a;
+		}
+		if(p[6] >= 24) {
+			++b;
+		}
+		if(p[7] >= 24) {
+			++b;
+		}
+		if(p[8] >= 24) {
+			++b;
+		}
+		if(p[9] >= 24) {
+			++b;
+		}
+		if(p[10] >= 24) {
+			++b;
+		}
+		if(p[11] >= 24) {
+			++b;
+		}
+		return "Peixes pescados: marfim " + a + " · laca " + b + " (vence quem pescar 3)";
+	}
+	,svg: function(s,ui) {
+		var p = s.p;
+		var o = s.o;
+		var sb_b = "";
+		sb_b += Std.string("<svg viewBox=\"-40 -60 880 920\">" + World.DEFS);
+		sb_b += "<rect x=\"40\" y=\"40\" width=\"720\" height=\"720\" rx=\"22\" fill=\"#2a120c\"/><rect x=\"58\" y=\"58\" width=\"684\" height=\"684\" rx=\"14\" fill=\"#5a1e14\"/><rect x=\"58\" y=\"58\" width=\"684\" height=\"684\" rx=\"14\" fill=\"none\" stroke=\"#e2b961\" stroke-width=\"3\"/>";
+		var gold = "#e9c46a";
+		sb_b += Std.string("<g stroke=\"" + gold + "\" stroke-width=\"10\" fill=\"none\" stroke-linecap=\"square\" opacity=\".9\">");
+		sb_b += "<rect x=\"310\" y=\"310\" width=\"180\" height=\"180\"/>";
+		sb_b += "<path d=\"M370,130 H430 M400,130 V200 M370,670 H430 M400,670 V600 M130,370 V430 M130,400 H200 M670,370 V430 M670,400 H600\"/>";
+		sb_b += "<path d=\"M310,250 V310 H250 M490,250 V310 H550 M310,550 V490 H250 M490,550 V490 H550\"/>";
+		sb_b += "<path d=\"M100,100 L160,160 M700,100 L640,160 M100,700 L160,640 M700,700 L640,640\"/>";
+		sb_b += "</g>";
+		sb_b += "<rect x=\"320\" y=\"320\" width=\"160\" height=\"160\" fill=\"#1d4f6e\" opacity=\".9\"/><path d=\"M335,360 q16,-14 32,0 t32,0 t32,0 t32,0 M335,400 q16,-14 32,0 t32,0 t32,0 t32,0 M335,440 q16,-14 32,0 t32,0 t32,0 t32,0\" stroke=\"#8fc6e8\" stroke-width=\"4\" fill=\"none\" opacity=\".7\"/>";
+		sb_b += "<rect x=\"130\" y=\"130\" width=\"540\" height=\"540\" fill=\"none\" stroke=\"rgba(233,196,106,.35)\" stroke-width=\"4\" stroke-dasharray=\"6 10\"/>";
+		var _g = 0;
+		while(_g < 24) {
+			var c = _g++;
+			var a = Liubo.xy(c);
+			sb_b += Std.string("<circle cx=\"" + a[0] + "\" cy=\"" + a[1] + "\" r=\"" + (Liubo.SAFE.indexOf(c) >= 0 ? 15 : 9) + "\" fill=\"" + (Liubo.SAFE.indexOf(c) >= 0 ? gold : "rgba(233,196,106,.65)") + "\"/>");
+		}
+		sb_b += Std.string(World.marks(ui,Liubo.xy,34));
+		var stacks = new haxe_ds_IntMap();
+		var wait = [0,0];
+		var fish = [0,0];
+		var _g = 0;
+		while(_g < 12) {
+			var i = _g++;
+			var x = p[i];
+			if(x < 0) {
+				wait[i < 6 ? 0 : 1]++;
+				continue;
+			}
+			if(x >= 24) {
+				fish[i < 6 ? 0 : 1]++;
+				continue;
+			}
+			var c = this.ringOf(i,x);
+			if(!stacks.h.hasOwnProperty(c)) {
+				stacks.h[c] = [];
+			}
+			stacks.h[c].push(i);
+		}
+		var c = stacks.keys();
+		while(c.hasNext()) {
+			var c1 = c.next();
+			var a = Liubo.xy(c1);
+			var _g = 0;
+			var _g1 = stacks.h[c1];
+			while(_g < _g1.length) {
+				var i = _g1[_g];
+				++_g;
+				sb_b += Std.string(Liubo.block(a[0],a[1],i < 6,o[i] == 1,1.0));
+			}
+		}
+		var _g = 0;
+		var _g1 = wait[0];
+		while(_g < _g1) {
+			var k = _g++;
+			sb_b += Std.string(Liubo.block(220 + k * 72,805,true,false,0.9));
+		}
+		var _g = 0;
+		var _g1 = wait[1];
+		while(_g < _g1) {
+			var k = _g++;
+			sb_b += Std.string(Liubo.block(220 + k * 72,-5,false,false,0.9));
+		}
+		var _g = 0;
+		var _g1 = fish[0];
+		while(_g < _g1) {
+			var k = _g++;
+			sb_b += Std.string(Liubo.block(355 + k * 45,450,true,false,0.7));
+		}
+		var _g = 0;
+		var _g1 = fish[1];
+		while(_g < _g1) {
+			var k = _g++;
+			sb_b += Std.string(Liubo.block(355 + k * 45,352,false,false,0.7));
+		}
+		var tg = ui.targets;
+		if(tg != null) {
+			var _g = 0;
+			while(_g < tg.length) {
+				var c = tg[_g];
+				++_g;
+				var a = Liubo.xy(c);
+				if(a != null) {
+					sb_b += Std.string("<circle cx=\"" + a[0] + "\" cy=\"" + a[1] + "\" r=\"16\" fill=\"rgba(46,170,80,.9)\" stroke=\"#fff\" stroke-width=\"3\"/>");
+				}
+			}
+		}
+		if(ui.thumb != true) {
+			var _g = 0;
+			while(_g < 24) {
+				var c = _g++;
+				var a = Liubo.xy(c);
+				sb_b += Std.string(World.hitC(c,a[0],a[1],42));
+			}
+			sb_b += Std.string(World.hit(24,320,320,160,160));
+			sb_b += Std.string(World.hit(31,160,770,480,70));
+			sb_b += Std.string(World.hit(32,160,-40,480,70));
+			var srcs = ui.srcs;
+			if(ui.sel < 0 && srcs != null && ui.my == true && srcs.indexOf(31) >= 0) {
+				sb_b += "<rect x=\"170\" y=\"775\" width=\"460\" height=\"62\" rx=\"12\" fill=\"none\" stroke=\"rgba(46,170,80,.7)\" stroke-width=\"4\" stroke-dasharray=\"12 8\"/>";
+			}
+			if(ui.sel == 31) {
+				sb_b += "<rect x=\"170\" y=\"775\" width=\"460\" height=\"62\" rx=\"12\" fill=\"none\" stroke=\"#2e9d4c\" stroke-width=\"6\"/>";
+			}
+		}
+		sb_b += "</svg>";
+		return sb_b;
+	}
+});
+var Oware = function() {
+	WGame.call(this);
+	this.id = "mancala";
+	this.name = "Mancala (oware)";
+	this.era = "África · família de jogos com milhares de anos";
+	this.sides = ["Você embaixo","Em cima"];
+	this.flipOk = false;
+	this.story = ["Mancala não é um jogo, é uma família: centenas de jogos de semear e colher sementes em covas, jogados na África, no Oriente Médio, na Ásia e no Caribe. A palavra vem do árabe naqala, mover.","Tabuleiros de covas escavadas em pedra aparecem em sítios muito antigos da África e do Oriente Médio, e o jogo é ensinado de geração em geração até hoje. Em muitas regiões, contar e distribuir sementes era também uma forma de aprender matemática.","Aqui se joga o oware (ou awalé), a versão mais difundida da África Ocidental, com duas fileiras de seis covas e 48 sementes. Como o xadrez, não tem sorte nenhuma: tudo é cálculo."];
+	this.rules = ["Cada jogador tem as 6 covas do seu lado (o seu é o de baixo). Começa com 4 sementes em cada cova.","Na sua vez, pegue todas as sementes de uma cova sua e distribua uma por cova, no sentido anti-horário (para a direita no seu lado). Se a cova de origem tiver 12 sementes ou mais, ela é pulada.","Colheita: se a última semente cair numa cova do adversário e ela ficar com 2 ou 3 sementes, você colhe essas sementes, e também as das covas anteriores do adversário que tiverem 2 ou 3, em sequência.","Não pode colher todas as sementes do adversário de uma vez (a colheita é anulada). Se o adversário ficar sem sementes, você é obrigado a jogar de modo a dar sementes a ele.","Vence quem colher mais de 24 sementes. Se ninguém puder mais colher, cada um fica com as sementes do seu lado."];
+	this.pieces = [["Semente","Todas iguais: o que importa é em qual cova estão e quantas são."]];
+};
+Oware.__name__ = true;
+Oware.seeds = function(x,y,n,rx,ry,seed) {
+	var s_b = "";
+	var k = seed;
+	var cols = ["#efe3c4","#d9c08e","#c8a46a","#f6ead0"];
+	var _g = 0;
+	var _g1 = Math.min(n,30) | 0;
+	while(_g < _g1) {
+		var i = _g++;
+		k = k * 1103515245 + 12345 & 2147483647;
+		var a = k % 1000 / 1000 * Math.PI * 2;
+		k = k * 1103515245 + 12345 & 2147483647;
+		var r = Math.sqrt(k % 1000 / 1000);
+		var sx = x + Math.cos(a) * r * (rx - 9);
+		var sy = y + Math.sin(a) * r * (ry - 9);
+		s_b += Std.string("<ellipse cx=\"" + Math.round(sx) + "\" cy=\"" + Math.round(sy) + "\" rx=\"9\" ry=\"7\" transform=\"rotate(" + i * (37 % 180) + " " + Math.round(sx) + " " + Math.round(sy) + ")\" fill=\"" + cols[i % 4] + "\" stroke=\"#6b4a22\" stroke-width=\"1.5\"/>");
+	}
+	return s_b;
+};
+Oware.__super__ = WGame;
+Oware.prototype = $extend(WGame.prototype,{
+	init: function() {
+		var _g = [];
+		_g.push(4);
+		_g.push(4);
+		_g.push(4);
+		_g.push(4);
+		_g.push(4);
+		_g.push(4);
+		_g.push(4);
+		_g.push(4);
+		_g.push(4);
+		_g.push(4);
+		_g.push(4);
+		_g.push(4);
+		return { p : _g, st : [0,0], turn : 1, q : 0};
+	}
+	,sow: function(p,i) {
+		var n = p[i];
+		p[i] = 0;
+		var j = i;
+		while(n > 0) {
+			j = (j + 1) % 12;
+			if(j == i) {
+				continue;
+			}
+			p[j]++;
+			--n;
+		}
+		return j;
+	}
+	,rowSum: function(p,side) {
+		var t = 0;
+		if(side == 1) {
+			t += p[0];
+		}
+		if(side == 1) {
+			t += p[1];
+		}
+		if(side == 1) {
+			t += p[2];
+		}
+		if(side == 1) {
+			t += p[3];
+		}
+		if(side == 1) {
+			t += p[4];
+		}
+		if(side == 1) {
+			t += p[5];
+		}
+		if(side == 1 ? false : true) {
+			t += p[6];
+		}
+		if(side == 1 ? false : true) {
+			t += p[7];
+		}
+		if(side == 1 ? false : true) {
+			t += p[8];
+		}
+		if(side == 1 ? false : true) {
+			t += p[9];
+		}
+		if(side == 1 ? false : true) {
+			t += p[10];
+		}
+		if(side == 1 ? false : true) {
+			t += p[11];
+		}
+		return t;
+	}
+	,moves: function(s) {
+		var p = s.p;
+		var side = s.turn;
+		var _g = [];
+		if(side == 1 && p[0] > 0) {
+			_g.push({ f : -1, t : 0});
+		}
+		if(side == 1 && p[1] > 0) {
+			_g.push({ f : -1, t : 1});
+		}
+		if(side == 1 && p[2] > 0) {
+			_g.push({ f : -1, t : 2});
+		}
+		if(side == 1 && p[3] > 0) {
+			_g.push({ f : -1, t : 3});
+		}
+		if(side == 1 && p[4] > 0) {
+			_g.push({ f : -1, t : 4});
+		}
+		if(side == 1 && p[5] > 0) {
+			_g.push({ f : -1, t : 5});
+		}
+		if((side == 1 ? false : true) && p[6] > 0) {
+			_g.push({ f : -1, t : 6});
+		}
+		if((side == 1 ? false : true) && p[7] > 0) {
+			_g.push({ f : -1, t : 7});
+		}
+		if((side == 1 ? false : true) && p[8] > 0) {
+			_g.push({ f : -1, t : 8});
+		}
+		if((side == 1 ? false : true) && p[9] > 0) {
+			_g.push({ f : -1, t : 9});
+		}
+		if((side == 1 ? false : true) && p[10] > 0) {
+			_g.push({ f : -1, t : 10});
+		}
+		if((side == 1 ? false : true) && p[11] > 0) {
+			_g.push({ f : -1, t : 11});
+		}
+		var all = _g;
+		if(this.rowSum(p,-side) == 0) {
+			var _g = [];
+			var _g1 = 0;
+			while(_g1 < all.length) {
+				var m = all[_g1];
+				++_g1;
+				var c = p.slice();
+				this.sow(c,m.t);
+				_g.push(this.rowSum(c,-side) > 0 ? m : null);
+			}
+			var feed = _g;
+			var _g = [];
+			var _g1 = 0;
+			while(_g1 < feed.length) {
+				var m = feed[_g1];
+				++_g1;
+				if(m != null) {
+					_g.push(m);
+				}
+			}
+			all = _g;
+		}
+		return all;
+	}
+	,apply: function(s,m) {
+		var p = s.p.slice();
+		var side = s.turn;
+		var st = s.st.slice();
+		var last = this.sow(p,m.t);
+		var got = 0;
+		var c = p.slice();
+		var j = last;
+		while(!(side == 1 ? j < 6 : j >= 6) && (c[j] == 2 || c[j] == 3)) {
+			got += c[j];
+			c[j] = 0;
+			j = (j + 11) % 12;
+			if(side == 1 ? j < 6 : j >= 6) {
+				break;
+			}
+		}
+		if(got > 0 && this.rowSum(c,-side) > 0) {
+			p = c;
+			st[side == 1 ? 0 : 1] += got;
+		} else {
+			got = 0;
+		}
+		return { p : p, st : st, turn : -side, q : got > 0 ? 0 : s.q + 1};
+	}
+	,over: function(s,ms) {
+		var st = s.st;
+		if(st[0] > 24) {
+			return { w : 1, why : st[0] + " sementes a " + st[1]};
+		}
+		if(st[1] > 24) {
+			return { w : -1, why : st[1] + " sementes a " + st[0]};
+		}
+		if(st[0] == 24 && st[1] == 24) {
+			return { w : 0, why : "24 a 24"};
+		}
+		if(ms.length == 0 || s.q >= 100) {
+			var p = s.p;
+			var a = st[0] + this.rowSum(p,1);
+			var b = st[1] + this.rowSum(p,-1);
+			return { w : a > b ? 1 : b > a ? -1 : 0, why : (ms.length == 0 ? "sem jogadas possíveis" : "100 jogadas sem colheita") + ": " + a + " a " + b + " sementes"};
+		}
+		return null;
+	}
+	,'eval': function(s) {
+		var st = s.st;
+		var p = s.p;
+		var v = (st[0] - st[1]) * 100.0;
+		var _g = 0;
+		while(_g < 12) {
+			var i = _g++;
+			var x = p[i];
+			if(x == 1 || x == 2) {
+				v += i < 6 ? -6 : 6;
+			}
+			if(x > 11) {
+				v += i < 6 ? 8 : -8;
+			}
+		}
+		v += (this.rowSum(p,1) - this.rowSum(p,-1)) * 2;
+		return v;
+	}
+	,cfg: function(level) {
+		return [[0.0,0,0],[2.0,200,40],[6.0,900,0],[16.0,2500,0],[30.0,4000,0]][level];
+	}
+	,src: function(m) {
+		return -1;
+	}
+	,lastCells: function(s,m) {
+		return [m.t];
+	}
+	,label: function(s,m) {
+		var i = m.t;
+		var p = s.p;
+		return "cova " + (i % 6 + 1) + " (" + p[i] + (p[i] == 1 ? " semente)" : " sementes)");
+	}
+	,key: function(s) {
+		return s.p.join(",") + "|" + Std.string(s.turn);
+	}
+	,status: function(s) {
+		var st = s.st;
+		return "Colhidas: você " + st[World.humanSide() == 1 ? 0 : 1] + " · computador " + st[World.humanSide() == 1 ? 1 : 0] + " (vence quem passar de 24)";
+	}
+	,svg: function(s,ui) {
+		var _gthis = this;
+		var p = s.p;
+		var st = s.st;
+		var bottom = ui.human == -1 ? -1 : 1;
+		var sb_b = "";
+		sb_b += Std.string("<svg viewBox=\"0 0 1000 420\">" + World.DEFS);
+		sb_b += "<rect x=\"6\" y=\"20\" width=\"988\" height=\"380\" rx=\"150\" fill=\"#6b3f1d\"/><rect x=\"18\" y=\"32\" width=\"964\" height=\"356\" rx=\"140\" fill=\"url(#wgW)\" opacity=\".55\"/>";
+		sb_b += "<rect x=\"18\" y=\"32\" width=\"964\" height=\"356\" rx=\"140\" fill=\"none\" stroke=\"#3a2008\" stroke-width=\"4\"/>";
+		var pos = function(i) {
+			var lowRow = bottom == 1 ? i < 6 : i >= 6;
+			var k = i % 6;
+			var col = bottom == 1 ? lowRow ? k : 5 - k : lowRow ? k : 5 - k;
+			return [218 + col * 113,lowRow ? 280 : 140];
+		};
+		var sd = -1;
+		var x = sd == bottom ? 905 : 95;
+		var n = st[sd == 1 ? 0 : 1];
+		sb_b += Std.string("<ellipse cx=\"" + x + "\" cy=\"210\" rx=\"62\" ry=\"150\" fill=\"#4a2810\" stroke=\"#2a1405\" stroke-width=\"3\"/><ellipse cx=\"" + x + "\" cy=\"214\" rx=\"54\" ry=\"140\" fill=\"rgba(0,0,0,.25)\"/>");
+		sb_b += Std.string(Oware.seeds(x,210,n,40,120,1000 + sd));
+		sb_b += Std.string("<text x=\"" + x + "\" y=\"" + (sd == bottom ? 395 : 45) + "\" text-anchor=\"middle\" font-size=\"26\" font-weight=\"700\" fill=\"#fff1c4\" font-family=\"Georgia,serif\">" + n + "</text>");
+		var sd = 1;
+		var x = sd == bottom ? 905 : 95;
+		var n = st[sd == 1 ? 0 : 1];
+		sb_b += Std.string("<ellipse cx=\"" + x + "\" cy=\"210\" rx=\"62\" ry=\"150\" fill=\"#4a2810\" stroke=\"#2a1405\" stroke-width=\"3\"/><ellipse cx=\"" + x + "\" cy=\"214\" rx=\"54\" ry=\"140\" fill=\"rgba(0,0,0,.25)\"/>");
+		sb_b += Std.string(Oware.seeds(x,210,n,40,120,1000 + sd));
+		sb_b += Std.string("<text x=\"" + x + "\" y=\"" + (sd == bottom ? 395 : 45) + "\" text-anchor=\"middle\" font-size=\"26\" font-weight=\"700\" fill=\"#fff1c4\" font-family=\"Georgia,serif\">" + n + "</text>");
+		if(ui.thumb != true && ui.last != null) {
+			var _g = 0;
+			var _g1 = ui.last;
+			while(_g < _g1.length) {
+				var c = _g1[_g];
+				++_g;
+				var a = pos(c);
+				sb_b += Std.string("<circle cx=\"" + a[0] + "\" cy=\"" + a[1] + "\" r=\"54\" fill=\"rgba(240,200,60,.35)\"/>");
+			}
+		}
+		var _g = 0;
+		while(_g < 12) {
+			var i = _g++;
+			var a = pos(i);
+			sb_b += Std.string("<circle cx=\"" + a[0] + "\" cy=\"" + a[1] + "\" r=\"48\" fill=\"#4a2810\" stroke=\"#2a1405\" stroke-width=\"3\"/><circle cx=\"" + a[0] + "\" cy=\"" + (a[1] + 4) + "\" r=\"42\" fill=\"rgba(0,0,0,.28)\"/>");
+			sb_b += Std.string(Oware.seeds(a[0],a[1],p[i],34,34,i * 31 + 7));
+			var lowRow = bottom == 1 ? i < 6 : i >= 6;
+			sb_b += Std.string("<text x=\"" + a[0] + "\" y=\"" + (lowRow ? a[1] + 76 : a[1] - 60) + "\" text-anchor=\"middle\" font-size=\"24\" font-weight=\"700\" fill=\"" + (lowRow ? "#fff1c4" : "#e9cf8c") + "\" font-family=\"Georgia,serif\">" + p[i] + "</text>");
+			if(ui.my == true && ui.srcs != null && ui.srcs.indexOf(i) >= 0) {
+				sb_b += Std.string("<circle cx=\"" + a[0] + "\" cy=\"" + a[1] + "\" r=\"51\" fill=\"none\" stroke=\"#2e9d4c\" stroke-width=\"5\" stroke-dasharray=\"10 7\"/>");
+			}
+			if(ui.thumb != true) {
+				sb_b += Std.string(World.hitC(i,a[0],a[1],54));
+			}
+		}
+		sb_b += "</svg>";
+		return sb_b;
+	}
+});
+var Pachisi = function() {
+	WGame.call(this);
+	this.id = "pachisi";
+	this.name = "Pachisi";
+	this.era = "Índia · desde a Idade Média";
+	this.sides = ["Vermelhas","Verdes"];
+	this.dice = true;
+	this.flipOk = false;
+	this.tossName = "búzios";
+	this.note = "Versão para dois jogadores, com as regras mais citadas do pachisi tradicional.";
+	if(Pachisi.LOOP == null) {
+		Pachisi.LOOP = [];
+		Pachisi.LOOP.push(217);
+		Pachisi.LOOP.push(236);
+		Pachisi.LOOP.push(255);
+		Pachisi.LOOP.push(274);
+		Pachisi.LOOP.push(293);
+		Pachisi.LOOP.push(312);
+		Pachisi.LOOP.push(331);
+		Pachisi.LOOP.push(350);
+		Pachisi.LOOP.push(351);
+		var y = 18;
+		while(y >= 11) {
+			Pachisi.LOOP.push(y * 19 + 10);
+			--y;
+		}
+		Pachisi.LOOP.push(201);
+		Pachisi.LOOP.push(202);
+		Pachisi.LOOP.push(203);
+		Pachisi.LOOP.push(204);
+		Pachisi.LOOP.push(205);
+		Pachisi.LOOP.push(206);
+		Pachisi.LOOP.push(207);
+		Pachisi.LOOP.push(208);
+		Pachisi.LOOP.push(189);
+		var x = 18;
+		while(x >= 11) {
+			Pachisi.LOOP.push(152 + x);
+			--x;
+		}
+		y = 7;
+		while(y >= 0) {
+			Pachisi.LOOP.push(y * 19 + 10);
+			--y;
+		}
+		Pachisi.LOOP.push(9);
+		Pachisi.LOOP.push(8);
+		Pachisi.LOOP.push(27);
+		Pachisi.LOOP.push(46);
+		Pachisi.LOOP.push(65);
+		Pachisi.LOOP.push(84);
+		Pachisi.LOOP.push(103);
+		Pachisi.LOOP.push(122);
+		Pachisi.LOOP.push(141);
+		x = 7;
+		while(x >= 0) {
+			Pachisi.LOOP.push(152 + x);
+			--x;
+		}
+		Pachisi.LOOP.push(171);
+		Pachisi.LOOP.push(190);
+		Pachisi.LOOP.push(191);
+		Pachisi.LOOP.push(192);
+		Pachisi.LOOP.push(193);
+		Pachisi.LOOP.push(194);
+		Pachisi.LOOP.push(195);
+		Pachisi.LOOP.push(196);
+		Pachisi.LOOP.push(197);
+		Pachisi.PATH = [];
+		var _g = [];
+		_g.push(218);
+		_g.push(237);
+		_g.push(256);
+		_g.push(275);
+		_g.push(294);
+		_g.push(313);
+		_g.push(332);
+		var south = _g;
+		var startS = Pachisi.LOOP.indexOf(351);
+		var _g = 0;
+		while(_g < 68) {
+			var k = _g++;
+			south.push(Pachisi.LOOP[(startS + k) % 68]);
+		}
+		var yy = 17;
+		while(yy >= 11) {
+			south.push(yy * 19 + 9);
+			--yy;
+		}
+		var north = [];
+		yy = 7;
+		while(yy >= 1) {
+			north.push(yy * 19 + 9);
+			--yy;
+		}
+		var startN = Pachisi.LOOP.indexOf(9);
+		var _g = 0;
+		while(_g < 68) {
+			var k = _g++;
+			north.push(Pachisi.LOOP[(startN + k) % 68]);
+		}
+		north.push(28);
+		north.push(47);
+		north.push(66);
+		north.push(85);
+		north.push(104);
+		north.push(123);
+		north.push(142);
+		Pachisi.PATH = [south,north];
+		Pachisi.CASTLE = [351,189,9,171,293,295,205,167,65,67,155,193];
+	}
+	this.story = ["O pachisi é o jogo nacional da Índia, jogado num pano bordado em forma de cruz. O nome vem do hindi pachis, vinte e cinco, o maior lance dos búzios.","O imperador mogol Akbar, no século XVI, jogava pachisi em pátios de palácio desenhados no chão, com pessoas vestidas de cores diferentes fazendo o papel das peças.","Do pachisi vieram jogos de corrida do mundo inteiro: o ludo inglês, o parchís espanhol e o Ludo que se joga no Brasil. Na árvore, ele aparece entre os primos antigos do xadrez, também nascido na Índia."];
+	this.rules = ["Cada um tem 4 peças, que começam no centro (o charkoni). O percurso desce pelo meio do seu braço da cruz, dá a volta inteira no tabuleiro e sobe de novo pelo meio do seu braço até o centro.","Jogue os 6 búzios. Conte quantos caem com a abertura para cima: 2, 3 e 4 valem isso mesmo, 5 vale 5, 6 vale 6, 1 vale 10 e nenhum vale 25.","Os lances 6, 10 e 25 são lances de graça: dão direito a jogar de novo, e só com eles uma peça nova sai do centro.","Caindo numa casa com peças adversárias, você as captura e elas voltam ao centro; capturar também dá outro lance. As casas marcadas com X são castelos: ali ninguém é capturado.","Para voltar ao centro é preciso o número exato. Vence quem levar primeiro as 4 peças de volta ao centro."];
+	this.pieces = [["Peça (cone)","Anda o valor dos búzios pelo seu percurso. Várias peças suas podem dividir a mesma casa."],["Búzios","Seis conchas de cauri fazem o papel dos dados."]];
+};
+Pachisi.__name__ = true;
+Pachisi.xy = function(c) {
+	return [10 + c % 19 * 46.0 + 23.,10 + (c / 19 | 0) * 46.0 + 23.];
+};
+Pachisi.pawn = function(x,y,red,k) {
+	var f = red ? "url(#wgR)" : "url(#wgG)";
+	var st = red ? "#4a0d08" : "#0b2a12";
+	return "<ellipse cx=\"" + x + "\" cy=\"" + (y + 14 * k) + "\" rx=\"" + 15 * k + "\" ry=\"" + 5 * k + "\" fill=\"rgba(0,0,0,.35)\"/><path d=\"M" + (x - 13 * k) + "," + (y + 12 * k) + " Q" + (x - 14 * k) + "," + (y - 6 * k) + " " + x + "," + (y - 18 * k) + " Q" + (x + 14 * k) + "," + (y - 6 * k) + " " + (x + 13 * k) + "," + (y + 12 * k) + " Z\" fill=\"" + f + "\" stroke=\"" + st + "\" stroke-width=\"" + 1.8 * k + "\"/><circle cx=\"" + x + "\" cy=\"" + (y - 17 * k) + "\" r=\"" + 4 * k + "\" fill=\"#f3d98c\" stroke=\"" + st + "\" stroke-width=\"1.2\"/>";
+};
+Pachisi.__super__ = WGame;
+Pachisi.prototype = $extend(WGame.prototype,{
+	init: function() {
+		var _g = [];
+		_g.push(-1);
+		_g.push(-1);
+		_g.push(-1);
+		_g.push(-1);
+		_g.push(-1);
+		_g.push(-1);
+		_g.push(-1);
+		_g.push(-1);
+		return { p : _g, turn : 1, roll : null, ex : false, k : 0};
+	}
+	,cellOf: function(i,pos) {
+		var sd = i < 4 ? 1 : -1;
+		if(pos < 0 || pos >= 82) {
+			return 180;
+		} else {
+			return Pachisi.PATH[sd == 1 ? 0 : 1][pos];
+		}
+	}
+	,onLoop: function(pos) {
+		if(pos >= 7) {
+			return pos < 75;
+		} else {
+			return false;
+		}
+	}
+	,moves: function(s) {
+		if(s.roll == null) {
+			return [];
+		}
+		var p = s.p;
+		var me = s.turn;
+		var v = s.roll;
+		var grace = v == 6 || v == 10 || v == 25;
+		var out = [];
+		var seen = [];
+		var _g = me == 1 ? 0 : 4;
+		var _g1 = (me == 1 ? 0 : 4) + 4;
+		while(_g < _g1) {
+			var i = _g++;
+			var from = p[i];
+			if(from >= 82 || seen.indexOf(from) >= 0) {
+				continue;
+			}
+			seen.push(from);
+			var to = from < 0 ? grace ? 0 : -9 : from + v;
+			if(to < 0 || to > 82) {
+				continue;
+			}
+			if(to < 82) {
+				var cell = Pachisi.PATH[me == 1 ? 0 : 1][to];
+				var enemy = false;
+				var _g2 = -me == 1 ? 0 : 4;
+				var _g3 = (-me == 1 ? 0 : 4) + 4;
+				while(_g2 < _g3) {
+					var j = _g2++;
+					if(p[j] >= 0 && p[j] < 82 && this.cellOf(j,p[j]) == cell) {
+						enemy = true;
+					}
+				}
+				if(enemy && Pachisi.CASTLE.indexOf(cell) >= 0) {
+					continue;
+				}
+			}
+			out.push({ f : from < 0 ? 180 : Pachisi.PATH[me == 1 ? 0 : 1][from], t : to >= 82 ? 180 : Pachisi.PATH[me == 1 ? 0 : 1][to], i : i, to : to});
+		}
+		return out;
+	}
+	,apply: function(s,m) {
+		var p = s.p.slice();
+		var me = s.turn;
+		var to = m.to;
+		var i = m.i;
+		p[i] = to;
+		var capt = false;
+		if(to < 82) {
+			var cell = Pachisi.PATH[me == 1 ? 0 : 1][to];
+			var _g = -me == 1 ? 0 : 4;
+			var _g1 = (-me == 1 ? 0 : 4) + 4;
+			while(_g < _g1) {
+				var j = _g++;
+				if(p[j] >= 0 && p[j] < 82 && this.cellOf(j,p[j]) == cell) {
+					p[j] = -1;
+					capt = true;
+				}
+			}
+		}
+		return { p : p, turn : s.ex == true || capt ? me : -me, roll : null, ex : false, k : 0};
+	}
+	,over: function(s,ms) {
+		var p = s.p;
+		var a = 0;
+		var b = 0;
+		if(p[0] >= 82) {
+			++a;
+		}
+		if(p[1] >= 82) {
+			++a;
+		}
+		if(p[2] >= 82) {
+			++a;
+		}
+		if(p[3] >= 82) {
+			++a;
+		}
+		if(p[4] >= 82) {
+			++b;
+		}
+		if(p[5] >= 82) {
+			++b;
+		}
+		if(p[6] >= 82) {
+			++b;
+		}
+		if(p[7] >= 82) {
+			++b;
+		}
+		if(a == 4) {
+			return { w : 1, why : "as 4 vermelhas voltaram ao centro"};
+		}
+		if(b == 4) {
+			return { w : -1, why : "as 4 verdes voltaram ao centro"};
+		}
+		return null;
+	}
+	,'eval': function(s) {
+		var p = s.p;
+		var v = 0.0;
+		var _g = 0;
+		while(_g < 8) {
+			var i = _g++;
+			var sd = i < 4 ? 1 : -1;
+			var x = p[i];
+			var val = x < 0 ? 0.0 : x >= 82 ? 110.0 : x + 6.0;
+			if(x >= 0 && x < 82 && this.onLoop(x)) {
+				var cell = this.cellOf(i,x);
+				if(Pachisi.CASTLE.indexOf(cell) >= 0) {
+					val += 3;
+				} else {
+					var _g1 = 0;
+					while(_g1 < 8) {
+						var j = _g1++;
+						if((j < 4 ? 1 : -1) != sd && p[j] >= 0 && this.onLoop(p[j])) {
+							var them = Pachisi.PATH[-sd == 1 ? 0 : 1];
+							var k = them.indexOf(cell,7);
+							if(k > p[j] && k - p[j] <= 10) {
+								val -= 4;
+								break;
+							}
+						}
+					}
+				}
+			}
+			v += sd * val;
+		}
+		return v;
+	}
+	,rolls: function(s) {
+		var _g = [];
+		var _g1 = 0;
+		while(_g1 < 7) {
+			var k = _g1++;
+			_g.push([Pachisi.VALS[k],Pachisi.BIN[k] / 64,Pachisi.VALS[k] == 6 || Pachisi.VALS[k] == 10 || Pachisi.VALS[k] == 25 ? 1 : 0,k]);
+		}
+		return _g;
+	}
+	,toss: function() {
+		var k = 0;
+		if(Math.random() < 0.5) {
+			++k;
+		}
+		if(Math.random() < 0.5) {
+			++k;
+		}
+		if(Math.random() < 0.5) {
+			++k;
+		}
+		if(Math.random() < 0.5) {
+			++k;
+		}
+		if(Math.random() < 0.5) {
+			++k;
+		}
+		if(Math.random() < 0.5) {
+			++k;
+		}
+		var v = Pachisi.VALS[k];
+		return [v,Pachisi.BIN[k] / 64,v == 6 || v == 10 || v == 25 ? 1 : 0,k];
+	}
+	,rollText: function(s) {
+		var k = s.k;
+		return Std.string(s.roll) + " (" + (k == 0 ? "nenhum búzio aberto" : k + (k == 1 ? " búzio aberto" : " búzios abertos")) + ")" + (s.roll == 6 || s.roll == 10 || s.roll == 25 ? " · lance de graça" : "");
+	}
+	,rollSvg: function(s) {
+		return World.sticks(6,s.k,"cowrie");
+	}
+	,label: function(s,m) {
+		var to = m.to;
+		var p = s.p;
+		var from = p[m.i];
+		if(from < 0) {
+			return "peça sai do centro";
+		}
+		if(to >= 82) {
+			return "peça chega ao centro";
+		}
+		return "peça anda " + (to - from) + " casas";
+	}
+	,status: function(s) {
+		var p = s.p;
+		var a_0 = 0;
+		var a_1 = 0;
+		var a_2 = 0;
+		var a_3 = 0;
+		if(p[0] >= 82) {
+			++a_0;
+		}
+		if(p[0] < 0) {
+			++a_2;
+		}
+		if(p[1] >= 82) {
+			++a_0;
+		}
+		if(p[1] < 0) {
+			++a_2;
+		}
+		if(p[2] >= 82) {
+			++a_0;
+		}
+		if(p[2] < 0) {
+			++a_2;
+		}
+		if(p[3] >= 82) {
+			++a_0;
+		}
+		if(p[3] < 0) {
+			++a_2;
+		}
+		if(p[4] >= 82) {
+			++a_1;
+		}
+		if(p[4] < 0) {
+			++a_3;
+		}
+		if(p[5] >= 82) {
+			++a_1;
+		}
+		if(p[5] < 0) {
+			++a_3;
+		}
+		if(p[6] >= 82) {
+			++a_1;
+		}
+		if(p[6] < 0) {
+			++a_3;
+		}
+		if(p[7] >= 82) {
+			++a_1;
+		}
+		if(p[7] < 0) {
+			++a_3;
+		}
+		return "No centro para sair: vermelhas " + a_2 + ", verdes " + a_3 + " · Chegaram: vermelhas " + a_0 + ", verdes " + a_1;
+	}
+	,svg: function(s,ui) {
+		var p = s.p;
+		var size = 894.;
+		var sb_b = "";
+		sb_b += Std.string("<svg viewBox=\"0 0 " + size + " " + size + "\">" + World.DEFS);
+		var arms = [[8,11,3,8,"#7d1d16"],[11,8,8,3,"#7d5a16"],[8,0,3,8,"#1d5a2a"],[0,8,8,3,"#20304f"]];
+		var _g = 0;
+		while(_g < arms.length) {
+			var a = arms[_g];
+			++_g;
+			sb_b += Std.string("<rect x=\"" + (10 + a[0] * 46.0 - 6) + "\" y=\"" + (10 + a[1] * 46.0 - 6) + "\" width=\"" + (a[2] * 46.0 + 12) + "\" height=\"" + (a[3] * 46.0 + 12) + "\" rx=\"8\" fill=\"" + Std.string(a[4]) + "\"/>");
+		}
+		var cells = Pachisi.LOOP.slice();
+		var _g = 0;
+		var _g1 = Pachisi.PATH;
+		while(_g < _g1.length) {
+			var pp = _g1[_g];
+			++_g;
+			var _g2 = 0;
+			while(_g2 < pp.length) {
+				var c = pp[_g2];
+				++_g2;
+				if(cells.indexOf(c) < 0) {
+					cells.push(c);
+				}
+			}
+		}
+		var _g = 0;
+		while(_g < cells.length) {
+			var c = cells[_g];
+			++_g;
+			var a = Pachisi.xy(c);
+			sb_b += Std.string("<rect x=\"" + (a[0] - 23. + 2) + "\" y=\"" + (a[1] - 23. + 2) + "\" width=\"" + 42. + "\" height=\"" + 42. + "\" rx=\"4\" fill=\"" + (c % 19 == 9 || (c / 19 | 0) == 9 ? "#f1dfb6" : "#e8d0a0") + "\" stroke=\"#b08a4a\" stroke-width=\"1.5\"/>");
+			if(Pachisi.CASTLE.indexOf(c) >= 0) {
+				sb_b += Std.string("<path d=\"M" + (a[0] - 14) + "," + (a[1] - 14) + " L" + (a[0] + 14) + "," + (a[1] + 14) + " M" + (a[0] + 14) + "," + (a[1] - 14) + " L" + (a[0] - 14) + "," + (a[1] + 14) + "\" stroke=\"#7a4a1c\" stroke-width=\"4\"/>");
+			}
+		}
+		var cc = Pachisi.xy(180);
+		sb_b += Std.string("<rect x=\"" + (cc[0] - 69.) + "\" y=\"" + (cc[1] - 69.) + "\" width=\"" + 138. + "\" height=\"" + 138. + "\" rx=\"10\" fill=\"#c8963a\" stroke=\"#5b3714\" stroke-width=\"3\"/><rect x=\"" + (cc[0] - 69. + 8) + "\" y=\"" + (cc[1] - 69. + 8) + "\" width=\"" + 122. + "\" height=\"" + 122. + "\" rx=\"6\" fill=\"none\" stroke=\"#f3d98c\" stroke-width=\"2\"/>");
+		sb_b += Std.string(World.marks(ui,Pachisi.xy,22.08));
+		var stacks = new haxe_ds_IntMap();
+		var home = [0,0];
+		var done = [0,0];
+		var _g = 0;
+		while(_g < 8) {
+			var i = _g++;
+			var x = p[i];
+			var k = i < 4 ? 0 : 1;
+			if(x < 0) {
+				home[k]++;
+				continue;
+			}
+			if(x >= 82) {
+				done[k]++;
+				continue;
+			}
+			var c = this.cellOf(i,x);
+			if(!stacks.h.hasOwnProperty(c)) {
+				stacks.h[c] = [];
+			}
+			stacks.h[c].push(i);
+		}
+		var c = stacks.keys();
+		while(c.hasNext()) {
+			var c1 = c.next();
+			var a = Pachisi.xy(c1);
+			var l = stacks.h[c1];
+			sb_b += Std.string(Pachisi.pawn(a[0],a[1],l[0] < 4,1.0));
+			if(l.length > 1) {
+				sb_b += Std.string("<circle cx=\"" + (a[0] + 15) + "\" cy=\"" + (a[1] - 14) + "\" r=\"10\" fill=\"#1b1209\" stroke=\"#f3d98c\" stroke-width=\"2\"/><text x=\"" + (a[0] + 15) + "\" y=\"" + (a[1] - 9) + "\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\" fill=\"#f3d98c\">" + l.length + "</text>");
+			}
+		}
+		var _g = 0;
+		var _g1 = home[0];
+		while(_g < _g1) {
+			var k = _g++;
+			sb_b += Std.string(Pachisi.pawn(cc[0] - 36 + k * 24,cc[1] + 36,true,0.7));
+		}
+		var _g = 0;
+		var _g1 = home[1];
+		while(_g < _g1) {
+			var k = _g++;
+			sb_b += Std.string(Pachisi.pawn(cc[0] - 36 + k * 24,cc[1] - 30,false,0.7));
+		}
+		var _g = 0;
+		var _g1 = done[0];
+		while(_g < _g1) {
+			var k = _g++;
+			sb_b += Std.string(Pachisi.pawn(cc[0] - 26 + k * 17,cc[1] + 6,true,0.55));
+		}
+		var _g = 0;
+		var _g1 = done[1];
+		while(_g < _g1) {
+			var k = _g++;
+			sb_b += Std.string(Pachisi.pawn(cc[0] - 26 + k * 17,cc[1] - 12,false,0.55));
+		}
+		var tg = ui.targets;
+		if(tg != null) {
+			var _g = 0;
+			while(_g < tg.length) {
+				var c = tg[_g];
+				++_g;
+				var a = Pachisi.xy(c);
+				sb_b += Std.string("<circle cx=\"" + a[0] + "\" cy=\"" + a[1] + "\" r=\"10\" fill=\"rgba(30,130,55,.9)\" stroke=\"#fff\" stroke-width=\"2.5\"/>");
+			}
+		}
+		if(ui.thumb != true) {
+			var _g = 0;
+			while(_g < cells.length) {
+				var c = cells[_g];
+				++_g;
+				var a = Pachisi.xy(c);
+				sb_b += Std.string(World.hit(c,a[0] - 23.,a[1] - 23.,46.0,46.0));
+			}
+			sb_b += Std.string(World.hit(180,cc[0] - 69.,cc[1] - 69.,138.,138.));
+		}
+		sb_b += "</svg>";
+		return sb_b;
+	}
+});
+var Senet = function() {
+	WGame.call(this);
+	this.id = "senet";
+	this.name = "Senet";
+	this.era = "Egito · por volta de 3100 a.C.";
+	this.sides = ["Cones (claras)","Carretéis (escuras)"];
+	this.dice = true;
+	this.flipOk = false;
+	this.tossName = "varetas";
+	this.note = "As regras originais se perderam. Aqui se joga a reconstrução de Timothy Kendall (1978), a mais usada hoje.";
+	this.story = ["O senet é um dos jogos de tabuleiro mais antigos do mundo: aparece em pinturas de túmulos egípcios de cerca de 3100 a.C. A rainha Nefertari foi pintada jogando senet, e o faraó Tutancâmon foi enterrado com quatro tabuleiros.","Com o tempo o jogo ganhou sentido religioso: a passagem das peças pelas 30 casas lembrava a viagem da alma pelo mundo dos mortos. As últimas casas trazem símbolos como a água, perigosa, e a casa da beleza, por onde todos precisam passar.","Na árvore ele aparece entre os primos antigos: não é ancestral do xadrez, mas mostra que, muito antes do chaturanga, as pessoas já se sentavam diante de um tabuleiro quadriculado."];
+	this.rules = ["Cada lado tem 5 peças, que começam alternadas nas 10 primeiras casas. O percurso faz um S: 1 a 10 na fileira de cima, 11 a 20 voltando, 21 a 30 na de baixo.","Lance as 4 varetas: o número de faces claras para cima é quanto você anda (nenhuma clara vale 5). Com 1, 4 ou 5 você joga de novo.","Caindo numa casa com uma peça adversária sozinha, vocês trocam de lugar. Duas peças da mesma cor lado a lado se protegem, e três seguidas formam uma barreira que ninguém atravessa.","A casa 26 (beleza) é obrigatória: toda peça precisa parar nela. Quem cai na 27 (água) volta para a casa 15. As casas 26, 28, 29 e 30 são seguras.","Da casa 26 em diante, a peça sai do tabuleiro com o número exato que a leva além da 30. Vence quem tirar primeiro todas as 5 peças."];
+	this.pieces = [["Cone","As suas peças claras."],["Carretel","As peças escuras do adversário."],["Varetas","Quatro varetas com um lado claro e um escuro fazem o papel dos dados."]];
+};
+Senet.__name__ = true;
+Senet.cellXY = function(i) {
+	var row = i / 10 | 0;
+	var col = row == 1 ? 9 - i % 10 : i % 10;
+	return [30 + col * 100 + 50,30 + row * 100 + 50];
+};
+Senet.cone = function(x,y,light) {
+	if(light) {
+		return "<ellipse cx=\"" + x + "\" cy=\"" + (y + 32) + "\" rx=\"30\" ry=\"8\" fill=\"rgba(0,0,0,.3)\"/><path d=\"M" + x + "," + (y - 36) + " L" + (x + 26) + "," + (y + 28) + " Q" + x + "," + (y + 38) + " " + (x - 26) + "," + (y + 28) + " Z\" fill=\"url(#wgL)\" stroke=\"#6b4a22\" stroke-width=\"2.5\"/><circle cx=\"" + x + "\" cy=\"" + (y - 34) + "\" r=\"7\" fill=\"#f6ead0\" stroke=\"#6b4a22\" stroke-width=\"2\"/>";
+	}
+	return "<ellipse cx=\"" + x + "\" cy=\"" + (y + 32) + "\" rx=\"30\" ry=\"8\" fill=\"rgba(0,0,0,.3)\"/><path d=\"M" + (x - 24) + "," + (y - 30) + " L" + (x + 24) + "," + (y - 30) + " L" + (x + 12) + "," + y + " L" + (x + 24) + "," + (y + 30) + " L" + (x - 24) + "," + (y + 30) + " L" + (x - 12) + "," + y + " Z\" fill=\"url(#wgD)\" stroke=\"#c8963a\" stroke-width=\"2.5\"/><path d=\"M" + (x - 24) + "," + (y - 30) + " L" + (x + 24) + "," + (y - 30) + "\" stroke=\"#e9cf8c\" stroke-width=\"3\"/>";
+};
+Senet.__super__ = WGame;
+Senet.prototype = $extend(WGame.prototype,{
+	init: function() {
+		return { p : [0,2,4,6,8,1,3,5,7,9], turn : 1, roll : null, ex : false, k : 0};
+	}
+	,occ: function(p,x) {
+		if(p[0] == x) {
+			return 1;
+		}
+		if(p[1] == x) {
+			return 1;
+		}
+		if(p[2] == x) {
+			return 1;
+		}
+		if(p[3] == x) {
+			return 1;
+		}
+		if(p[4] == x) {
+			return 1;
+		}
+		if(p[5] == x) {
+			return -1;
+		}
+		if(p[6] == x) {
+			return -1;
+		}
+		if(p[7] == x) {
+			return -1;
+		}
+		if(p[8] == x) {
+			return -1;
+		}
+		if(p[9] == x) {
+			return -1;
+		}
+		return 0;
+	}
+	,idx: function(p,x) {
+		if(p[0] == x) {
+			return 0;
+		}
+		if(p[1] == x) {
+			return 1;
+		}
+		if(p[2] == x) {
+			return 2;
+		}
+		if(p[3] == x) {
+			return 3;
+		}
+		if(p[4] == x) {
+			return 4;
+		}
+		if(p[5] == x) {
+			return 5;
+		}
+		if(p[6] == x) {
+			return 6;
+		}
+		if(p[7] == x) {
+			return 7;
+		}
+		if(p[8] == x) {
+			return 8;
+		}
+		if(p[9] == x) {
+			return 9;
+		}
+		return -1;
+	}
+	,moves: function(s) {
+		if(s.roll == null) {
+			return [];
+		}
+		var p = s.p;
+		var me = s.turn;
+		var r = s.roll;
+		var out = [];
+		var lo = me == 1 ? 0 : 5;
+		var _g = lo;
+		var _g1 = lo + 5;
+		while(_g < _g1) {
+			var i = _g++;
+			var from = p[i];
+			if(from >= 30) {
+				continue;
+			}
+			var t = from + r;
+			if(t > 30) {
+				continue;
+			}
+			if(from < 25 && t > 25) {
+				continue;
+			}
+			if(t == 30 && from < 25) {
+				continue;
+			}
+			if(t < 30) {
+				var o = this.occ(p,t);
+				if(o == me) {
+					continue;
+				}
+				if(o == -me) {
+					if(Senet.SAFE.indexOf(t) >= 0) {
+						continue;
+					}
+					if(this.occ(p,t - 1) == -me || this.occ(p,t + 1) == -me) {
+						continue;
+					}
+				}
+			}
+			var run = 0;
+			var blocked = false;
+			var _g2 = from + 1;
+			var _g3 = t;
+			while(_g2 < _g3) {
+				var j = _g2++;
+				if(this.occ(p,j) == -me) {
+					++run;
+					if(run >= 3) {
+						blocked = true;
+					}
+				} else {
+					run = 0;
+				}
+			}
+			if(blocked) {
+				continue;
+			}
+			out.push({ f : from, t : t, i : i});
+		}
+		return out;
+	}
+	,apply: function(s,m) {
+		var p = s.p.slice();
+		var t = m.t;
+		var i = m.i;
+		if(t < 30) {
+			var j = this.idx(p,t);
+			if(j >= 0) {
+				p[j] = m.f;
+			}
+		}
+		p[i] = t;
+		if(t == 26) {
+			var k = 14;
+			while(k >= 0 && this.idx(p,k) >= 0) --k;
+			p[i] = k < 0 ? 0 : k;
+		}
+		var me = s.turn;
+		return { p : p, turn : s.ex == true ? me : -me, roll : null, ex : false, k : 0};
+	}
+	,over: function(s,ms) {
+		var p = s.p;
+		var a = 0;
+		var b = 0;
+		if(p[0] >= 30) {
+			++a;
+		}
+		if(p[1] >= 30) {
+			++a;
+		}
+		if(p[2] >= 30) {
+			++a;
+		}
+		if(p[3] >= 30) {
+			++a;
+		}
+		if(p[4] >= 30) {
+			++a;
+		}
+		if(p[5] >= 30) {
+			++b;
+		}
+		if(p[6] >= 30) {
+			++b;
+		}
+		if(p[7] >= 30) {
+			++b;
+		}
+		if(p[8] >= 30) {
+			++b;
+		}
+		if(p[9] >= 30) {
+			++b;
+		}
+		if(a == 5) {
+			return { w : 1, why : "os 5 cones saíram do tabuleiro"};
+		}
+		if(b == 5) {
+			return { w : -1, why : "os 5 carretéis saíram do tabuleiro"};
+		}
+		return null;
+	}
+	,'eval': function(s) {
+		var p = s.p;
+		var v = 0.0;
+		var _g = 0;
+		while(_g < 10) {
+			var i = _g++;
+			var sd = i < 5 ? 1 : -1;
+			var x = p[i];
+			var val = x >= 30 ? 48.0 : x + (x >= 25 ? 4 : 0);
+			if(x < 30 && x != 25 && (this.occ(p,x - 1) == sd || this.occ(p,x + 1) == sd)) {
+				val += 2.5;
+			}
+			v += sd * val;
+		}
+		return v;
+	}
+	,rolls: function(s) {
+		var _g = [];
+		var _g1 = 0;
+		var _g2 = Senet.R;
+		while(_g1 < _g2.length) {
+			var r = _g2[_g1];
+			++_g1;
+			var _g3 = [];
+			var _g4 = 0;
+			while(_g4 < r.length) {
+				var x = r[_g4];
+				++_g4;
+				_g3.push(x);
+			}
+			_g.push(_g3);
+		}
+		return _g;
+	}
+	,toss: function() {
+		var k = 0;
+		if(Math.random() < 0.5) {
+			++k;
+		}
+		if(Math.random() < 0.5) {
+			++k;
+		}
+		if(Math.random() < 0.5) {
+			++k;
+		}
+		if(Math.random() < 0.5) {
+			++k;
+		}
+		var _g = 0;
+		var _g1 = Senet.R;
+		while(_g < _g1.length) {
+			var r = _g1[_g];
+			++_g;
+			if(r[3] == k) {
+				var _g2 = [];
+				var _g3 = 0;
+				while(_g3 < r.length) {
+					var x = r[_g3];
+					++_g3;
+					_g2.push(x);
+				}
+				return _g2;
+			}
+		}
+		return [5,0.0625,1,0];
+	}
+	,rollText: function(s) {
+		return Std.string(s.roll) + (s.k == 0 ? " (nenhuma face clara)" : " (" + Std.string(s.k) + (s.k == 1 ? " face clara)" : " faces claras)"));
+	}
+	,rollSvg: function(s) {
+		return World.sticks(4,s.k,"stick");
+	}
+	,label: function(s,m) {
+		var p = s.p;
+		var t = m.t;
+		if(t >= 30) {
+			return "casa " + (m.f + 1) + " → sai";
+		}
+		var sw = this.idx(p,t) >= 0 ? " (troca)" : "";
+		return "casa " + (m.f + 1) + " → " + (t + 1) + sw + (t == 26 ? " · caiu na água, volta à 15" : "");
+	}
+	,status: function(s) {
+		var p = s.p;
+		var a = 0;
+		var b = 0;
+		if(p[0] >= 30) {
+			++a;
+		}
+		if(p[1] >= 30) {
+			++a;
+		}
+		if(p[2] >= 30) {
+			++a;
+		}
+		if(p[3] >= 30) {
+			++a;
+		}
+		if(p[4] >= 30) {
+			++a;
+		}
+		if(p[5] >= 30) {
+			++b;
+		}
+		if(p[6] >= 30) {
+			++b;
+		}
+		if(p[7] >= 30) {
+			++b;
+		}
+		if(p[8] >= 30) {
+			++b;
+		}
+		if(p[9] >= 30) {
+			++b;
+		}
+		return "Fora do tabuleiro: cones " + a + " · carretéis " + b;
+	}
+	,svg: function(s,ui) {
+		var p = s.p;
+		var sb_b = "";
+		sb_b += Std.string("<svg viewBox=\"0 0 1180 360\">" + World.DEFS);
+		sb_b += "<rect x=\"0\" y=\"0\" width=\"1060\" height=\"360\" rx=\"20\" fill=\"#5b3a17\"/><rect x=\"14\" y=\"14\" width=\"1032\" height=\"332\" rx=\"12\" fill=\"url(#wgW)\"/>";
+		var _g = 0;
+		while(_g < 30) {
+			var i = _g++;
+			var a = Senet.cellXY(i);
+			sb_b += Std.string("<rect x=\"" + (a[0] - 48) + "\" y=\"" + (a[1] - 48) + "\" width=\"96\" height=\"96\" rx=\"6\" fill=\"" + (i == 14 || i >= 25 ? "#f1ddb0" : "#e9cf98") + "\" stroke=\"#8a6232\" stroke-width=\"2\"/>");
+			var gx = a[0];
+			var gy = a[1];
+			var ink = "#7a4a1c";
+			if(i == 14) {
+				sb_b += Std.string("<g stroke=\"" + ink + "\" stroke-width=\"5\" fill=\"none\" opacity=\".75\"><ellipse cx=\"" + gx + "\" cy=\"" + (gy - 22) + "\" rx=\"11\" ry=\"14\"/><path d=\"M" + gx + "," + (gy - 8) + " V" + (gy + 34) + " M" + (gx - 20) + "," + (gy - 2) + " H" + (gx + 20) + "\"/></g>");
+			}
+			if(i == 25) {
+				sb_b += Std.string("<g stroke=\"" + ink + "\" stroke-width=\"5\" fill=\"none\" opacity=\".75\"><path d=\"M" + gx + "," + (gy - 34) + " V" + (gy + 6) + " M" + (gx - 12) + "," + (gy - 22) + " H" + (gx + 12) + "\"/><ellipse cx=\"" + gx + "\" cy=\"" + (gy + 20) + "\" rx=\"16\" ry=\"14\"/></g>");
+			}
+			if(i == 26) {
+				sb_b += Std.string("<path d=\"M" + (gx - 34) + "," + (gy - 14) + " q8.5,-12 17,0 t17,0 t17,0 t17,0 M" + (gx - 34) + "," + (gy + 2) + " q8.5,-12 17,0 t17,0 t17,0 t17,0 M" + (gx - 34) + "," + (gy + 18) + " q8.5,-12 17,0 t17,0 t17,0 t17,0\" stroke=\"#2f6f9e\" stroke-width=\"5\" fill=\"none\" opacity=\".8\"/>");
+			}
+			if(i >= 27) {
+				var nn = 30 - i;
+				var _g1 = 0;
+				var _g2 = nn;
+				while(_g1 < _g2) {
+					var k = _g1++;
+					sb_b += Std.string("<circle cx=\"" + (gx - (nn - 1) * 15 + k * 30) + "\" cy=\"" + gy + "\" r=\"8\" fill=\"" + ink + "\" opacity=\".7\"/>");
+				}
+			}
+			if(ui.thumb != true) {
+				sb_b += Std.string("<text x=\"" + (a[0] - 40) + "\" y=\"" + (a[1] - 30) + "\" font-size=\"16\" fill=\"rgba(90,55,20,.55)\" font-family=\"Georgia,serif\">" + (i + 1) + "</text>");
+			}
+		}
+		sb_b += "<path d=\"M1048,80 v200\" stroke=\"#5b3a17\" stroke-width=\"0\"/>";
+		sb_b += Std.string(World.marks(ui,Senet.cellXY,46));
+		var offA = 0;
+		var offB = 0;
+		var _g = 0;
+		while(_g < 10) {
+			var i = _g++;
+			var x = p[i];
+			if(x >= 30) {
+				if(i < 5) {
+					++offA;
+				} else {
+					++offB;
+				}
+				continue;
+			}
+			var a = Senet.cellXY(x);
+			sb_b += Std.string(Senet.cone(a[0],a[1],i < 5));
+		}
+		sb_b += "<rect x=\"1070\" y=\"14\" width=\"104\" height=\"332\" rx=\"14\" fill=\"rgba(0,0,0,.28)\" stroke=\"rgba(220,181,92,.45)\" stroke-width=\"2\"/>";
+		sb_b += "<text x=\"1122\" y=\"44\" text-anchor=\"middle\" font-size=\"18\" fill=\"#e9cf8c\" font-family=\"Georgia,serif\">saída</text>";
+		var _g = 0;
+		var _g1 = offA;
+		while(_g < _g1) {
+			var k = _g++;
+			sb_b += Std.string("<g transform=\"translate(1100 " + (100 + k * 46) + ") scale(.55)\">" + Senet.cone(0,0,true) + "</g>");
+		}
+		var _g = 0;
+		var _g1 = offB;
+		while(_g < _g1) {
+			var k = _g++;
+			sb_b += Std.string("<g transform=\"translate(1146 " + (100 + k * 46) + ") scale(.55)\">" + Senet.cone(0,0,false) + "</g>");
+		}
+		var tg = ui.targets;
+		if(tg != null) {
+			var _g = 0;
+			while(_g < tg.length) {
+				var t = tg[_g];
+				++_g;
+				if(t >= 30) {
+					sb_b += "<rect x=\"1072\" y=\"16\" width=\"100\" height=\"328\" rx=\"12\" fill=\"rgba(30,130,55,.25)\" stroke=\"#2e9d4c\" stroke-width=\"4\"/>";
+				} else {
+					var a = Senet.cellXY(t);
+					sb_b += Std.string("<circle cx=\"" + a[0] + "\" cy=\"" + a[1] + "\" r=\"15\" fill=\"rgba(30,130,55,.85)\" stroke=\"#fff\" stroke-width=\"3\"/>");
+				}
+			}
+		}
+		if(ui.thumb != true) {
+			var _g = 0;
+			while(_g < 30) {
+				var i = _g++;
+				var a = Senet.cellXY(i);
+				sb_b += Std.string(World.hit(i,a[0] - 50,a[1] - 50,100,100));
+			}
+			sb_b += Std.string(World.hit(30,1070,14,104,332));
+		}
+		sb_b += "</svg>";
+		return sb_b;
+	}
+});
+var Tafl = function(h) {
+	WGame.call(this);
+	this.hnef = h;
+	this.n = h ? 11 : 9;
+	this.throne = this.n * this.n / 2 | 0;
+	this.sides = ["Defensores (rei)","Atacantes"];
+	this.first = -1;
+	if(h) {
+		this.id = "tafl";
+		this.name = "Tafl (hnefatafl)";
+		this.era = "Escandinávia · época viking, séculos IV a XII";
+		this.story = ["Antes de o xadrez chegar ao norte da Europa, os povos germânicos e os vikings jogavam tafl, uma família de jogos de cerco. O mais famoso é o hnefatafl, \"a mesa do rei\".","O jogo é desigual de propósito: o rei e os seus defensores começam no centro, cercados por um exército duas vezes maior. O rei quer fugir para um dos cantos; os atacantes querem prendê-lo.","Tabuleiros e peças de tafl aparecem em túmulos vikings e em sagas islandesas. Quando o xadrez chegou, por volta do ano 1100, tomou o lugar do tafl, e as regras antigas se perderam. As que se jogam hoje são reconstruções; aqui usamos as de Copenhague, simplificadas."];
+		this.rules = ["Os atacantes (escuros, 24 peças) começam. Os defensores (claros, 12 peças) protegem o rei, que começa no trono, no centro.","Todas as peças andam como a torre do xadrez: quantas casas quiserem na horizontal ou vertical, sem saltar. Só o rei pode parar no trono e nos quatro cantos.","Captura: prenda uma peça adversária entre duas suas, na mesma linha ou coluna. Os cantos e o trono vazio também servem de \"parede\". Quem se mete entre duas peças não é capturado.","O rei vence se chegar a um canto. Os atacantes vencem se cercarem o rei pelos quatro lados (o trono conta como lado). O rei não pode ser capturado na borda.","Quem ficar sem lances perde. Repetir três vezes a mesma posição é empate."];
+	} else {
+		this.id = "tablut";
+		this.name = "Tablut";
+		this.era = "Lapônia (povo sámi) · registrado por Lineu em 1732";
+		this.story = ["O tablut é a única variante de tafl cujas regras foram escritas por alguém que viu o jogo sendo jogado. Em 1732, o naturalista sueco Carl Linnaeus (Lineu), o pai da classificação das espécies, viajou pela Lapônia e anotou as regras num diário, em latim.","O tabuleiro tem 9 x 9 casas. Os sámi chamavam os defensores de suecos e os atacantes de moscovitas. O rei, ou konakis, foge pelo tabuleiro para chegar à borda.","O diário de Lineu foi traduzido para o inglês em 1811 com alguns erros, e por isso há várias versões das regras. Aqui usamos a mais jogada hoje."];
+		this.rules = ["Os atacantes (escuros, 16 peças) começam. Os defensores (claros, 8 peças) protegem o rei, que começa no trono, no centro.","Todas as peças andam como a torre do xadrez. Ninguém pode parar no trono nem passar por ele, a não ser o rei.","Captura: prenda uma peça adversária entre duas suas, na mesma linha ou coluna. O trono vazio também serve de parede.","O rei vence se chegar a qualquer casa da borda. Longe do trono, o rei é capturado como as outras peças (entre dois atacantes); no trono ou ao lado dele, precisa ser cercado pelos quatro lados.","Quem ficar sem lances perde. Repetir três vezes a mesma posição é empate."];
+	}
+	this.pieces = [["Rei",this.hnef ? "Anda como torre; foge para um canto. Só ele para no trono e nos cantos." : "Anda como torre; foge para qualquer casa da borda."],["Defensor","Anda como torre; ajuda a proteger e a abrir caminho para o rei."],["Atacante","Anda como torre; cerca e captura."]];
+};
+Tafl.__name__ = true;
+Tafl.__super__ = WGame;
+Tafl.prototype = $extend(WGame.prototype,{
+	corner: function(c) {
+		var x = c % this.n;
+		var y = c / this.n | 0;
+		if(x == 0 || x == this.n - 1) {
+			if(y != 0) {
+				return y == this.n - 1;
+			} else {
+				return true;
+			}
+		} else {
+			return false;
+		}
+	}
+	,restricted: function(c) {
+		if(c != this.throne) {
+			if(this.hnef) {
+				return this.corner(c);
+			} else {
+				return false;
+			}
+		} else {
+			return true;
+		}
+	}
+	,goal: function(c) {
+		if(this.hnef) {
+			return this.corner(c);
+		}
+		var x = c % this.n;
+		var y = c / this.n | 0;
+		if(!(x == 0 || y == 0 || x == this.n - 1)) {
+			return y == this.n - 1;
+		} else {
+			return true;
+		}
+	}
+	,init: function() {
+		var _g = [];
+		var _g1 = 0;
+		var _g2 = this.n * this.n;
+		while(_g1 < _g2) {
+			var i = _g1++;
+			_g.push(0);
+		}
+		var b = _g;
+		var m = this.n / 2 | 0;
+		if(this.hnef) {
+			b[3 >= this.n || 0 >= this.n ? -1 : 0 * this.n + 3] = -1;
+			b[3 >= this.n || 10 >= this.n ? -1 : 10 * this.n + 3] = -1;
+			b[0 >= this.n || 3 >= this.n ? -1 : 3 * this.n] = -1;
+			b[10 >= this.n || 3 >= this.n ? -1 : 3 * this.n + 10] = -1;
+			b[4 >= this.n || 0 >= this.n ? -1 : 0 * this.n + 4] = -1;
+			b[4 >= this.n || 10 >= this.n ? -1 : 10 * this.n + 4] = -1;
+			b[0 >= this.n || 4 >= this.n ? -1 : 4 * this.n] = -1;
+			b[10 >= this.n || 4 >= this.n ? -1 : 4 * this.n + 10] = -1;
+			b[5 >= this.n || 0 >= this.n ? -1 : 0 * this.n + 5] = -1;
+			b[5 >= this.n || 10 >= this.n ? -1 : 10 * this.n + 5] = -1;
+			b[0 >= this.n || 5 >= this.n ? -1 : 5 * this.n] = -1;
+			b[10 >= this.n || 5 >= this.n ? -1 : 5 * this.n + 10] = -1;
+			b[6 >= this.n || 0 >= this.n ? -1 : 0 * this.n + 6] = -1;
+			b[6 >= this.n || 10 >= this.n ? -1 : 10 * this.n + 6] = -1;
+			b[0 >= this.n || 6 >= this.n ? -1 : 6 * this.n] = -1;
+			b[10 >= this.n || 6 >= this.n ? -1 : 6 * this.n + 10] = -1;
+			b[7 >= this.n || 0 >= this.n ? -1 : 0 * this.n + 7] = -1;
+			b[7 >= this.n || 10 >= this.n ? -1 : 10 * this.n + 7] = -1;
+			b[0 >= this.n || 7 >= this.n ? -1 : 7 * this.n] = -1;
+			b[10 >= this.n || 7 >= this.n ? -1 : 7 * this.n + 10] = -1;
+			var q_0 = 5;
+			var q_1 = 1;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = -1;
+			var q_0 = 5;
+			var q_1 = 9;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = -1;
+			var q_0 = 1;
+			var q_1 = 5;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = -1;
+			var q_0 = 9;
+			var q_1 = 5;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = -1;
+			var q_0 = 5;
+			var q_1 = 3;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = 1;
+			var q_0 = 4;
+			var q_1 = 4;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = 1;
+			var q_0 = 5;
+			var q_1 = 4;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = 1;
+			var q_0 = 6;
+			var q_1 = 4;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = 1;
+			var q_0 = 3;
+			var q_1 = 5;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = 1;
+			var q_0 = 4;
+			var q_1 = 5;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = 1;
+			var q_0 = 6;
+			var q_1 = 5;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = 1;
+			var q_0 = 7;
+			var q_1 = 5;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = 1;
+			var q_0 = 4;
+			var q_1 = 6;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = 1;
+			var q_0 = 5;
+			var q_1 = 6;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = 1;
+			var q_0 = 6;
+			var q_1 = 6;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = 1;
+			var q_0 = 5;
+			var q_1 = 7;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = 1;
+		} else {
+			b[3 >= this.n || 0 >= this.n ? -1 : 0 * this.n + 3] = -1;
+			b[3 >= this.n || 8 >= this.n ? -1 : 8 * this.n + 3] = -1;
+			b[0 >= this.n || 3 >= this.n ? -1 : 3 * this.n] = -1;
+			b[8 >= this.n || 3 >= this.n ? -1 : 3 * this.n + 8] = -1;
+			b[4 >= this.n || 0 >= this.n ? -1 : 0 * this.n + 4] = -1;
+			b[4 >= this.n || 8 >= this.n ? -1 : 8 * this.n + 4] = -1;
+			b[0 >= this.n || 4 >= this.n ? -1 : 4 * this.n] = -1;
+			b[8 >= this.n || 4 >= this.n ? -1 : 4 * this.n + 8] = -1;
+			b[5 >= this.n || 0 >= this.n ? -1 : 0 * this.n + 5] = -1;
+			b[5 >= this.n || 8 >= this.n ? -1 : 8 * this.n + 5] = -1;
+			b[0 >= this.n || 5 >= this.n ? -1 : 5 * this.n] = -1;
+			b[8 >= this.n || 5 >= this.n ? -1 : 5 * this.n + 8] = -1;
+			var q_0 = 4;
+			var q_1 = 1;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = -1;
+			var q_0 = 4;
+			var q_1 = 7;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = -1;
+			var q_0 = 1;
+			var q_1 = 4;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = -1;
+			var q_0 = 7;
+			var q_1 = 4;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = -1;
+			var q_0 = 4;
+			var q_1 = 2;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = 1;
+			var q_0 = 4;
+			var q_1 = 3;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = 1;
+			var q_0 = 4;
+			var q_1 = 5;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = 1;
+			var q_0 = 4;
+			var q_1 = 6;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = 1;
+			var q_0 = 2;
+			var q_1 = 4;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = 1;
+			var q_0 = 3;
+			var q_1 = 4;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = 1;
+			var q_0 = 5;
+			var q_1 = 4;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = 1;
+			var q_0 = 6;
+			var q_1 = 4;
+			var x = q_0;
+			var y = q_1;
+			b[x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x] = 1;
+		}
+		b[m < 0 || m < 0 || m >= this.n || m >= this.n ? -1 : m * this.n + m] = 2;
+		return { b : b, turn : -1, kc : false};
+	}
+	,moves: function(s) {
+		var b = s.b;
+		var side = s.turn;
+		var out = [];
+		var _g = 0;
+		var _g1 = this.n * this.n;
+		while(_g < _g1) {
+			var c = _g++;
+			if(b[c] * side <= 0) {
+				continue;
+			}
+			var king = b[c] == 2;
+			var _g2 = 0;
+			var _g3 = Tafl.D;
+			while(_g2 < _g3.length) {
+				var d = _g3[_g2];
+				++_g2;
+				var x = c % this.n + d[0];
+				var y = (c / this.n | 0) + d[1];
+				while(true) {
+					var t = x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x;
+					if(t < 0 || b[t] != 0) {
+						break;
+					}
+					if(this.restricted(t) && !king) {
+						break;
+					}
+					out.push({ f : c, t : t});
+					x += d[0];
+					y += d[1];
+				}
+			}
+		}
+		return out;
+	}
+	,hostile: function(b,c,side) {
+		if(c < 0) {
+			return false;
+		}
+		if(b[c] != 0) {
+			return (b[c] > 0 ? 1 : -1) == side;
+		}
+		return this.restricted(c);
+	}
+	,kingSq: function(b) {
+		var _g = 0;
+		var _g1 = this.n * this.n;
+		while(_g < _g1) {
+			var c = _g++;
+			if(b[c] == 2) {
+				return c;
+			}
+		}
+		return -1;
+	}
+	,apply: function(s,m) {
+		var _gthis = this;
+		var b = s.b.slice();
+		var side = s.turn;
+		var t = m.t;
+		b[t] = b[m.f];
+		b[m.f] = 0;
+		var _g = 0;
+		var _g1 = Tafl.D;
+		while(_g < _g1.length) {
+			var d = _g1[_g];
+			++_g;
+			var x = t % this.n + d[0];
+			var y = (t / this.n | 0) + d[1];
+			var a = x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x;
+			if(a < 0) {
+				continue;
+			}
+			if(b[a] == 0 || b[a] == 2 || (b[a] > 0 ? 1 : -1) == side) {
+				continue;
+			}
+			var x1 = t % this.n + 2 * d[0];
+			var y1 = (t / this.n | 0) + 2 * d[1];
+			var c2 = x1 < 0 || y1 < 0 || x1 >= this.n || y1 >= this.n ? -1 : y1 * this.n + x1;
+			if(this.hostile(b,c2,side)) {
+				b[a] = 0;
+			}
+		}
+		var kc = false;
+		if(side == -1) {
+			var k = this.kingSq(b);
+			if(k >= 0) {
+				var att = function(c) {
+					if(c >= 0) {
+						if(b[c] != -1) {
+							return c == _gthis.throne;
+						} else {
+							return true;
+						}
+					} else {
+						return false;
+					}
+				};
+				var x = k % this.n;
+				var y = k / this.n | 0;
+				var near = k == this.throne || Math.abs(x - this.throne % this.n) + Math.abs(y - (this.throne / this.n | 0)) == 1;
+				if(this.hnef) {
+					var edge = x == 0 || y == 0 || x == this.n - 1 || y == this.n - 1;
+					var tmp;
+					var tmp1;
+					var tmp2;
+					var tmp3;
+					if(!edge) {
+						var x1 = x + 1;
+						tmp3 = att(x1 < 0 || y < 0 || x1 >= this.n || y >= this.n ? -1 : y * this.n + x1);
+					} else {
+						tmp3 = false;
+					}
+					if(tmp3) {
+						var x1 = x - 1;
+						tmp2 = att(x1 < 0 || y < 0 || x1 >= this.n || y >= this.n ? -1 : y * this.n + x1);
+					} else {
+						tmp2 = false;
+					}
+					if(tmp2) {
+						var y1 = y + 1;
+						tmp1 = att(x < 0 || y1 < 0 || x >= this.n || y1 >= this.n ? -1 : y1 * this.n + x);
+					} else {
+						tmp1 = false;
+					}
+					if(tmp1) {
+						var y1 = y - 1;
+						tmp = att(x < 0 || y1 < 0 || x >= this.n || y1 >= this.n ? -1 : y1 * this.n + x);
+					} else {
+						tmp = false;
+					}
+					if(tmp) {
+						kc = true;
+					}
+				} else if(near) {
+					var tmp;
+					var tmp1;
+					var tmp2;
+					var x1 = x + 1;
+					if(att(x1 < 0 || y < 0 || x1 >= this.n || y >= this.n ? -1 : y * this.n + x1)) {
+						var x1 = x - 1;
+						tmp2 = att(x1 < 0 || y < 0 || x1 >= this.n || y >= this.n ? -1 : y * this.n + x1);
+					} else {
+						tmp2 = false;
+					}
+					if(tmp2) {
+						var y1 = y + 1;
+						tmp1 = att(x < 0 || y1 < 0 || x >= this.n || y1 >= this.n ? -1 : y1 * this.n + x);
+					} else {
+						tmp1 = false;
+					}
+					if(tmp1) {
+						var y1 = y - 1;
+						tmp = att(x < 0 || y1 < 0 || x >= this.n || y1 >= this.n ? -1 : y1 * this.n + x);
+					} else {
+						tmp = false;
+					}
+					if(tmp) {
+						kc = true;
+					}
+				} else {
+					var h = function(c) {
+						if(c >= 0) {
+							if(b[c] != -1) {
+								if(c == _gthis.throne) {
+									return b[c] == 0;
+								} else {
+									return false;
+								}
+							} else {
+								return true;
+							}
+						} else {
+							return false;
+						}
+					};
+					var tmp;
+					var tmp1;
+					var x1 = x + 1;
+					if(h(x1 < 0 || y < 0 || x1 >= this.n || y >= this.n ? -1 : y * this.n + x1)) {
+						var x1 = x - 1;
+						tmp1 = h(x1 < 0 || y < 0 || x1 >= this.n || y >= this.n ? -1 : y * this.n + x1);
+					} else {
+						tmp1 = false;
+					}
+					if(!tmp1) {
+						var y1 = y + 1;
+						if(h(x < 0 || y1 < 0 || x >= this.n || y1 >= this.n ? -1 : y1 * this.n + x)) {
+							var y1 = y - 1;
+							tmp = h(x < 0 || y1 < 0 || x >= this.n || y1 >= this.n ? -1 : y1 * this.n + x);
+						} else {
+							tmp = false;
+						}
+					} else {
+						tmp = true;
+					}
+					if(tmp) {
+						kc = true;
+					}
+				}
+				if(kc) {
+					b[k] = 0;
+				}
+			}
+		}
+		return { b : b, turn : -side, kc : kc};
+	}
+	,over: function(s,ms) {
+		if(s.kc == true) {
+			return { w : -1, why : "o rei foi capturado"};
+		}
+		var b = s.b;
+		var k = this.kingSq(b);
+		if(k >= 0 && this.goal(k)) {
+			return { w : 1, why : this.hnef ? "o rei chegou a um canto" : "o rei chegou à borda"};
+		}
+		var att = 0;
+		var _g = 0;
+		while(_g < b.length) {
+			var p = b[_g];
+			++_g;
+			if(p == -1) {
+				++att;
+			}
+		}
+		if(att == 0) {
+			return { w : 1, why : "todos os atacantes capturados"};
+		}
+		if(ms.length == 0) {
+			return { w : -s.turn, why : "sem lances"};
+		}
+		return null;
+	}
+	,escapes: function(b,k) {
+		var one = 0;
+		var two = 0;
+		var _g = 0;
+		var _g1 = Tafl.D;
+		while(_g < _g1.length) {
+			var d = _g1[_g];
+			++_g;
+			var x = k % this.n + d[0];
+			var y = (k / this.n | 0) + d[1];
+			while(true) {
+				var t = x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x;
+				if(t < 0 || b[t] != 0) {
+					break;
+				}
+				if(this.goal(t)) {
+					++one;
+				} else if(!this.restricted(t)) {
+					var _g2 = 0;
+					var _g3 = Tafl.D;
+					while(_g2 < _g3.length) {
+						var e = _g3[_g2];
+						++_g2;
+						if(e[0] == -d[0] && e[1] == -d[1]) {
+							continue;
+						}
+						var xx = t % this.n + e[0];
+						var yy = (t / this.n | 0) + e[1];
+						while(true) {
+							var u = xx < 0 || yy < 0 || xx >= this.n || yy >= this.n ? -1 : yy * this.n + xx;
+							if(u < 0 || b[u] != 0) {
+								break;
+							}
+							if(this.goal(u)) {
+								++two;
+								break;
+							}
+							xx += e[0];
+							yy += e[1];
+						}
+					}
+				}
+				x += d[0];
+				y += d[1];
+			}
+		}
+		return [one,two];
+	}
+	,'eval': function(s) {
+		var b = s.b;
+		var def = 0;
+		var att = 0;
+		var _g = 0;
+		while(_g < b.length) {
+			var p = b[_g];
+			++_g;
+			if(p == 1) {
+				++def;
+			}
+			if(p == -1) {
+				++att;
+			}
+		}
+		var v = def * 130.0 - att * 100.0;
+		var k = this.kingSq(b);
+		if(k < 0) {
+			return -100000;
+		}
+		var e = this.escapes(b,k);
+		v += e[0] >= 2 ? 3000 : e[0] * 600;
+		v += Math.min(e[1],4) * 70;
+		var x = k % this.n;
+		var y = k / this.n | 0;
+		var _g = 0;
+		var _g1 = Tafl.D;
+		while(_g < _g1.length) {
+			var d = _g1[_g];
+			++_g;
+			var x1 = x + d[0];
+			var y1 = y + d[1];
+			var c = x1 < 0 || y1 < 0 || x1 >= this.n || y1 >= this.n ? -1 : y1 * this.n + x1;
+			if(c >= 0 && b[c] == -1) {
+				v -= 55;
+			}
+		}
+		var mid = (this.n - 1) / 2;
+		v += (Math.abs(x - mid) + Math.abs(y - mid)) * 12;
+		if(this.hnef) {
+			var cc = 1 >= this.n || 1 >= this.n ? -1 : this.n + 1;
+			if(b[cc] == -1) {
+				v -= 25;
+			}
+			var y = this.n - 2;
+			var cc = y < 0 || 1 >= this.n || y >= this.n ? -1 : y * this.n + 1;
+			if(b[cc] == -1) {
+				v -= 25;
+			}
+			var x = this.n - 2;
+			var cc = x < 0 || x >= this.n || 1 >= this.n ? -1 : this.n + x;
+			if(b[cc] == -1) {
+				v -= 25;
+			}
+			var x = this.n - 2;
+			var y = this.n - 2;
+			var cc = x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x;
+			if(b[cc] == -1) {
+				v -= 25;
+			}
+		}
+		return v;
+	}
+	,order: function(s,ms) {
+		var b = s.b;
+		var side = s.turn;
+		var k = this.kingSq(b);
+		var _g = [];
+		var _g1 = 0;
+		while(_g1 < ms.length) {
+			var m = ms[_g1];
+			++_g1;
+			var t = m.t;
+			var v = 0;
+			if(b[m.f] == 2) {
+				v += this.goal(t) ? 100000 : 40;
+			}
+			if(k >= 0 && Math.abs(t % this.n - k % this.n) + Math.abs((t / this.n | 0) - (k / this.n | 0)) == 1) {
+				v += 30;
+			}
+			var _g2 = 0;
+			var _g3 = Tafl.D;
+			while(_g2 < _g3.length) {
+				var d = _g3[_g2];
+				++_g2;
+				var x = t % this.n + d[0];
+				var y = (t / this.n | 0) + d[1];
+				var a = x < 0 || y < 0 || x >= this.n || y >= this.n ? -1 : y * this.n + x;
+				var tmp;
+				if(a >= 0 && b[a] != 0 && b[a] != 2 && (b[a] > 0 ? 1 : -1) != side) {
+					var x1 = t % this.n + 2 * d[0];
+					var y1 = (t / this.n | 0) + 2 * d[1];
+					tmp = this.hostile(b,x1 < 0 || y1 < 0 || x1 >= this.n || y1 >= this.n ? -1 : y1 * this.n + x1,side);
+				} else {
+					tmp = false;
+				}
+				if(tmp) {
+					v += 500;
+				}
+			}
+			_g.push(v);
+		}
+		var sc = _g;
+		var _g = [];
+		var _g1 = 0;
+		var _g2 = ms.length;
+		while(_g1 < _g2) {
+			var i = _g1++;
+			_g.push(i);
+		}
+		var idx = _g;
+		idx.sort(function(a,c) {
+			return sc[c] - sc[a];
+		});
+		var _g = [];
+		var _g1 = 0;
+		while(_g1 < idx.length) {
+			var i = idx[_g1];
+			++_g1;
+			_g.push(ms[i]);
+		}
+		return _g;
+	}
+	,cfg: function(level) {
+		return [[0.0,0,0],[1.0,300,60],[2.0,1200,0],[4.0,3000,0],[6.0,4500,0]][level];
+	}
+	,nm: function(c) {
+		return "abcdefghijk".charAt(c % this.n) + (this.n - (c / this.n | 0));
+	}
+	,label: function(s,m) {
+		var b = s.b;
+		return (b[m.f] == 2 ? "Rei " : "") + this.nm(m.f) + "-" + this.nm(m.t);
+	}
+	,key: function(s) {
+		return s.b.join("") + Std.string(s.turn);
+	}
+	,status: function(s) {
+		var b = s.b;
+		var d = 0;
+		var a = 0;
+		var _g = 0;
+		while(_g < b.length) {
+			var p = b[_g];
+			++_g;
+			if(p == 1) {
+				++d;
+			}
+			if(p == -1) {
+				++a;
+			}
+		}
+		return "Defensores " + d + " + rei · Atacantes " + a;
+	}
+	,svg: function(s,ui) {
+		var _gthis = this;
+		var b = s.b;
+		var flip = ui.flip == true;
+		var c = 900.0 / this.n;
+		var o = 30.0;
+		var size = o * 2 + 900;
+		var P = function(q) {
+			var x = flip ? _gthis.n - 1 - q % _gthis.n : q % _gthis.n;
+			var y = flip ? _gthis.n - 1 - (q / _gthis.n | 0) : q / _gthis.n | 0;
+			return [o + x * c + c / 2,o + y * c + c / 2];
+		};
+		var sb_b = "";
+		sb_b += Std.string("<svg viewBox=\"0 0 " + size + " " + size + "\">" + World.DEFS);
+		sb_b += Std.string("<rect width=\"" + size + "\" height=\"" + size + "\" rx=\"20\" fill=\"#3b2a1a\"/>");
+		var _g = 0;
+		var _g1 = this.n * this.n;
+		while(_g < _g1) {
+			var q = _g++;
+			var a = P(q);
+			var sp = this.restricted(q) || !this.hnef && this.goal(q) && false;
+			sb_b += Std.string("<rect x=\"" + (a[0] - c / 2) + "\" y=\"" + (a[1] - c / 2) + "\" width=\"" + c + "\" height=\"" + c + "\" fill=\"" + ((q % this.n + (q / this.n | 0)) % 2 == 0 ? "#e8d4a6" : "#dcc493") + "\" stroke=\"#7a5a32\" stroke-width=\"1.5\"/>");
+			if(sp) {
+				sb_b += Std.string("<rect x=\"" + (a[0] - c / 2 + 4) + "\" y=\"" + (a[1] - c / 2 + 4) + "\" width=\"" + (c - 8) + "\" height=\"" + (c - 8) + "\" fill=\"#9c6b3a\" opacity=\".55\"/><path d=\"M" + (a[0] - c * .3) + "," + (a[1] - c * .3) + "L" + (a[0] + c * .3) + "," + (a[1] + c * .3) + "M" + (a[0] + c * .3) + "," + (a[1] - c * .3) + "L" + (a[0] - c * .3) + "," + (a[1] + c * .3) + "\" stroke=\"#5b3714\" stroke-width=\"3\"/>");
+			}
+		}
+		if(!this.hnef) {
+			sb_b += Std.string("<rect x=\"" + o + "\" y=\"" + o + "\" width=\"900\" height=\"900\" fill=\"none\" stroke=\"#c8963a\" stroke-width=\"5\" stroke-dasharray=\"14 8\" opacity=\".8\"/>");
+		}
+		sb_b += Std.string(World.marks(ui,P,c * 0.46));
+		var _g = 0;
+		var _g1 = this.n * this.n;
+		while(_g < _g1) {
+			var q = _g++;
+			if(b[q] != 0) {
+				var a = P(q);
+				sb_b += Std.string(World.disc(a[0],a[1],c * 0.38,b[q] > 0,b[q] == 2));
+			}
+		}
+		sb_b += Std.string(World.targetMarks(ui,P,c * 0.46));
+		if(ui.thumb != true) {
+			var _g = 0;
+			var _g1 = this.n * this.n;
+			while(_g < _g1) {
+				var q = _g++;
+				var a = P(q);
+				sb_b += Std.string(World.hit(q,a[0] - c / 2,a[1] - c / 2,c,c));
+			}
+		}
+		sb_b += "</svg>";
+		return sb_b;
+	}
+});
 var Evo = function() { };
 Evo.__name__ = true;
 Evo.applyTheme = function() {
@@ -19411,6 +24685,11 @@ haxe_ds_IntMap.prototype = {
 		delete(this.h[key]);
 		return true;
 	}
+	,keys: function() {
+		var a = [];
+		for( var key in this.h ) if(this.h.hasOwnProperty(key)) a.push(+key);
+		return new haxe_iterators_ArrayIterator(a);
+	}
 };
 var haxe_ds_StringMap = function() {
 	this.h = Object.create(null);
@@ -19446,11 +24725,26 @@ haxe_Resource.content = [];
 if(typeof(performance) != "undefined" ? typeof(performance.now) == "function" : false) {
 	HxOverrides.now = performance.now.bind(performance);
 }
-Ancient.GAMES = [{ id : "chaturanga", name : "Chaturanga", era : "Índia · por volta do século VI", board : "anc", marks : true, setup : "rnefkenr/pppppppp/8/8/8/8/PPPPPPPP/RNEFKENR", disp : "kfenrp", promo : 7, stale : "stalemated", bare : true, count : 0, names : ["","Padati (soldado)","Ashva (cavalo)","Gaja (elefante)","Ratha (carro de guerra)","Mantri (conselheiro)","Raja (rei)",""], story : ["O chaturanga nasceu no norte da Índia, na época do Império Gupta, por volta do século VI. O nome em sânscrito quer dizer \"quatro partes\": as quatro divisões do exército indiano, infantaria, cavalaria, elefantes e carros de guerra.","Era jogado no ashtapada, um tabuleiro de 8 x 8 casas sem cores alternadas, que já servia a um jogo de corrida. As casas marcadas com um X são tradição desse tabuleiro: o historiador H. J. R. Murray notou que elas coincidem com casas que os elefantes nunca alcançam.","Nenhum livro com as regras completas sobreviveu. O que se joga hoje é uma reconstrução feita por historiadores a partir do shatranj, seu sucessor. A maior dúvida é o elefante: textos antigos descrevem três movimentos diferentes; aqui ele salta duas casas na diagonal, o movimento considerado mais antigo.","O escritor árabe al-Adli, no século IX, registrou duas regras curiosas que vieram da Índia: quem fica afogado (sem lances, mas sem estar em xeque) vence a partida, e quem perde todas as peças, ficando só com o rei, perde."], rules : ["Vence quem der xeque-mate no rei adversário (o raja).","Afogamento: se você deixar o adversário sem lances sem dar xeque, ele vence! Cuidado no final.","Rei despido: capturar todas as peças do adversário, deixando só o rei, também vence (se ele não puder despir o seu rei no lance seguinte; nesse caso é empate).","Não há roque, nem avanço de duas casas do peão, nem captura en passant.","O soldado que chega à última fileira vira mantri (conselheiro)."]},{ id : "shatranj", name : "Shatranj (chatrang)", era : "Pérsia e mundo árabe · séculos VII a XV", board : "anc", marks : false, setup : "rnefkenr/pppppppp/8/8/8/8/PPPPPPPP/RNEFKENR", disp : "kfenrp", promo : 7, stale : "stalemater", bare : true, count : 0, names : ["","Baidaq (soldado)","Faras (cavalo)","Fil ou alfil (elefante)","Rukh (carro)","Firzan (vizir)","Shah (rei)",""], story : ["Da Índia o jogo chegou à Pérsia dos sassânidas, onde virou chatrang. Um poema persa conta que um rei indiano enviou o jogo ao rei Cosroes I como desafio: se os sábios persas não descobrissem as regras, a Pérsia pagaria tributo. O sábio Bozorgmehr decifrou o jogo e respondeu inventando o nard, ancestral do gamão.","Depois da conquista árabe da Pérsia, no século VII, o jogo se espalhou pelo mundo islâmico com o nome de shatranj. O rei era o shah, e \"shah mat\" (o rei está indefeso) virou a nossa palavra xeque-mate.","Foi a primeira grande era de mestres. Al-Adli e as-Suli (século X) escreveram livros, criaram problemas (os mansubat) e estudaram aberturas, as ta'biyat. As-Suli avaliava as peças assim: rukh 5, faras 3 e 1/3, firzan 1 e 2/3, alfil 1 e 1/4, soldado do centro 1 e 1/4.","Sem dama e sem bispo de longo alcance, as partidas eram lentas e estratégicas. Por isso o afogamento e o rei despido valiam a vitória: eram jeitos de vencer finais que o xeque-mate sozinho não resolveria."], rules : ["Vence quem der xeque-mate no shah.","Afogamento: quem deixa o adversário sem lances vence.","Rei despido: quem captura todas as peças do outro, deixando só o rei, vence, salvo se o outro puder despir o seu rei no lance seguinte (empate).","Firzan anda uma casa na diagonal; o alfil salta exatamente duas casas na diagonal, por cima de qualquer peça.","Sem roque, sem avanço duplo do peão; o soldado vira firzan na última fileira."]},{ id : "medieval", name : "Xadrez medieval europeu", era : "Europa · por volta de 1000 a 1475", board : "med", marks : false, setup : "rnefkenr/pppppppp/8/8/8/8/PPPPPPPP/RNEFKENR", disp : "kfbnrp", promo : 7, stale : "stalemater", bare : true, count : 0, names : ["","Peão","Cavalo","Alfil (o futuro bispo)","Roque (torre)","Alferza ou fers (a futura dama)","Rei",""], story : ["Por volta do ano 1000 o jogo entrou na Europa pela Península Ibérica, governada pelos mouros, e pela Itália. As peças ganharam nomes europeus: o firzan virou fers ou alferza e, depois, regina (a rainha); o alfil manteve o nome no espanhol e no português e virou o bispo em outras línguas; o rukh virou roque.","Os europeus passaram a pintar o tabuleiro com casas claras e escuras, como usamos até hoje, e o jogo virou parte da educação dos nobres. Em 1283, o rei Afonso X de Castela mandou fazer o Libro de los juegos, com mais de cem problemas de xadrez.","As regras eram praticamente as do shatranj, com variações de região para região. Em 1475, na Espanha, a alferza ganhou o movimento da dama atual e o alfil passou a correr a diagonal inteira: nasceu o xadrez moderno, chamado na época de \"xadrez da dama louca\"."], rules : ["Vence quem der xeque-mate. Como no shatranj, afogar o rei adversário e despir o rei também dão vitória.","A alferza (fers) anda só uma casa na diagonal: ainda não é a dama poderosa de hoje.","O alfil salta duas casas na diagonal. Aqui ele aparece com o desenho do bispo, que herdou o seu lugar.","Sem roque e sem avanço duplo do peão; o peão vira alferza na última fileira."]},{ id : "makruk", name : "Makruk (xadrez tailandês)", era : "Tailândia · jogado até hoje", board : "anc", marks : false, setup : "rnsqksnr/8/pppppppp/8/8/PPPPPPPP/8/RNSKQSNR", disp : "kfsnrp", promo : 5, stale : "draw", bare : false, count : 64, names : ["","Bia (concha de búzio)","Ma (cavalo)","","Ruea (barco)","Met (semente)","Khun (senhor)","Khon (nobre)"], story : ["O makruk é o parente vivo mais próximo do chaturanga. O jogo seguiu da Índia para o Sudeste Asiático e se manteve quase igual por séculos. Na Tailândia, ele é mais jogado do que o xadrez ocidental.","As peças têm nomes do cotidiano: khun (senhor), met (semente ou caroço de fruta), khon (nobre, ou a máscara do teatro clássico tailandês), ma (cavalo), ruea (barco) e bia, as conchas de búzio usadas como peões. Quando promove, o bia é virado de cabeça para baixo: vira o bia ngai, a \"concha virada\".","Os peões começam na terceira fileira e promovem logo na sexta. Os reis não ficam frente a frente: o khun branco começa em d1 e o preto em e8. O khon anda como o elefante de algumas regiões da Índia, uma casa na diagonal ou uma para a frente."], rules : ["Vence quem der xeque-mate no khun. Afogamento é empate.","Met: uma casa na diagonal. Khon: uma casa na diagonal ou uma casa para a frente.","O bia anda uma casa para a frente, captura na diagonal e vira met ao chegar à sexta fileira.","No final, a regra de contagem tailandesa dá empate a quem resiste; aqui ela foi simplificada: 64 lances de cada lado sem captura nem lance de peão terminam empatados."]}];
+Ancient.GAMES = [{ id : "chaturanga", name : "Chaturanga", era : "Índia · por volta do século VI", board : "anc", marks : true, setup : "rnefkenr/pppppppp/8/8/8/8/PPPPPPPP/RNEFKENR", disp : "kfenrp", promo : 7, stale : "stalemated", bare : true, count : 0, names : ["","Padati (soldado)","Ashva (cavalo)","Gaja (elefante)","Ratha (carro de guerra)","Mantri (conselheiro)","Raja (rei)",""], story : ["O chaturanga nasceu no norte da Índia, na época do Império Gupta, por volta do século VI. O nome em sânscrito quer dizer \"quatro partes\": as quatro divisões do exército indiano, infantaria, cavalaria, elefantes e carros de guerra.","Era jogado no ashtapada, um tabuleiro de 8 x 8 casas sem cores alternadas, que já servia a um jogo de corrida. As casas marcadas com um X são tradição desse tabuleiro: o historiador H. J. R. Murray notou que elas coincidem com casas que os elefantes nunca alcançam.","Nenhum livro com as regras completas sobreviveu. O que se joga hoje é uma reconstrução feita por historiadores a partir do shatranj, seu sucessor. A maior dúvida é o elefante: textos antigos descrevem três movimentos diferentes; aqui ele salta duas casas na diagonal, o movimento considerado mais antigo.","O escritor árabe al-Adli, no século IX, registrou duas regras curiosas que vieram da Índia: quem fica afogado (sem lances, mas sem estar em xeque) vence a partida, e quem perde todas as peças, ficando só com o rei, perde."], rules : ["Vence quem der xeque-mate no rei adversário (o raja).","Afogamento: se você deixar o adversário sem lances sem dar xeque, ele vence! Cuidado no final.","Rei despido: capturar todas as peças do adversário, deixando só o rei, também vence (se ele não puder despir o seu rei no lance seguinte; nesse caso é empate).","Não há roque, nem avanço de duas casas do peão, nem captura en passant.","O soldado que chega à última fileira vira mantri (conselheiro)."]},{ id : "shatranj", name : "Shatranj (chatrang)", era : "Pérsia e mundo árabe · séculos VII a XV", board : "anc", marks : false, setup : "rnefkenr/pppppppp/8/8/8/8/PPPPPPPP/RNEFKENR", disp : "kfenrp", promo : 7, stale : "stalemater", bare : true, count : 0, names : ["","Baidaq (soldado)","Faras (cavalo)","Fil ou alfil (elefante)","Rukh (carro)","Firzan (vizir)","Shah (rei)",""], story : ["Da Índia o jogo chegou à Pérsia dos sassânidas, onde virou chatrang. Um poema persa conta que um rei indiano enviou o jogo ao rei Cosroes I como desafio: se os sábios persas não descobrissem as regras, a Pérsia pagaria tributo. O sábio Bozorgmehr decifrou o jogo e respondeu inventando o nard, ancestral do gamão.","Depois da conquista árabe da Pérsia, no século VII, o jogo se espalhou pelo mundo islâmico com o nome de shatranj. O rei era o shah, e \"shah mat\" (o rei está indefeso) virou a nossa palavra xeque-mate.","Foi a primeira grande era de mestres. Al-Adli e as-Suli (século X) escreveram livros, criaram problemas (os mansubat) e estudaram aberturas, as ta'biyat. As-Suli avaliava as peças assim: rukh 5, faras 3 e 1/3, firzan 1 e 2/3, alfil 1 e 1/4, soldado do centro 1 e 1/4.","Sem dama e sem bispo de longo alcance, as partidas eram lentas e estratégicas. Por isso o afogamento e o rei despido valiam a vitória: eram jeitos de vencer finais que o xeque-mate sozinho não resolveria."], rules : ["Vence quem der xeque-mate no shah.","Afogamento: quem deixa o adversário sem lances vence.","Rei despido: quem captura todas as peças do outro, deixando só o rei, vence, salvo se o outro puder despir o seu rei no lance seguinte (empate).","Firzan anda uma casa na diagonal; o alfil salta exatamente duas casas na diagonal, por cima de qualquer peça.","Sem roque, sem avanço duplo do peão; o soldado vira firzan na última fileira."]},{ id : "medieval", name : "Xadrez medieval europeu", era : "Europa · por volta de 1000 a 1475", board : "med", marks : false, setup : "rnefkenr/pppppppp/8/8/8/8/PPPPPPPP/RNEFKENR", disp : "kfbnrp", promo : 7, stale : "stalemater", bare : true, count : 0, names : ["","Peão","Cavalo","Alfil (o futuro bispo)","Roque (torre)","Alferza ou fers (a futura dama)","Rei",""], story : ["Por volta do ano 1000 o jogo entrou na Europa pela Península Ibérica, governada pelos mouros, e pela Itália. As peças ganharam nomes europeus: o firzan virou fers ou alferza e, depois, regina (a rainha); o alfil manteve o nome no espanhol e no português e virou o bispo em outras línguas; o rukh virou roque.","Os europeus passaram a pintar o tabuleiro com casas claras e escuras, como usamos até hoje, e o jogo virou parte da educação dos nobres. Em 1283, o rei Afonso X de Castela mandou fazer o Libro de los juegos, com mais de cem problemas de xadrez.","As regras eram praticamente as do shatranj, com variações de região para região. Em 1475, na Espanha, a alferza ganhou o movimento da dama atual e o alfil passou a correr a diagonal inteira: nasceu o xadrez moderno, chamado na época de \"xadrez da dama louca\"."], rules : ["Vence quem der xeque-mate. Como no shatranj, afogar o rei adversário e despir o rei também dão vitória.","A alferza (fers) anda só uma casa na diagonal: ainda não é a dama poderosa de hoje.","O alfil salta duas casas na diagonal. Aqui ele aparece com o desenho do bispo, que herdou o seu lugar.","Sem roque e sem avanço duplo do peão; o peão vira alferza na última fileira."]},{ id : "makruk", name : "Makruk (xadrez tailandês)", era : "Tailândia · jogado até hoje", board : "anc", marks : false, setup : "rnsqksnr/8/pppppppp/8/8/PPPPPPPP/8/RNSKQSNR", disp : "kfsnrp", promo : 5, stale : "draw", bare : false, count : 64, names : ["","Bia (concha de búzio)","Ma (cavalo)","","Ruea (barco)","Met (semente)","Khun (senhor)","Khon (nobre)"], story : ["O makruk é o parente vivo mais próximo do chaturanga. O jogo seguiu da Índia para o Sudeste Asiático e se manteve quase igual por séculos. Na Tailândia, ele é mais jogado do que o xadrez ocidental.","As peças têm nomes do cotidiano: khun (senhor), met (semente ou caroço de fruta), khon (nobre, ou a máscara do teatro clássico tailandês), ma (cavalo), ruea (barco) e bia, as conchas de búzio usadas como peões. Quando promove, o bia é virado de cabeça para baixo: vira o bia ngai, a \"concha virada\".","Os peões começam na terceira fileira e promovem logo na sexta. Os reis não ficam frente a frente: o khun branco começa em d1 e o preto em e8. O khon anda como o elefante de algumas regiões da Índia, uma casa na diagonal ou uma para a frente."], rules : ["Vence quem der xeque-mate no khun. Afogamento é empate.","Met: uma casa na diagonal. Khon: uma casa na diagonal ou uma casa para a frente.","O bia anda uma casa para a frente, captura na diagonal e vira met ao chegar à sexta fileira.","No final, a regra de contagem tailandesa dá empate a quem resiste; aqui ela foi simplificada: 64 lances de cada lado sem captura nem lance de peão terminam empatados."]},{ id : "sittuyin", name : "Sittuyin (xadrez birmanês)", era : "Mianmar (Birmânia) · jogo tradicional birmanês", board : "anc sit", marks : true, setup : "r6r/1nsfksn1/4pppp/pppp4/4PPPP/PPPP4/1NSKFSN1/R6R", disp : "kfsnrp", promo : -1, promoDiag : true, stale : "draw", bare : false, count : 0, names : ["","Ne (soldado)","Myin (cavalo)","","Yahhta (carro)","Sit-ke (general)","Min-gyi (rei)","Sin (elefante)"], story : ["O sittuyin é o xadrez tradicional de Mianmar, a antiga Birmânia. Como o makruk tailandês, descende do chaturanga que viajou da Índia para o Sudeste Asiático, e conserva peças fracas e de passo curto, bem parecidas com as originais.","Duas marcas o tornam único. Os soldados começam escalonados: metade na terceira fileira e metade na quarta, já quase se tocando no centro. E, no jogo tradicional, cada jogador arruma as suas peças como quiser atrás dos soldados antes da partida começar; aqui elas começam numa arrumação fixa, para você jogar na hora.","As duas grandes diagonais do tabuleiro são riscadas. Elas marcam as casas onde um soldado pode virar general, e só quando o seu general já foi capturado.","Com a chegada do xadrez internacional, o sittuyin ficou raro, mas continua lembrado como parte da cultura birmanesa."], rules : ["Vence quem der xeque-mate no min-gyi (rei). Afogamento é empate.","Sit-ke (general): uma casa na diagonal. Sin (elefante): uma casa na diagonal ou uma casa para a frente. Myin: salta em L. Yahhta: anda quantas casas quiser em linha reta.","Os soldados começam escalonados (fileiras 3 e 4) e andam uma casa para a frente, capturando na diagonal.","Promoção: o soldado que chega a uma casa das diagonais marcadas, no campo do adversário, vira sit-ke, mas só se o seu sit-ke já tiver sido capturado.","Aqui as peças começam numa arrumação fixa; no jogo tradicional, cada um arruma as suas antes de começar."]}];
 Ancient.MARKS = [0,3,4,7,24,31,32,39,27,28,35,36,56,59,60,63];
 Ancient.KN = [[1,2],[2,1],[2,-1],[1,-2],[-1,-2],[-2,-1],[-2,1],[-1,2]];
 Ancient.DG = [[1,1],[1,-1],[-1,1],[-1,-1]];
 Ancient.OR = [[1,0],[-1,0],[0,1],[0,-1]];
+Ancient.DIAG = (function($this) {
+	var $r;
+	var _g = [];
+	{
+		var _g1 = 0;
+		while(_g1 < 64) {
+			var q = _g1++;
+			if((q & 7) == q >> 3 || (q & 7) == 7 - (q >> 3)) {
+				_g.push(q);
+			}
+		}
+	}
+	$r = _g;
+	return $r;
+}(this));
 Ancient.VAL = [0,100,330,125,500,165,0,250];
 Ancient.nodes = 0;
 Ancient.deadline = 0.0;
@@ -19887,6 +25181,12 @@ Online.newColor = 1;
 Online.newPhone = "";
 Online.newName = "";
 History.PIECES = [["Raja (rei)","Shah","Rei","wK","Rei"],["Mantri (conselheiro)","Firzan (vizir)","Fers, alferza","wQ","Dama"],["Gaja (elefante)","Fil, alfil","Alfil","wB","Bispo"],["Ashva (cavalo)","Faras","Cavalo","wN","Cavalo"],["Ratha (carro)","Rukh","Roque","wR","Torre"],["Padati (soldado)","Baidaq","Peão","wP","Peão"]];
+World.LV = ["","fácil","normal","forte","mestre"];
+World.deadline = 0.0;
+World.stopped = false;
+World.nodes = 0;
+World.EURO = ["Na árvore, os jogos modernos aparecem como descendentes das Damas: herdaram a ideia do tabuleiro como território e das peças que disputam espaço. Na prática, eles formam uma família nova, nascida na Alemanha nos anos 1980 e 1990.","Os eurogames trocaram a eliminação direta por economia, construção e pontos. Ninguém sai do jogo no meio, a sorte pesa pouco e as partidas cabem numa noite. O prêmio alemão Spiel des Jahres, criado em 1979, ajudou a transformar esses jogos em cultura de família.","Como o xadrez, eles premiam o planejamento: escolher o que fazer agora pensando três rodadas à frente."];
+World.DEFS = "<defs>" + "<radialGradient id=\"wgL\" cx=\".38\" cy=\".3\" r=\".8\"><stop offset=\"0\" stop-color=\"#ffffff\"/><stop offset=\".55\" stop-color=\"#f1e6cf\"/><stop offset=\"1\" stop-color=\"#c7b48e\"/></radialGradient>" + "<radialGradient id=\"wgD\" cx=\".38\" cy=\".3\" r=\".8\"><stop offset=\"0\" stop-color=\"#6e5640\"/><stop offset=\".5\" stop-color=\"#2b1d12\"/><stop offset=\"1\" stop-color=\"#0d0805\"/></radialGradient>" + "<radialGradient id=\"wgR\" cx=\".38\" cy=\".3\" r=\".8\"><stop offset=\"0\" stop-color=\"#ff8d7a\"/><stop offset=\".55\" stop-color=\"#c3362a\"/><stop offset=\"1\" stop-color=\"#6e1610\"/></radialGradient>" + "<radialGradient id=\"wgG\" cx=\".38\" cy=\".3\" r=\".8\"><stop offset=\"0\" stop-color=\"#9fe0a6\"/><stop offset=\".55\" stop-color=\"#2f8a43\"/><stop offset=\"1\" stop-color=\"#11431e\"/></radialGradient>" + "<radialGradient id=\"wgS\" cx=\".5\" cy=\".5\" r=\".55\"><stop offset=\"0\" stop-color=\"#5a3a1a\" stop-opacity=\".55\"/><stop offset=\"1\" stop-color=\"#5a3a1a\" stop-opacity=\"0\"/></radialGradient>" + "<linearGradient id=\"wgW\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\"><stop offset=\"0\" stop-color=\"#e9c98c\"/><stop offset=\".5\" stop-color=\"#d6ad6a\"/><stop offset=\"1\" stop-color=\"#b98a4b\"/></linearGradient>" + "</defs>";
 Xiangqi.jg = false;
 Xiangqi.VAL_XQ = [0,0,200,200,400,900,450,100];
 Xiangqi.VAL_JG = [0,0,300,300,500,1300,700,200];
@@ -19911,6 +25211,56 @@ Xiangqi.deadline = 0.0;
 Xiangqi.stop = false;
 Xiangqi.latin = false;
 Xiangqi.ideo = false;
+Jump.DX = [0,1,1,1,0,-1,-1,-1];
+Jump.DY = [-1,-1,0,1,1,1,0,-1];
+Shogi.G6 = [[-1,1],[0,1],[1,1],[-1,0],[1,0],[0,-1]];
+Shogi.S5 = [[-1,1],[0,1],[1,1],[-1,-1],[1,-1]];
+Shogi.K8 = [[-1,1],[0,1],[1,1],[-1,0],[1,0],[-1,-1],[0,-1],[1,-1]];
+Shogi.DG = [[1,1],[1,-1],[-1,1],[-1,-1]];
+Shogi.OR = [[0,1],[0,-1],[1,0],[-1,0]];
+Shogi.STEPS = [[],[[0,1]],[],[[-1,2],[1,2]],Shogi.S5,Shogi.G6,[],[],Shogi.K8,Shogi.G6,Shogi.G6,Shogi.G6,Shogi.G6,Shogi.OR,Shogi.DG];
+Shogi.SLIDES = [[],[],[[0,1]],[],[],[],Shogi.DG,Shogi.OR,[],[],[],[],[],Shogi.DG,Shogi.OR];
+Shogi.VAL = [0,100,300,380,500,580,800,980,0,620,560,560,560,1050,1250];
+Shogi.KJ = ["","歩","香","桂","銀","金","角","飛","玉","と","杏","圭","全","馬","龍"];
+Shogi.LT = ["","P","L","N","S","G","B","R","K","+P","+L","+N","+S","+B","+R"];
+Shogi.PT = ["","Peão","Lança","Cavalo","Prata","Ouro","Bispo","Torre","Rei","Tokin","Lança promovida","Cavalo promovido","Prata promovida","Cavalo-dragão","Rei-dragão"];
+GoGame.KOMI = 7.0;
+GoGame.mark = (function($this) {
+	var $r;
+	var _g = [];
+	{
+		var _g1 = 0;
+		while(_g1 < 81) {
+			var i = _g1++;
+			_g.push(0);
+		}
+	}
+	$r = _g;
+	return $r;
+}(this));
+GoGame.stamp = 0;
+GoGame.stack = (function($this) {
+	var $r;
+	var _g = [];
+	{
+		var _g1 = 0;
+		while(_g1 < 82) {
+			var i = _g1++;
+			_g.push(0);
+		}
+	}
+	$r = _g;
+	return $r;
+}(this));
+GoGame.grp = [];
+Liubo.RING = [[3,6],[4,6],[5,6],[6,6],[6,5],[6,4],[6,3],[6,2],[6,1],[6,0],[5,0],[4,0],[3,0],[2,0],[1,0],[0,0],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[1,6],[2,6]];
+Liubo.SAFE = [0,6,12,18];
+Liubo.BIN = [1,6,15,20,15,6,1];
+Pachisi.VALS = [25,10,2,3,4,5,6];
+Pachisi.BIN = [1,6,15,20,15,6,1];
+Senet.SAFE = [25,27,28,29];
+Senet.R = [[1,0.25,1,1],[2,0.375,0,2],[3,0.25,0,3],[4,0.0625,1,4],[5,0.0625,1,0]];
+Tafl.D = [[1,0],[-1,0],[0,1],[0,-1]];
 Evo.BOARD_THEMES = [["madeira","Madeira clássica","#f0d9b5","#b58863"],["nogueira","Nogueira","#ecd0a4","#8a5a2e"],["verde","Verde de torneio","#eeeed2","#769656"],["ceu","Céu","#f3f7fa","#c3dbea"],["turquesa","Turquesa","#ffffff","#1cc7b1"],["lavanda","Lavanda","#efe7f6","#8f74b0"],["rubi","Rubi","#ffffff","#e5423b"],["laranja","Laranja","#ffffff","#ff8c00"],["diagrama","Diagrama de livro","#f6f5f0","#6b6b6b"],["pixel","Pixel art 8-bit","#ffe9a8","#29adff"]];
 Evo.OLD = (function($this) {
 	var $r;

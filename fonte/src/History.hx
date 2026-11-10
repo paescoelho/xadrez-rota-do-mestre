@@ -15,18 +15,28 @@ class History {
   static function board8(kind:String):String {
     var s = new StringBuf();
     s.add('<svg viewBox="0 0 80 80">');
-    var plain = kind == "chaturanga" || kind == "shatranj" || kind == "makruk";
-    var base = kind == "shatranj" ? "#c9a36a" : (kind == "makruk" ? "#dcb877" : "#e3c792");
+    var plain = kind == "chaturanga" || kind == "shatranj" || kind == "makruk" || kind == "sittuyin";
+    var base = kind == "shatranj" ? "#c9a36a" : (kind == "makruk" ? "#dcb877" : (kind == "sittuyin" ? "#d8b07a" : "#e3c792"));
     for (r in 0...8) for (f in 0...8) {
       var dk = ((r + f) & 1) == 1;
       var c = plain ? base : (kind == "medieval" ? (dk ? "#8f5f37" : "#ead9b0") : (dk ? "#b58863" : "#f0d9b5"));
       s.add('<rect x="' + f * 10 + '" y="' + r * 10 + '" width="10" height="10" fill="' + c + '"' + (plain ? ' stroke="#6d4512" stroke-width=".35"' : '') + '/>');
     }
     if (kind == "chaturanga") for (q in Ancient.MARKS) { var x = (q & 7) * 10; var y = (7 - (q >> 3)) * 10; s.add('<path d="M' + (x + 2) + ' ' + (y + 2) + 'l6 6M' + (x + 8) + ' ' + (y + 2) + 'l-6 6" stroke="#7a4e22" stroke-width=".7" opacity=".7"/>'); }
+    if (kind == "sittuyin") {
+      s.add('<path d="M0 80L80 0M0 0L80 80" stroke="#7a4e22" stroke-width=".8" opacity=".75"/>');
+      for (f in 0...8) {
+        var low = f < 4;
+        s.add(disc(f * 10 + 5, (low ? 5 : 4) * 10 + 5, 2.5, true)); s.add(disc(f * 10 + 5, (low ? 3 : 2) * 10 + 5, 2.5, false));
+        if (f == 0 || f == 7) { s.add(disc(f * 10 + 5, 75, 3.6, true)); s.add(disc(f * 10 + 5, 5, 3.6, false)); }
+        else { s.add(disc(f * 10 + 5, 65, 3.6, true)); s.add(disc(f * 10 + 5, 15, 3.6, false)); }
+      }
+    } else {
     var pawnW = kind == "makruk" ? 5 : 6; var pawnB = kind == "makruk" ? 2 : 1;
     for (f in 0...8) {
       s.add(disc(f * 10 + 5, 75, 3.6, true)); s.add(disc(f * 10 + 5, 5, 3.6, false));
       s.add(disc(f * 10 + 5, pawnW * 10 + 5, 2.5, true)); s.add(disc(f * 10 + 5, pawnB * 10 + 5, 2.5, false));
+    }
     }
     s.add('<rect x="0" y="0" width="80" height="80" fill="none" stroke="#3a2510" stroke-width="2"/></svg>');
     return s.toString();
@@ -72,10 +82,19 @@ class History {
           case "chaturanga": "Índia · século VI · tabuleiro sem cores, o ashtapada";
           case "shatranj": "Pérsia e mundo árabe · séculos VII a XV";
           case "medieval": "Europa · por volta de 1000 a 1475 · surge o tabuleiro bicolor";
+          case "sittuyin": "Mianmar · soldados escalonados e promoção nas diagonais";
           default: "Tailândia · o parente vivo mais próximo do chaturanga";
         };
         Ui.gameCard(board8(id), g.name, sub, function() Ancient.info(id), function() Ancient.quick(id));
     }
+  }
+
+  /* cartão de um jogo do World (árvore genealógica) */
+  static function wcard(id:String) {
+    #if js
+    var x = World.get(id); if (x == null) return;
+    Ui.gameCard(World.thumb(id), x.name, x.era, function() World.info(id), function() World.quick(id));
+    #end
   }
 
   /* ---------- figuras ---------- */
@@ -117,23 +136,25 @@ class History {
       case "moderno": App.setupGame();
       case "xiangqi": Xiangqi.quick(false);
       case "janggi": Xiangqi.quick(true);
-      default: Ancient.quick(id);
+      case "eurogames": World.euro();
+      case "chaturanga" | "shatranj" | "medieval" | "makruk" | "sittuyin": Ancient.quick(id);
+      default: if (World.get(id) != null) World.quick(id) else World.info(id);
     }
   }
   static function genealogy():String {
     var nodes:Array<Array<Dynamic>> = [
-      ["mancala", "Mancala", "África · Antiguidade", 24, 155, 150, 135, "", false],
+      ["mancala", "Mancala", "África · Antiguidade", 24, 155, 150, 135, "", true],
       ["chaturanga", "Chaturanga", "Índia · séc. VI d.C.", 275, 145, 210, 160, "main", true],
       ["xiangqi", "Xiangqi", "China · séc. X d.C.", 14, 390, 140, 142, "", true],
       ["janggi", "Janggi", "Coreia", 165, 390, 140, 142, "", true],
       ["shatranj", "Shatranj", "Pérsia · séc. VII d.C.", 316, 390, 140, 142, "", true],
-      ["makruk", "Makruk", "Tailândia · séc. X d.C.", 467, 390, 140, 142, "", true],
-      ["shogi", "Shogi", "Japão · séc. X–XV d.C.", 618, 390, 128, 142, "", false],
-      ["chineses", "Origens chinesas antigas", "Go · Weiqi / Liubo", 15, 680, 145, 192, "", false],
+      ["makruk", "Makruk", "Tailândia · Mianmar", 467, 390, 140, 142, "", [["makruk", "makruk"], ["sittuyin", "sittuyin"]]],
+      ["shogi", "Shogi", "Japão · séc. X–XV d.C.", 618, 390, 128, 142, "", true],
+      ["chineses", "Origens chinesas antigas", "Go · Weiqi / Liubo", 15, 680, 145, 192, "", [["go", "go"], ["liubo", "liubo"]]],
       ["medieval", "Xadrez medieval", "Europa · séc. VIII–XV", 220, 710, 165, 150, "", true],
-      ["alquerque", "Alquerque", "Norte da África · Espanha", 425, 710, 145, 150, "", false],
-      ["fierges", "Fierges", "Precursor das damas", 600, 710, 145, 150, "", false],
-      ["damas", "Damas", "Oriente Médio · Europa · séc. XIII", 600, 918, 145, 135, "", false],
+      ["alquerque", "Alquerque", "Norte da África · Espanha", 425, 710, 145, 150, "", true],
+      ["fierges", "Fierges", "Precursor das damas", 600, 710, 145, 150, "", true],
+      ["damas", "Damas", "Modo mestre · desafio", 600, 918, 145, 135, "", true],
       ["moderno", "Xadrez moderno", "Internacional · séc. XV d.C.", 275, 1110, 210, 165, "modern", true]
     ];
     var paths = [
@@ -152,16 +173,23 @@ class History {
     for (n in nodes) {
       out += '<div class="genealogy-node ' + n[7] + '" style="left:' + n[3] + 'px;top:' + n[4] + 'px;width:' + n[5] + 'px;height:' + n[6] + 'px">';
       out += '<div class="genealogy-board" aria-hidden="true"></div><div class="genealogy-name">' + n[1] + '</div><div class="genealogy-desc">' + n[2] + '</div>';
-      if (n[8] == true) out += '<button class="genealogy-play" type="button" data-game="' + n[0] + '">▶ jogar</button>';
+      var bt:Dynamic = n[8];
+      if (bt == true) out += '<button class="genealogy-play" type="button" data-game="' + n[0] + '">▶ jogar</button>';
+      else if (bt != false && bt != null) {
+        var arr:Array<Dynamic> = bt;
+        out += '<div class="genealogy-plays">';
+        for (x in arr) out += '<button class="genealogy-play sm" type="button" data-game="' + x[0] + '">▶ ' + x[1] + '</button>';
+        out += '</div>';
+      }
       out += '</div>';
     }
     var tags:Array<Array<Dynamic>> = [["Primo distante", 565, 188], ["Ancestral direto", 330, 348], ["Primos · Sudeste Asiático", 524, 362], ["Irmãos paralelos", 140, 355], ["Linhagem direta", 345, 655], ["Descendente direto", 290, 1058]];
     for (t in tags) out += '<span class="genealogy-tag" style="left:' + t[1] + 'px;top:' + t[2] + 'px">' + t[0] + '</span>';
     out += '<div class="genealogy-group" style="left:15px;top:1100px;width:190px;height:285px">PRIMOS ANTIGOS<div class="genealogy-small">';
-    for (x in [["Pachisi", "▦"], ["Senet", "▤"], ["Tafl", "♜"], ["Tablut", "♟"]]) out += '<div class="genealogy-mini"><span class="mini-icon">' + x[1] + '</span>' + x[0] + '</div>';
+    for (x in [["Pachisi", "▦", "pachisi"], ["Senet", "▤", "senet"], ["Tafl", "♜", "tafl"], ["Tablut", "♟", "tablut"]]) out += '<button type="button" class="genealogy-mini genealogy-go" data-game="' + x[2] + '"><span class="mini-icon">' + x[1] + '<i>▶</i></span>' + x[0] + '</button>';
     out += '</div></div>';
     out += '<div class="genealogy-group" style="left:530px;top:1100px;width:215px;height:285px">JOGOS MODERNOS<div class="genealogy-small">';
-    for (x in [["Scotland Yard", "◎"], ["Carcassonne", "▣"], ["Catan", "⬡"], ["Terra Mystica", "✥"]]) out += '<div class="genealogy-mini"><span class="mini-icon">' + x[1] + '</span>' + x[0] + '</div>';
+    for (x in [["Scotland Yard", "◎"], ["Carcassonne", "▣"], ["Catan", "⬡"], ["Terra Mystica", "✥"]]) out += '<button type="button" class="genealogy-mini genealogy-go info" data-game="eurogames"><span class="mini-icon">' + x[1] + '<i>i</i></span>' + x[0] + '</button>';
     out += '</div></div></div>';
     return out;
   }
@@ -209,12 +237,12 @@ class History {
     Ui.page("História do xadrez", App.menu);
     Ui.group("callout", function() {
       Ui.p("Uma história que se joga", "gold big");
-      Ui.p("Os ancestrais e os primos do xadrez estão aqui com regras, peças e partidas contra o computador: chaturanga, shatranj, xadrez medieval, makruk, xiangqi e janggi.", "");
+      Ui.p("Os ancestrais e os primos do xadrez estão aqui com regras, peças e partidas contra o computador: 18 jogos, do senet dos faraós às damas, passando por chaturanga, shatranj, xiangqi, shogi e go.", "");
       Ui.p("Toque no tabuleiro para conhecer o jogo ou em Jogar para começar uma partida na hora.", "muted small");
     });
     #if js
     Ui.html(genealogy(), "genealogy-figure");
-    var pl = Ui.cur.querySelectorAll(".genealogy-play");
+    var pl = Ui.cur.querySelectorAll(".genealogy-play,.genealogy-go");
     for (i in 0...pl.length) {
       var e:js.html.Element = cast pl.item(i); var id = e.getAttribute("data-game");
       e.onclick = function(_) treePlay(id);
@@ -226,6 +254,8 @@ class History {
     chap("Antes do xadrez", [
       "Jogos de tabuleiro são muito mais antigos que o xadrez. O senet egípcio e o Jogo Real de Ur, da Mesopotâmia, têm mais de 4.500 anos, mas eram corridas decididas por dados.",
       "Na Índia, o ashtapada, um tabuleiro de 8 x 8 casas sem cores, também servia a jogos de corrida. A grande invenção foi trocar a sorte dos dados por um exército em miniatura, em que cada peça tem um movimento próprio e a vitória depende só do raciocínio."]);
+
+    wcard("senet");
 
     chap("Índia: o chaturanga (século VI)", [
       "O chaturanga nasceu no norte da Índia, na época do Império Gupta. Em sânscrito, o nome quer dizer \"quatro partes\": as divisões do exército, infantaria, cavalaria, elefantes e carros de guerra. Delas vieram o peão, o cavalo, o bispo e a torre.",
@@ -247,14 +277,37 @@ class History {
       "O chaturanga também foi para o leste e deu origem a uma família inteira de jogos. No Sudeste Asiático virou o makruk tailandês e o sittuyin birmanês. Na China surgiu o xiangqi, jogado nas intersecções das linhas, com rio, palácio e canhões.",
       "Do xiangqi nasceu o janggi coreano, sem rio e com as diagonais do palácio. No Japão, o shogi trouxe uma ideia única: as peças capturadas voltam ao jogo do lado de quem capturou."]);
     card("makruk");
+    card("sittuyin");
     card("xiangqi");
     card("janggi");
+    wcard("shogi");
+
+    chap("China antiga: go e liubo", [
+      "Na China, bem antes do xiangqi, já se jogava o go (weiqi), com pedras pretas e brancas disputando território nas intersecções de uma grade. Tem mais de 2.500 anos e é jogado até hoje; aqui ele aparece no tabuleiro pequeno, de 9 x 9.",
+      "O liubo foi muito popular na época da dinastia Han, jogado com varetas no lugar de dados. As regras completas se perderam: o que se joga é uma reconstrução a partir de tabuleiros e textos antigos."]);
+    wcard("go");
+    wcard("liubo");
+
+    chap("África, Índia e Escandinávia: outros jogos de estratégia", [
+      "A mancala é uma família de jogos de semear sementes em covas, jogada em toda a África há milhares de anos; o oware, da África Ocidental, é uma das versões mais conhecidas.",
+      "Na Índia, o pachisi é um jogo de corrida em cruz com búzios no lugar de dados, avô do ludo. No norte da Europa, os vikings jogavam o tafl: um rei cercado tenta fugir para um canto enquanto os atacantes tentam capturá-lo. O tablut, a versão da Lapônia, foi registrado pelo naturalista Lineu em 1732."]);
+    wcard("mancala");
+    wcard("pachisi");
+    wcard("tafl");
+    wcard("tablut");
 
     chap("Europa medieval", [
       "O xadrez entrou na Europa por volta do ano 1000, pela Ibéria e pela Itália. Um poema latino do mosteiro de Einsiedeln, na Suíça, escrito por volta de 997, é uma das primeiras descrições do jogo no continente.",
       "Foram os europeus que pintaram o tabuleiro com casas claras e escuras, por volta do século XII. Dessa época são as famosas peças de Lewis, esculpidas em marfim de morsa e encontradas numa ilha da Escócia em 1831.",
       "Em 1283, o rei Afonso X de Castela mandou fazer o Libro de los juegos, com mais de cem problemas de xadrez ilustrados. O jogo virou parte da educação dos nobres e até tema de sermões sobre a sociedade."]);
     card("medieval");
+
+    chap("Do alquerque às damas", [
+      "O alquerque, jogo de saltos sobre uma grade de linhas, veio do mundo árabe para a Espanha e aparece no Libro de los juegos de Afonso X, ao lado do xadrez.",
+      "Por volta do século XII, no sul da França, alguém pôs as peças do alquerque num tabuleiro de xadrez: nasceu o fierges. Quando a captura passou a ser obrigatória, no século XVI, surgiram as damas modernas. Aqui as damas brasileiras jogam no modo mestre: o computador não alivia."]);
+    wcard("alquerque");
+    wcard("fierges");
+    wcard("damas");
 
     chap("1475: a dama louca", [
       "No fim do século XV, provavelmente em Valência, a dama e o bispo ganharam o alcance de hoje. O jogo ficou muito mais rápido e agressivo, e na época foi chamado de \"xadrez da dama louca\".",
@@ -285,6 +338,12 @@ class History {
 
     chap("Xadrez para todos", [
       "Com a internet, qualquer pessoa pode jogar a qualquer hora contra adversários do mundo todo. Em 2020, a pandemia e a série \"O Gambito da Rainha\" levaram milhões de novos jogadores ao xadrez online."]);
+
+    chap("Jogos de tabuleiro modernos", [
+      "Dos tabuleiros como território nasceu, nos anos 1980 e 1990, uma família nova: os eurogames, como Scotland Yard, Catan, Carcassonne e Terra Mystica. Eles trocaram a eliminação por economia, construção e pontos, e premiam o planejamento, como o xadrez."]);
+    #if js
+    Ui.btns([["Conhecer os jogos modernos", World.euro]]);
+    #end
 
     chap("O Brasil no xadrez", [
       "Henrique Mecking, o Mequinho, gaúcho, tornou-se o primeiro grande mestre brasileiro em 1972, aos 20 anos. Nos anos 1970 esteve entre os melhores do mundo e disputou o Torneio de Candidatos ao título mundial."]);

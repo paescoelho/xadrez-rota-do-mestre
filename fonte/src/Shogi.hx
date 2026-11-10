@@ -168,7 +168,7 @@ class Shogi extends WGame {
     var idx = [for (i in 0...ms.length) i]; idx.sort(function(a, c) return sc[c] - sc[a]);
     return [for (i in idx) ms[i]];
   }
-  override public function cfg(level:Int):Array<Float> return [[0, 0, 0], [1, 400, 90], [2, 1500, 0], [4, 3500, 0], [5, 5000, 0]][level];
+  override public function cfg(level:Int):Array<Float> return [[0.0, 0, 0], [1.0, 400, 90], [2.0, 1500, 0], [4.0, 3500, 0], [5.0, 5000, 0]][level];
   override public function src(m:Dynamic):Int return (m.d : Int) > 0 ? 1000 + (m.d : Int) : m.f;
   override public function lastCells(s:Dynamic, m:Dynamic):Array<Int> return (m.d : Int) > 0 ? [m.t] : [m.f, m.t];
   function sqn(q:Int):String return (9 - f(q)) + "abcdefghi".charAt(8 - r(q));

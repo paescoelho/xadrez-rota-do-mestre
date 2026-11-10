@@ -119,7 +119,7 @@ class App {
       it.push(r);
     }
     it.push({ t: "Painel de evolução", d: "Perfil em teia, evolução mês a mês e dicas", f: Pages.profile, wide: true, ico: "pnl", pnl: panelData() });
-    it.push({ t: "História do xadrez", d: "1.500 anos · 6 jogos para jogar", f: Pages.history, wide: true, ico: "hist" });
+    it.push({ t: "História do xadrez", d: "1.500 anos · 18 jogos para jogar", f: Pages.history, wide: true, ico: "hist" });
     var cb = Profile.combined();
     var v:Int = cb[0];
     var info = v > 0 ? "Elo estimado " + v + " · meta " + Profile.nextGoal(v) : "Comece pelo Nivelamento";

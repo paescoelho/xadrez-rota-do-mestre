@@ -25,7 +25,7 @@ class WGame {
   public function tactical(s:Dynamic, m:Dynamic):Bool return false;
   public function order(s:Dynamic, ms:Array<Dynamic>):Array<Dynamic> return ms;
   /* [profundidade máxima, tempo em ms, ruído] por nível */
-  public function cfg(level:Int):Array<Float> return [[0, 0, 0], [2, 300, 60], [4, 1000, 0], [8, 2500, 0], [40, 4500, 0]][level];
+  public function cfg(level:Int):Array<Float> return [[0.0, 0, 0], [2.0, 300, 60], [4.0, 1000, 0], [8.0, 2500, 0], [40.0, 4500, 0]][level];
   public function src(m:Dynamic):Int return m.f;
   public function dst(m:Dynamic):Int return m.t;
   public function lastCells(s:Dynamic, m:Dynamic):Array<Int> return [src(m), dst(m)];
@@ -592,7 +592,7 @@ class Jump extends WGame {
     return o;
   }
   override public function cfg(level:Int):Array<Float> {
-    return kind == "damas" ? [[0, 0, 0], [2, 300, 40], [4, 900, 0], [10, 2500, 0], [60, 5000, 0]][level] : [[0, 0, 0], [2, 300, 50], [4, 900, 0], [9, 2500, 0], [40, 4500, 0]][level];
+    return kind == "damas" ? [[0.0, 0, 0], [2.0, 300, 40], [4.0, 900, 0], [10.0, 2500, 0], [60.0, 5000, 0]][level] : [[0.0, 0, 0], [2.0, 300, 50], [4.0, 900, 0], [9.0, 2500, 0], [40.0, 4500, 0]][level];
   }
   function sqName(n:Int):String return kind == "alquerque" ? "abcde".charAt(X[n]) + (5 - Y[n]) : "abcdefgh".charAt(X[n]) + (8 - Y[n]);
   override public function label(s:Dynamic, m:Dynamic):String {
@@ -707,7 +707,7 @@ class Oware extends WGame {
     v += (rowSum(p, 1) - rowSum(p, -1)) * 2;
     return v;
   }
-  override public function cfg(level:Int):Array<Float> return [[0, 0, 0], [2, 200, 40], [6, 900, 0], [16, 2500, 0], [30, 4000, 0]][level];
+  override public function cfg(level:Int):Array<Float> return [[0.0, 0, 0], [2.0, 200, 40], [6.0, 900, 0], [16.0, 2500, 0], [30.0, 4000, 0]][level];
   override public function src(m:Dynamic):Int return -1;
   override public function lastCells(s:Dynamic, m:Dynamic):Array<Int> return [m.t];
   override public function label(s:Dynamic, m:Dynamic):String { var i:Int = m.t; var p:Array<Int> = s.p; return "cova " + ((i % 6) + 1) + " (" + p[i] + (p[i] == 1 ? " semente)" : " sementes)"); }
@@ -926,7 +926,7 @@ class Tafl extends WGame {
     var idx = [for (i in 0...ms.length) i]; idx.sort(function(a, c) return sc[c] - sc[a]);
     return [for (i in idx) ms[i]];
   }
-  override public function cfg(level:Int):Array<Float> return [[0, 0, 0], [1, 300, 60], [2, 1200, 0], [4, 3000, 0], [6, 4500, 0]][level];
+  override public function cfg(level:Int):Array<Float> return [[0.0, 0, 0], [1.0, 300, 60], [2.0, 1200, 0], [4.0, 3000, 0], [6.0, 4500, 0]][level];
   function nm(c:Int):String return "abcdefghijk".charAt(fx(c)) + (n - fy(c));
   override public function label(s:Dynamic, m:Dynamic):String { var b:Array<Int> = s.b; return (b[m.f] == 2 ? "Rei " : "") + nm(m.f) + "-" + nm(m.t); }
   override public function key(s:Dynamic):String return (s.b : Array<Int>).join("") + s.turn;
