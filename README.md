@@ -125,3 +125,9 @@ No menu, o **Laboratório do Pensamento** ocupa o lugar do "Mapa do seu pensamen
   e a distinção entre erro isolado e padrão que se repete (3 partidas ou mais).
 - Os dados ficam no aparelho (IndexedDB, banco `rota-do-mestre` versão 2, gaveta `imp`); a atualização do banco não apaga nada.
   Há botões para exportar as partidas em PGN e para apagar as importadas.
+
+## Abertura em 16:9 no computador
+
+Em tela larga (computador), a abertura usa uma versão 1920 × 1080 feita para o formato (`media/intro_hd16.*`):
+as legendas aparecem em tamanho original sobre o preto e as cenas de xadrez ficam no centro com as laterais preenchidas
+pelo próprio vídeo desfocado. No celular em pé continua a versão vertical 1080 × 1920. O site baixa só a versão da tela de quem acessa.

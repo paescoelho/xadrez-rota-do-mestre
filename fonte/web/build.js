@@ -60,6 +60,8 @@ let res='';
 for(const n of ['content','lpuzzles','openings','explorer','models']){const ext=n==='content'?'json':'txt';const txt=fs.readFileSync(__dirname+'/../res/'+n+'.'+ext,'utf8');if(/<\/script|<!--/i.test(txt))throw new Error('texto proibido em '+n);res+='<script type="text/plain" id="res_'+n+'">'+txt+'</script>\n';}
 res+='<script type="text/plain" id="res_histau">'+histau.toString('base64')+'</script>\n';
 const hd=fs.readFileSync(__dirname+'/../media/intro_hd.bin').toString('base64');
+const hdx16=fs.readFileSync(__dirname+'/../media/intro_hd16.json','utf8');
+const hd16=fs.readFileSync(__dirname+'/../media/intro_hd16.bin').toString('base64');
 /* Stockfish 19 lite (GPLv3, nmrugg/stockfish.js): só na versão completa; a leve usa o motor do jogo */
 const sfjs=fs.readFileSync(__dirname+'/../sf/bin/stockfish-19-lite-single.js','utf8');
 if(/<\/script|<!--/i.test(sfjs))throw new Error('texto proibido no stockfish.js');
@@ -67,7 +69,7 @@ const sfwasm=fs.readFileSync(__dirname+'/../sf/bin/stockfish-19-lite-single.wasm
 const sfTags='<script type="text/plain" id="res_sfjs">'+sfjs+'</script>\n<script type="text/plain" id="res_sfwasm">'+sfwasm+'</script>\n';
 const base=t;
 function make(lite){let t=base;
-t=t.replace('FONTS_CSS',()=>fonts).replace('PIECES_CSS',()=>css).replace('MENU_BG',()=>'"data:image/jpeg;base64,'+bg+'"').replace('INTRO_FRAMES',()=>lite?'[]':JSON.stringify(frames)).replace('INTRO_AUDIO',()=>lite?'':aud).replace('INTRO_HDX',()=>lite?'null':hdx).replace('INTRO_HD',()=>lite?'':hd).replace('INTRO_LITE',()=>lite?'true':'false').replace('RES_TAGS',()=>res+(lite?'':sfTags)).replace('APP_JS',()=>app);
+t=t.replace('FONTS_CSS',()=>fonts).replace('PIECES_CSS',()=>css).replace('MENU_BG',()=>'"data:image/jpeg;base64,'+bg+'"').replace('INTRO_FRAMES',()=>lite?'[]':JSON.stringify(frames)).replace('INTRO_AUDIO',()=>lite?'':aud).replace('INTRO_HDX16',()=>lite?'null':hdx16).replace('INTRO_HD16',()=>lite?'':hd16).replace('INTRO_HDX',()=>lite?'null':hdx).replace('INTRO_HD',()=>lite?'':hd).replace('INTRO_LITE',()=>lite?'true':'false').replace('RES_TAGS',()=>res+(lite?'':sfTags)).replace('APP_JS',()=>app);
 return t;}
 for(const [lite,name] of [[false,'xadrez-treinador.html'],[true,'xadrez-treinador-leve.html']]){const t=make(lite);fs.writeFileSync(__dirname+'/../out/'+name,t);console.log(name,(t.length/1e6).toFixed(2)+'MB');}
 
@@ -88,12 +90,14 @@ put('introfr.json',Buffer.from(JSON.stringify(frames),'utf8'));
 put('introau.txt',Buffer.from(aud,'utf8'));
 put('introhdx.json',Buffer.from(hdx,'utf8'));
 put('intro_hd.bin',fs.readFileSync(__dirname+'/../media/intro_hd.bin'));
+put('intro_hd16.bin',fs.readFileSync(__dirname+'/../media/intro_hd16.bin'));
+put('introhdx16.json',Buffer.from(hdx16,'utf8'));
 put('historia.mp3',histau);
 const U=n=>'data/'+n+'?v='+files[n];
 const loader=`<script>
 /* carregador do site: baixa (ou pega do cache offline) os arquivos do jogo, mostra o progresso e inicia o app */
 (function(){
- var F=${JSON.stringify({res:[['res_content',U('content.json')],['res_lpuzzles',U('lpuzzles.txt')],['res_openings',U('openings.txt')],['res_explorer',U('explorer.txt')],['res_models',U('models.txt')],['res_sfjs',U('sf.js')]],intro:[['introfr',U('introfr.json')],['introau',U('introau.txt')],['introhdx',U('introhdx.json')]],hd:U('intro_hd.bin'),histau:U('historia.mp3'),wasm:U('sf.wasm'),app:U('app.js')})};
+ var F=${JSON.stringify({res:[['res_content',U('content.json')],['res_lpuzzles',U('lpuzzles.txt')],['res_openings',U('openings.txt')],['res_explorer',U('explorer.txt')],['res_models',U('models.txt')],['res_sfjs',U('sf.js')]],intro:[['introfr',U('introfr.json')],['introau',U('introau.txt')],['introhdx',U('introhdx.json')]],hd:U('intro_hd.bin'),hd16:U('intro_hd16.bin'),hdx16:U('introhdx16.json'),histau:U('historia.mp3'),wasm:U('sf.wasm'),app:U('app.js')})};
  var c=navigator.connection||{},slow=!!(c.saveData||/(^|-)2g|3g/.test(c.effectiveType||''));
  var box=document.createElement('div');box.id='boot';box.innerHTML='<div class="bt">Rota do Mestre</div><div class="bb"><i></i></div><div class="bs">Preparando o tabuleiro…</div>';document.body.appendChild(box);
  var bar=box.querySelector('i'),msg=box.querySelector('.bs'),done=0,total=F.res.length+(slow?0:F.intro.length+1)+1;
@@ -104,7 +108,10 @@ const loader=`<script>
  var jobs=F.res.map(function(x){return txt(x[1]).then(function(t){tag(x[0],t);});});
  if(slow){window.XLITE=true;tag('introfr','[]','application/json');tag('introhdx','null','application/json');}
  else{jobs=jobs.concat(F.intro.map(function(x){return txt(x[1]).then(function(t){tag(x[0],t,x[0]==='introau'?'text/plain':'application/json');});}));
-  jobs.push(fetch(F.hd).then(function(r){return r.ok?r.arrayBuffer():null;}).then(function(b){if(b)window.XHDBUF=new Uint8Array(b);step();}).catch(function(){tag('introhdx','null','application/json');step();}));}
+  /* computador (tela larga): só a abertura 16:9 em 1920x1080; celular: só a vertical */
+  var wide=(window.innerWidth||1)/Math.max(1,window.innerHeight||1)>1.15;
+  if(wide)jobs.push(txt(F.hdx16).then(function(t){tag('introhdx16',t,'application/json');}).catch(function(){}));
+  jobs.push(fetch(wide?F.hd16:F.hd).then(function(r){return r.ok?r.arrayBuffer():null;}).then(function(b){if(b){if(wide)window.XHDBUF16=new Uint8Array(b);else window.XHDBUF=new Uint8Array(b);}step();}).catch(function(){tag(wide?'introhdx16':'introhdx','null','application/json');step();}));}
  Promise.all(jobs).then(function(){return txt(F.app);}).then(function(code){
   msg.textContent='Abrindo…';var s=document.createElement('script');s.id='appjs';s.textContent=code;document.body.appendChild(s);
   setTimeout(function(){box.remove();},300);
@@ -116,14 +123,15 @@ const loader=`<script>
 const head=`<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0d10"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" href="icons/icon-192.png"><link rel="icon" type="image/png" href="icons/icon-192.png">
 <style>#boot{position:fixed;inset:0;z-index:99;background:#050606;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#f3d98c;font-family:Georgia,serif}#boot .bt{font-size:26px;letter-spacing:2px}#boot .bb{width:min(70vw,320px);height:6px;border-radius:4px;background:#262c35;overflow:hidden}#boot .bb i{display:block;width:0;height:100%;background:linear-gradient(90deg,#b8852f,#f3d98c);transition:width .25s}#boot .bs{font:13px system-ui,sans-serif;color:#98a1ab}</style>`;
 let idx=base.replace('FONTS_CSS',()=>fonts).replace('PIECES_CSS',()=>css).replace('MENU_BG',()=>'"data:image/jpeg;base64,'+bg+'"')
- .replace('INTRO_FRAMES',()=>'[]').replace('INTRO_AUDIO',()=>'').replace('INTRO_HDX',()=>'null').replace('INTRO_HD',()=>'').replace('INTRO_LITE',()=>'false')
+ .replace('INTRO_FRAMES',()=>'[]').replace('INTRO_AUDIO',()=>'').replace('INTRO_HDX16',()=>'null').replace('INTRO_HD16',()=>'').replace('INTRO_HDX',()=>'null').replace('INTRO_HD',()=>'').replace('INTRO_LITE',()=>'false')
  .replace('RES_TAGS',()=>'').replace(/<script id="appjs">\s*APP_JS\s*<\/script>/,()=>loader).replace('</head>',()=>head+'\n</head>');
 if(idx.indexOf('APP_JS')>=0)throw new Error('APP_JS sobrou no index');
 fs.writeFileSync(S+'/index.html',idx);
 for(const f of fs.readdirSync(__dirname+'/icons'))fs.copyFileSync(__dirname+'/icons/'+f,S+'/icons/'+f);
 fs.writeFileSync(S+'/manifest.webmanifest',JSON.stringify({name:'Xadrez · Rota do Mestre',short_name:'Rota do Mestre',description:'Treinador de xadrez: jogue, aprenda e acompanhe o seu pensamento.',lang:'pt-BR',start_url:'./',scope:'./',display:'standalone',orientation:'portrait',background_color:'#0b0d10',theme_color:'#0b0d10',
  icons:[{src:'icons/icon-192.png',sizes:'192x192',type:'image/png'},{src:'icons/icon-512.png',sizes:'512x512',type:'image/png'},{src:'icons/icon-maskable-512.png',sizes:'512x512',type:'image/png',purpose:'maskable'}]},null,1));
-const core=['./','index.html','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png'].concat(Object.keys(files).map(U));
+/* a abertura 16:9 (5,7 MB) não entra no pré-cache: quem usa computador guarda ao abrir; o celular não baixa à toa */
+const core=['./','index.html','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png'].concat(Object.keys(files).filter(n=>n!=='intro_hd16.bin'&&n!=='introhdx16.json').map(U));
 const ver=crypto.createHash('md5').update(idx+JSON.stringify(files)).digest('hex').slice(0,10);
 fs.writeFileSync(S+'/sw.js',`/* cache offline do Rota do Mestre (gerado pelo build) */
 const V='rdm-${ver}';

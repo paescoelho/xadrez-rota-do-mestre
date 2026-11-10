@@ -824,6 +824,8 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 <script type="text/plain" id="introau"></script>
 <script type="application/json" id="introhdx">null</script>
 <script type="text/plain" id="introhd"></script>
+<script type="application/json" id="introhdx16">null</script>
+<script type="text/plain" id="introhd16"></script>
 <script>
 /* abertura em HD (1080x1920, 24 quadros/s): H.264 decodificado pelo WebCodecs e desenhado no canvas, sem elemento de vídeo */
 window.XLITE=true;
@@ -833,13 +835,16 @@ window.XHD=(function(){
   function prepare(){
     try{
       if(!window.VideoDecoder||!window.EncodedVideoChunk)return Promise.resolve(false);
-      var el=document.getElementById('introhdx');var tx=el?el.textContent.trim():'';
+      /* tela larga (computador, monitor 16:9): versão 1920x1080 feita para o formato; celular em pé: 1080x1920 */
+      var wide=(window.innerWidth||1)/Math.max(1,window.innerHeight||1)>1.15,e16=document.getElementById('introhdx16'),t16=e16?e16.textContent.trim():'';
+      var use16=wide&&t16&&t16!=='null'&&t16!=='INTRO_HDX16';
+      var el=document.getElementById(use16?'introhdx16':'introhdx');var tx=el?el.textContent.trim():'';
       if(!tx||tx==='null')return Promise.resolve(false);
       idx=JSON.parse(tx);
       var cfg={codec:idx.codec,codedWidth:idx.w,codedHeight:idx.h,description:u8(idx.avcc)};
       return VideoDecoder.isConfigSupported(cfg).then(function(r){
         if(!r||!r.supported)return false;
-        data=window.XHDBUF||u8(document.getElementById('introhd').textContent.trim());
+        data=use16?(window.XHDBUF16||u8(document.getElementById('introhd16').textContent.trim())):(window.XHDBUF||u8(document.getElementById('introhd').textContent.trim()));
         idx.off=[];var o=0;for(var i=0;i<idx.sizes.length;i++){idx.off.push(o);o+=idx.sizes[i];}
         for(var k=0;k<idx.keys.length;k++)keys[idx.keys[k]]=1;
         dec=new VideoDecoder({output:function(f){q.push(f);},error:function(){failed=true;}});
@@ -54525,6 +54530,14 @@ UiJs.intro = function(done) {
 		var ch = cv.height;
 		var cover = Math.max(cw / iw,ch / ih);
 		var contain = Math.min(cw / iw,ch / ih);
+		if(wide() && iw > ih) {
+			var ar = cw / Math.max(1,ch);
+			if(ar >= 1.45 && ar <= 2.15) {
+				return cover;
+			} else {
+				return contain;
+			}
+		}
 		if(wide()) {
 			return contain;
 		}

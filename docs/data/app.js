@@ -11211,6 +11211,14 @@ UiJs.intro = function(done) {
 		var ch = cv.height;
 		var cover = Math.max(cw / iw,ch / ih);
 		var contain = Math.min(cw / iw,ch / ih);
+		if(wide() && iw > ih) {
+			var ar = cw / Math.max(1,ch);
+			if(ar >= 1.45 && ar <= 2.15) {
+				return cover;
+			} else {
+				return contain;
+			}
+		}
 		if(wide()) {
 			return contain;
 		}

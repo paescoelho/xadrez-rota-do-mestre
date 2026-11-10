@@ -91,6 +91,8 @@ class UiJs {
     function scaleFor(iw:Float, ih:Float, t:Float):Float {
       var cw:Float = cv.width; var ch:Float = cv.height;
       var cover = Math.max(cw / iw, ch / ih); var contain = Math.min(cw / iw, ch / ih);
+      /* abertura 16:9 (computador): preenche a tela inteira em monitores de 3:2 a 21:10; fora disso, inteira com fundo desfocado */
+      if (wide() && iw > ih) { var ar = cw / Math.max(1, ch); return (ar >= 1.45 && ar <= 2.15) ? cover : contain; }
       if (wide()) return contain;
       var r = inSafe(t);
       return r == null ? cover : Math.max(contain, Math.min(cover, cw / (iw * r[2])));
