@@ -4,7 +4,7 @@
  * Nenhum dado pessoal é coletado. Os aparelhos do criador ficam fora da contagem (marcados ao abrir o painel).
  * Para ligar: preencha V27.GC com o código do site no GoatCounter (ex.: 'rotadomestre') e ligue, nas configurações
  * do site no GoatCounter, "Allow adding visitor counts on your website" (é o que deixa o painel ler os totais). */
-var V27={GC:'',sent:{}};
+var V27={GC:'paescoelho',sent:{}};
 V27.KEY='rdm-nao-contar';
 V27.mine=function(){try{return localStorage.getItem(V27.KEY)==='1';}catch(e){return false;}};
 V27.setMine=function(on){try{if(on)localStorage.setItem(V27.KEY,'1');else localStorage.removeItem(V27.KEY);}catch(e){}};
