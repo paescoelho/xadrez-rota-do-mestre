@@ -175,3 +175,23 @@ pelo próprio vídeo desfocado. No celular em pé continua a versão vertical 10
 - **Treinar movimento das peças:** em "Aprenda antes de jogar", um tabuleiro com um exercício por peça (torre, bispo,
   dama, rei, cavalo e peão, com captura e promoção): a peça já vem selecionada e é preciso pegar todas as estrelas.
   O progresso fica salvo.
+
+## Jogar online ao vivo (v31)
+
+- No menu, **Jogar online · Convide um amigo** (ícone do WhatsApp animado) ocupa o lugar de "Meu DNA Enxadrista",
+  que agora fica dentro de **Seu maior adversário**.
+- Quem convida escolhe ritmo e cor, cria a sala e manda o link pelo WhatsApp (`?sala=CÓDIGO`). O amigo toca e cai
+  direto no convite, sem abertura, sem instalar e sem cadastro. Relógio, empate, abandono, revanche com cores
+  trocadas, aviso de adversário desconectado e retomada da partida depois de recarregar.
+- Os lances passam pelo Firestore (Firebase, plano gratuito) com login anônimo. As regras ficam em
+  `firebase/firestore.rules`: só os dois jogadores mexem na sala, e cada lance só vale de quem tem a vez.
+- Enquanto `V31.FB` (em `fonte/web/extras_v31.js`) estiver vazio, o botão oferece o modo por mensagens.
+
+### Ligar o jogo ao vivo
+1. console.firebase.google.com › criar projeto (sem Google Analytics).
+2. Authentication › Começar › Método de login › ativar **Anônimo** (e Google, para o login futuro).
+3. Authentication › Configurações › Domínios autorizados › adicionar `paescoelho.github.io`.
+4. Firestore Database › Criar banco › modo de produção › região `southamerica-east1`.
+5. Firestore › Regras › colar o conteúdo de `firebase/firestore.rules` › Publicar.
+6. Configurações do projeto › Seus apps › Web (`</>`) › registrar › copiar o `firebaseConfig` para `V31.FB`.
+7. Opcional: Firestore › TTL › política no campo `expira` da coleção `salas` (apaga convites antigos).

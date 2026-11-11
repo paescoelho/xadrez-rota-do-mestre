@@ -211,6 +211,7 @@ class Dna {
   public static function rival() {
     Ui.page("Seu maior adversário", App.menu);
     Ui.p("Você contra você de 3 meses atrás. O fantasma joga com o seu DNA daquele mês: as aberturas que você jogava, seus erros em cada fase, sua pressa, seu tilt e os pontos cegos do seu Mapa do pensamento. Ganhar dele é a prova concreta de que você evoluiu.", "");
+    Ui.items([{ t: "Meu DNA Enxadrista", d: "Exporte seu clone e enfrente o de amigos", r: "abrir ›", f: home }]);
     var me = now();
     if (me == null) {
       Ui.p("Para criar um clone mais fiel, o jogo exige 20 partidas analisadas (" + Mind.games().length + "/20 registradas). Jogue e volte aqui.", "gold");
@@ -267,7 +268,7 @@ class Dna {
 
   /* ---------- Meu DNA Enxadrista ---------- */
   public static function home() {
-    Ui.page("Meu DNA Enxadrista", App.menu);
+    Ui.page("Meu DNA Enxadrista", rival);
     Ui.p("Seu jogo vira um código: aberturas, erros por fase, pressa, tilt, estilo e pontos cegos. Mande pelo WhatsApp e seu amigo joga contra o seu clone, sem internet e sem servidor. Ele também pode mandar o dele para você.", "");
     Ui.field("Seu nome no DNA", Profile.d.name, "Como seu amigo vai ver o clone", "text", function(v) { Profile.d.name = StringTools.trim(v); Profile.save(); });
     var me = now();
@@ -281,7 +282,7 @@ class Dna {
       Ui.ul(describe(me, "você"), "small");
       Ui.h("Enviar o seu clone");
       Ui.btns([["Enviar pelo WhatsApp", function() sendWhats(me), "pri"], ["Enviar arquivo", function() sendFile(me)], ["Copiar código", function() copy(me)]]);
-      Ui.p("O arquivo e a mensagem têm o mesmo código. Seu amigo abre o jogo › Meu DNA Enxadrista › Importar. O DNA é atualizado a cada partida: mande de novo quando quiser mostrar a sua evolução.", "muted small");
+      Ui.p("O arquivo e a mensagem têm o mesmo código. Seu amigo abre o jogo › Seu maior adversário › Meu DNA Enxadrista › Importar. O DNA é atualizado a cada partida: mande de novo quando quiser mostrar a sua evolução.", "muted small");
     }
     Ui.h("Clones recebidos");
     var cl = clones();
@@ -336,7 +337,7 @@ class Dna {
     var lines = ["♟️ " + d.n + " te mandou o DNA enxadrista (Elo " + d.e + "). Jogue contra o clone!"];
     var base = Online.baseUrl();
     if (base != null) lines.push("Toque para importar: " + base + "#xd=" + code.substr(PFX.length));
-    else lines.push("Abra o Xadrez · Rota do Mestre › Meu DNA Enxadrista › Importar e cole esta mensagem.");
+    else lines.push("Abra o Xadrez · Rota do Mestre › Seu maior adversário › Meu DNA Enxadrista › Importar e cole esta mensagem.");
     lines.push(code);
     return lines.join("\n");
   }
