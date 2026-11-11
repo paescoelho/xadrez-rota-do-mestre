@@ -40,7 +40,7 @@ V30.gameUI=function(){
  shell.classList.add('v30-game');
  var row=bar.querySelector('.btns');if(!row)return;
  if(!row.querySelector('.v30-back')){
-  var bk=document.createElement('button');bk.type='button';bk.className='btn v30-back';bk.setAttribute('aria-label','Voltar');bk.title='Voltar';bk.textContent='‹';
+  var bk=document.createElement('button');bk.type='button';bk.className='btn v30-back';bk.setAttribute('aria-label','Voltar');bk.title='Voltar';bk.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4.5 7.5 12l7.5 7.5" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   bk.onclick=function(e){e.stopPropagation();var hb=shell.querySelector('.hdr .back');V30.fsExit();if(hb)hb.click();else App.menu();};
   row.insertBefore(bk,row.firstChild);
  }
