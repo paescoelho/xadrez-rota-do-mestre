@@ -176,10 +176,11 @@ Profile.combined=function(){
  if(md.length>=3){var s=0,n=0;for(var i=md.length-1;i>=0&&n<5;i--){s+=md[i].perf;n++;}parts.push(['Adivinhe o lance',V28.toGame(s/n),0.08*Math.min(1,md.length/8)]);}
  var pl=d.place;
  if(pl&&pl.est){var pe=pl.method==='critico-v28'?pl.est:V28.toGame(pl.est);parts.push(['Nivelamento',pe,parts.length===0?1:0.15]);}
+ try{if(typeof V32!=='undefined'&&V32.ext)V32.ext().forEach(function(x){parts.push(x);});}catch(e){}
  var sw=0,sv=0;parts.forEach(function(p){sw+=p[2];sv+=p[1]*p[2];});
  var val=sw>0?Math.round(sv/sw):0;
  /* força em partida só se comprova jogando: com menos de 10 partidas o número fica limitado */
- if(val>0&&games<10&&!(ac&&ac.n>=10))val=Math.min(val,1000+games*20);
+ if(val>0&&games<10&&!(ac&&ac.n>=10)&&!(typeof V32!=='undefined'&&V32.verified&&V32.verified()))val=Math.min(val,1000+games*20);
  var out=parts.map(function(p){return [p[0],Math.round(p[1]),p[2]];});
  var dc=val>0?V29.decay():{amt:0};
  if(dc.amt>0){val=Math.max(100,val-dc.amt);out.push(['Inatividade',-dc.amt,0]);}

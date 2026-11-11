@@ -25,19 +25,29 @@ V31.esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){re
 
 /* ---------- Firebase sob demanda ---------- */
 V31.script=function(src){return new Promise(function(ok,bad){var s=document.createElement('script');s.src=src;s.async=false;s.onload=ok;s.onerror=function(){bad(new Error('rede'));};document.head.appendChild(s);});};
-V31.boot=null;
-V31.init=function(){
+V31.base0=null;V31.authP=null;V31.boot=null;
+/* carrega o Firebase uma vez só (usado pelo jogo ao vivo e pela conta Google) e espera o login salvo carregar */
+V31.fbBoot=function(){
  if(!V31.ready())return Promise.reject(new Error('config'));
- if(V31.boot)return V31.boot;
- V31.boot=(window.firebase&&window.firebase.firestore?Promise.resolve():Promise.all(['firebase-app-compat.js','firebase-auth-compat.js','firebase-firestore-compat.js'].map(function(f){return V31.script(V31.SDK+f);})))
+ if(V31.base0)return V31.base0;
+ V31.base0=(window.firebase&&window.firebase.firestore?Promise.resolve():Promise.all(['firebase-app-compat.js','firebase-auth-compat.js','firebase-firestore-compat.js'].map(function(f){return V31.script(V31.SDK+f);})))
  .then(function(){
   var fb=window.firebase;V31.app=fb.apps.length?fb.app():fb.initializeApp(V31.FB);
   var auth=fb.auth();V31.db=fb.firestore();
   if(V31.EMU){try{auth.useEmulator('http://'+V31.EMU.host+':'+V31.EMU.auth,{disableWarnings:true});V31.db.useEmulator(V31.EMU.host,V31.EMU.fs);}catch(e){}}
-  return new Promise(function(ok,bad){
-   var done=false,off=auth.onAuthStateChanged(function(u){if(u&&!done){done=true;off();V31.uid=u.uid;ok();}});
-   if(!auth.currentUser)auth.signInAnonymously().catch(function(e){if(!done){done=true;bad(e);}});
-  });
+  V31.authP=new Promise(function(ok){var first=true;auth.onAuthStateChanged(function(u){V31.uid=u?u.uid:null;if(first){first=false;ok(u);}});});
+  return V31.authP;
+ }).catch(function(e){V31.base0=null;throw e;});
+ return V31.base0;
+};
+/* jogo ao vivo: precisa de um usuário; se não houver nenhum (nem Google nem anônimo salvo), cria um anônimo */
+V31.init=function(){
+ if(!V31.ready())return Promise.reject(new Error('config'));
+ if(V31.boot)return V31.boot;
+ V31.boot=V31.fbBoot().then(function(u){
+  var auth=window.firebase.auth();
+  if(auth.currentUser){V31.uid=auth.currentUser.uid;return;}
+  return auth.signInAnonymously().then(function(c){V31.uid=c.user.uid;});
  }).catch(function(e){V31.boot=null;throw e;});
  return V31.boot;
 };

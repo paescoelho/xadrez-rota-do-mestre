@@ -195,3 +195,19 @@ pelo próprio vídeo desfocado. No celular em pé continua a versão vertical 10
 5. Firestore › Regras › colar o conteúdo de `firebase/firestore.rules` › Publicar.
 6. Configurações do projeto › Seus apps › Web (`</>`) › registrar › copiar o `firebaseConfig` para `V31.FB`.
 7. Opcional: Firestore › TTL › política no campo `expira` da coleção `salas` (apaga convites antigos).
+
+## Conta, contas de xadrez e Aula da semana (v32)
+
+- **Conta Google (opcional):** "Salvar progresso com Google" no Painel ou em Conta e backup. Quem jogava anônimo é
+  promovido para a conta Google sem perder nada; o perfil vai para `users/{uid}` e as partidas para
+  `users/{uid}/games` (mesclagem entre aparelhos herdada da v23). Botões para sair e para apagar os dados da nuvem.
+- **Contas de xadrez:** usuário no Lichess e no Chess.com, salvos no perfil (e na nuvem). Ao abrir o jogo, no máximo a
+  cada 3 horas, as partidas públicas novas são importadas e analisadas em segundo plano. Os ratings públicos são lidos
+  uma vez por dia.
+- **Entrar com Lichess:** OAuth 2 com PKCE (sem senha e sem segredo). O jogo lê só o nome e os ratings e revoga a
+  autorização na hora; nenhuma chave do Lichess fica guardada. O Chess.com não tem login para apps: só o usuário.
+- **Aula da semana:** o erro que mais se repete nas partidas de lá (últimas 2 semanas ou últimas 20 analisadas), a
+  lição, as suas posições (treino guiado do Laboratório), 8 problemas do mesmo tema e as revisões do dia.
+- **Seus erros viram cartões:** cada posição crítica das partidas importadas entra na revisão espaçada (FSRS).
+- **Calibração do Elo:** rating de lá convertido para a escala daqui (Lichess ≈ 0,9 × rating − 350; Chess.com ≈
+  0,95 × rating − 100). Lichess confirmado tem peso 1,6; não confirmado 0,5; Chess.com 0,6. Conversão aproximada.
