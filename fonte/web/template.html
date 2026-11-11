@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v29</title>
+<title>Xadrez · Rota do Mestre — v30</title>
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
 <meta name="description" content="Treinador de xadrez offline e partidas com amigos pelo WhatsApp.">
@@ -782,6 +782,32 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v29-arow.worst .v29-an{color:#f0a35e}
 .v29-arow .v29-av{text-align:right;font-weight:700}
 .v29-arow .v29-ac{opacity:.65;font-size:11.5px}
+/* v30: partida sem a faixa de cima; seta antes da Dica e adversário depois do Abandonar */
+.shell.v30-game>.hdr{display:none!important}
+.shell.v30-game .game-actions .btns{display:grid!important;grid-template-columns:38px repeat(3,minmax(0,1fr)) auto!important;align-items:stretch}
+.shell.v30-game .game-actions .v30-back{font-size:24px!important;line-height:1!important;padding:0 0 3px!important;color:var(--gold2);font-weight:400}
+.v30-opp{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;min-width:46px;max-width:92px;padding:0 4px 0 3px;line-height:1.1}
+.v30-opp b{color:var(--gold2);font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.v30-opp span{color:var(--tx);opacity:.75;font-size:11px}
+.shell.v30-game .bp.elite-three-column .game-actions .btns{grid-template-columns:34px repeat(3,minmax(0,1fr))!important}
+.shell.v30-game .bp.elite-three-column .v30-opp{grid-column:1/-1;flex-direction:row;align-items:baseline;gap:6px;max-width:none;padding:3px 2px 0}
+.shell.v30-game .bp.elite-three-column .v30-opp b{font-size:13px}
+/* v30: tutorial de movimento das peças */
+.v30-star{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:min(7vw,34px);color:#f2c54b;text-shadow:0 1px 3px rgba(0,0,0,.55);z-index:2;pointer-events:none;animation:v30pulse 1.6s ease-in-out infinite}
+@keyframes v30pulse{0%,100%{transform:scale(.88)}50%{transform:scale(1.06)}}
+.v30-chips{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;margin:4px 0 10px}
+.v30-chip{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 2px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:var(--card);color:var(--tx);font:inherit;cursor:pointer}
+.v30-chip i{font-style:normal;font-size:22px;line-height:1}
+.v30-chip span{font-size:10.5px}
+.v30-chip.on{border-color:var(--gold2);box-shadow:0 0 0 1px var(--gold2) inset}
+.v30-chip em{position:absolute;top:1px;right:4px;font-style:normal;font-size:10px;color:#6fd08c}
+.v30-chip.ok:not(.on){opacity:.8}
+.v30-prog{font-weight:700;color:var(--gold2)}
+.v30-ok{background:rgba(111,208,140,.1);border:1px solid rgba(111,208,140,.45);border-radius:12px;padding:10px 12px;margin:8px 0}
+.v30-ok b{display:block;color:#8be0a4}
+.v30-ok span{display:block;font-size:13px;margin-top:4px}
+.btn.v30-train{display:flex;flex-direction:column;align-items:center;gap:2px}
+.btn.v30-train small{font-size:11px;opacity:.7}
 </style>
 </head>
 <body>

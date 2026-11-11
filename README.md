@@ -165,3 +165,13 @@ pelo próprio vídeo desfocado. No celular em pé continua a versão vertical 10
   Recupera com 5 partidas ou um novo Nivelamento.
 - **Notas por área:** tática, cálculo, finais e abertura. A nota geral do Nivelamento é 70% da estimativa com todas as
   respostas + 30% da pior área com pelo menos 5 questões. Aparecem no resultado do Nivelamento e no Painel.
+
+## Partida mais limpa e tutorial de peças (v30)
+
+- **Tela cheia no celular:** ao começar uma partida no celular, o jogo pede tela cheia ao navegador e volta ao normal ao sair
+  da partida. No iPhone o Safari não permite isso numa página; o jogo avisa uma vez como adicionar à Tela de Início.
+- **Sem a faixa de cima na partida:** a seta de voltar fica antes do botão Dica e o nome e a força do adversário ficam
+  depois do Abandonar. O tabuleiro sobe e sobra mais espaço embaixo.
+- **Treinar movimento das peças:** em "Aprenda antes de jogar", um tabuleiro com um exercício por peça (torre, bispo,
+  dama, rei, cavalo e peão, com captura e promoção): a peça já vem selecionada e é preciso pegar todas as estrelas.
+  O progresso fica salvo.
