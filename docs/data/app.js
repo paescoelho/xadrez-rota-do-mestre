@@ -31002,7 +31002,7 @@ V31.join=function(code){
 };
 V31.open=function(code){
  if(V31.unsub){try{V31.unsub();}catch(e){}V31.unsub=null;}
- V31.code=code;V31.room=null;V31.view=null;V31.turnLen=-1;V31.flip=null;V31.busy=false;
+ V31.code=code;V31.room=null;V31.view=null;V31.turnLen=-1;V31.flip=null;V31.busy=false;V31.heard=Date.now();V31.seenOpp=null;
  V31.ref=V31.db.collection('salas').doc(code);
  V31.unsub=V31.ref.onSnapshot(function(s){if(!s.exists){V31.gone('Esta sala não existe mais.');return;}V31.onSnap(s.data());},function(e){V31.gone(V31.err(e));});
  V31.startTimers();
