@@ -185,7 +185,7 @@ pelo próprio vídeo desfocado. No celular em pé continua a versão vertical 10
   trocadas, aviso de adversário desconectado e retomada da partida depois de recarregar.
 - Os lances passam pelo Firestore (Firebase, plano gratuito) com login anônimo. As regras ficam em
   `firebase/firestore.rules`: só os dois jogadores mexem na sala, e cada lance só vale de quem tem a vez.
-- Enquanto `V31.FB` (em `fonte/web/extras_v31.js`) estiver vazio, o botão oferece o modo por mensagens.
+- Projeto Firebase: `xadrez-whatsapp` (login anônimo e Google ativos, Firestore em São Paulo, regras publicadas).
 
 ### Ligar o jogo ao vivo
 1. console.firebase.google.com › criar projeto (sem Google Analytics).

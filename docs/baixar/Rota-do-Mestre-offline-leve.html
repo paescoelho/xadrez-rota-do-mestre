@@ -74320,7 +74320,9 @@ V30.tutOpen=function(){
  * A configuração do Firebase NÃO é segredo (identifica o projeto); quem protege os dados são as regras do Firestore
  * (arquivo firebase/firestore.rules do repositório). */
 var V31={START:'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
- FB:null,                                   /* firebaseConfig: {apiKey, authDomain, projectId, appId, ...} */
+ FB:{apiKey:'AIzaSyBraWM57IhpPDRgPuBp2eEgNHPMvBH1dho',authDomain:'xadrez-whatsapp.firebaseapp.com',projectId:'xadrez-whatsapp',
+  storageBucket:'xadrez-whatsapp.firebasestorage.app',messagingSenderId:'788487053452',appId:'1:788487053452:web:77ea97f6afab461cee9ba9'},
+                                            /* firebaseConfig público do projeto xadrez-whatsapp (não é segredo; as regras protegem os dados) */
  SDK:'https://www.gstatic.com/firebasejs/10.14.1/',
  EMU:null,                                  /* só para testes: {host, fs, auth} */
  TCS:[['Sem relógio',null],['3+2',[3,2]],['5+3',[5,3]],['10 min',[10,0]],['15+10',[15,10]]],
