@@ -6,6 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
 <title>Xadrez · Rota do Mestre — v31</title>
+<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
 <meta name="description" content="Treinador de xadrez offline e partidas com amigos pelo WhatsApp.">
@@ -902,6 +903,7 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 @keyframes v31spin{to{transform:rotate(360deg)}}
 .v31-net{font-size:12.5px;color:#f0a35e;min-height:0}
 .v31-net:empty{display:none}
+.v31-net.me{color:#f3d98c;font-weight:700}
 @media (prefers-reduced-motion:reduce){.mitem.v31-mi .mwa,.v31-heroi svg,.btn.v31-wa .v31-wai{animation:none!important}}
 </style>
 </head>
@@ -74352,12 +74354,12 @@ V31.elo=function(){try{var c=Profile.combined();return c&&c[0]>0?c[0]:0;}catch(e
 V31.esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
 
 /* ---------- Firebase sob demanda ---------- */
-V31.script=function(src){return new Promise(function(ok,bad){var s=document.createElement('script');s.src=src;s.async=true;s.onload=ok;s.onerror=function(){bad(new Error('rede'));};document.head.appendChild(s);});};
+V31.script=function(src){return new Promise(function(ok,bad){var s=document.createElement('script');s.src=src;s.async=false;s.onload=ok;s.onerror=function(){bad(new Error('rede'));};document.head.appendChild(s);});};
 V31.boot=null;
 V31.init=function(){
  if(!V31.ready())return Promise.reject(new Error('config'));
  if(V31.boot)return V31.boot;
- V31.boot=(window.firebase&&window.firebase.firestore?Promise.resolve():V31.script(V31.SDK+'firebase-app-compat.js').then(function(){return V31.script(V31.SDK+'firebase-auth-compat.js');}).then(function(){return V31.script(V31.SDK+'firebase-firestore-compat.js');}))
+ V31.boot=(window.firebase&&window.firebase.firestore?Promise.resolve():Promise.all(['firebase-app-compat.js','firebase-auth-compat.js','firebase-firestore-compat.js'].map(function(f){return V31.script(V31.SDK+f);})))
  .then(function(){
   var fb=window.firebase;V31.app=fb.apps.length?fb.app():fb.initializeApp(V31.FB);
   var auth=fb.auth();V31.db=fb.firestore();
@@ -74423,12 +74425,20 @@ V31.open=function(code){
  if(V31.unsub){try{V31.unsub();}catch(e){}V31.unsub=null;}
  V31.code=code;V31.room=null;V31.view=null;V31.turnLen=-1;V31.flip=null;V31.busy=false;V31.heard=Date.now();V31.seenOpp=null;
  V31.ref=V31.db.collection('salas').doc(code);
- V31.unsub=V31.ref.onSnapshot(function(s){if(!s.exists){V31.gone('Esta sala não existe mais.');return;}V31.onSnap(s.data());},function(e){V31.gone(V31.err(e));});
+ V31.lastKey=null;V31.pendSince=0;V31.cache=false;
+ V31.unsub=V31.ref.onSnapshot({includeMetadataChanges:true},function(s){
+  if(!s.exists){if(!s.metadata.fromCache)V31.gone('Esta sala não existe mais.');return;}
+  var m=s.metadata;V31.cache=m.fromCache;
+  if(m.hasPendingWrites){if(!V31.pendSince)V31.pendSince=Date.now();}else V31.pendSince=0;
+  var d=s.data(),k=JSON.stringify(d,function(key,v){return key==='seen'?undefined:v;})+'|'+JSON.stringify(d.seen||{});
+  if(k!==V31.lastKey){V31.lastKey=k;V31.onSnap(d);}else V31.presence();
+ },function(e){V31.gone(V31.err(e));});
+ V31.wake(true);
  V31.startTimers();
 };
 V31.close=function(){
  if(V31.unsub){try{V31.unsub();}catch(e){}V31.unsub=null;}
- clearInterval(V31.tick);clearInterval(V31.beat);V31.tick=V31.beat=null;V31.room=null;V31.code=null;V31.view=null;
+ clearInterval(V31.tick);clearInterval(V31.beat);V31.tick=V31.beat=null;V31.room=null;V31.code=null;V31.view=null;V31.wake(false);
 };
 V31.leave=function(){V31.close();try{V30.fsExit();}catch(e){}App.menu();};
 V31.gone=function(msg){V31.close();UiJs.page('Jogar online',App.menu);UiJs.p(msg,'warn');UiJs.btns([['Voltar',V31.home,'pri']]);};
@@ -74483,10 +74493,32 @@ V31.timeout=function(c){
 };
 V31.presence=function(){
  var el=document.querySelector('.v31-net');if(!el)return;var r=V31.room;
- if(!r||r.status!=='play'){el.textContent='';return;}
- var off=Date.now()-V31.heard>65000;
+ if(!r||r.status==='over'){el.textContent='';return;}
+ var meOff=(typeof navigator!=='undefined'&&navigator.onLine===false)||(V31.pendSince&&Date.now()-V31.pendSince>2500);
+ if(meOff){el.className='v31-net me';el.textContent='Sem conexão. Seu lance fica guardado e é enviado sozinho assim que a internet voltar.';return;}
+ if(V31.cache){el.className='v31-net me';el.textContent='Reconectando…';return;}
+ var off=r.status==='play'&&Date.now()-V31.heard>65000;
  el.className='v31-net'+(off?' off':'');el.textContent=off?V31.oppName(r)+' parece desconectado. A partida continua quando ele voltar.':'';
 };
+/* tela acesa durante a partida (celular apagando a tela derruba a conexão) */
+V31.wl=null;
+V31.wake=function(on){
+ try{
+  if(!on){if(V31.wl){V31.wl.release().catch(function(){});V31.wl=null;}return;}
+  if(V31.wl||!navigator.wakeLock||document.hidden)return;
+  navigator.wakeLock.request('screen').then(function(l){V31.wl=l;l.addEventListener('release',function(){V31.wl=null;});}).catch(function(){});
+ }catch(e){}
+};
+if(typeof document!=='undefined'){
+ document.addEventListener('visibilitychange',function(){
+  if(document.hidden||!V31.room||!V31.ref)return;
+  V31.wake(true);
+  if(V31.me&&V31.room.status!=='over'){var u={};u['seen.'+V31.me]=V31.FV().serverTimestamp();V31.ref.update(u).catch(function(){});}
+  V31.bars();V31.presence();
+ });
+ window.addEventListener('online',function(){V31.presence();});
+ window.addEventListener('offline',function(){V31.presence();});
+}
 
 /* ---------- lances e ações ---------- */
 V31.status=function(r){
@@ -74504,11 +74536,9 @@ V31.onMove=function(u4){
   var q=V31.pos(moves),st=Engine.gameStatus(q,V31.keys(moves));
   if(st.over){upd.status='over';upd.winner=st.winner===0?'d':(st.winner===1?'w':'b');upd.how=App.howText(st.result);}
   /* mostra o lance na hora; o servidor confirma em seguida */
-  V31.busy=true;var opt=Object.assign({},r,upd);V31.room=opt;V31.turnLen=moves.length;V31.turnStart=Date.now();V31.render();
+  var opt=Object.assign({},r,upd);V31.room=opt;V31.turnLen=moves.length;V31.turnStart=Date.now();V31.render();
   try{UiJs.sfx(Engine.inCheck(q)?'chk':'mv');}catch(e){}
-  V31.db.runTransaction(function(t){return t.get(V31.ref).then(function(s){var x=s.data();if(x.status!=='play'||(x.moves||[]).length!==len)throw new Error('fora de hora');t.update(V31.ref,upd);});})
-  .catch(function(e){UiJs.toast(/fora de hora/.test(String(e&&e.message))?'A partida mudou antes do seu lance chegar.':V31.err(e));V31.room=r;V31.turnLen=-1;V31.render();})
-  .then(function(){V31.busy=false;});
+  V31.ref.update(upd).catch(function(e){UiJs.toast(/permission/i.test(String(e&&(e.code||e.message)))?'A partida mudou antes do seu lance chegar.':V31.err(e));V31.lastKey=null;V31.room=r;V31.turnLen=-1;V31.render();});
  });
 };
 V31.upd=function(o){return V31.ref.update(o).catch(function(e){UiJs.toast(V31.err(e));});};
@@ -74606,6 +74636,7 @@ V31.home=function(){
   if(V31.owner())UiJs.p('Para o criador: falta colar o firebaseConfig em web/extras_v31.js (V31.FB) e publicar as regras de firebase/firestore.rules.','muted small');
   return;
  }
+ V31.init().catch(function(){});
  UiJs.field('Seu nome','string'===typeof Profile.d.name?Profile.d.name:'','Como seu amigo vai ver você','text',function(v){Profile.d.name=String(v).trim();Profile.save();});
  UiJs.seg('Ritmo',V31.TCS.map(function(t,i){return [t[0],function(){V31.tc=i;V31.home();},V31.tc===i];}),3);
  UiJs.seg('Você joga de',[['Brancas',function(){V31.color='w';V31.home();},V31.color==='w'],['Pretas',function(){V31.color='b';V31.home();},V31.color==='b'],['Sorteio',function(){V31.color='r';V31.home();},V31.color==='r']],3);
@@ -74677,6 +74708,7 @@ V31.WA='<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#25D366" d="M16 
   return r;
  };
 })();
+if(typeof window!=='undefined')window.__rdmLive=V31; /* diagnóstico do jogo ao vivo */
 
 Main.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
