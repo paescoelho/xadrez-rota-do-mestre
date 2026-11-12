@@ -12568,16 +12568,16 @@ UiJs.swatches = function(label,list,sel,pick) {
 	UiJs.el("div","segl",w,label + (current != null ? " · " + current[1] : ""));
 	var grid = UiJs.el("div","sw sw-labeled",w);
 	var shortNames_h = Object.create(null);
-	shortNames_h["madeira"] = "Madeira";
-	shortNames_h["nogueira"] = "Nogueira";
-	shortNames_h["verde"] = "Verde";
-	shortNames_h["ceu"] = "Céu";
 	shortNames_h["turquesa"] = "Turquesa";
-	shortNames_h["lavanda"] = "Lavanda";
-	shortNames_h["rubi"] = "Rubi";
-	shortNames_h["laranja"] = "Laranja";
-	shortNames_h["diagrama"] = "Diagrama";
 	shortNames_h["pixel"] = "Pixel Art";
+	shortNames_h["pelourinho"] = "Pelourinho";
+	shortNames_h["praia"] = "Praia";
+	shortNames_h["sertao"] = "Sertão";
+	shortNames_h["origami"] = "Origami";
+	shortNames_h["bic"] = "Caderno Bic";
+	shortNames_h["nanquim"] = "Nanquim";
+	shortNames_h["praca"] = "Praça";
+	shortNames_h["daltonico"] = "Daltônico";
 	var _g = 0;
 	while(_g < list.length) {
 		var t = list[_g];
@@ -25270,17 +25270,25 @@ Pachisi.BIN = [1,6,15,20,15,6,1];
 Senet.SAFE = [25,27,28,29];
 Senet.R = [[1,0.25,1,1],[2,0.375,0,2],[3,0.25,0,3],[4,0.0625,1,4],[5,0.0625,1,0]];
 Tafl.D = [[1,0],[-1,0],[0,1],[0,-1]];
-Evo.BOARD_THEMES = [["madeira","Madeira clássica","#f0d9b5","#b58863"],["nogueira","Nogueira","#ecd0a4","#8a5a2e"],["verde","Verde de torneio","#eeeed2","#769656"],["ceu","Céu","#f3f7fa","#c3dbea"],["turquesa","Turquesa","#ffffff","#1cc7b1"],["lavanda","Lavanda","#efe7f6","#8f74b0"],["rubi","Rubi","#ffffff","#e5423b"],["laranja","Laranja","#ffffff","#ff8c00"],["diagrama","Diagrama de livro","#f6f5f0","#6b6b6b"],["pixel","Pixel art 8-bit","#ffe9a8","#29adff"]];
+Evo.BOARD_THEMES = [["turquesa","Turquesa","#ffffff","#1cc7b1"],["pixel","Pixel art 8-bit","#ffe9a8","#29adff"],["pelourinho","Pelourinho","#f7e7c6","#2f7fbf"],["praia","Praia baiana","#f3dfb0","#30c3c9"],["sertao","Sertão","#e9b97a","#8a4b26"],["origami","Origami","#fffaf2","#ef6f5c"],["bic","Caderno Bic","#fdfdf8","#a9c3e3"],["nanquim","Nanquim","#f4efe4","#8f897d"],["praca","Praça de concreto","#cfccc5","#3f4a52"],["daltonico","Daltônico (alto contraste)","#f0f0f0","#3d6e9e"]];
 Evo.OLD = (function($this) {
 	var $r;
 	var _g = new haxe_ds_StringMap();
-	_g.h["azul"] = "ceu";
-	_g.h["contraste"] = "ceu";
-	_g.h["jornal"] = "diagrama";
-	_g.h["terracota"] = "laranja";
-	_g.h["marmore"] = "madeira";
-	_g.h["oliva"] = "verde";
-	_g.h["ardosia"] = "ceu";
+	_g.h["azul"] = "turquesa";
+	_g.h["contraste"] = "daltonico";
+	_g.h["jornal"] = "nanquim";
+	_g.h["terracota"] = "sertao";
+	_g.h["marmore"] = "turquesa";
+	_g.h["oliva"] = "turquesa";
+	_g.h["ardosia"] = "turquesa";
+	_g.h["madeira"] = "turquesa";
+	_g.h["nogueira"] = "turquesa";
+	_g.h["verde"] = "turquesa";
+	_g.h["ceu"] = "turquesa";
+	_g.h["lavanda"] = "turquesa";
+	_g.h["rubi"] = "turquesa";
+	_g.h["laranja"] = "turquesa";
+	_g.h["diagrama"] = "nanquim";
 	$r = _g;
 	return $r;
 }(this));
@@ -25643,7 +25651,7 @@ Mestre.placementResult=function(res){
 
 /* Gancho de tela, preservando o roteamento e lógica já existentes. */
 var _mOldMenu=UiJs.menu;
-UiJs.menu=function(items,info){_mOldMenu(items,info);var menu=UiJs.root.querySelector('.menu'),footer=menu&&menu.querySelector('.mfoot');if(footer){var v=UiJs.el('span','menu-version',footer,'Versão: 11.11.2026');v.setAttribute('aria-label','Versão de 11 de novembro de 2026');}};
+UiJs.menu=function(items,info){_mOldMenu(items,info);var menu=UiJs.root.querySelector('.menu'),footer=menu&&menu.querySelector('.mfoot');if(footer){var v=UiJs.el('span','menu-version',footer,'Versão: 12.11.2026');v.setAttribute('aria-label','Versão de 12 de novembro de 2026');}};
 var _mOldTraining=App.training;
 App.training=function(){_mOldTraining();var g=UiJs.root.querySelector('.menu.hub .mgrid');if(g){UiJs.mitem(g,{t:'Laboratório de alto rendimento',d:'Desafios progressivos · cálculo profundo · biblioteca dos mestres',f:Mestre.hub,wide:true,hl:true,ico:'ct'});}};
 Mestre.training=function(){var base=Mestre.clamp(Profile.d.pzElo||1200,650,2650),seen=Profile.seenMap(),tasks=[];for(var i=0;i<18;i++){var rating=Mestre.clamp(base-180+i*65,500,2900),tags=i%4===0?["endgame"]:i%3===0?["long","veryLong"]:null,ps=Puzzles.pick(tags,rating-100,rating+120,1,seen,i%3===0?4:0);if(!ps.length)continue;var p=ps[0];seen.h[p.id]=true;tasks.push(Study.pzTask(p,i%3===0,i%4===0?"finais":i%3===0?"calculo":"tatica"));}Drills.run('Treino de alto rendimento',tasks,{back:App.training});};
@@ -31710,6 +31718,81 @@ V32.panelBox=function(anchor){
    return r;
   };
  }
+})();
+
+/* Rota do Mestre v33 — 10 tabuleiros temáticos com efeitos próprios (o visual está no CSS "v33: temas").
+ * Ordem: Turquesa (padrão), Pixel Art, Pelourinho, Praia baiana, Sertão, Origami, Caderno Bic, Nanquim, Praça de concreto
+ * e Daltônico. Aqui ficam só os efeitos que precisam de JavaScript: a onda no xeque-mate (Turquesa), o pombo que pousa
+ * no xeque-mate (Praça), o "plic" de gota do Turquesa e a descrição do efeito no seletor de tabuleiro. */
+var V33={lastMate:'',ctx:null,
+ FX:{turquesa:'Água: a casa ondula quando a peça pousa, a captura espirra gotinhas, o xeque pulsa como água e o mate passa uma onda pelo tabuleiro.',
+  pixel:'8-bit: sons de videogame antigo, peças que pousam em quadros e explosão de pixels na captura.',
+  pelourinho:'Fitinhas do Bonfim coloridas voam a cada captura, nas cores dos casarões.',
+  praia:'Uma onda de espuma atravessa o tabuleiro a cada xeque.',
+  sertao:'A peça capturada afunda e levanta poeira de terra seca.',
+  origami:'A peça gira como papel ao se mover; a capturada vira um passarinho de papel e sai voando.',
+  bic:'Casas e setas desenhadas à caneta: o último lance é circulado e a captura ganha um X rabiscado.',
+  nanquim:'Uma mancha de tinta se espalha na captura; o xeque vira um carimbo vermelho.',
+  praca:'Clima de praça: no xeque-mate, um pombo pousa no canto do tabuleiro.',
+  daltonico:'Alto contraste e marcações por forma (molduras, cantos e listras), sem depender de cor; animações curtas.'}};
+
+/* efeitos de xeque-mate */
+V33.isMate=function(fen){try{var p=Engine.posFromFEN(fen);return Engine.inCheck(p)&&Engine.legalMoves(p).length===0;}catch(e){return false;}};
+(function(){
+ if(typeof BoardJ==='undefined'||!BoardJ.prototype||!BoardJ.prototype.draw)return;
+ var od=BoardJ.prototype.draw;
+ BoardJ.prototype.draw=function(){
+  var r=od.apply(this,arguments);
+  try{
+   var bt=UiJs.boardTheme;
+   if(this.theme===''&&(bt==='turquesa'||bt==='praca')&&this.check>=0&&this.fen&&this._v33m!==this.fen&&V33.isMate(this.fen)){
+    this._v33m=this.fen;var root=this.root,fx=document.createElement('div');
+    fx.className='v33-fx '+(bt==='turquesa'?'wave':'pombo');root.appendChild(fx);
+    setTimeout(function(){if(fx.parentNode)fx.parentNode.removeChild(fx);},bt==='praca'?7000:1800);
+   }
+  }catch(e){}
+  return r;
+ };
+})();
+
+/* som de gota do Turquesa (bem baixinho); xeque e outros sons continuam os de sempre */
+V33.drop=function(big){
+ try{
+  if(!V33.ctx)V33.ctx=new (window.AudioContext||window.webkitAudioContext)();
+  var c=V33.ctx;if(c.state==='suspended')c.resume();
+  var one=function(t0,f0,f1,vol){
+   var o=c.createOscillator(),g=c.createGain();o.type='sine';
+   o.frequency.setValueAtTime(f0,t0);o.frequency.exponentialRampToValueAtTime(f1,t0+0.09);
+   g.gain.setValueAtTime(0.0001,t0);g.gain.exponentialRampToValueAtTime(vol,t0+0.008);g.gain.exponentialRampToValueAtTime(0.0001,t0+0.16);
+   o.connect(g);g.connect(c.destination);o.start(t0);o.stop(t0+0.18);
+  };
+  var t=c.currentTime+0.01;
+  one(t,1300,520,0.05);
+  if(big){one(t+0.07,900,330,0.04);one(t+0.13,1600,700,0.025);}
+  return true;
+ }catch(e){return false;}
+};
+(function(){
+ if(typeof UiJs==='undefined'||!UiJs.sfx)return;
+ var os=UiJs.sfx;
+ UiJs.sfx=function(kind){
+  if(UiJs.boardTheme==='turquesa'&&UiJs.soundOn&&(kind==='mv'||kind==='cap'||kind==='castle')&&V33.drop(kind==='cap'))return;
+  return os.apply(this,arguments);
+ };
+})();
+
+/* seletor de tabuleiro: mostra o efeito do tema escolhido */
+(function(){
+ if(typeof App==='undefined'||!App.setupGame)return;
+ var o=App.setupGame;
+ App.setupGame=function(){
+  var r=o.apply(this,arguments);
+  try{
+   var tp=UiJs.root.querySelector('.theme-picker'),id=Profile.d.bt;
+   if(tp&&V33.FX[id]){var p=document.createElement('div');p.className='v33-fxd';p.textContent='✦ '+V33.FX[id];tp.appendChild(p);}
+  }catch(e){}
+  return r;
+ };
 })();
 
 Main.main();

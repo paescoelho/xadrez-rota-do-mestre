@@ -12,19 +12,19 @@ import UiJs as Ui;
 class Evo {
   /* temas de tabuleiro: id, nome, casa clara, casa escura */
   public static var BOARD_THEMES:Array<Array<String>> = [
-    ["madeira", "Madeira clássica", "#f0d9b5", "#b58863"],
-    ["nogueira", "Nogueira", "#ecd0a4", "#8a5a2e"],
-    ["verde", "Verde de torneio", "#eeeed2", "#769656"],
-    ["ceu", "Céu", "#f3f7fa", "#c3dbea"],
     ["turquesa", "Turquesa", "#ffffff", "#1cc7b1"],
-    ["lavanda", "Lavanda", "#efe7f6", "#8f74b0"],
-    ["rubi", "Rubi", "#ffffff", "#e5423b"],
-    ["laranja", "Laranja", "#ffffff", "#ff8c00"],
-    ["diagrama", "Diagrama de livro", "#f6f5f0", "#6b6b6b"],
-    ["pixel", "Pixel art 8-bit", "#ffe9a8", "#29adff"]
+    ["pixel", "Pixel art 8-bit", "#ffe9a8", "#29adff"],
+    ["pelourinho", "Pelourinho", "#f7e7c6", "#2f7fbf"],
+    ["praia", "Praia baiana", "#f3dfb0", "#30c3c9"],
+    ["sertao", "Sertão", "#e9b97a", "#8a4b26"],
+    ["origami", "Origami", "#fffaf2", "#ef6f5c"],
+    ["bic", "Caderno Bic", "#fdfdf8", "#a9c3e3"],
+    ["nanquim", "Nanquim", "#f4efe4", "#8f897d"],
+    ["praca", "Praça de concreto", "#cfccc5", "#3f4a52"],
+    ["daltonico", "Daltônico (alto contraste)", "#f0f0f0", "#3d6e9e"]
   ];
   /* temas antigos (removidos) passam para o mais parecido */
-  static var OLD = ["azul" => "ceu", "contraste" => "ceu", "jornal" => "diagrama", "terracota" => "laranja", "marmore" => "madeira", "oliva" => "verde", "ardosia" => "ceu"];
+  static var OLD = ["azul" => "turquesa", "contraste" => "daltonico", "jornal" => "nanquim", "terracota" => "sertao", "marmore" => "turquesa", "oliva" => "turquesa", "ardosia" => "turquesa", "madeira" => "turquesa", "nogueira" => "turquesa", "verde" => "turquesa", "ceu" => "turquesa", "lavanda" => "turquesa", "rubi" => "turquesa", "laranja" => "turquesa", "diagrama" => "nanquim"];
   public static function applyTheme() {
     #if js
     Profile.d.ps = "lux";

@@ -784,7 +784,7 @@ class UiJs {
     var current:Array<String> = null; for (t in list) if (current == null && t[0] == sel) current = t;
     el("div", "segl", w, label + (current != null ? " · " + current[1] : ""));
     var grid = el("div", "sw sw-labeled", w);
-    var shortNames = ["madeira" => "Madeira", "nogueira" => "Nogueira", "verde" => "Verde", "ceu" => "Céu", "turquesa" => "Turquesa", "lavanda" => "Lavanda", "rubi" => "Rubi", "laranja" => "Laranja", "diagrama" => "Diagrama", "pixel" => "Pixel Art"];
+    var shortNames = ["turquesa" => "Turquesa", "pixel" => "Pixel Art", "pelourinho" => "Pelourinho", "praia" => "Praia", "sertao" => "Sertão", "origami" => "Origami", "bic" => "Caderno Bic", "nanquim" => "Nanquim", "praca" => "Praça", "daltonico" => "Daltônico"];
     for (t in list) {
       var active = t[0] == sel;
       var b:js.html.ButtonElement = cast el("button", "theme-tile" + (active ? " on" : ""), grid);

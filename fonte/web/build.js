@@ -9,7 +9,7 @@ let app=fs.readFileSync(__dirname+'/../out/app.js','utf8');
  const ex='var V23_FIREBASE='+fb+';\n'+fs.readFileSync(__dirname+'/extras_v23.js','utf8');const k=app.lastIndexOf('Main.main();');app=app.slice(0,k)+ex+'\n'+app.slice(k);}
 /* camada v24: Raio-X do pensamento (registro por lance, agudeza, certeza, domínio por tema, tilt, IndexedDB, PWA) */
 {const ex=fs.readFileSync(__dirname+'/extras_v24.js','utf8');const k=app.lastIndexOf('Main.main();');app=app.slice(0,k)+ex+'\n'+app.slice(k);}
-{const ex='/* QR Code Generator for JavaScript, Copyright (c) 2009 Kazuhiko Arase, licença MIT */\n'+fs.readFileSync(__dirname+'/qr_v25.part.js','utf8')+'\n'+fs.readFileSync(__dirname+'/extras_v25.js','utf8')+'\n'+fs.readFileSync(__dirname+'/extras_v26.js','utf8')+'\n'+fs.readFileSync(__dirname+'/extras_v27.js','utf8')+'\n'+fs.readFileSync(__dirname+'/extras_v28.js','utf8')+'\n'+fs.readFileSync(__dirname+'/extras_v29.js','utf8')+'\n'+fs.readFileSync(__dirname+'/extras_v30.js','utf8')+'\n'+fs.readFileSync(__dirname+'/extras_v31.js','utf8')+'\n'+fs.readFileSync(__dirname+'/extras_v32.js','utf8');const k=app.lastIndexOf('Main.main();');app=app.slice(0,k)+ex+'\n'+app.slice(k);}
+{const ex='/* QR Code Generator for JavaScript, Copyright (c) 2009 Kazuhiko Arase, licença MIT */\n'+fs.readFileSync(__dirname+'/qr_v25.part.js','utf8')+'\n'+fs.readFileSync(__dirname+'/extras_v25.js','utf8')+'\n'+fs.readFileSync(__dirname+'/extras_v26.js','utf8')+'\n'+fs.readFileSync(__dirname+'/extras_v27.js','utf8')+'\n'+fs.readFileSync(__dirname+'/extras_v28.js','utf8')+'\n'+fs.readFileSync(__dirname+'/extras_v29.js','utf8')+'\n'+fs.readFileSync(__dirname+'/extras_v30.js','utf8')+'\n'+fs.readFileSync(__dirname+'/extras_v31.js','utf8')+'\n'+fs.readFileSync(__dirname+'/extras_v32.js','utf8')+'\n'+fs.readFileSync(__dirname+'/extras_v33.js','utf8');const k=app.lastIndexOf('Main.main();');app=app.slice(0,k)+ex+'\n'+app.slice(k);}
 if(/<\/script/i.test(app)) throw new Error('</script no app.js');
 let css='';
 /* peças com volume: degradê radial (luz vinda do alto à esquerda) no mesmo desenho; por tema e na edição marfim e ébano */
@@ -21,6 +21,7 @@ function shade(code,P){
   if(P.flat){
     if(w) svg=svg.replace(/fill="#fff"/g,`fill="${P.w[0]}"`).replace(/stroke="#000"/g,`stroke="${P.w[1]}"`).replace(/fill="#000"/g,`fill="${P.w[1]}"`);
     else svg=svg.replace(/fill="#000"/g,`fill="${P.b[0]}"`).replace(/stroke="#000"/g,`stroke="${P.b[1]}"`).replace(/#ececec/g,P.b[2]);
+    if(P.sw)svg=svg.replace(/stroke-width="1.5"/g,`stroke-width="${P.sw}"`);
     return svg;
   }
   const g=w?grad('g',...P.wg):grad('g',...P.bg);
@@ -31,15 +32,25 @@ function shade(code,P){
 }
 const STD={wg:['#ffffff','#f3f0e8','#c8c0ae'],wl:'#000',bg:['#6b6b6b','#262626','#030303'],bl:'#000',bd:'#ececec'};
 const PAL={
-  ceu:{wg:['#ffffff','#eef4f9','#bccddb'],wl:'#3c5368',bg:['#63b6e6','#2b86bd','#124f78'],bl:'#0c3550',bd:'#e3f3fc'},
-  lavanda:{wg:['#fffdf8','#f3ecf7','#cbbcdb'],wl:'#2c1f40',bg:['#6d5694','#3a2858','#1a1030'],bl:'#160c26',bd:'#eadff6'},
   pixel:{flat:true,w:['#fff1e8','#1d2b53'],b:['#1d2b53','#090f26','#ffec27']}
+};
+/* v33: peças dos temas novos (vêm depois das peças marfim e ébano, então valem nesses tabuleiros) */
+const PAL2={
+  pelourinho:{wg:['#fffdf5','#f7ecd2','#d7c09a'],wl:'#5a3d14',bg:['#6b4a2b','#3b2716','#1c1109'],bl:'#120a04',bd:'#f1d9a6'},
+  praia:{wg:['#ffffff','#fff6e5','#e6cfa2'],wl:'#6b4a1c',bg:['#1c7f8c','#0f5a66','#06323a'],bl:'#04242a',bd:'#d8fbfb'},
+  sertao:{wg:['#fff8ea','#f2d8a8','#c99a5a'],wl:'#4a2a10',bg:['#5f3a1f','#33190a','#140803'],bl:'#0e0502',bd:'#f2d8a8'},
+  origami:{flat:true,w:['#fffaf2','#6b5a48'],b:['#2f3b52','#141b29','#fffaf2'],sw:1.3},
+  bic:{flat:true,w:['#fdfdf8','#1f3fbf'],b:['#1f3fbf','#1f3fbf','#fdfdf8'],sw:1.6},
+  nanquim:{flat:true,w:['#f4efe4','#1c1a17'],b:['#1c1a17','#1c1a17','#c0392b'],sw:1.7},
+  praca:{wg:['#ffffff','#ececec','#bdbdbd'],wl:'#333',bg:['#4a4a4a','#222','#050505'],bl:'#000',bd:'#dcdcdc'},
+  daltonico:{flat:true,w:['#ffffff','#000000'],b:['#000000','#000000','#ffffff'],sw:2}
 };
 const LUX={wg:['#fffdf3','#f2e4c3','#c9a56a'],wl:'#5a3d14',bg:['#5e4832','#1f1710','#050403'],bl:'#0b0906',bd:'#e6c16a'};
 const b64=x=>Buffer.from(x).toString('base64');
 for(const c of ['w','b'])for(const p of ['K','Q','R','B','N','P'])css+=`.pc.${c}${p}{background-image:url("data:image/svg+xml;base64,${b64(shade(c+p,STD))}")}\n`;
 for(const th in PAL)for(const c of ['w','b'])for(const p of ['K','Q','R','B','N','P'])css+=`.bt-${th} .pc.${c}${p}{background-image:url("data:image/svg+xml;base64,${b64(shade(c+p,PAL[th]))}")}\n`;
 for(const c of ['w','b'])for(const p of ['K','Q','R','B','N','P'])css+=`.ps-lux .pc.${c}${p}{background-image:url("data:image/svg+xml;base64,${b64(shade(c+p,LUX))}")}\n`;
+for(const th in PAL2)for(const c of ['w','b'])for(const p of ['K','Q','R','B','N','P'])css+=`.board.bt-${th} .pc.${c}${p}{background-image:url("data:image/svg+xml;base64,${b64(shade(c+p,PAL2[th]))}")}\n`;
 for(const c of ['w','b'])for(const p of ['F','E','S']){
   const svg=fs.readFileSync(`${__dirname}/anc/${c}${p}.svg`);
   css+=`.pc.${c}${p}{background-image:url("data:image/svg+xml;base64,${svg.toString('base64')}")}\n`;

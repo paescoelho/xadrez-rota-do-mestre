@@ -211,3 +211,23 @@ pelo próprio vídeo desfocado. No celular em pé continua a versão vertical 10
 - **Seus erros viram cartões:** cada posição crítica das partidas importadas entra na revisão espaçada (FSRS).
 - **Calibração do Elo:** rating de lá convertido para a escala daqui (Lichess ≈ 0,9 × rating − 350; Chess.com ≈
   0,95 × rating − 100). Lichess confirmado tem peso 1,6; não confirmado 0,5; Chess.com 0,6. Conversão aproximada.
+
+## Tabuleiros temáticos (v33 · versão 12.11.2026)
+
+Dez tabuleiros, nesta ordem, cada um com peças, textura, moldura e efeitos próprios:
+
+1. **Turquesa (padrão) · Água:** a casa ondula quando a peça pousa, a captura espirra gotinhas, o xeque pulsa como água,
+   o xeque-mate passa uma onda pelo tabuleiro e o lance tem um "plic" de gota bem baixinho.
+2. **Pixel Art:** sons 8-bit, peças em quadros e explosão de pixels (como antes).
+3. **Pelourinho:** casas nas cores dos casarões; fitinhas do Bonfim voam na captura.
+4. **Praia baiana:** areia e mar; uma onda de espuma atravessa o tabuleiro no xeque.
+5. **Sertão:** terra rachada; a peça capturada afunda e levanta poeira.
+6. **Origami:** papel dobrado; a peça gira como papel e a capturada vira um passarinho que sai voando.
+7. **Caderno Bic:** papel quadriculado e caneta azul; último lance circulado e captura com X rabiscado.
+8. **Nanquim:** tinta e papel de arroz; mancha de tinta na captura e xeque como carimbo vermelho.
+9. **Praça de concreto:** mesa de praça; no xeque-mate um pombo pousa no canto do tabuleiro.
+10. **Daltônico:** alto contraste (azul e cinza-claro) e marcações por forma — molduras, cantos e listras —,
+    sem depender de cor; animações curtas.
+
+Os temas antigos (Madeira, Nogueira, Verde, Céu, Lavanda, Rubi, Laranja, Diagrama) passam automaticamente para o
+Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "reduzir movimento" do aparelho.
