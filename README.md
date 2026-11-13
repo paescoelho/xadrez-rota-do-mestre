@@ -238,3 +238,6 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 - Centro de Treino em 5 seções numeradas, com rolagem: Comece por aqui (Nivelamento, Como pensar) · Sua rotina (Plano do dia, Trilha) · Treinos por tema · Seus erros e seu pensamento (Analisar erros, Laboratório do Pensamento) · Alto rendimento.
 - Novo "Analisar erros": contas Lichess/Chess.com, importação, Aula da semana e Reconstrua seu Pensamento, em sequência.
 - Laboratório do Pensamento fica com Primeiras observações, Mapa do seu pensamento e Raio-X.
+
+## v35 — Painel de evolução (12.11.2026)
+- A constelação do botão Painel de evolução fica num quadro dentro do botão (moldura dourada), com título "Sua constelação", raios dos 9 eixos e legenda hoje / mês passado.

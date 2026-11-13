@@ -11859,7 +11859,7 @@ UiJs.panelBtn = function(g,it) {
 		var i = _g1++;
 		_g.push(pt(i,0.333333333333333315));
 	}
-	s_b += Std.string("<polygon points='" + _g.join(" ") + "' fill='none' stroke='#4a3f2a' stroke-width='.5'/>");
+	s_b += Std.string("<polygon points='" + _g.join(" ") + "' fill='" + "none" + "' stroke='" + "#4a3f2a" + "' stroke-width='" + ".5" + "'/>");
 	var _g = [];
 	var _g1 = 0;
 	var _g2 = n;
@@ -11867,7 +11867,7 @@ UiJs.panelBtn = function(g,it) {
 		var i = _g1++;
 		_g.push(pt(i,0.66666666666666663));
 	}
-	s_b += Std.string("<polygon points='" + _g.join(" ") + "' fill='none' stroke='#4a3f2a' stroke-width='.5'/>");
+	s_b += Std.string("<polygon points='" + _g.join(" ") + "' fill='" + "none" + "' stroke='" + "#4a3f2a" + "' stroke-width='" + ".5" + "'/>");
 	var _g = [];
 	var _g1 = 0;
 	var _g2 = n;
@@ -11875,7 +11875,14 @@ UiJs.panelBtn = function(g,it) {
 		var i = _g1++;
 		_g.push(pt(i,1.));
 	}
-	s_b += Std.string("<polygon points='" + _g.join(" ") + "' fill='none' stroke='#4a3f2a' stroke-width='.5'/>");
+	s_b += Std.string("<polygon points='" + _g.join(" ") + "' fill='" + "rgba(243,217,140,.04)" + "' stroke='" + "#7a6a44" + "' stroke-width='" + ".7" + "'/>");
+	var _g = 0;
+	var _g1 = n;
+	while(_g < _g1) {
+		var i = _g++;
+		var e = pt(i,1).split(",");
+		s_b += Std.string("<line x1='" + cx + "' y1='" + cy + "' x2='" + e[0] + "' y2='" + e[1] + "' stroke='#4a3f2a' stroke-width='.4'/><circle cx='" + e[0] + "' cy='" + e[1] + "' r='.9' fill='#8a7a52'/>");
+	}
 	if(pv != null && pv.length == n) {
 		var _g = [];
 		var _g1 = 0;
@@ -11907,7 +11914,8 @@ UiJs.panelBtn = function(g,it) {
 	}
 	s_b += "</svg>";
 	var left = "<span class=\"pn-tx\"><span class=\"mt\">" + UiJs.esc(it.t) + "</span>" + "<span class=\"pn-elo\">" + (elo > 0 ? "<b class=\"pn-n\">" + Std.string(d.from) + "</b>" : "") + (elo > 0 ? delta != 0 ? "<i class=\"pn-up" + (delta < 0 ? " dn" : "") + "\">" + (delta > 0 ? "▲ " : "▼ ") + (Math.abs(delta) | 0) + " em " + Std.string(d.month) + "</i>" : "<i class=\"pn-up eq\">Elo estimado</i>" : "<i class=\"pn-up eq\">Faça o Nivelamento</i>") + "</span>" + (elo > 0 ? "<span class=\"pn-goal\"><i style=\"--p:" + Math.round(d.pct) + "%\"></i></span><span class=\"pn-gl\">meta " + Std.string(d.goal) + "</span>" : "") + "</span>";
-	b.innerHTML = left + "<span class=\"pn-sky\">" + s_b + "</span>";
+	var leg = "<span class=\"pn-cap\">Sua constelação</span><span class=\"pn-leg\"><i class=\"pn-lt\"></i>hoje" + (pv != null && pv.length == n ? "<i class=\"pn-lp\"></i>mês passado" : "") + "</span>";
+	b.innerHTML = left + "<span class=\"pn-sky\"><span class=\"pn-frame\">" + s_b + leg + "</span></span>";
 	var f = it.f;
 	b.onclick = function(_) {
 		f();

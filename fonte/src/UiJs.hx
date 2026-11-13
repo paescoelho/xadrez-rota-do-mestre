@@ -355,7 +355,9 @@ class UiJs {
     var seed = 7;
     function rnd():Float { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
     for (k in 0...30) s.add("<circle class='pn-bg' cx='" + Math.round(rnd() * 160) + "' cy='" + Math.round(rnd() * 80) + "' r='" + (0.35 + rnd() * 0.5) + "' style='animation-delay:" + (Math.round(rnd() * 40) / 10) + "s'/>");
-    for (k in 1...4) s.add("<polygon points='" + [for (i in 0...n) pt(i, k / 3)].join(" ") + "' fill='none' stroke='#4a3f2a' stroke-width='.5'/>");
+    for (k in 1...4) s.add("<polygon points='" + [for (i in 0...n) pt(i, k / 3)].join(" ") + "' fill='" + (k == 3 ? "rgba(243,217,140,.04)" : "none") + "' stroke='" + (k == 3 ? "#7a6a44" : "#4a3f2a") + "' stroke-width='" + (k == 3 ? ".7" : ".5") + "'/>");
+    /* v35: raios do centro até cada eixo, para a teia ter estrutura mesmo sem dados */
+    for (i in 0...n) { var e = pt(i, 1).split(","); s.add("<line x1='" + cx + "' y1='" + cy + "' x2='" + e[0] + "' y2='" + e[1] + "' stroke='#4a3f2a' stroke-width='.4'/><circle cx='" + e[0] + "' cy='" + e[1] + "' r='.9' fill='#8a7a52'/>"); }
     if (pv != null && pv.length == n) s.add("<polygon class='pn-prev' points='" + [for (i in 0...n) pt(i, vv(pv[i]))].join(" ") + "' fill='none' stroke='#7fb2d9' stroke-width='.7' stroke-dasharray='2 2'/>");
     s.add("<polygon class='pn-line' pathLength='1' points='" + [for (i in 0...n) pt(i, vv(ax[i]))].join(" ") + "' fill='rgba(243,217,140,.14)' stroke='#f3d98c' stroke-width='.9' stroke-linejoin='round'/>");
     for (i in 0...n) {
@@ -369,7 +371,8 @@ class UiJs {
       + '<span class="pn-elo">' + (elo > 0 ? '<b class="pn-n">' + Std.string(d.from) + '</b>' : '')
       + (elo > 0 ? (delta != 0 ? '<i class="pn-up' + (delta < 0 ? ' dn' : '') + '">' + (delta > 0 ? "▲ " : "▼ ") + Std.int(Math.abs(delta)) + ' em ' + d.month + '</i>' : '<i class="pn-up eq">Elo estimado</i>') : '<i class="pn-up eq">Faça o Nivelamento</i>') + '</span>'
       + (elo > 0 ? '<span class="pn-goal"><i style="--p:' + Math.round(d.pct) + '%"></i></span><span class="pn-gl">meta ' + d.goal + '</span>' : '') + '</span>';
-    b.innerHTML = left + '<span class="pn-sky">' + s.toString() + '</span>';
+    var leg = '<span class="pn-cap">Sua constelação</span><span class="pn-leg"><i class="pn-lt"></i>hoje' + (pv != null && pv.length == n ? '<i class="pn-lp"></i>mês passado' : '') + '</span>';
+    b.innerHTML = left + '<span class="pn-sky"><span class="pn-frame">' + s.toString() + leg + '</span></span>';
     var f:Void->Void = it.f;
     b.onclick = function(_) f();
     /* o Elo conta até o valor atual */

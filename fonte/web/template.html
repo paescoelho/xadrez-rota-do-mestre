@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v34</title>
+<title>Xadrez · Rota do Mestre — v35</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1012,6 +1012,20 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .menu.hub.v34-ct .v34-sec .mitem.wide{grid-column:1/-1}
 .menu.hub.v34-ct .v34-sec .mitem.lone{grid-column:1/-1;justify-self:center;width:calc(50% - 4px)}
 @media (prefers-reduced-motion:reduce){.v34-sec,.v34-eic .v34-lens,.mitem.hero.v34-hascont:after{animation:none}}
+
+/* ================= v35: Painel de evolução — a constelação num quadro dentro do botão ================= */
+.mitem.pnl .pn-sky{flex:1;display:flex;align-items:center;justify-content:center;padding:clamp(7px,1.3vh,12px) 12px clamp(7px,1.3vh,12px) 4px;background:none!important;border-left:0!important;box-shadow:none!important}
+.mitem.pnl .pn-frame{position:relative;width:100%;height:100%;border-radius:12px;overflow:hidden;background:radial-gradient(ellipse at 50% 45%,#22305a 0%,#121a33 45%,#070a14 100%);border:1px solid rgba(243,217,140,.7);box-shadow:0 0 0 3px rgba(10,8,4,.85),0 0 0 4px rgba(200,150,58,.45),0 6px 14px rgba(0,0,0,.55),inset 0 0 18px rgba(0,0,0,.6),inset 0 0 30px rgba(90,120,200,.12)}
+.mitem.pnl .pn-frame svg{position:absolute;left:4%;right:4%;top:17%;bottom:15%;width:92%;height:68%}
+.mitem.pnl .pn-frame:before{content:'';position:absolute;inset:0;background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,0) 35%);pointer-events:none;z-index:2}
+.pn-cap{position:absolute;left:0;right:0;top:5%;text-align:center;font:600 clamp(8px,1.15vh,9.5px)/1 Georgia,serif;letter-spacing:.16em;text-transform:uppercase;color:#d8b968;opacity:.9}
+.pn-leg{position:absolute;left:0;right:0;bottom:5%;display:flex;justify-content:center;align-items:center;gap:5px;font-size:clamp(8px,1.1vh,9.5px);color:#aeb6c8;white-space:nowrap}
+.pn-leg i{display:inline-block;width:12px;height:0;border-top:1.6px solid #f3d98c}
+.pn-leg i.pn-lp{border-top:1.4px dashed #7fb2d9;margin-left:6px}
+.mitem.pnl .pn-frame{max-width:440px}
+.mitem.pnl .pn-elo{flex-wrap:wrap;row-gap:0;white-space:normal}
+.mitem.pnl .pn-elo .pn-up{white-space:nowrap}
+@media (max-height:640px){.pn-leg{display:none}.mitem.pnl .pn-frame svg{top:14%;bottom:6%;height:80%}}
 </style>
 </head>
 <body>
