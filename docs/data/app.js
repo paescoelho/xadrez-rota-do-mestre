@@ -1336,7 +1336,16 @@ App.panelData = function() {
 		++_g1;
 		_g.push(a.val);
 	}
-	return { elo : v, from : tmp, delta : tmp1, month : tmp2, goal : goal, pct : tmp3, ax : _g, prev : prevAx};
+	var tmp4 = _g;
+	var _g = [];
+	var _g1 = 0;
+	var _g2 = Evo.axes();
+	while(_g1 < _g2.length) {
+		var a = _g2[_g1];
+		++_g1;
+		_g.push(a.label);
+	}
+	return { elo : v, from : tmp, delta : tmp1, month : tmp2, goal : goal, pct : tmp3, ax : tmp4, lb : _g, prev : prevAx};
 };
 App.training = function() {
 	App.stopClock();
@@ -11914,7 +11923,38 @@ UiJs.panelBtn = function(g,it) {
 	}
 	s_b += "</svg>";
 	var left = "<span class=\"pn-tx\"><span class=\"mt\">" + UiJs.esc(it.t) + "</span>" + "<span class=\"pn-elo\">" + (elo > 0 ? "<b class=\"pn-n\">" + Std.string(d.from) + "</b>" : "") + (elo > 0 ? delta != 0 ? "<i class=\"pn-up" + (delta < 0 ? " dn" : "") + "\">" + (delta > 0 ? "▲ " : "▼ ") + (Math.abs(delta) | 0) + " em " + Std.string(d.month) + "</i>" : "<i class=\"pn-up eq\">Elo estimado</i>" : "<i class=\"pn-up eq\">Faça o Nivelamento</i>") + "</span>" + (elo > 0 ? "<span class=\"pn-goal\"><i style=\"--p:" + Math.round(d.pct) + "%\"></i></span><span class=\"pn-gl\">meta " + Std.string(d.goal) + "</span>" : "") + "</span>";
-	var leg = "<span class=\"pn-cap\">Sua constelação</span><span class=\"pn-leg\"><i class=\"pn-lt\"></i>hoje" + (pv != null && pv.length == n ? "<i class=\"pn-lp\"></i>mês passado" : "") + "</span>";
+	var lb = d.lb;
+	var best = -1;
+	var worst = -1;
+	var _g = 0;
+	var _g1 = n;
+	while(_g < _g1) {
+		var i = _g++;
+		var x = ax[i];
+		if(x == null || x < 0) {
+			continue;
+		}
+		if(best < 0 || x > ax[best]) {
+			best = i;
+		}
+		if(worst < 0 || x < ax[worst]) {
+			worst = i;
+		}
+	}
+	var chip = function(cls,tag,name,v) {
+		return "<span class=\"pn-ch " + cls + "\"><i>" + tag + "</i><b>" + UiJs.esc(name) + "</b>" + (v >= 0 ? "<s><u style=\"width:" + v + "%\"></u></s>" : "") + "</span>";
+	};
+	var hasPrev = pv != null && pv.length == n;
+	var lc;
+	var rc;
+	if(lb != null && best >= 0 && worst >= 0 && best != worst) {
+		lc = chip("pn-best","▲ ponto forte",lb[best],Math.round(ax[best]));
+		rc = chip("pn-weak","● a treinar",lb[worst],Math.round(ax[worst]));
+	} else {
+		lc = chip("pn-best pn-x","sua teia",n + " eixos",-1);
+		rc = chip("pn-weak pn-x","faça o","Nivelamento",-1);
+	}
+	var leg = "<span class=\"pn-col pn-l\">" + lc + "<span class=\"pn-lg\"><i class=\"pn-lt\"></i>hoje</span></span>" + "<span class=\"pn-col pn-r\">" + rc + (hasPrev ? "<span class=\"pn-lg\"><i class=\"pn-lp\"></i>mês passado</span>" : "<span class=\"pn-lg\"></span>") + "</span>";
 	b.innerHTML = left + "<span class=\"pn-sky\"><span class=\"pn-frame\">" + s_b + leg + "</span></span>";
 	var f = it.f;
 	b.onclick = function(_) {

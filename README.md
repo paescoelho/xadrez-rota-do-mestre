@@ -241,3 +241,7 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 
 ## v35 — Painel de evolução (12.11.2026)
 - A constelação do botão Painel de evolução fica num quadro dentro do botão (moldura dourada), com título "Sua constelação", raios dos 9 eixos e legenda hoje / mês passado.
+
+## v36 — quadro do Painel igual ao pergaminho (12.11.2026)
+- O quadro da constelação tem a mesma altura e largura do pergaminho do botão História do xadrez.
+- Sem o título: dentro do quadro ficam o ponto forte (verde, à esquerda), o que treinar (laranja, à direita), cada um com barrinha, e a legenda hoje / mês passado nos cantos de baixo.

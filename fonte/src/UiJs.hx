@@ -371,7 +371,25 @@ class UiJs {
       + '<span class="pn-elo">' + (elo > 0 ? '<b class="pn-n">' + Std.string(d.from) + '</b>' : '')
       + (elo > 0 ? (delta != 0 ? '<i class="pn-up' + (delta < 0 ? ' dn' : '') + '">' + (delta > 0 ? "▲ " : "▼ ") + Std.int(Math.abs(delta)) + ' em ' + d.month + '</i>' : '<i class="pn-up eq">Elo estimado</i>') : '<i class="pn-up eq">Faça o Nivelamento</i>') + '</span>'
       + (elo > 0 ? '<span class="pn-goal"><i style="--p:' + Math.round(d.pct) + '%"></i></span><span class="pn-gl">meta ' + d.goal + '</span>' : '') + '</span>';
-    var leg = '<span class="pn-cap">Sua constelação</span><span class="pn-leg"><i class="pn-lt"></i>hoje' + (pv != null && pv.length == n ? '<i class="pn-lp"></i>mês passado' : '') + '</span>';
+    /* v36: dentro do quadro, sem título: ponto forte à esquerda, o que treinar à direita, legenda embaixo de cada lado */
+    var lb:Array<Dynamic> = d.lb;
+    var best = -1; var worst = -1;
+    for (i in 0...n) { var x:Dynamic = ax[i]; if (x == null || (x : Float) < 0) continue;
+      if (best < 0 || (x : Float) > (ax[best] : Float)) best = i;
+      if (worst < 0 || (x : Float) < (ax[worst] : Float)) worst = i; }
+    function chip(cls:String, tag:String, name:String, v:Int):String
+      return '<span class="pn-ch ' + cls + '"><i>' + tag + '</i><b>' + esc(name) + '</b>' + (v >= 0 ? '<s><u style="width:' + v + '%"></u></s>' : '') + '</span>';
+    var hasPrev = pv != null && pv.length == n;
+    var lc:String; var rc:String;
+    if (lb != null && best >= 0 && worst >= 0 && best != worst) {
+      lc = chip("pn-best", "▲ ponto forte", lb[best], Math.round(ax[best]));
+      rc = chip("pn-weak", "● a treinar", lb[worst], Math.round(ax[worst]));
+    } else {
+      lc = chip("pn-best pn-x", "sua teia", n + " eixos", -1);
+      rc = chip("pn-weak pn-x", "faça o", "Nivelamento", -1);
+    }
+    var leg = '<span class="pn-col pn-l">' + lc + '<span class="pn-lg"><i class="pn-lt"></i>hoje</span></span>'
+      + '<span class="pn-col pn-r">' + rc + (hasPrev ? '<span class="pn-lg"><i class="pn-lp"></i>mês passado</span>' : '<span class="pn-lg"></span>') + '</span>';
     b.innerHTML = left + '<span class="pn-sky"><span class="pn-frame">' + s.toString() + leg + '</span></span>';
     var f:Void->Void = it.f;
     b.onclick = function(_) f();

@@ -143,7 +143,7 @@ class App {
     var goal = Profile.nextGoal(v); var lo = 0; for (gl in Profile.GOALS) if (gl <= v) lo = gl;
     return { elo: v, from: pe > 0 && v > 0 ? pe : (v > 0 ? Std.int(Math.max(0, v - 40)) : 0), delta: pe > 0 && v > 0 ? v - pe : 0, month: MES[now.getMonth()],
       goal: goal, pct: v > 0 ? Math.max(4, Math.min(100, (v - lo) * 100 / Math.max(1, goal - lo))) : 0,
-      ax: [for (a in Evo.axes()) a.val], prev: prevAx };
+      ax: [for (a in Evo.axes()) a.val], lb: [for (a in Evo.axes()) a.label], prev: prevAx };
   }
 
   /* ---------- Centro de Treino: segundo menu com os treinos ---------- */
