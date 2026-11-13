@@ -332,3 +332,6 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 ## v62 (13.11.2026)
 - Botão Jogar do menu sempre com "Jogue com Mentor ou contra IA".
 - Nova partida: "Começar nova partida" e "Continuar partida" com a mesma altura fixa (56 px).
+
+## v63 (13.11.2026)
+- Treinador por voz (modo Mentor), desligado por padrão: cartão "Treinador por voz" com chave em Nova partida (quando o Mentor está escolhido) e botão 🔊 Voz na partida. Usa a voz em português do aparelho (sem internet, sem custo). Fala a avaliação do seu lance (e o melhor lance quando errou), o lance do Mentor com o motivo, xeque e o resultado. Seu lance interrompe a fala anterior.
