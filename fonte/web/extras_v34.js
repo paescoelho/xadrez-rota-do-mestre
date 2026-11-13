@@ -456,3 +456,8 @@ V34.inbox=function(){
  });
 };
 if(typeof V27!=='undefined'&&V27.panel){var oP34=V27.panel;V27.panel=function(){var r=oP34.apply(this,arguments);try{var cur=UiJs.cur,dev=cur.querySelector('.v27-dev');var b=document.createElement('button');b.type='button';b.className='v34-inbtn';b.innerHTML='<b>💬 Caixa de sugestões</b><span>Ideias, erros e elogios enviados pelos jogadores. Só a sua conta Google lê.</span><i>›</i>';b.onclick=V34.inbox;if(dev&&dev.nextSibling)cur.insertBefore(b,dev.nextSibling);else cur.insertBefore(b,cur.firstChild);}catch(e){}return r;};}
+
+/* v50: o Painel do criador (5 toques na versão) só abre logado na conta Google do criador */
+V34.ADMIN_UID='yQcB43kSJcbxnJorS1QsJsJtP5x1';
+V34.isAdmin=function(){try{var u=V23.Cloud&&V23.Cloud.user;return !!(u&&u.uid===V34.ADMIN_UID);}catch(e){return false;}};
+if(typeof V27!=='undefined'&&V27.panel){var oP50=V27.panel;V27.panel=function(){if(!V34.isAdmin())return;return oP50.apply(this,arguments);};}

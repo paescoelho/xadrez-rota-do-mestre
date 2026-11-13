@@ -290,3 +290,6 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 
 ## v49 (13.11.2026)
 - Apoio ou sugestão: o Pix cresce para ocupar o espaço livre da tela (QR maior em celulares mais altos), ainda sem rolar.
+
+## v50 (13.11.2026)
+- Painel do criador: os 5 toques na versão só abrem o painel quando o jogo está logado na conta Google do criador.
