@@ -30335,7 +30335,7 @@ V27.base=function(){return 'https://'+V27.GC+'.goatcounter.com';};
 V27.EV=[
  ['evento-sessao-celular','Sessões no celular','ap'],['evento-sessao-computador','Sessões no computador','ap'],['evento-sessao-app','Abriu como app instalado','ap'],
  ['evento-partida','Começou uma partida','uso'],['evento-centro-treino','Abriu o Centro de Treino','uso'],['evento-nivelamento','Abriu o Nivelamento','uso'],
- ['evento-laboratorio','Abriu o Laboratório do Pensamento','uso'],['evento-erros','Abriu Analisar erros','uso'],['evento-importou','Importou partidas','uso'],['evento-reconstrua','Reconstruiu uma posição','uso'],
+ ['evento-laboratorio','Abriu o Laboratório do Pensamento','uso'],['evento-erros','Abriu Analisar jogadas (Lichess e Chess)','uso'],['evento-importou','Importou partidas','uso'],['evento-reconstrua','Reconstruiu uma posição','uso'],
  ['evento-historia','Abriu a História do xadrez','uso'],['evento-jogo-antigo','Jogou um jogo antigo','uso'],
  ['evento-pix','Abriu a tela do Pix','uso'],['evento-pix-copiado','Copiou o código Pix','uso']
 ];
@@ -31982,10 +31982,10 @@ App.training=function(){
   {t:'Partidas de mestres',d:'Adivinhe o lance',f:Pages.models}
  ]);
  var g4=sec(4,'Seus erros e seu pensamento',[
-  {t:'Analisar erros',d:'Lichess, Chess.com e outros sites · Aula da semana'+dueTxt,f:V34.erros,wide:true,ico:'v34err',hl:ms.due>0},
+  {t:'Analisar jogadas do Lichess e Chess',d:'Conecte suas contas: o jogo importa as partidas e monta aulas sobre os seus erros'+dueTxt,f:V34.erros,wide:true,ico:'v34err',hl:ms.due>0},
   {t:'Laboratório do Pensamento',d:'Descubra como você pensa',f:V26.lab,wide:true,ico:'eye'}
  ]);
- try{var ae=V34.findItem(g4,'Analisar erros');if(ae){ae.classList.add('v34-ae');V34.addIcon(ae,'mico v34-eic',V34.ERR_ICO);}}catch(e){}
+ try{var ae=V34.findItem(g4,'Analisar jogadas do Lichess e Chess');if(ae){ae.classList.add('v34-ae');V34.addIcon(ae,'mico v34-eic',V34.ERR_ICO);}}catch(e){}
  sec(5,'Alto rendimento',[
   {t:'Laboratório de alto rendimento',d:'Desafios progressivos · cálculo profundo · biblioteca dos mestres',f:Mestre.hub,wide:true,ico:'ct'}
  ]);
@@ -32000,7 +32000,7 @@ V34.stats=function(st,cr,all){
 };
 V34.erros=function(){
  V34.ev('evento-erros');V34.errCtx=true;
- UiJs.page('Analisar erros',App.training);
+ UiJs.page('Analisar jogadas',App.training);
  var cur=UiJs.cur;cur.classList.add('v26-lab','v34-err');
  var hd=UiJs.el('div','v26-hero',cur);hd.innerHTML='<b>Seus erros dos outros sites viram aula aqui.</b><span>Traga as partidas do Lichess, do Chess.com ou de qualquer site (arquivo PGN). O jogo encontra os lances que mais custaram e treina você neles com posições novas, para o erro não se repetir.</span>';
  var st=UiJs.el('div','v26-stat',cur);st.textContent='Carregando…';
@@ -32056,7 +32056,7 @@ if(typeof V26!=='undefined'){
     {t:'Primeiras observações',d:'Onde as suas decisões mais custaram, com o grau de confiança',r:'›',f:V26.obs},
     {t:'Mapa do seu pensamento',d:'O que você olhou e o que deixou de ver nas partidas daqui',r:'›',f:function(){Mind.page();V34.reback(V26.lab);}},
     {t:'Raio-X das partidas',d:'Calma sob pressão, pressa, certeza e domínio por tema',r:'›',f:function(){if(V24.xray){V24.xray();V34.reback(V26.lab);}}},
-    {t:'Analisar erros',d:'Traga partidas do Lichess, do Chess.com e de outros sites',r:'›',f:V34.erros}
+    {t:'Analisar jogadas do Lichess e Chess',d:'Conecte suas contas para importar as partidas e montar aulas sobre os seus erros',r:'›',f:V34.erros}
    ]);
    UiJs.cur=keep;
   });});

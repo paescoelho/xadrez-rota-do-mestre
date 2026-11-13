@@ -256,3 +256,6 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 
 ## v39 (12.11.2026)
 - Botão História do xadrez: ao tocar, os bastões abrem junto com o pergaminho (antes o papel esticava e passava por cima deles).
+
+## v40 (12.11.2026)
+- Centro de Treino: o botão "Analisar erros" virou "Analisar jogadas do Lichess e Chess", com a explicação "Conecte suas contas: o jogo importa as partidas e monta aulas sobre os seus erros".

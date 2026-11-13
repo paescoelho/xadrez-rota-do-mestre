@@ -15,7 +15,7 @@ V27.base=function(){return 'https://'+V27.GC+'.goatcounter.com';};
 V27.EV=[
  ['evento-sessao-celular','Sessões no celular','ap'],['evento-sessao-computador','Sessões no computador','ap'],['evento-sessao-app','Abriu como app instalado','ap'],
  ['evento-partida','Começou uma partida','uso'],['evento-centro-treino','Abriu o Centro de Treino','uso'],['evento-nivelamento','Abriu o Nivelamento','uso'],
- ['evento-laboratorio','Abriu o Laboratório do Pensamento','uso'],['evento-erros','Abriu Analisar erros','uso'],['evento-importou','Importou partidas','uso'],['evento-reconstrua','Reconstruiu uma posição','uso'],
+ ['evento-laboratorio','Abriu o Laboratório do Pensamento','uso'],['evento-erros','Abriu Analisar jogadas (Lichess e Chess)','uso'],['evento-importou','Importou partidas','uso'],['evento-reconstrua','Reconstruiu uma posição','uso'],
  ['evento-historia','Abriu a História do xadrez','uso'],['evento-jogo-antigo','Jogou um jogo antigo','uso'],
  ['evento-pix','Abriu a tela do Pix','uso'],['evento-pix-copiado','Copiou o código Pix','uso']
 ];
