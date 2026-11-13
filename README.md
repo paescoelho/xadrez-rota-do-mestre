@@ -356,3 +356,10 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 - Até 20 partidas valendo pontos (ou até confirmar a conta do Lichess), o Elo exibido tem teto de **800 + 25 por vitória + 10 por empate**.
 - A precisão das jogadas não pode passar do melhor resultado real em mais de 150 pontos (máx. 1000 sem vitórias).
 - O Painel mostra a linha "Limite de iniciante (sobe com vitórias)" quando o teto está ativo.
+
+## v69 — Ranking com rigor máximo
+- **Nível inicial (como no Chess.com):** na primeira vez o jogo pergunta: Novo no xadrez (400), Sei jogar (800) ou Jogo com frequência (1200). Perfis antigos respondem uma vez e as partidas do histórico são refeitas a partir desse número.
+- **Mais duro que Chess.com e Lichess:** vitória vale metade (máx. +12 nas 5 primeiras partidas, +8 depois); derrota vale o dobro (mín. −20 nas 5 primeiras, −12 depois); empate contra adversário igual tira 4.
+- **Treino sobe pouco:** problemas ganham 40% do normal e perdem 150%; precisão, problemas e "adivinhe o lance" nunca passam 100 acima da sua nota em partidas.
+- **Teto:** até 30 partidas valendo pontos, nível + 12 por vitória e nunca acima da sua nota em partidas; depois, no máximo 50 acima dela.
+- **Número estável:** entre partidas ele não sobe nem desce com treino; só muda jogando (ou com a inatividade).
