@@ -202,3 +202,32 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
 })();
 /* sair da tela de assistir pelo menu também desliga os ouvintes */
 (function(){var o=App.menu;App.menu=function(){if(V35.wc)V35.wStop();return o.apply(this,arguments);};})();
+
+/* v54: tela "Jogar online" apresenta a ligação por áudio, o assistir e as reações (com destaque para professores) */
+(function(){
+ if(typeof V31==='undefined')return;
+ var oH=V31.home;V31.home=function(){
+  var r=oH.apply(this,arguments);
+  try{
+   if(!V31.ready())return r;
+   var cur=UiJs.cur,hero=cur.querySelector('.v31-hero');
+   var box=document.createElement('div');box.className='v35-feat';
+   box.innerHTML='<div class="v35-fh"><span class="v35-fi"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="#fff" d="M6.6 10.8a15.2 15.2 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z"/></svg></span>'
+    +'<div><b>Jogue conversando por áudio</b><span>Durante a partida, um toque abre a ligação pelo WhatsApp com quem você convidou.</span></div></div>'
+    +'<ul class="v35-fl2">'
+    +'<li><i>📞</i><span><b>Ligação pelo WhatsApp</b>Cada um libera o próprio número se quiser. Só o adversário vê, e o número é apagado quando a partida acaba.</span></li>'
+    +'<li><i>👁</i><span><b>Partida para assistir</b>Mande o link "Chamar para assistir": quem abre acompanha ao vivo, sem instalar nada.</span></li>'
+    +'<li><i>👏</i><span><b>Reações no tabuleiro</b>👍 😮 😂 👏 🤝 🔥 aparecem na hora para os jogadores e para quem assiste.</span></li>'
+    +'</ul>'
+    +'<div class="v35-prof"><b>🎓 Para professores de xadrez</b><span>Dê aula a distância: jogue com o aluno conversando por áudio e explique cada lance na hora. A turma assiste ao vivo pelo link e reage aos lances. No fim, a partida fica no histórico de cada um para revisar.</span></div>';
+   var go=cur.querySelector('.v31-wa');
+   if(go&&go.nextSibling)cur.insertBefore(box,go.nextSibling);else cur.appendChild(box);
+   /* aviso curto logo abaixo do topo, que leva ao quadro completo */
+   var tz=document.createElement('button');tz.type='button';tz.className='v35-tz';
+   tz.innerHTML='<span>📞</span><b>Converse por áudio no WhatsApp durante a partida</b><i>ver como ›</i>';
+   tz.onclick=function(){box.scrollIntoView({behavior:'smooth',block:'start'});box.classList.add('pulse');setTimeout(function(){box.classList.remove('pulse');},1400);};
+   if(hero&&hero.nextSibling)cur.insertBefore(tz,hero.nextSibling);
+  }catch(e){}
+  return r;
+ };
+})();

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v53</title>
+<title>Xadrez · Rota do Mestre — v54</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1418,6 +1418,26 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v35-whd .v35-eye{margin-left:auto}
 .v35-wwait{display:flex;flex-direction:column;gap:8px;align-items:flex-start;border:1px solid rgba(220,181,92,.3);border-radius:14px;padding:14px;background:rgba(0,0,0,.2)}.v35-wwait b{color:#f3d98c;font-size:16px}.v35-wwait span:last-child{color:#bbb;font-size:13.5px}
 @media (prefers-reduced-motion:reduce){.board .v35-fl{animation-duration:.01s}}
+
+/* v54: destaque das funções do Jogar online */
+.v35-feat{border:1px solid rgba(76,210,138,.45);border-radius:16px;background:linear-gradient(180deg,rgba(30,92,68,.35),rgba(12,30,23,.55));padding:12px 14px;margin:4px 0 14px}
+.v35-fh{display:flex;gap:12px;align-items:center}
+.v35-fi{flex:0 0 42px;height:42px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(180deg,#2fbf6a,#1f9150);box-shadow:0 0 0 4px rgba(47,191,106,.18);animation:v35ring 2.4s ease-out infinite}
+@keyframes v35ring{0%{box-shadow:0 0 0 0 rgba(47,191,106,.45)}70%,100%{box-shadow:0 0 0 12px rgba(47,191,106,0)}}
+.v35-fh b{display:block;color:#fff;font-size:16.5px}.v35-fh span{display:block;color:#cfe9da;font-size:13px;line-height:1.35;margin-top:2px}
+.v35-fl2{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:9px}
+.v35-fl2 li{display:flex;gap:10px;align-items:flex-start}
+.v35-fl2 i{font-style:normal;flex:0 0 30px;height:30px;border-radius:9px;background:rgba(0,0,0,.25);display:grid;place-items:center;font-size:16px}
+.v35-fl2 span{font-size:12.8px;color:#bcd2c6;line-height:1.35}.v35-fl2 span b{display:block;color:#f3d98c;font-size:13.5px}
+.v35-prof{margin-top:12px;border-top:1px solid rgba(243,217,140,.25);padding-top:10px}
+.v35-prof b{display:block;color:#f3d98c;font-size:14px;margin-bottom:3px}.v35-prof span{font-size:12.8px;color:#d9d3c2;line-height:1.4}
+@media (prefers-reduced-motion:reduce){.v35-fi{animation:none}}
+
+.v35-fh .v35-fi{display:grid}
+.v35-feat{margin-top:12px}
+.v35-feat.pulse{box-shadow:0 0 0 3px rgba(76,210,138,.6);transition:box-shadow .3s}
+.v35-tz{display:flex;align-items:center;gap:8px;width:100%;text-align:left;margin:-2px 0 12px;padding:9px 12px;border-radius:12px;border:1px solid rgba(76,210,138,.5);background:rgba(47,154,114,.14);color:#dff5e8;cursor:pointer}
+.v35-tz span{font-size:17px}.v35-tz b{flex:1;font-size:13.5px;font-weight:700}.v35-tz i{font-style:normal;font-size:12px;color:#9fe3b8;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -76445,6 +76465,35 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
 })();
 /* sair da tela de assistir pelo menu também desliga os ouvintes */
 (function(){var o=App.menu;App.menu=function(){if(V35.wc)V35.wStop();return o.apply(this,arguments);};})();
+
+/* v54: tela "Jogar online" apresenta a ligação por áudio, o assistir e as reações (com destaque para professores) */
+(function(){
+ if(typeof V31==='undefined')return;
+ var oH=V31.home;V31.home=function(){
+  var r=oH.apply(this,arguments);
+  try{
+   if(!V31.ready())return r;
+   var cur=UiJs.cur,hero=cur.querySelector('.v31-hero');
+   var box=document.createElement('div');box.className='v35-feat';
+   box.innerHTML='<div class="v35-fh"><span class="v35-fi"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="#fff" d="M6.6 10.8a15.2 15.2 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z"/></svg></span>'
+    +'<div><b>Jogue conversando por áudio</b><span>Durante a partida, um toque abre a ligação pelo WhatsApp com quem você convidou.</span></div></div>'
+    +'<ul class="v35-fl2">'
+    +'<li><i>📞</i><span><b>Ligação pelo WhatsApp</b>Cada um libera o próprio número se quiser. Só o adversário vê, e o número é apagado quando a partida acaba.</span></li>'
+    +'<li><i>👁</i><span><b>Partida para assistir</b>Mande o link "Chamar para assistir": quem abre acompanha ao vivo, sem instalar nada.</span></li>'
+    +'<li><i>👏</i><span><b>Reações no tabuleiro</b>👍 😮 😂 👏 🤝 🔥 aparecem na hora para os jogadores e para quem assiste.</span></li>'
+    +'</ul>'
+    +'<div class="v35-prof"><b>🎓 Para professores de xadrez</b><span>Dê aula a distância: jogue com o aluno conversando por áudio e explique cada lance na hora. A turma assiste ao vivo pelo link e reage aos lances. No fim, a partida fica no histórico de cada um para revisar.</span></div>';
+   var go=cur.querySelector('.v31-wa');
+   if(go&&go.nextSibling)cur.insertBefore(box,go.nextSibling);else cur.appendChild(box);
+   /* aviso curto logo abaixo do topo, que leva ao quadro completo */
+   var tz=document.createElement('button');tz.type='button';tz.className='v35-tz';
+   tz.innerHTML='<span>📞</span><b>Converse por áudio no WhatsApp durante a partida</b><i>ver como ›</i>';
+   tz.onclick=function(){box.scrollIntoView({behavior:'smooth',block:'start'});box.classList.add('pulse');setTimeout(function(){box.classList.remove('pulse');},1400);};
+   if(hero&&hero.nextSibling)cur.insertBefore(tz,hero.nextSibling);
+  }catch(e){}
+  return r;
+ };
+})();
 
 Main.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);

@@ -303,3 +303,6 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 ## v53 (13.11.2026)
 - Jogar online: ligação pelo WhatsApp entre os dois jogadores (cada um libera o próprio número; só o adversário vê; apagado no fim), reações 👍 😮 😂 👏 🤝 🔥 no tabuleiro e partida para assistir ao vivo pelo link "?ver=CÓDIGO" (sem login, só ver; os jogadores veem quantos estão assistindo).
 - Regras do Firestore: subcoleções privado, plateia e reacoes dentro de cada sala.
+
+## v54 (13.11.2026)
+- Tela Jogar online: aviso "Converse por áudio no WhatsApp durante a partida" no topo e, abaixo do botão de criar, um quadro com ligação pelo WhatsApp, partida para assistir, reações e um destaque para professores de xadrez.
