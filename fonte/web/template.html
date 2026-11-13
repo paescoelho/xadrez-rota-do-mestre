@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v65</title>
+<title>Xadrez · Rota do Mestre — v66</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1422,6 +1422,14 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 @media (max-height:660px){.col.v36-has .v36-tx em{display:none}.col.v36-has .segn{display:none!important}}
 @media (max-height:660px){.col.v36-has .seg{margin-bottom:3px}.col.v36-has .sb{min-height:30px!important}.col.v36-has .theme-tile .theme-preview{height:26px!important}.col.v36-has .v36-card{padding:5px 9px}.col.v36-has .v36-ic{flex-basis:28px;height:28px;font-size:15px}.col.v36-has .segl{margin-bottom:2px}}
 @media (max-height:620px){.col.v36-has .btns{margin-top:2px!important}.col.v36-has .v34-cont{margin-top:4px!important}.col.v36-has .seg{margin-bottom:2px}}
+
+/* v66: barra fixa de fim de partida */
+.v36-end{position:sticky;bottom:0;z-index:5;margin:10px -12px 0;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(13,16,21,.86),#0d1015 30%);border-top:1px solid rgba(220,181,92,.35);box-shadow:0 -8px 18px rgba(0,0,0,.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.v36-er{font-weight:800;font-size:14px;margin:0 2px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v36-er.good{color:#7fe0a8}.v36-er.bad{color:#ff8a7a}.v36-er.gold{color:#f3d98c}
+.v36-eb{display:grid;gap:6px}
+.v36-eb .btn{margin:0;min-height:46px;padding:0 6px;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (min-width:900px){.v36-end{margin:10px -10px 0}.v36-eb{grid-template-columns:1fr 1fr!important}.v36-eb .btn.pri{grid-column:1/-1;order:-1}.v36-eb .btn{min-height:38px;font-size:13px}}
 </style>
 </head>
 <body>

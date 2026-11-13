@@ -143,3 +143,24 @@ V36.btn=function(){
   return r;
  };
 })();
+
+/* v66: fim de partida (Mentor ou computador): botões principais sempre visíveis, fixos no rodapé do painel */
+V36.endBar=function(){
+ var g=App.G,cur=UiJs.cur;if(!g||g.over==null||!cur||g.peek!=null)return;
+ if(cur.querySelector('.v36-end'))return;
+ var row=null;[].forEach.call(cur.querySelectorAll('.btns'),function(b){if(!row&&/Nova partida/.test(b.textContent))row=b;});if(!row)return;
+ var find=function(re){var r=null;[].forEach.call(row.querySelectorAll('.btn'),function(b){if(!r&&re.test(b.textContent))r=b;});return r;};
+ var rev=find(/^Revisão ativa/),ana=find(/^Análise completa/),rv=find(/^Revanche/),nova=find(/^Nova partida/),menu=find(/^Menu$/);
+ var bar=document.createElement('div');bar.className='v36-end';
+ var sc=g.over.score,res=document.createElement('div');res.className='v36-er '+(sc>=1?'good':(sc<=0?'bad':'gold'));res.textContent=(sc>=1?'🏆 Vitória!':(sc<=0?'Derrota':'½ Empate'))+(g.over.how?' · '+g.over.how:'');bar.appendChild(res);
+ var bs=document.createElement('div');bs.className='v36-eb';bar.appendChild(bs);
+ var add=function(src,label,cls){if(!src)return;var b=document.createElement('button');b.type='button';b.className='btn '+(cls||'');b.textContent=label;b.onclick=function(){src.click();};bs.appendChild(b);};
+ add(rev||ana,rev?'🔁 Revisar':'🔎 Análise','');
+ if(rv)add(rv,'⚔ Revanche','');
+ add(nova,'♞ Nova partida','pri');
+ add(menu,'Menu','');
+ bs.style.gridTemplateColumns=bs.children.length===4?'1fr 1fr 1.3fr .8fr':'1fr 1.3fr .8fr';
+ cur.appendChild(bar);
+ try{var hb=document.querySelector('.v36-hb');if(hb)hb.style.display='none';}catch(e){}
+};
+(function(){if(typeof App==='undefined')return;var oD=App.drawGame;App.drawGame=function(){var r=oD.apply(this,arguments);try{V36.endBar();}catch(e){}return r;};})();

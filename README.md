@@ -341,3 +341,6 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 
 ## v65 (13.11.2026)
 - Jogar online: o aviso dos botões Lichess.org e Chess.com fica o dobro do tempo na tela (4,4 s).
+
+## v66 (13.11.2026)
+- Fim de partida (Mentor ou computador): barra fixa no rodapé com o resultado e os botões Revisar (ou Análise), Revanche quando houver, Nova partida e Menu, sempre visíveis sem rolar. Os botões completos continuam no fim do painel.
