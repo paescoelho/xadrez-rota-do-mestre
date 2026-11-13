@@ -253,3 +253,6 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 
 ## v38 (12.11.2026)
 - Conta Google: "Conectado · sincronizado" em verde, com ponto pulsando; cartão e ícone com contorno verde.
+
+## v39 (12.11.2026)
+- Botão História do xadrez: ao tocar, os bastões abrem junto com o pergaminho (antes o papel esticava e passava por cima deles).

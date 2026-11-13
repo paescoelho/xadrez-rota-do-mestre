@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v38</title>
+<title>Xadrez · Rota do Mestre — v39</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1088,6 +1088,14 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v34-acct .v34-ag:has(.v34-on){border-color:rgba(76,210,138,.55);box-shadow:0 0 14px rgba(76,210,138,.15)}
 .v34-agh:has(.v34-on) .v34-agi{box-shadow:0 0 0 2px rgba(76,210,138,.6),0 0 10px rgba(76,210,138,.35)}
 @media (prefers-reduced-motion:reduce){.v34-agh b.v34-on,.v34-dot:after{animation:none}}
+
+/* v39: ao tocar em História do xadrez, os bastões abrem junto com o pergaminho (antes o papel esticava e passava por cima dos bastões) */
+.mitem.hstb .hs-sc{transform-origin:center;transition:transform .36s cubic-bezier(.3,.7,.3,1)}
+.mitem.hstb .hs-rod{transition:transform .36s cubic-bezier(.3,.7,.3,1)}
+.mitem.hstb.open .hs-pa{transform:none!important;filter:brightness(1.12)}
+.mitem.hstb.open .hs-sc{transform:scale(1.06,1.05)}
+.mitem.hstb.open .hs-rod{transform:scaleX(.943)}
+@media (prefers-reduced-motion:reduce){.mitem.hstb .hs-sc,.mitem.hstb .hs-rod{transition:none}}
 </style>
 </head>
 <body>
