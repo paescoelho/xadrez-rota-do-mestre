@@ -245,3 +245,8 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 ## v36 — quadro do Painel igual ao pergaminho (12.11.2026)
 - O quadro da constelação tem a mesma altura e largura do pergaminho do botão História do xadrez.
 - Sem o título: dentro do quadro ficam o ponto forte (verde, à esquerda), o que treinar (laranja, à direita), cada um com barrinha, e a legenda hoje / mês passado nos cantos de baixo.
+
+## v37 — tela Conta Google enxuta (12.11.2026)
+- Tela "Conta Google" em cartões: Google · Lichess e Chess.com (campos na própria tela) · Backup (Baixar / Restaurar…) · Instalar · "Mais opções" recolhido.
+- Saiu o código de transferência (Flash/Switch) e a seção "Apoiar o projeto" repetida.
+- O voltar respeita a origem: volta ao menu principal ou ao Painel de evolução, de onde a tela foi aberta.

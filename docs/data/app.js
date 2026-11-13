@@ -31460,7 +31460,7 @@ V32.setUser=function(site,name){
  v.lastAuto=0;Profile.save();
 };
 V32.chessForm=function(parent){
- var a=V32.acc(),v=V32.d(),li=v.li,box=UiJs.el('div','v32-acc',parent);
+ var a=V32.acc(),v=V32.d(),li=v.li,box=UiJs.el('div','v32-acc',parent),keepCur=UiJs.cur;UiJs.cur=box;
  var row=function(label,site,val,ph){
   var w=UiJs.el('label','fld',box);UiJs.el('span','fl',w,label);var i=UiJs.el('input','fi',w);i.type='text';i.value=val||'';i.placeholder=ph;i.autocomplete='off';i.autocapitalize='off';i.spellcheck=false;
   i.onchange=function(){V32.setUser(site,i.value);V32.chessForm.redraw(parent);};
@@ -31473,11 +31473,12 @@ V32.chessForm=function(parent){
  else st.innerHTML='<span>Sem conta? Crie grátis em lichess.org.</span>';
  if(a.lichess||!li)UiJs.btns([[li&&li.ver?'Confirmar de novo com o Lichess':'Entrar com Lichess (confirmar que é sua)',V32.liStart,li&&li.ver?'':'pri']]);
  row('Usuário no Chess.com','cc',a.chesscom,'ex.: seu_usuario');
- var s2=UiJs.el('div','v32-st',box);s2.innerHTML=a.chesscom?V32.rtLine('cc'):'<span>O Chess.com não oferece login para outros apps: basta o nome de usuário (as partidas de lá são públicas).</span>';
+ var s2=UiJs.el('div','v32-st',box);s2.innerHTML=a.chesscom?V32.rtLine('cc'):'<span>Basta o nome de usuário: as partidas do Chess.com são públicas.</span>';
  UiJs.p('O jogo nunca pede a senha dessas contas. As partidas novas são importadas sozinhas quando você abre o jogo e analisadas aqui, para virar a sua Aula da semana.','muted small');
  if(a.lichess||a.chesscom)UiJs.btns([['Buscar partidas novas agora',function(){V32.auto(true,true);}]]);
+ UiJs.cur=keepCur;
 };
-V32.chessForm.redraw=function(parent){try{parent.innerHTML='';var keep=UiJs.cur;UiJs.cur=parent;UiJs.h('Contas de xadrez');V32.chessForm(parent);UiJs.cur=keep;}catch(e){}};
+V32.chessForm.redraw=function(parent){try{var a=parent.querySelector('.v32-acc');if(a&&a.parentNode===parent){var n=document.createElement('div');parent.replaceChild(n,a);var keep=UiJs.cur;UiJs.cur=parent;V32.chessForm(parent);var nb=parent.lastChild;parent.replaceChild(nb,n);UiJs.cur=keep;return;}parent.innerHTML='';var keep2=UiJs.cur;UiJs.cur=parent;V32.chessForm(parent);UiJs.cur=keep2;}catch(e){}};
 V32.PERF={li:[['rapid','rápidas'],['classical','clássicas'],['blitz','blitz'],['bullet','bullet']],cc:[['chess_rapid','rápidas'],['chess_daily','por dia'],['chess_blitz','blitz'],['chess_bullet','bullet']]};
 V32.rtLine=function(site){
  var r=V32.d().rt[site];if(!r||!r.p)return '';
@@ -32063,26 +32064,75 @@ if(typeof V26!=='undefined'){
  };
 }
 
-/* ---------- Conta e backup: as contas de xadrez agora moram no "Analisar erros" ---------- */
-if(typeof V23!=='undefined'&&V23.account){
- var oAcc34=V23.account;
- V23.account=function(){
-  var r=oAcc34.apply(this,arguments);
-  try{
-   var cur=UiJs.cur,f=cur&&cur.querySelector('.v32-acc');
-   if(f){
-    var sec=f.parentNode,h=null;[].forEach.call(sec.querySelectorAll('.h'),function(x){if(x.textContent==='Contas de xadrez')h=x;});
-    var w=document.createElement('div');w.className='v34-accl';
-    w.innerHTML='<b>Contas de xadrez</b><span>Lichess e Chess.com ficam em Centro de Treino › Analisar erros.</span>';
-    var bt=document.createElement('button');bt.type='button';bt.className='btn';bt.textContent='Abrir contas Lichess e Chess.com';bt.onclick=V34.contas;w.appendChild(bt);
-    sec.insertBefore(w,h||f);if(h)sec.removeChild(h);sec.removeChild(f);
-    [].forEach.call(sec.querySelectorAll('.p'),function(x){if(/nunca pede a senha dessas contas/.test(x.textContent))sec.removeChild(x);});
-    [].forEach.call(sec.querySelectorAll('.btns'),function(x){if(x.parentNode===sec&&/Lichess|Buscar partidas/.test(x.textContent))sec.removeChild(x);});
-   }
-  }catch(e){}
-  return r;
- };
-}
+/* ---------- Conta Google: uma tela só, enxuta ----------
+ * Google · Lichess e Chess.com (campos aqui mesmo) · Backup · Instalar · "Mais opções" recolhido.
+ * Sem código de transferência (Flash/Switch). O voltar respeita de onde veio (menu ou Painel). */
+V34.accBack=null;
+V34.card=function(parent,title,cls){var c=UiJs.el('div','v34-acard'+(cls?' '+cls:''),parent);if(title)UiJs.el('div','v34-acth',c,title);return c;};
+V34.inside=function(el,fn){var keep=UiJs.cur;UiJs.cur=el;try{fn();}catch(e){}UiJs.cur=keep;};
+V34.restoreAsk=function(){UiJs.modal('Restaurar um backup','Mesclar junta o arquivo com o que está neste aparelho, sem apagar nada. Substituir troca tudo pelo arquivo (uma cópia de segurança fica guardada).',[['Mesclar',function(){V23.restoreFile('merge');},'pri'],['Substituir',function(){V23.restoreFile('replace');}],['Cancelar',null]]);};
+V23.account=function(){
+ var C=V23.Cloud,v=V23.d();
+ /* de onde veio: se já está nesta tela (atualização), mantém; no Painel, volta ao Painel; senão, ao menu */
+ if(!(UiJs.root&&UiJs.root.querySelector('.v23-acct'))){var t=document.querySelector('.htitle');V34.accBack=t&&t.textContent==='Painel de evolução'?Pages.profile:App.menu;}
+ var back=V34.accBack||App.menu;
+ if(C&&C.web()&&C.configured()&&!C.loaded&&!C.loading)C.load().then(function(){if(UiJs.root.querySelector('.v23-acct'))V23.account();}).catch(function(){});
+ var y=0;try{var sc=document.querySelector('.content,.page');if(UiJs.root.querySelector('.v23-acct')&&sc)y=sc.scrollTop;}catch(e){}
+ UiJs.page('Conta Google',back);
+ var cur=UiJs.cur;cur.classList.add('v23-acct','v34-acct');
+ /* 1. Google */
+ var g=V34.card(cur,null,'v34-ag');
+ var hd=UiJs.el('div','v34-agh',g);hd.innerHTML='<span class="v34-agi">'+V34.G_ICO+'</span><span><b>'+(C&&C.user?'Conectado':'Conta Google')+'</b><i>'+(C&&C.user?V34.esc(C.user.email||C.user.displayName||'Google'):'Progresso salvo na nuvem, em qualquer aparelho')+'</i></span>';
+ V34.inside(g,function(){
+  if(!C||!C.configured())UiJs.p('O login com Google ainda não está disponível nesta versão. Use o backup abaixo.','muted small');
+  else if(!C.web())UiJs.p('O login com Google funciona no site do jogo. Nesta versão em arquivo, use o backup abaixo.','muted small');
+  else if(C.user){
+   UiJs.p('Tudo é enviado sozinho para a nuvem. Em outro aparelho, entre com a mesma conta: o progresso é mesclado, nada se perde.','muted small');
+   UiJs.btns([['Sincronizar agora',function(){C.pull();UiJs.toast('Sincronizando…');},'pri'],['Sair',C.logout]]);
+  }else{
+   UiJs.p('O próprio Google confirma quem é você: o jogo nunca vê a senha.','muted small');
+   if(C.status)UiJs.p(C.status,'warn small');
+   UiJs.btns([['Entrar com Google',function(){v.cloudOn=true;Profile.save();C.login();},'pri']]);
+  }
+ });
+ /* 2. Lichess e Chess.com, aqui mesmo */
+ var x=V34.card(cur,'Lichess e Chess.com','v34-ax');
+ V34.inside(x,function(){try{V32.chessForm(x);}catch(e){}});
+ /* 3. Backup */
+ var bk=V34.card(cur,'Backup em arquivo');
+ V34.inside(bk,function(){
+  UiJs.p('Último backup: '+(v.lastBackup?new Date(v.lastBackup).toLocaleDateString():'nunca')+'. Guarde o arquivo no Drive ou no e-mail.','muted small');
+  UiJs.btns([['Baixar backup',V23.backupFile,'pri'],['Restaurar…',V34.restoreAsk]]);
+ });
+ /* 4. Instalar */
+ try{
+  var web=/^https?:$/.test(location.protocol),standalone=(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+  if(web&&!standalone){
+   var ins=V34.card(cur,'Instalar como aplicativo');
+   V34.inside(ins,function(){
+    if(V24.installEvt)UiJs.btns([['Instalar o app',function(){var e=V24.installEvt;V24.installEvt=null;e.prompt();e.userChoice.then(function(){V23.account();});},'pri']]);
+    else if(/iphone|ipad|ipod/i.test(navigator.userAgent))UiJs.p('No iPhone: Compartilhar › "Adicionar à Tela de Início".','muted small');
+    else UiJs.p('No menu do navegador: "Instalar app" ou "Adicionar à tela inicial".','muted small');
+   });
+  }
+ }catch(e){}
+ /* 5. Mais opções (recolhido) */
+ var det=document.createElement('details');det.className='v34-more';cur.appendChild(det);
+ var sm=document.createElement('summary');sm.textContent='Mais opções';det.appendChild(sm);
+ var mb=UiJs.el('div','v34-mb',det);
+ V34.inside(mb,function(){
+  var bt=[];
+  if(C&&C.user){bt.push(['Baixar todas as partidas da nuvem (PGN)',V23.cloudPgn]);}
+  var snaps=[];try{snaps=JSON.parse(localStorage.getItem(V23.SNAP)||'[]');}catch(e){}
+  if(snaps.length)bt.push(['Desfazer a última restauração ('+new Date(snaps[0].t).toLocaleString().slice(0,16)+')',V23.undoSnap]);
+  if(web)bt.push(['Baixar o jogo num arquivo (completo)',function(){location.href='baixar/Rota-do-Mestre-offline.html';}],['Baixar o jogo num arquivo (leve)',function(){location.href='baixar/Rota-do-Mestre-offline-leve.html';}]);
+  if(C&&C.user)bt.push(['Apagar meus dados da nuvem',C.wipe,'warn']);
+  bt.forEach(function(b){UiJs.btns([b]);});
+  UiJs.p('Privacidade: nenhuma senha é pedida aqui. O Lichess e o Chess.com só são lidos pelas partidas públicas.','muted small');
+ });
+ try{if(y){var sc2=document.querySelector('.content,.page');if(sc2)sc2.scrollTop=y;}}catch(e){}
+};
+Pages.sync=V23.account;
 
 /* ---------- Nivelamento volta para o Centro de Treino ---------- */
 (function(){var o=Pages.placementIntro;Pages.placementIntro=function(){var r=o.apply(this,arguments);V34.reback(App.training);return r;};})();

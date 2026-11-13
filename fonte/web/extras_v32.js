@@ -102,7 +102,7 @@ V32.setUser=function(site,name){
  v.lastAuto=0;Profile.save();
 };
 V32.chessForm=function(parent){
- var a=V32.acc(),v=V32.d(),li=v.li,box=UiJs.el('div','v32-acc',parent);
+ var a=V32.acc(),v=V32.d(),li=v.li,box=UiJs.el('div','v32-acc',parent),keepCur=UiJs.cur;UiJs.cur=box;
  var row=function(label,site,val,ph){
   var w=UiJs.el('label','fld',box);UiJs.el('span','fl',w,label);var i=UiJs.el('input','fi',w);i.type='text';i.value=val||'';i.placeholder=ph;i.autocomplete='off';i.autocapitalize='off';i.spellcheck=false;
   i.onchange=function(){V32.setUser(site,i.value);V32.chessForm.redraw(parent);};
@@ -115,11 +115,12 @@ V32.chessForm=function(parent){
  else st.innerHTML='<span>Sem conta? Crie grátis em lichess.org.</span>';
  if(a.lichess||!li)UiJs.btns([[li&&li.ver?'Confirmar de novo com o Lichess':'Entrar com Lichess (confirmar que é sua)',V32.liStart,li&&li.ver?'':'pri']]);
  row('Usuário no Chess.com','cc',a.chesscom,'ex.: seu_usuario');
- var s2=UiJs.el('div','v32-st',box);s2.innerHTML=a.chesscom?V32.rtLine('cc'):'<span>O Chess.com não oferece login para outros apps: basta o nome de usuário (as partidas de lá são públicas).</span>';
+ var s2=UiJs.el('div','v32-st',box);s2.innerHTML=a.chesscom?V32.rtLine('cc'):'<span>Basta o nome de usuário: as partidas do Chess.com são públicas.</span>';
  UiJs.p('O jogo nunca pede a senha dessas contas. As partidas novas são importadas sozinhas quando você abre o jogo e analisadas aqui, para virar a sua Aula da semana.','muted small');
  if(a.lichess||a.chesscom)UiJs.btns([['Buscar partidas novas agora',function(){V32.auto(true,true);}]]);
+ UiJs.cur=keepCur;
 };
-V32.chessForm.redraw=function(parent){try{parent.innerHTML='';var keep=UiJs.cur;UiJs.cur=parent;UiJs.h('Contas de xadrez');V32.chessForm(parent);UiJs.cur=keep;}catch(e){}};
+V32.chessForm.redraw=function(parent){try{var a=parent.querySelector('.v32-acc');if(a&&a.parentNode===parent){var n=document.createElement('div');parent.replaceChild(n,a);var keep=UiJs.cur;UiJs.cur=parent;V32.chessForm(parent);var nb=parent.lastChild;parent.replaceChild(nb,n);UiJs.cur=keep;return;}parent.innerHTML='';var keep2=UiJs.cur;UiJs.cur=parent;V32.chessForm(parent);UiJs.cur=keep2;}catch(e){}};
 V32.PERF={li:[['rapid','rápidas'],['classical','clássicas'],['blitz','blitz'],['bullet','bullet']],cc:[['chess_rapid','rápidas'],['chess_daily','por dia'],['chess_blitz','blitz'],['chess_bullet','bullet']]};
 V32.rtLine=function(site){
  var r=V32.d().rt[site];if(!r||!r.p)return '';
