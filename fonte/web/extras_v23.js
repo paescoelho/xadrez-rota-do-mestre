@@ -58,7 +58,14 @@ var SF=(function(){
   api.cur=j;j.lines=[];
   var w=api.w;
   w.postMessage('setoption name MultiPV value '+(j.multipv||1));
-  w.postMessage('position fen '+j.fen);
+  /* v73: quando joga (níveis do Stockfish), a força pode ser limitada; nas análises volta sempre à força total */
+  var want=j.play&&j.elo?j.elo:0;
+  if(want!==(api.lim||0)){
+   if(want){w.postMessage('setoption name UCI_LimitStrength value true');w.postMessage('setoption name UCI_Elo value '+want);}
+   else w.postMessage('setoption name UCI_LimitStrength value false');
+   api.lim=want;
+  }
+  w.postMessage(j.pos||('position fen '+j.fen));
   var go='go';
   if(j.depth)go+=' depth '+j.depth;
   if(j.movetime)go+=' movetime '+j.movetime;

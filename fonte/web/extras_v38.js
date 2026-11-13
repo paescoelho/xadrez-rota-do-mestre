@@ -36,6 +36,7 @@ V72.build=function(site,user,text){
  gs=gs.slice(-60);
  if(gs.length<5)return {err:gs.length?'só encontrei '+gs.length+' partida'+(gs.length>1?'s':'')+' sua'+(gs.length>1?'s':'')+' nessa época; preciso de pelo menos 5':'não encontrei partidas suas nessa época'};
  var rs=[],n=0,fast=0,timed=0,msS=0,msK=0,agg=0,ks=0,qs=0,cnS=0,cast=0,qx=0,dates=[],cnt={1:{},'-1':{}};
+ V72._samp=V72._samp||{};V72._samp[site]=V72.sample(gs);
  gs.forEach(function(r){
   var el=r.col===1?r.we:r.be;if(el>0)rs.push(el);
   var t=V32.dateOf(r);if(t)dates.push(t);
@@ -64,6 +65,46 @@ V72.build=function(site,user,text){
   bp:null,bb:null,bq:null,bL:null,bw:null,vs:-1,ow:lines(1),ob:lines(-1),ax:null,g:gs.length,
   from:dates[0]||0,to:dates[dates.length-1]||0};
 };
+/* ---------- v73: erros de verdade ----------
+   Sorteia lances seus das partidas importadas (até 40 por fase) e mede cada um com o Stockfish, em segundo plano:
+   quanto a chance de vitória caiu em relação ao melhor lance. Erro = queda de 5 pontos ou mais (8 na abertura, onde aqui os lances de livro são perdoados); gafe = 15 ou mais
+   (a mesma régua das partidas jogadas aqui). O resultado substitui a estimativa pelo rating. */
+V72.phase=function(fen){var t=fen.split(' '),n=0,b=t[0];for(var i=0;i<b.length;i++)if('nbrqNBRQ'.indexOf(b[i])>=0)n++;return n<=6?2:((+t[5]||1)<=12?0:1);};
+V72.sample=function(gs){
+ var by=[[],[],[]];
+ gs.forEach(function(r){for(var k=0;k<r.u.length;k++){if((k%2===0?1:-1)!==r.col)continue;if(k<8)continue;var f=r.f[k];if(!f)continue;by[V72.phase(f)].push({f:f,u:r.u[k]});}});
+ var out=[];by.forEach(function(a,ph){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t;}a.slice(0,40).forEach(function(x){x.ph=ph;out.push(x);});});
+ return out;
+};
+V72.measure=function(site){
+ var smp=V72._samp&&V72._samp[site],slot=V72.d()[site];
+ if(!smp||!smp.length||!slot||!slot.dna||typeof SF==='undefined'||SF.failed)return;
+ var tok=(V72._mtok=V72._mtok||{});tok[site]=(tok[site]||0)+1;var my=tok[site];
+ var cnt=[[0,0],[0,0],[0,0]],bl=0,n=0,i=0;
+ slot.dna.meas=0;
+ var fin=function(){
+  var s2=V72.d()[site];if(!s2||!s2.dna||tok[site]!==my||n<30)return;
+  var d=s2.dna,all=cnt[0][0]+cnt[1][0]+cnt[2][0],base=all/n;
+  d.ph=cnt.map(function(c){return Math.round((c[1]>=8?c[0]/c[1]:base)*1000)/10;});
+  d.bl=Math.round(bl*1000/n)/10;d.real=n;delete d.meas;Profile.save();
+  try{if(UiJs.cur&&UiJs.cur.querySelector('.v72'))Dna.rival();}catch(e){}
+ };
+ var next=function(){
+  if(tok[site]!==my)return;
+  if(i>=smp.length){fin();return;}
+  var x=smp[i++];
+  SF.go({fen:x.f,depth:11,movetime:140},function(r){
+   if(tok[site]!==my)return;
+   if(!r||!r.lines.length||!r.best){if(SF.failed){fin();return;}next();return;}
+   var bs=SF.score(r.lines[0]);
+   var done=function(ms){var loss=Math.max(0,Coach.winPct(bs)-Coach.winPct(ms));n++;cnt[x.ph][1]++;if(loss>=(x.ph===0?8:5))cnt[x.ph][0]++;if(loss>=15)bl++;
+    var s2=V72.d()[site];if(s2&&s2.dna&&s2.dna.real==null)s2.dna.meas=Math.round(100*i/smp.length);next();};
+   if(x.u===r.best){done(bs);return;}
+   SF.go({fen:x.f,depth:10,movetime:120,searchmoves:x.u},function(r2){if(tok[site]!==my)return;if(!r2||!r2.lines.length){next();return;}done(Math.min(bs,SF.score(r2.lines[0])));},true);
+  },true);
+ };
+ next();
+};
 V72.importSite=function(site,btn){
  var u=V72.user(site);if(!u){UiJs.toast('Coloque o seu usuário do '+V72.SITES[site].n+' primeiro.');return;}
  if(V72.busy)return;V72.busy=site;
@@ -76,6 +117,7 @@ V72.importSite=function(site,btn){
   /* as mesmas partidas entram no "Analisar jogadas" */
   try{V26.addName(u);V26.importText(text,site==='li'?'lichess':'chesscom',function(){});}catch(e){}
   V72.busy=null;UiJs.toast('Pronto: você de '+Dna.monthLabel(dna.m)+' no '+V72.SITES[site].n+' ('+dna.g+' partidas).');Dna.rival();
+  try{V72.measure(site);}catch(e){}
  }).catch(function(e){V72.busy=null;UiJs.toast('Não consegui buscar: '+(e&&e.message||'sem conexão')+'.');Dna.rival();});
 };
 V72.play=function(site){
@@ -99,6 +141,9 @@ V72.block=function(box){
    var d=x.dna,ln=UiJs.el('div','v72-in',row);
    ln.innerHTML='<b>'+Dna.monthLabel(d.m)+'</b> · '+d.g+' partidas · rating '+d.site+' no '+S.n+' → nível <b>'+d.e+'</b> aqui · placar '+Dna.scoreTxt('ext:'+s+':'+d.m);
    var ds=Dna.describe(d,'você').filter(function(t){return !/^Erra |^Gafes|Pontos cegos|^Sem pontos cegos/.test(t);}).slice(0,3);
+   /* v73: erros medidos de verdade pelo Stockfish (ou a estimativa, enquanto a medição não termina) */
+   if(d.real)ds.unshift('Erros medidos em '+d.real+' lances seus: '+d.ph[0]+' a cada 100 na abertura, '+d.ph[1]+' no meio-jogo, '+d.ph[2]+' no final; gafes: '+d.bl+'.');
+   else ds.push(d.meas!=null?'Medindo os seus erros de verdade… '+d.meas+'%':'Erros estimados pelo rating (toque em Atualizar para medir de verdade).');
    if(ds.length){var ul=UiJs.el('ul','v72-ds',row);ds.forEach(function(t){UiJs.el('li','',ul,t);});}
    var bs=UiJs.el('div','v72-bs',row);
    var b1=UiJs.el('button','btn pri',bs,'Desafiar você de '+Dna.monthLabel(d.m));b1.onclick=function(){V72.play(s);};
@@ -113,7 +158,7 @@ V72.block=function(box){
  if(any){var tg=UiJs.el('button','v72-tog',fw,'Contas do Lichess e do Chess.com ›');var inner=UiJs.el('div','v72-inner',fw);inner.style.display='none';
   tg.onclick=function(){var o=inner.style.display==='none';inner.style.display=o?'':'none';tg.textContent='Contas do Lichess e do Chess.com '+(o?'⌄':'›');if(o&&!inner.firstChild)V32.chessForm(inner);};}
  else{UiJs.el('div','p v72-tx v72-hint',fw,'Só o nome de usuário, sem senha. Ligou aqui, vale no jogo inteiro: Painel, Analisar jogadas e Conta.');V32.chessForm(fw);}
- UiJs.p('O nível de erros desse fantasma é estimado pelo seu rating da época; as aberturas, a pressa, o estilo e o roque vêm das suas partidas de verdade. O duelo não muda o seu Elo.','muted small');
+ UiJs.p('As aberturas, a pressa, o estilo e o roque vêm das suas partidas de verdade. Os erros são medidos pelo Stockfish numa amostra de lances seus (leva cerca de um minuto, em segundo plano); até terminar, vale uma estimativa pelo rating da época. O duelo não muda o seu Elo.','muted small');
  UiJs.cur=keep;
 };
 (function(){

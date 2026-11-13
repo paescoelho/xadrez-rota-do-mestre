@@ -179,8 +179,8 @@ class App {
     var o:Dynamic = opts;
     var ad:Int = Profile.d.adapt;
     var opps:Array<Array<Dynamic>> = [["Mentor", 0, Std.string(ad)]];
-    for (lv in 1...5) opps.push([Engine.LEVEL_NAMES[lv], lv, Std.string(Engine.LEVEL_ELO[lv])]);
-    Ui.seg("Adversário", [for (x in opps) [x[0], function() { o.opp = x[1]; setupGame(); }, o.opp == x[1], x[2]]], 5,
+    for (lv in 1...Engine.LEVEL_NAMES.length) opps.push([Engine.LEVEL_NAMES[lv], lv, Std.string(Engine.LEVEL_ELO[lv])]);
+    Ui.seg("Adversário", [for (x in opps) [x[0], function() { o.opp = x[1]; setupGame(); }, o.opp == x[1], x[2]]], opps.length > 5 ? 4 : 5,
       o.opp == 0 ? "Mentor: depois de cada lance do computador, toque na peça que ele moveu para ver o motivo da jogada. A força se adapta ao seu desempenho." : "Força fixa: bom para medir o seu progresso.");
     Ui.seg("Ritmo · cada um tem sua pontuação", [for (c in ["std", "rapid", "classic"]) [c == "std" ? "Sem relógio" : (c == "rapid" ? "Rápida 10+5" : "Clássica 30+20"), function() { o.cat = c; setupGame(); }, o.cat == c, ratingShort(c)]], 3);
     Ui.seg("Cor", [["Brancas", function() { o.color = 1; setupGame(); }, o.color == 1], ["Pretas", function() { o.color = -1; setupGame(); }, o.color == -1], ["Sorteio", function() { o.color = 0; setupGame(); }, o.color == 0]], 3);
@@ -395,7 +395,7 @@ class App {
     if (g.over != null) return;
     g.busy = "O computador está pensando…"; g.turnStart = now();
     drawGame();
-    var q:Dynamic = { cmd: "cpu", fen: Engine.toFEN(g.pos), keys: g.keys, human: g.human };
+    var q:Dynamic = { cmd: "cpu", fen: Engine.toFEN(g.pos), keys: g.keys, human: g.human, ucis: g.ucis };
     if (g.ghost != null) { q.cmd = "ghost"; q.dna = g.ghost; q.ucis = g.ucis; q.tilt = g.gTilt; g.busy = g.oppName + " está pensando…"; }
     else if (g.adaptive || g.level < 4) q.elo = g.elo; else q.level = g.level;
     Think.run(q, function(r:Dynamic) {

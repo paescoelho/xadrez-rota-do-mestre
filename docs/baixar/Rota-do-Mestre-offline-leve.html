@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v72</title>
+<title>Xadrez · Rota do Mestre — v73</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -45473,10 +45473,12 @@ App.setupGame = function() {
 	var o = App.opts;
 	var ad = Profile.d.adapt;
 	var opps = [["Mentor",0,ad == null ? "null" : "" + ad]];
-	opps.push([Engine.LEVEL_NAMES[1],1,Std.string(Engine.LEVEL_ELO[1])]);
-	opps.push([Engine.LEVEL_NAMES[2],2,Std.string(Engine.LEVEL_ELO[2])]);
-	opps.push([Engine.LEVEL_NAMES[3],3,Std.string(Engine.LEVEL_ELO[3])]);
-	opps.push([Engine.LEVEL_NAMES[4],4,Std.string(Engine.LEVEL_ELO[4])]);
+	var _g = 1;
+	var _g1 = Engine.LEVEL_NAMES.length;
+	while(_g < _g1) {
+		var lv = _g++;
+		opps.push([Engine.LEVEL_NAMES[lv],lv,Std.string(Engine.LEVEL_ELO[lv])]);
+	}
 	var _g = [];
 	var _g1 = 0;
 	while(_g1 < opps.length) {
@@ -45489,7 +45491,7 @@ App.setupGame = function() {
 			};
 		})(x),o.opp == x[0][1],x[0][2]]);
 	}
-	UiJs.seg("Adversário",_g,5,o.opp == 0 ? "Mentor: depois de cada lance do computador, toque na peça que ele moveu para ver o motivo da jogada. A força se adapta ao seu desempenho." : "Força fixa: bom para medir o seu progresso.");
+	UiJs.seg("Adversário",_g,opps.length > 5 ? 4 : 5,o.opp == 0 ? "Mentor: depois de cada lance do computador, toque na peça que ele moveu para ver o motivo da jogada. A força se adapta ao seu desempenho." : "Força fixa: bom para medir o seu progresso.");
 	var _g = [];
 	var c = "std";
 	_g.push([c == "std" ? "Sem relógio" : c == "rapid" ? "Rápida 10+5" : "Clássica 30+20",function() {
@@ -45889,7 +45891,7 @@ App.cpuMove = function() {
 	g.busy = "O computador está pensando…";
 	g.turnStart = HxOverrides.now() / 1000 * 1000;
 	App.drawGame();
-	var q = { cmd : "cpu", fen : Engine.toFEN(g.pos), keys : g.keys, human : g.human};
+	var q = { cmd : "cpu", fen : Engine.toFEN(g.pos), keys : g.keys, human : g.human, ucis : g.ucis};
 	if(g.ghost != null) {
 		q.cmd = "ghost";
 		q.dna = g.ghost;
@@ -46902,8 +46904,9 @@ Brain.init = function() {
 	Brain.inited = true;
 	Engine.init();
 	Coach.init();
+	Brain.SCALE = 0.5;
 	Coach.AN_NODES = 60000 * Brain.SCALE | 0;
-	Engine.HUMAN_NODES = Brain.SCALE;
+	Engine.HUMAN_NODES = Brain.SCALE * 0.5;
 };
 Brain.keysMap = function(keys) {
 	var m = new haxe_ds_StringMap();
@@ -46939,12 +46942,16 @@ Brain.handle = function(q) {
 			var pos = Engine.posFromFEN(q.fen);
 			var keys = q.keys;
 			var m = -1;
-			if(q.elo != null && pos.full <= 8 && Math.random() < 0.9) {
-				var share = q.elo < 1000 ? 0.12 : 0.05;
+			var strong = q.elo == null && q.level != null && q.level >= 4;
+			if((q.elo != null || strong) && pos.full <= 8 && Math.random() < 0.9) {
+				var share = q.elo != null && q.elo < 1000 ? 0.12 : 0.05;
 				var u = Book.pickMaster(pos,share,1.2);
 				if(u != null) {
 					m = Engine.uciToMove(pos,u);
 				}
+			}
+			if(m < 0 && q.bookOnly == true) {
+				return { nobook : true};
 			}
 			if(m < 0) {
 				m = q.elo != null ? Engine.chooseHuman(pos,q.elo,keys) : Engine.chooseWithKeys(pos,q.level,keys);
@@ -46955,6 +46962,14 @@ Brain.handle = function(q) {
 			var san = Engine.moveToSAN(pos,m);
 			var note = q.human != null ? Coach.opponentNote(pos,m,q.human) : null;
 			return { uci : Engine.moveToUCI(m), san : san, score : Engine.lastScoreValid ? Engine.lastScore : null, note : note};
+		case "cpunote":
+			var pos = Engine.posFromFEN(q.fen);
+			var m = Engine.uciToMove(pos,q.uci);
+			if(m < 0) {
+				return { uci : null};
+			}
+			var note = q.human != null ? Coach.opponentNote(pos,m,q.human) : null;
+			return { uci : q.uci, san : Engine.moveToSAN(pos,m), score : q.score, note : note};
 		case "eg":
 			var pos = Engine.posFromFEN(q.fen);
 			if(Engine.legalMoves(pos).length == 0) {
@@ -51647,6 +51662,7 @@ Pos.prototype = {
 };
 var Ctx = function(timeMs,maxNodes) {
 	this.stop = false;
+	this.hist = null;
 	this.repKeys = null;
 	this.maxNodes = 2000000000;
 	this.nodes = 0;
@@ -51713,7 +51729,7 @@ Engine.rnd = function() {
 };
 Engine.clearTT = function() {
 	var _g = 0;
-	while(_g < 131072) {
+	while(_g < 262144) {
 		var i = _g++;
 		Engine.ttCheck[i] = 0;
 		Engine.ttMove[i] = 0;
@@ -51721,7 +51737,7 @@ Engine.clearTT = function() {
 		Engine.ttDF[i] = -1;
 	}
 	var _g = 0;
-	while(_g < 4096) {
+	while(_g < 8192) {
 		var i = _g++;
 		Engine.history[i] = 0;
 	}
@@ -51840,11 +51856,21 @@ Engine.init = function() {
 	Engine.ZE2[7] = Engine.rnd();
 	Engine.ZS1 = Engine.rnd();
 	Engine.ZS2 = Engine.rnd();
-	Engine.ttCheck = new Array(131072);
-	Engine.ttMove = new Array(131072);
-	Engine.ttScore = new Array(131072);
-	Engine.ttDF = new Array(131072);
-	Engine.history = new Array(4096);
+	Engine.ttCheck = new Array(262144);
+	Engine.ttMove = new Array(262144);
+	Engine.ttScore = new Array(262144);
+	Engine.ttDF = new Array(262144);
+	Engine.history = new Array(8192);
+	Engine.LMR = new Array(4096);
+	var _g = 0;
+	while(_g < 64) {
+		var d = _g++;
+		var _g1 = 0;
+		while(_g1 < 64) {
+			var n = _g1++;
+			Engine.LMR[d * 64 + n] = d < 1 || n < 1 ? 0 : 0.4 + Math.log(d) * Math.log(n) / 2.3 | 0;
+		}
+	}
 	Engine.clearTT();
 	var _g = 0;
 	while(_g < 64) {
@@ -52275,10 +52301,57 @@ Engine.see = function(pos,sq,side) {
 	}
 	return gain[0];
 };
+Engine.seeMove = function(pos,m) {
+	var b = pos.board;
+	var from = m & 63;
+	var to = m >> 6 & 63;
+	var aPiece = b[from];
+	var col = aPiece > 0 ? 1 : -1;
+	var orig = b[to];
+	Engine._sg[0] = m >> 15 == 1 ? 100 : orig != 0 ? Engine.VAL[orig < 0 ? -orig : orig] : 0;
+	var n = 0;
+	var d = 0;
+	var fsq = from;
+	while(fsq >= 0 && d < 30) {
+		++d;
+		Engine._sg[d] = Engine.VAL[aPiece < 0 ? -aPiece : aPiece] - Engine._sg[d - 1];
+		if(-Engine._sg[d - 1] < 0 && Engine._sg[d] < 0) {
+			break;
+		}
+		Engine._ssq[n] = fsq;
+		Engine._spc[n] = aPiece;
+		++n;
+		b[fsq] = 0;
+		b[to] = aPiece;
+		col = -col;
+		fsq = Engine.leastAttackerSq(b,to,col);
+		if(fsq >= 0) {
+			aPiece = b[fsq];
+		}
+	}
+	--d;
+	while(d > 0) {
+		var x = -Engine._sg[d - 1];
+		var y = Engine._sg[d];
+		Engine._sg[d - 1] = -(x > y ? x : y);
+		--d;
+	}
+	while(n > 0) {
+		--n;
+		b[Engine._ssq[n]] = Engine._spc[n];
+	}
+	b[to] = orig;
+	return Engine._sg[0];
+};
 Engine.genPseudo = function(pos,capsOnly) {
+	var moves = [];
+	Engine.genInto(pos,capsOnly,moves);
+	return moves;
+};
+Engine.genInto = function(pos,capsOnly,moves) {
 	var b = pos.board;
 	var us = pos.turn;
-	var moves = [];
+	var n = 0;
 	var dir = us * 8;
 	var startRank = us == 1 ? 1 : 6;
 	var promoRank = us == 1 ? 7 : 0;
@@ -52296,14 +52369,14 @@ Engine.genPseudo = function(pos,capsOnly) {
 			var to = sq + dir;
 			if(b[to] == 0) {
 				if(to >> 3 == promoRank) {
-					moves.push(sq | to << 6 | 20480 | 0);
-					moves.push(sq | to << 6 | 16384 | 0);
-					moves.push(sq | to << 6 | 12288 | 0);
-					moves.push(sq | to << 6 | 8192 | 0);
+					moves[n++] = sq | to << 6 | 20480 | 0;
+					moves[n++] = sq | to << 6 | 16384 | 0;
+					moves[n++] = sq | to << 6 | 12288 | 0;
+					moves[n++] = sq | to << 6 | 8192 | 0;
 				} else if(!capsOnly) {
-					moves.push(sq | to << 6 | 0 | 0);
+					moves[n++] = sq | to << 6 | 0 | 0;
 					if(r == startRank && b[to + dir] == 0) {
-						moves.push(sq | to + dir << 6 | 0 | 131072);
+						moves[n++] = sq | to + dir << 6 | 0 | 131072;
 					}
 				}
 			}
@@ -52315,15 +52388,15 @@ Engine.genPseudo = function(pos,capsOnly) {
 					var cp = b[tt];
 					if(cp != 0 && cp > 0 != us > 0) {
 						if(tt >> 3 == promoRank) {
-							moves.push(sq | tt << 6 | 20480 | 0);
-							moves.push(sq | tt << 6 | 16384 | 0);
-							moves.push(sq | tt << 6 | 12288 | 0);
-							moves.push(sq | tt << 6 | 8192 | 0);
+							moves[n++] = sq | tt << 6 | 20480 | 0;
+							moves[n++] = sq | tt << 6 | 16384 | 0;
+							moves[n++] = sq | tt << 6 | 12288 | 0;
+							moves[n++] = sq | tt << 6 | 8192 | 0;
 						} else {
-							moves.push(sq | tt << 6 | 0 | 0);
+							moves[n++] = sq | tt << 6 | 0 | 0;
 						}
 					} else if(cp == 0 && tt == pos.ep) {
-						moves.push(sq | tt << 6 | 0 | 32768);
+						moves[n++] = sq | tt << 6 | 0 | 32768;
 					}
 				}
 				df += 2;
@@ -52338,26 +52411,26 @@ Engine.genPseudo = function(pos,capsOnly) {
 				var cp1 = b[to1];
 				if(cp1 == 0) {
 					if(!capsOnly) {
-						moves.push(sq | to1 << 6 | 0 | 0);
+						moves[n++] = sq | to1 << 6 | 0 | 0;
 					}
 				} else if(cp1 > 0 != us > 0) {
-					moves.push(sq | to1 << 6 | 0 | 0);
+					moves[n++] = sq | to1 << 6 | 0 | 0;
 				}
 			}
 			if(t == 6 && !capsOnly) {
 				if(us == 1 && sq == 4) {
 					if((pos.castling & 1) != 0 && b[5] == 0 && b[6] == 0 && b[7] == 4 && !Engine.isAttacked(b,4,-1) && !Engine.isAttacked(b,5,-1) && !Engine.isAttacked(b,6,-1)) {
-						moves.push(65924);
+						moves[n++] = 65924;
 					}
 					if((pos.castling & 2) != 0 && b[3] == 0 && b[2] == 0 && b[1] == 0 && b[0] == 4 && !Engine.isAttacked(b,4,-1) && !Engine.isAttacked(b,3,-1) && !Engine.isAttacked(b,2,-1)) {
-						moves.push(65668);
+						moves[n++] = 65668;
 					}
 				} else if(us == -1 && sq == 60) {
 					if((pos.castling & 4) != 0 && b[61] == 0 && b[62] == 0 && b[63] == -4 && !Engine.isAttacked(b,60,1) && !Engine.isAttacked(b,61,1) && !Engine.isAttacked(b,62,1)) {
-						moves.push(69564);
+						moves[n++] = 69564;
 					}
 					if((pos.castling & 8) != 0 && b[59] == 0 && b[58] == 0 && b[57] == 0 && b[56] == -4 && !Engine.isAttacked(b,60,1) && !Engine.isAttacked(b,59,1) && !Engine.isAttacked(b,58,1)) {
-						moves.push(69308);
+						moves[n++] = 69308;
 					}
 				}
 			}
@@ -52377,11 +52450,11 @@ Engine.genPseudo = function(pos,capsOnly) {
 					var cp2 = b[to2];
 					if(cp2 == 0) {
 						if(!capsOnly) {
-							moves.push(sq | to2 << 6 | 0 | 0);
+							moves[n++] = sq | to2 << 6 | 0 | 0;
 						}
 					} else {
 						if(cp2 > 0 != us > 0) {
-							moves.push(sq | to2 << 6 | 0 | 0);
+							moves[n++] = sq | to2 << 6 | 0 | 0;
 						}
 						break;
 					}
@@ -52389,7 +52462,7 @@ Engine.genPseudo = function(pos,capsOnly) {
 			}
 		}
 	}
-	return moves;
+	return n;
 };
 Engine.makeMove = function(pos,m) {
 	var b = pos.board;
@@ -52717,8 +52790,52 @@ Engine.isEndgame = function(pos) {
 	}
 	return n <= 2600;
 };
+Engine.initKZ = function() {
+	Engine.KZ = new Array(4096);
+	var _g = 0;
+	var _g1 = 4096;
+	while(_g < _g1) {
+		var i = _g++;
+		Engine.KZ[i] = 0;
+	}
+	var _g = 0;
+	while(_g < 64) {
+		var k = _g++;
+		Engine.KZ[k * 64 + k] = 1;
+		var _g1 = 0;
+		var _g2 = Engine.KING_T[k];
+		while(_g1 < _g2.length) {
+			var t = _g2[_g1];
+			++_g1;
+			Engine.KZ[k * 64 + t] = 1;
+		}
+	}
+};
 Engine.evaluate = function(pos) {
+	if(Engine.ecKey == null) {
+		Engine.ecKey = new Array(65536);
+		Engine.ecVal = new Array(65536);
+		var _g = 0;
+		while(_g < 65536) {
+			var i = _g++;
+			Engine.ecKey[i] = 0;
+			Engine.ecVal[i] = 0;
+		}
+	}
+	var i = pos.h1 & 65535;
+	if(Engine.ecKey[i] == pos.h2 && pos.h2 != 0) {
+		return Engine.ecVal[i];
+	}
+	var v = Engine.evalFull(pos);
+	Engine.ecKey[i] = pos.h2;
+	Engine.ecVal[i] = v;
+	return v;
+};
+Engine.evalFull = function(pos) {
 	var b = pos.board;
+	if(Engine.KZ == null) {
+		Engine.initKZ();
+	}
 	Engine._pc[0] = 0;
 	Engine._pc[1] = 0;
 	Engine._pc[2] = 0;
@@ -52739,11 +52856,21 @@ Engine.evaluate = function(pos) {
 	var np1 = 0;
 	var nr0 = 0;
 	var nr1 = 0;
-	var s = 0;
+	var mg = 0;
+	var eg = 0;
 	var npmW = 0;
 	var npmB = 0;
 	var wb = 0;
 	var bb = 0;
+	var ph = 0;
+	var wk = pos.king[0];
+	var bk = pos.king[1];
+	var zw = wk * 64;
+	var zb = bk * 64;
+	var atkW = 0;
+	var cntW = 0;
+	var atkB = 0;
+	var cntB = 0;
 	var _g = 0;
 	while(_g < 64) {
 		var sq = _g++;
@@ -52755,34 +52882,140 @@ Engine.evaluate = function(pos) {
 			if(p == 6) {
 				continue;
 			}
-			s += Engine.VAL[p] + Engine.PSTW[p][sq];
+			var v = Engine.VAL[p] + Engine.PSTW[p][sq];
+			mg += v;
+			eg += v;
 			if(p == 1) {
 				Engine._pc[sq & 7] += 1;
 				Engine._ps0[np0++] = sq;
+				continue;
+			}
+			npmW += Engine.VAL[p];
+			ph += Engine.PHW[p];
+			var mob = 0;
+			var ka = 0;
+			if(p == 2) {
+				var tab = Engine.KNIGHT_T[sq];
+				var _g1 = 0;
+				var _g2 = tab.length;
+				while(_g1 < _g2) {
+					var i = _g1++;
+					var t = tab[i];
+					if(b[t] <= 0) {
+						++mob;
+						if(Engine.KZ[zb + t] != 0) {
+							++ka;
+						}
+					}
+				}
 			} else {
-				npmW += Engine.VAL[p];
 				if(p == 3) {
 					++wb;
 				} else if(p == 4) {
 					Engine._rk0[nr0++] = sq;
 				}
+				var d0 = p == 3 ? 4 : 0;
+				var d1 = p == 4 ? 4 : 8;
+				var rays = Engine.RAYS[sq];
+				var _g3 = d0;
+				var _g4 = d1;
+				while(_g3 < _g4) {
+					var d = _g3++;
+					var ray = rays[d];
+					var _g5 = 0;
+					var _g6 = ray.length;
+					while(_g5 < _g6) {
+						var i1 = _g5++;
+						var t1 = ray[i1];
+						var q = b[t1];
+						if(q <= 0) {
+							++mob;
+							if(Engine.KZ[zb + t1] != 0) {
+								++ka;
+							}
+						}
+						if(q != 0) {
+							break;
+						}
+					}
+				}
+			}
+			mob -= Engine.MOB0[p];
+			mg += Engine.MOBM[p] * mob;
+			eg += Engine.MOBE[p] * mob;
+			if(ka > 0) {
+				++cntW;
+				atkW += Engine.KAW[p] * ka;
 			}
 		} else {
-			var t = -p;
-			if(t == 6) {
+			var t0 = -p;
+			if(t0 == 6) {
 				continue;
 			}
-			s -= Engine.VAL[t] + Engine.PSTB[t][sq];
-			if(t == 1) {
+			var v1 = Engine.VAL[t0] + Engine.PSTB[t0][sq];
+			mg -= v1;
+			eg -= v1;
+			if(t0 == 1) {
 				Engine._pc[8 + (sq & 7)] += 1;
 				Engine._ps1[np1++] = sq;
+				continue;
+			}
+			npmB += Engine.VAL[t0];
+			ph += Engine.PHW[t0];
+			var mob1 = 0;
+			var ka1 = 0;
+			if(t0 == 2) {
+				var tab1 = Engine.KNIGHT_T[sq];
+				var _g7 = 0;
+				var _g8 = tab1.length;
+				while(_g7 < _g8) {
+					var i2 = _g7++;
+					var t2 = tab1[i2];
+					if(b[t2] >= 0) {
+						++mob1;
+						if(Engine.KZ[zw + t2] != 0) {
+							++ka1;
+						}
+					}
+				}
 			} else {
-				npmB += Engine.VAL[t];
-				if(t == 3) {
+				if(t0 == 3) {
 					++bb;
-				} else if(t == 4) {
+				} else if(t0 == 4) {
 					Engine._rk1[nr1++] = sq;
 				}
+				var d01 = t0 == 3 ? 4 : 0;
+				var d11 = t0 == 4 ? 4 : 8;
+				var rays1 = Engine.RAYS[sq];
+				var _g9 = d01;
+				var _g10 = d11;
+				while(_g9 < _g10) {
+					var d2 = _g9++;
+					var ray1 = rays1[d2];
+					var _g11 = 0;
+					var _g12 = ray1.length;
+					while(_g11 < _g12) {
+						var i3 = _g11++;
+						var t3 = ray1[i3];
+						var q1 = b[t3];
+						if(q1 >= 0) {
+							++mob1;
+							if(Engine.KZ[zw + t3] != 0) {
+								++ka1;
+							}
+						}
+						if(q1 != 0) {
+							break;
+						}
+					}
+				}
+			}
+			mob1 -= Engine.MOB0[t0];
+			mg -= Engine.MOBM[t0] * mob1;
+			eg -= Engine.MOBE[t0] * mob1;
+			if(ka1 > 0) {
+				++cntB;
+				atkB += Engine.KAW[t0] * ka1;
 			}
 		}
 	}
@@ -52790,10 +53023,12 @@ Engine.evaluate = function(pos) {
 		return 0;
 	}
 	if(wb >= 2) {
-		s += 30;
+		mg += 30;
+		eg += 45;
 	}
 	if(bb >= 2) {
-		s -= 30;
+		mg -= 30;
+		eg -= 45;
 	}
 	var _g = 0;
 	var _g1 = np0;
@@ -52803,10 +53038,12 @@ Engine.evaluate = function(pos) {
 		var f = sq & 7;
 		var r = sq >> 3;
 		if(Engine._pc[f] > 1) {
-			s -= 8;
+			mg -= 8;
+			eg -= 15;
 		}
 		if((f > 0 ? Engine._pc[f - 1] : 0) == 0 && (f < 7 ? Engine._pc[f + 1] : 0) == 0) {
-			s -= 12;
+			mg -= 12;
+			eg -= 15;
 		}
 		var passed = true;
 		var _g2 = 0;
@@ -52821,7 +53058,9 @@ Engine.evaluate = function(pos) {
 			}
 		}
 		if(passed) {
-			s += Engine.PASSED[r];
+			var pb = Engine.PASSED[r];
+			mg += pb >> 1;
+			eg += pb + (pb >> 2);
 		}
 	}
 	var _g = 0;
@@ -52832,10 +53071,12 @@ Engine.evaluate = function(pos) {
 		var f = sq & 7;
 		var r = sq >> 3;
 		if(Engine._pc[8 + f] > 1) {
-			s += 8;
+			mg += 8;
+			eg += 15;
 		}
 		if((f > 0 ? Engine._pc[8 + f - 1] : 0) == 0 && (f < 7 ? Engine._pc[8 + f + 1] : 0) == 0) {
-			s += 12;
+			mg += 12;
+			eg += 15;
 		}
 		var passed = true;
 		var _g2 = 0;
@@ -52850,7 +53091,9 @@ Engine.evaluate = function(pos) {
 			}
 		}
 		if(passed) {
-			s -= Engine.PASSED[7 - r];
+			var pb = Engine.PASSED[7 - r];
+			mg -= pb >> 1;
+			eg -= pb + (pb >> 2);
 		}
 	}
 	var _g = 0;
@@ -52859,7 +53102,9 @@ Engine.evaluate = function(pos) {
 		var i = _g++;
 		var f = Engine._rk0[i] & 7;
 		if(Engine._pc[f] == 0) {
-			s += Engine._pc[8 + f] == 0 ? 20 : 10;
+			var o = Engine._pc[8 + f] == 0 ? 20 : 10;
+			mg += o;
+			eg += o >> 1;
 		}
 	}
 	var _g = 0;
@@ -52868,72 +53113,76 @@ Engine.evaluate = function(pos) {
 		var i = _g++;
 		var f = Engine._rk1[i] & 7;
 		if(Engine._pc[8 + f] == 0) {
-			s -= Engine._pc[f] == 0 ? 20 : 10;
+			var o = Engine._pc[f] == 0 ? 20 : 10;
+			mg -= o;
+			eg -= o >> 1;
 		}
 	}
-	var wk = pos.king[0];
-	var bk = pos.king[1];
-	var eg = npmW + npmB <= 2600;
-	if(eg) {
-		s += Engine.KEG_W[wk] - Engine.KEG_B[bk];
-		if(s > 250 || s < -250) {
-			var win = s > 0 ? 0 : 1;
-			var wK = pos.king[win];
-			var lK = pos.king[1 - win];
-			var lf = lK & 7;
-			var lr = lK >> 3;
-			var cd = Math.max(3 - lf,lf - 4) + Math.max(3 - lr,lr - 4) | 0;
-			var md = Math.abs((wK & 7) - lf) + Math.abs((wK >> 3) - lr) | 0;
-			var bonus = cd * 10 + (14 - md) * 4;
-			s += win == 0 ? bonus : -bonus;
-		}
-	} else {
-		s += Engine.PSTW[6][wk] - Engine.PSTB[6][bk];
-		if(wk >> 3 == 0) {
-			var f = wk & 7;
-			var _g = -1;
-			while(_g < 2) {
-				var df = _g++;
-				var nf = f + df;
-				if(nf < 0 || nf > 7) {
-					continue;
-				}
-				if(b[8 + nf] == 1) {
-					s += 10;
-				} else if(b[16 + nf] == 1) {
-					s += 5;
-				}
+	mg += Engine.PSTW[6][wk] - Engine.PSTB[6][bk];
+	eg += Engine.KEG_W[wk] - Engine.KEG_B[bk];
+	if(wk >> 3 == 0) {
+		var f = wk & 7;
+		var _g = -1;
+		while(_g < 2) {
+			var df = _g++;
+			var nf = f + df;
+			if(nf < 0 || nf > 7) {
+				continue;
 			}
-		}
-		if(bk >> 3 == 7) {
-			var f = bk & 7;
-			var _g = -1;
-			while(_g < 2) {
-				var df = _g++;
-				var nf = f + df;
-				if(nf < 0 || nf > 7) {
-					continue;
-				}
-				if(b[48 + nf] == -1) {
-					s -= 10;
-				} else if(b[40 + nf] == -1) {
-					s -= 5;
-				}
+			if(b[8 + nf] == 1) {
+				mg += 10;
+			} else if(b[16 + nf] == 1) {
+				mg += 5;
 			}
 		}
 	}
-	if(pos.turn == 1) {
-		return s;
-	} else {
-		return -s;
+	if(bk >> 3 == 7) {
+		var f = bk & 7;
+		var _g = -1;
+		while(_g < 2) {
+			var df = _g++;
+			var nf = f + df;
+			if(nf < 0 || nf > 7) {
+				continue;
+			}
+			if(b[48 + nf] == -1) {
+				mg -= 10;
+			} else if(b[40 + nf] == -1) {
+				mg -= 5;
+			}
+		}
 	}
+	if(cntW >= 2) {
+		var pen = atkW * atkW >> 1;
+		mg += pen > 350 ? 350 : pen;
+	}
+	if(cntB >= 2) {
+		var pen = atkB * atkB >> 1;
+		mg -= pen > 350 ? 350 : pen;
+	}
+	if(ph > 24) {
+		ph = 24;
+	}
+	var s = (mg * ph + eg * (24 - ph)) / 24 | 0;
+	if(npmW + npmB <= 2600 && (s > 250 || s < -250)) {
+		var win = s > 0 ? 0 : 1;
+		var wK = pos.king[win];
+		var lK = pos.king[1 - win];
+		var lf = lK & 7;
+		var lr = lK >> 3;
+		var cd = Math.max(3 - lf,lf - 4) + Math.max(3 - lr,lr - 4) | 0;
+		var md = Math.abs((wK & 7) - lf) + Math.abs((wK >> 3) - lr) | 0;
+		var bonus = cd * 10 + (14 - md) * 4;
+		s += win == 0 ? bonus : -bonus;
+	}
+	return (pos.turn == 1 ? s : -s) + 8;
 };
-Engine.scoreMoves = function(pos,moves,ply,ctx,ttm) {
+Engine.scoreMoves = function(pos,moves,n,sc,ply,ctx,ttm) {
 	var b = pos.board;
 	var k = ctx.killers[ply];
-	var sc = [];
+	var hb = pos.turn == 1 ? 0 : 4096;
 	var _g = 0;
-	var _g1 = moves.length;
+	var _g1 = n;
 	while(_g < _g1) {
 		var i = _g++;
 		var m = moves[i];
@@ -52944,25 +53193,31 @@ Engine.scoreMoves = function(pos,moves,ply,ctx,ttm) {
 		var s = 0;
 		if(m == ttm) {
 			s = 3000000;
-		} else if(cap != 0) {
+		} else if(cap != 0 || m >> 15 == 1) {
+			var vv = cap != 0 ? Engine.VAL[cap < 0 ? -cap : cap] : 100;
 			var p = b[from];
-			s = 1000000 + Engine.VAL[cap < 0 ? -cap : cap] * 10 - (p < 0 ? -p : p);
-		} else if(m >> 15 == 1) {
-			s = 1000999;
-		} else if(k != null && (k[0] == m || k[1] == m)) {
-			s = 900000;
-		} else {
-			s = Engine.history[from * 64 + to];
-			if(s > 800000) {
-				s = 800000;
+			var av = Engine.VAL[p < 0 ? -p : p];
+			var p1 = b[from];
+			s = vv * 10 - (p1 < 0 ? -p1 : p1);
+			if(vv < av && promo == 0 && Engine.seeMove(pos,m) < 0) {
+				s += -900000;
+			} else {
+				s += 1000000;
 			}
+			if(promo != 0) {
+				s += promo == 5 ? 900000 : -1500000;
+			}
+		} else if(promo != 0) {
+			s = promo == 5 ? 1900000 : -500000 + promo;
+		} else if(k[0] == m) {
+			s = 900000;
+		} else if(k[1] == m) {
+			s = 899000;
+		} else {
+			s = Engine.history[hb + from * 64 + to];
 		}
-		if(promo != 0 && m != ttm) {
-			s += 850000 + promo;
-		}
-		sc.push(s);
+		sc[i] = s;
 	}
-	return sc;
 };
 Engine.updatePV = function(ctx,ply,m) {
 	ctx.pv[ply][ply] = m;
@@ -52973,6 +53228,72 @@ Engine.updatePV = function(ctx,ply,m) {
 		++j;
 	}
 	ctx.pvLen[ply] = Math.max(ply + 1,end) | 0;
+};
+Engine.buildHist = function(ctx) {
+	var h = new haxe_ds_IntMap();
+	ctx.hist = h;
+	if(ctx.repKeys == null) {
+		return;
+	}
+	var p = new Pos();
+	var h1 = ctx.repKeys.h;
+	var key_h = h1;
+	var key_keys = Object.keys(h1);
+	var key_length = key_keys.length;
+	var key_current = 0;
+	while(key_current < key_length) {
+		var key = key_keys[key_current++];
+		if(key.length < 68) {
+			continue;
+		}
+		var _g = 0;
+		while(_g < 64) {
+			var i = _g++;
+			p.board[i] = HxOverrides.cca(key,i) - 70;
+		}
+		var t = HxOverrides.substr(key,64,null).split(",");
+		if(t.length < 3) {
+			continue;
+		}
+		p.turn = Std.parseInt(t[0]) == -1 ? -1 : 1;
+		var c = Std.parseInt(t[1]);
+		p.castling = c == null ? 0 : c;
+		var e = t[2] == "-" ? null : Std.parseInt(t[2]);
+		p.ep = e == null ? -1 : e;
+		Engine.computeHash(p);
+		h.h[p.h1] = p.h2;
+	}
+};
+Engine.isDrawRep = function(pos,ply,ctx) {
+	var st = pos.stack;
+	var h1 = pos.h1;
+	var h2 = pos.h2;
+	var lim = pos.half;
+	var i = st.length - 1;
+	var c = 1;
+	var clean = true;
+	while(i >= 0 && c <= lim) {
+		var u = st[i];
+		if(u.m == 0) {
+			clean = false;
+			break;
+		}
+		if((c & 1) == 0 && u.h1 == h1 && u.h2 == h2) {
+			return true;
+		}
+		--i;
+		++c;
+	}
+	if(clean && lim >= ply && ctx.repKeys != null) {
+		if(ctx.hist == null) {
+			Engine.buildHist(ctx);
+		}
+		var v = ctx.hist.h[h1];
+		if(v != null && v == h2) {
+			return true;
+		}
+	}
+	return false;
 };
 Engine.quiesce = function(pos,alpha,beta,ply,ctx) {
 	ctx.pvLen[ply] = ply;
@@ -52995,17 +53316,19 @@ Engine.quiesce = function(pos,alpha,beta,ply,ctx) {
 	var us = pos.turn;
 	var ki = us == 1 ? 0 : 1;
 	var b = pos.board;
-	var moves = Engine.genPseudo(pos,true);
-	var sc = Engine.scoreMoves(pos,moves,ply,ctx,0);
+	var moves = Engine.mvBuf[ply];
+	var sc = Engine.scBuf[ply];
+	var n = Engine.genInto(pos,true,moves);
+	Engine.scoreMoves(pos,moves,n,sc,ply,ctx,0);
 	var best = stand;
 	var _g = 0;
-	var _g1 = moves.length;
+	var _g1 = n;
 	while(_g < _g1) {
 		var i = _g++;
 		var bi = i;
 		var bs = sc[i];
 		var _g2 = i + 1;
-		var _g3 = moves.length;
+		var _g3 = n;
 		while(_g2 < _g3) {
 			var j = _g2++;
 			if(sc[j] > bs) {
@@ -53022,6 +53345,9 @@ Engine.quiesce = function(pos,alpha,beta,ply,ctx) {
 			sc[bi] = ts;
 		}
 		var m = moves[i];
+		if(sc[i] < -400000) {
+			break;
+		}
 		var cap = b[m >> 6 & 63];
 		if((m >> 12 & 7) == 0 && stand + (cap != 0 ? Engine.VAL[cap < 0 ? -cap : cap] : 100) + 200 < alpha) {
 			continue;
@@ -53049,6 +53375,57 @@ Engine.quiesce = function(pos,alpha,beta,ply,ctx) {
 	}
 	return best;
 };
+Engine.directCheck = function(b,m,ksq) {
+	var from = m & 63;
+	var to = m >> 6 & 63;
+	var p = b[from];
+	var promo = m >> 12 & 7;
+	var us = p > 0 ? 1 : -1;
+	var t = promo != 0 ? promo : p > 0 ? p : -p;
+	var df = (ksq & 7) - (to & 7);
+	var dr = (ksq >> 3) - (to >> 3);
+	if(t == 1) {
+		if(dr == us) {
+			if(df != 1) {
+				return df == -1;
+			} else {
+				return true;
+			}
+		} else {
+			return false;
+		}
+	}
+	var af = df < 0 ? -df : df;
+	var ar = dr < 0 ? -dr : dr;
+	if(t == 2) {
+		if(!(af == 1 && ar == 2)) {
+			if(af == 2) {
+				return ar == 1;
+			} else {
+				return false;
+			}
+		} else {
+			return true;
+		}
+	}
+	if(t == 6) {
+		return false;
+	}
+	var line = df == 0 || dr == 0;
+	var diag = af == ar;
+	if(!(line && t != 3) && !(diag && t != 4)) {
+		return false;
+	}
+	var step = (dr > 0 ? 8 : dr < 0 ? -8 : 0) + (df > 0 ? 1 : df < 0 ? -1 : 0);
+	var s = to + step;
+	while(s != ksq) {
+		if(b[s] != 0 && s != from) {
+			return false;
+		}
+		s += step;
+	}
+	return true;
+};
 Engine.hasPieces = function(pos,us) {
 	var b = pos.board;
 	var _g = 0;
@@ -53074,6 +53451,9 @@ Engine.negamax = function(pos,depth,alpha,beta,ply,ctx,noNull) {
 	}
 	var us = pos.turn;
 	var ki = us == 1 ? 0 : 1;
+	if(ply > 0 && pos.half >= 2 && (pos.half >= 100 || Engine.isDrawRep(pos,ply,ctx))) {
+		return 0;
+	}
 	var chk = Engine.isAttacked(pos.board,pos.king[ki],-us);
 	if(chk && ply < 40) {
 		++depth;
@@ -53081,10 +53461,8 @@ Engine.negamax = function(pos,depth,alpha,beta,ply,ctx,noNull) {
 	if(depth <= 0 || ply >= 62) {
 		return Engine.quiesce(pos,alpha,beta,ply,ctx);
 	}
-	if(pos.half >= 100) {
-		return 0;
-	}
-	var idx = pos.h1 & 131071;
+	var pvNode = beta - alpha > 1;
+	var idx = pos.h1 & 262143;
 	var ttm = 0;
 	if(Engine.ttCheck[idx] == pos.h2 && Engine.ttDF[idx] >= 0) {
 		ttm = Engine.ttMove[idx];
@@ -53097,7 +53475,7 @@ Engine.negamax = function(pos,depth,alpha,beta,ply,ctx,noNull) {
 			} else if(ts < -29800) {
 				ts += ply;
 			}
-			var cut = tf == 0 || tf == 1 && ts >= beta || tf == 2 && ts <= alpha;
+			var cut = tf == 0 || !pvNode && (tf == 1 && ts >= beta || tf == 2 && ts <= alpha);
 			if(cut) {
 				if(ttm != 0 && tf != 2) {
 					ctx.pv[ply][ply] = ttm;
@@ -53107,33 +53485,64 @@ Engine.negamax = function(pos,depth,alpha,beta,ply,ctx,noNull) {
 			}
 		}
 	}
-	if(!noNull && !chk && depth >= 3 && ply > 0 && beta < 29800 && beta > -29800 && Engine.hasPieces(pos,us) && Engine.evaluate(pos) >= beta) {
-		var R = depth > 6 ? 3 : 2;
-		Engine.makeNull(pos);
-		var ns = -Engine.negamax(pos,depth - 1 - R,-beta,-beta + 1,ply + 1,ctx,true);
-		Engine.unmakeNull(pos);
-		if(ctx.stop) {
-			return 0;
-		}
-		if(ns >= beta) {
-			return beta;
+	var ev = 0;
+	var sane = beta < 29800 && beta > -29800 && alpha > -29800;
+	if(!chk) {
+		ev = Engine.evaluate(pos);
+		if(!pvNode && sane && ply > 0) {
+			if(depth <= 6 && ev - 85 * depth >= beta) {
+				return ev;
+			}
+			if(depth <= 2 && ev + 260 * depth < alpha) {
+				var q = Engine.quiesce(pos,alpha,beta,ply,ctx);
+				if(ctx.stop) {
+					return 0;
+				}
+				if(q < alpha) {
+					return q;
+				}
+			}
+			if(!noNull && depth >= 3 && ev >= beta && Engine.hasPieces(pos,us)) {
+				var R = 3 + (depth >> 2) + (ev - beta > 200 ? 1 : 0);
+				Engine.makeNull(pos);
+				var ns = -Engine.negamax(pos,depth - R,-beta,-beta + 1,ply + 1,ctx,true);
+				Engine.unmakeNull(pos);
+				if(ctx.stop) {
+					return 0;
+				}
+				if(ns >= beta) {
+					return beta;
+				}
+			}
 		}
 	}
-	var moves = Engine.genPseudo(pos,false);
-	var sc = Engine.scoreMoves(pos,moves,ply,ctx,ttm);
+	if(ttm == 0 && depth >= 5) {
+		--depth;
+	}
+	var moves = Engine.mvBuf[ply];
+	var sc = Engine.scBuf[ply];
+	var qt = Engine.qtBuf[ply];
+	var nq = 0;
+	var n = Engine.genInto(pos,false,moves);
+	Engine.scoreMoves(pos,moves,n,sc,ply,ctx,ttm);
 	var legal = 0;
 	var best = -1000000;
 	var bestM = 0;
 	var alpha0 = alpha;
 	var k = ctx.killers[ply];
+	var hb = us == 1 ? 0 : 4096;
+	var prune = !pvNode && !chk && sane && ply > 0;
+	var futile = prune && depth <= 6 && ev + 110 + 95 * depth <= alpha;
+	var lmp = 4 + depth * depth;
+	var oks = pos.king[1 - ki];
 	var _g = 0;
-	var _g1 = moves.length;
+	var _g1 = n;
 	while(_g < _g1) {
 		var i = _g++;
 		var bi = i;
 		var bs = sc[i];
 		var _g2 = i + 1;
-		var _g3 = moves.length;
+		var _g3 = n;
 		while(_g2 < _g3) {
 			var j = _g2++;
 			if(sc[j] > bs) {
@@ -53150,7 +53559,15 @@ Engine.negamax = function(pos,depth,alpha,beta,ply,ctx,noNull) {
 			sc[bi] = ts;
 		}
 		var m = moves[i];
+		var msc = sc[i];
 		var quiet = pos.board[m >> 6 & 63] == 0 && (m >> 12 & 7) == 0 && m >> 15 != 1;
+		if(prune && quiet && depth <= 5 && legal > lmp && best > -29800) {
+			continue;
+		}
+		var gives = Engine.directCheck(pos.board,m,oks);
+		if(prune && legal > 0 && !gives && best > -29800 && (quiet ? futile : depth <= 3 && msc < -400000)) {
+			continue;
+		}
 		Engine.makeMove(pos,m);
 		if(Engine.isAttacked(pos.board,pos.king[ki],-us)) {
 			Engine.unmakeMove(pos);
@@ -53162,8 +53579,24 @@ Engine.negamax = function(pos,depth,alpha,beta,ply,ctx,noNull) {
 			s2 = -Engine.negamax(pos,depth - 1,-beta,-alpha,ply + 1,ctx);
 		} else {
 			var red = 0;
-			if(depth >= 3 && legal >= 4 && quiet && !chk && m != k[0] && m != k[1] && !Engine.isAttacked(pos.board,pos.king[pos.turn == 1 ? 0 : 1],us)) {
-				red = legal >= 10 && depth >= 5 ? 2 : 1;
+			if(depth >= 3 && legal >= 3 && quiet && !chk && !gives) {
+				red = Engine.LMR[(depth > 63 ? 63 : depth) * 64 + (legal > 63 ? 63 : legal)];
+				if(pvNode) {
+					--red;
+				}
+				if(m == k[0] || m == k[1]) {
+					--red;
+				}
+				if(msc > 6000) {
+					--red;
+				} else if(msc < -6000) {
+					++red;
+				}
+				if(red < 0) {
+					red = 0;
+				} else if(red > depth - 2) {
+					red = depth - 2;
+				}
 			}
 			s2 = -Engine.negamax(pos,depth - 1 - red,-alpha - 1,-alpha,ply + 1,ctx);
 			if(!ctx.stop && s2 > alpha && (red > 0 || s2 < beta)) {
@@ -53187,11 +53620,26 @@ Engine.negamax = function(pos,depth,alpha,beta,ply,ctx,noNull) {
 						k[1] = k[0];
 						k[0] = m;
 					}
-					var hi = (m & 63) * 64 + (m >> 6 & 63);
-					Engine.history[hi] += depth * depth;
+					var bonus = depth * depth;
+					if(bonus > 400) {
+						bonus = 400;
+					}
+					var hi = hb + (m & 63) * 64 + (m >> 6 & 63);
+					Engine.history[hi] += bonus - (Engine.history[hi] * bonus / 16384 | 0);
+					var _g4 = 0;
+					var _g5 = nq;
+					while(_g4 < _g5) {
+						var j1 = _g4++;
+						var q2 = qt[j1];
+						var h2 = hb + (q2 & 63) * 64 + (q2 >> 6 & 63);
+						Engine.history[h2] -= bonus + (Engine.history[h2] * bonus / 16384 | 0);
+					}
 				}
 				break;
 			}
+		}
+		if(quiet && nq < 60) {
+			qt[nq++] = m;
 		}
 	}
 	if(legal == 0) {
@@ -53208,9 +53656,9 @@ Engine.negamax = function(pos,depth,alpha,beta,ply,ctx,noNull) {
 	} else if(st < -29800) {
 		st -= ply;
 	}
-	if(Engine.ttCheck[idx] != pos.h2 || Engine.ttDF[idx] >> 2 <= depth) {
+	if(Engine.ttCheck[idx] != pos.h2 || Engine.ttDF[idx] >> 2 <= depth || flag == 0) {
 		Engine.ttCheck[idx] = pos.h2;
-		Engine.ttMove[idx] = bestM;
+		Engine.ttMove[idx] = bestM != 0 ? bestM : ttm;
 		Engine.ttScore[idx] = st;
 		Engine.ttDF[idx] = depth << 2 | flag;
 	}
@@ -53264,6 +53712,54 @@ Engine.rootScores = function(pos,depth,ctx,moves) {
 	}
 	return out;
 };
+Engine.rootSearch = function(pos,d,lo,hi,order,ctx) {
+	var alpha = lo;
+	var first = true;
+	Engine.rsMove = -1;
+	Engine.rsScore = -1000000;
+	Engine.rsPv = null;
+	var _g = 0;
+	while(_g < order.length) {
+		var m = order[_g];
+		++_g;
+		Engine.makeMove(pos,m);
+		var sc;
+		var pv = null;
+		if(Engine.isRep(pos,ctx)) {
+			sc = 0;
+			pv = [m];
+		} else if(first) {
+			sc = -Engine.negamax(pos,d - 1,-hi,-alpha,1,ctx);
+			if(sc > alpha) {
+				pv = Engine.childPV(m,ctx);
+			}
+		} else {
+			sc = -Engine.negamax(pos,d - 1,-alpha - 1,-alpha,1,ctx);
+			if(!ctx.stop && sc > alpha) {
+				sc = -Engine.negamax(pos,d - 1,-hi,-alpha,1,ctx);
+				if(sc > alpha) {
+					pv = Engine.childPV(m,ctx);
+				}
+			}
+		}
+		Engine.unmakeMove(pos);
+		if(ctx.stop) {
+			return;
+		}
+		first = false;
+		if(sc > Engine.rsScore) {
+			Engine.rsScore = sc;
+			Engine.rsMove = m;
+			Engine.rsPv = pv != null ? pv : [m];
+		}
+		if(sc > alpha) {
+			alpha = sc;
+		}
+		if(sc >= hi) {
+			return;
+		}
+	}
+};
 Engine.searchBest = function(pos,maxDepth,timeMs,maxNodes,repKeys) {
 	var ctx = new Ctx(timeMs,maxNodes);
 	ctx.repKeys = repKeys;
@@ -53277,68 +53773,59 @@ Engine.searchBest = function(pos,maxDepth,timeMs,maxNodes,repKeys) {
 	var _g1 = maxDepth + 1;
 	while(_g < _g1) {
 		var d = _g++;
-		var alpha = -1000000;
-		var cur = -1;
-		var curScore = -1000000;
-		var curPv = null;
-		var first = true;
-		var _g2 = 0;
-		while(_g2 < order.length) {
-			var m = order[_g2];
-			++_g2;
-			Engine.makeMove(pos,m);
-			var sc;
-			var pv = null;
-			if(Engine.isRep(pos,ctx)) {
-				sc = 0;
-				pv = [m];
-			} else if(first) {
-				sc = -Engine.negamax(pos,d - 1,-1000000,-alpha,1,ctx);
-				if(sc > alpha) {
-					pv = Engine.childPV(m,ctx);
-				}
-			} else {
-				sc = -Engine.negamax(pos,d - 1,-alpha - 1,-alpha,1,ctx);
-				if(!ctx.stop && sc > alpha) {
-					sc = -Engine.negamax(pos,d - 1,-1000000,-alpha,1,ctx);
-					if(sc > alpha) {
-						pv = Engine.childPV(m,ctx);
-					}
-				}
-			}
-			Engine.unmakeMove(pos);
+		var lo = -1000000;
+		var hi = 1000000;
+		var delta = 30;
+		if(d >= 4 && best.score > -29700 && best.score < 29700) {
+			lo = best.score - delta;
+			hi = best.score + delta;
+		}
+		var done = false;
+		while(true) {
+			Engine.rootSearch(pos,d,lo,hi,order,ctx);
 			if(ctx.stop) {
 				break;
 			}
-			first = false;
-			if(sc > curScore) {
-				curScore = sc;
-				cur = m;
-				curPv = pv != null ? pv : [m];
-			}
-			if(sc > alpha) {
-				alpha = sc;
+			if(Engine.rsScore <= lo && lo > -1000000) {
+				delta *= 3;
+				lo = delta > 800 ? -1000000 : Engine.rsScore - delta;
+			} else if(Engine.rsScore >= hi && hi < 1000000) {
+				delta *= 3;
+				hi = delta > 800 ? 1000000 : Engine.rsScore + delta;
+				var no = [Engine.rsMove];
+				var _g2 = 0;
+				while(_g2 < order.length) {
+					var x = order[_g2];
+					++_g2;
+					if(x != Engine.rsMove) {
+						no.push(x);
+					}
+				}
+				order = no;
+			} else {
+				done = true;
+				break;
 			}
 		}
-		if(ctx.stop) {
-			if(cur >= 0 && cur != best.m && curScore > best.score && bestDepth > 0) {
-				best = new Scored(cur,curScore,curPv);
+		if(!done) {
+			if(Engine.rsMove >= 0 && Engine.rsMove != best.m && Engine.rsScore > best.score && Engine.rsScore > lo && bestDepth > 0) {
+				best = new Scored(Engine.rsMove,Engine.rsScore,Engine.rsPv);
 			}
 			break;
 		}
-		best = new Scored(cur,curScore,curPv);
+		best = new Scored(Engine.rsMove,Engine.rsScore,Engine.rsPv);
 		bestDepth = d;
-		var no = [cur];
+		var no1 = [Engine.rsMove];
 		var _g3 = 0;
 		while(_g3 < order.length) {
-			var x = order[_g3];
+			var x1 = order[_g3];
 			++_g3;
-			if(x != cur) {
-				no.push(x);
+			if(x1 != Engine.rsMove) {
+				no1.push(x1);
 			}
 		}
-		order = no;
-		if(Math.abs(curScore) > 29900) {
+		order = no1;
+		if(Math.abs(Engine.rsScore) > 29900) {
 			break;
 		}
 	}
@@ -53365,11 +53852,12 @@ Engine.chooseHuman = function(pos,elo,keys) {
 			rep.h[k] = true;
 		}
 	}
-	var x = Math.max(0,Math.min(1,(elo - 600) / 1400));
-	var pBlind = Math.max(0.0,Engine.HUM[2] - (elo - 600) * Engine.HUM[3]);
+	var ee = elo - Math.max(0,Math.min(Engine.HUM_CAP,(elo - 800) * Engine.HUM_ADJ));
+	var x = Math.max(0,Math.min(1,(ee - 600) / 1400));
+	var pBlind = Math.max(0.0,Engine.HUM[2] - (ee - 600) * Engine.HUM[3]);
 	var blind = Math.random() < pBlind;
 	var depth = blind ? 1 : elo < 900 ? 1 : elo < 1300 ? 2 : 3;
-	var ctx = new Ctx(2500,60000 * Engine.HUMAN_NODES | 0);
+	var ctx = new Ctx(2500,60000);
 	ctx.repKeys = rep;
 	var res = Engine.rootScores(pos,depth,ctx,legal);
 	if(res == null) {
@@ -53391,7 +53879,7 @@ Engine.chooseHuman = function(pos,elo,keys) {
 			}
 		}
 	}
-	var T = Math.max(6,Engine.HUM[0] - (elo - 600) * Engine.HUM[1]);
+	var T = Math.max(6,Engine.HUM[0] - (ee - 600) * Engine.HUM[1]);
 	var bk = Engine.HUM[4];
 	var w = [];
 	var mx = -1e9;
@@ -53523,7 +54011,7 @@ Engine.chooseGhost = function(pos,dna,keys,tilted) {
 	if(fast && depth > 1) {
 		--depth;
 	}
-	var ctx = new Ctx(2500,60000 * Engine.HUMAN_NODES | 0);
+	var ctx = new Ctx(2500,60000);
 	ctx.repKeys = rep;
 	var res = Engine.rootScores(pos,depth,ctx,legal);
 	if(res == null) {
@@ -69045,6 +69533,9 @@ Engine.inited = false;
 Engine.ZS1 = 0;
 Engine.ZS2 = 0;
 Engine.rngState = 625341585;
+Engine._sg = new Array(40);
+Engine._ssq = new Array(40);
+Engine._spc = new Array(40);
 Engine.SAN_LETTER = ["","","C","B","T","D","R"];
 Engine.SAN_EN = ["","","N","B","R","Q","K"];
 Engine.sanEnglish = false;
@@ -69054,17 +69545,68 @@ Engine._ps0 = new Array(8);
 Engine._ps1 = new Array(8);
 Engine._rk0 = new Array(16);
 Engine._rk1 = new Array(16);
+Engine.MOBM = [0,0,4,5,2,1,0];
+Engine.MOBE = [0,0,4,5,4,2,0];
+Engine.MOB0 = [0,0,4,6,7,13,0];
+Engine.KAW = [0,0,2,2,3,4,0];
+Engine.PHW = [0,0,1,1,2,4,0];
+Engine.mvBuf = (function($this) {
+	var $r;
+	var _g = [];
+	{
+		var _g1 = 0;
+		var _g2 = 72;
+		while(_g1 < _g2) {
+			var i = _g1++;
+			_g.push([]);
+		}
+	}
+	$r = _g;
+	return $r;
+}(this));
+Engine.scBuf = (function($this) {
+	var $r;
+	var _g = [];
+	{
+		var _g1 = 0;
+		var _g2 = 72;
+		while(_g1 < _g2) {
+			var i = _g1++;
+			_g.push([]);
+		}
+	}
+	$r = _g;
+	return $r;
+}(this));
+Engine.qtBuf = (function($this) {
+	var $r;
+	var _g = [];
+	{
+		var _g1 = 0;
+		var _g2 = 72;
+		while(_g1 < _g2) {
+			var i = _g1++;
+			_g.push([]);
+		}
+	}
+	$r = _g;
+	return $r;
+}(this));
 Engine.lastDepth = 0;
 Engine.lastNodes = 0;
-Engine.LEVEL_NAMES = ["","Fácil","Médio","Difícil","Grande Mestre"];
-Engine.LEVEL_ELO = [0,800,1200,1600,1850];
+Engine.rsMove = -1;
+Engine.rsScore = 0;
+Engine.LEVEL_NAMES = ["","Fácil","Médio","Difícil","Mestre","Grande Mestre","Stockfish"];
+Engine.LEVEL_ELO = [0,800,1200,1600,2000,2500,3200];
 Engine.lastScore = 0;
 Engine.lastScoreValid = false;
-Engine.LV_DEPTH = [0,1,2,14,14];
-Engine.LV_NOISE = [0,80,80,0,0];
-Engine.LV_NODES = [0,0,0,6000,90000];
-Engine.LV_TIME = [0,3000,3000,4000,7000];
+Engine.LV_DEPTH = [0,1,2,14,30,40,40];
+Engine.LV_NOISE = [0,80,80,0,0,0,0];
+Engine.LV_NODES = [0,0,0,1500,20000,250000,700000];
+Engine.LV_TIME = [0,3000,3000,4000,6000,7000,9000];
 Engine.HUMAN_NODES = 1.0;
+Engine.HUM_ADJ = 0.2;
+Engine.HUM_CAP = 160;
 Engine.HUM = [70,0.045,0.18,0.00015,1.0];
 Engine.ghostErr = false;
 Pages.GM_TIPS = [["Emanuel Lasker · campeão mundial de 1894 a 1921","Quando encontrar um bom lance, procure um melhor.","Achou um lance bom? Antes de jogar, gaste mais 10 segundos procurando um ainda melhor, principalmente xeques e capturas."],["Alexander Kotov · \"Pense como um grande mestre\" (1971)","Liste os lances candidatos antes de calcular e calcule cada um só uma vez.","Escolha 2 ou 3 candidatos, analise um de cada vez até o fim e não fique pulando de um para o outro."],["Benjamin Blumenfeld · regra de Blumenfeld","Depois de decidir o lance, olhe o tabuleiro de novo como se fosse um iniciante.","Antes de soltar a peça, pergunte: o que o adversário pode fazer de mais perigoso agora? Isso evita a maioria das gafes."],["Aron Nimzowitsch · \"Meu sistema\" (1925)","A ameaça costuma ser mais forte que a sua execução.","Nem sempre capture na hora: manter a ameaça amarra as peças do adversário e limita as opções dele."],["Aron Nimzowitsch","Peão passado é um criminoso que deve ser mantido preso.","Bloqueie o peão passado do adversário com uma peça, de preferência um cavalo, na casa à frente dele."],["Siegbert Tarrasch","Torres ficam atrás dos peões passados.","Seu peão passado ou o do adversário: coloque a torre atrás dele, nunca na frente."],["Savielly Tartakower","A tática é saber o que fazer quando há algo a fazer; a estratégia, quando não há nada a fazer.","Sem tática na posição, melhore a sua pior peça e escolha um alvo de longo prazo."],["José Raúl Capablanca · campeão de 1921 a 1927","Estude os finais primeiro.","Os finais ensinam o valor real de cada peça e a atividade do rei. Dez minutos de finais por dia rendem mais que decorar aberturas."],["Wilhelm Steinitz · primeiro campeão mundial","Acumule pequenas vantagens; só ataque quando a posição justificar.","Sem vantagem, não force o ataque: ganhe espaço, melhore as peças e crie fraquezas no campo adversário."],["Bobby Fischer · campeão de 1972 a 1975","As táticas brotam de uma posição superior.","Se as combinações não aparecem, melhore a posição primeiro: elas surgem quando suas peças estão melhores."],["Mikhail Tal · campeão de 1960 a 1961","Leve o adversário para uma floresta escura, onde 2 + 2 = 5.","Em posições complicadas, o adversário também erra. Se você calcula bem, a complicação é sua aliada."],["Tigran Petrosian e Anatoly Karpov · mestres da profilaxia","Antes de executar seu plano, impeça o plano do adversário.","A cada lance, pergunte: o que ele quer fazer? Às vezes o melhor lance é o que tira a melhor jogada dele."],["Mikhail Botvinnik · campeão em três períodos","Analise as suas próprias partidas com rigor, sem o computador primeiro.","Depois de cada partida, anote os momentos críticos e o que você pensou; só depois confira com o motor."],["Mark Dvoretsky · treinador de campeões","O cálculo se treina sem mexer as peças.","Resolva problemas olhando o diagrama e anotando a solução inteira antes de conferir."],["Garry Kasparov · campeão de 1985 a 2000","A iniciativa vale material.","Às vezes vale entregar um peão para desenvolver peças com ganho de tempo e manter o adversário se defendendo."],["Magnus Carlsen · campeão de 2013 a 2023","Partida igual não é empate: continue jogando.","No final, mesmo com pouca vantagem, siga fazendo lances úteis. O adversário cansa e erra."],["Judit Polgar · a maior jogadora da história","Jogue de forma ativa e confie no seu cálculo.","Prefira lances que criam ameaças e mantêm a iniciativa, mesmo que exijam cálculo preciso."],["Regra dos mestres para o relógio","Pense muito nos momentos críticos e pouco nos lances óbvios.","Lance forçado ou recaptura: jogue rápido. Mudança de estrutura, troca de damas ou sacrifício: pare e calcule."]];
@@ -70485,7 +71027,14 @@ var SF=(function(){
   api.cur=j;j.lines=[];
   var w=api.w;
   w.postMessage('setoption name MultiPV value '+(j.multipv||1));
-  w.postMessage('position fen '+j.fen);
+  /* v73: quando joga (níveis do Stockfish), a força pode ser limitada; nas análises volta sempre à força total */
+  var want=j.play&&j.elo?j.elo:0;
+  if(want!==(api.lim||0)){
+   if(want){w.postMessage('setoption name UCI_LimitStrength value true');w.postMessage('setoption name UCI_Elo value '+want);}
+   else w.postMessage('setoption name UCI_LimitStrength value false');
+   api.lim=want;
+  }
+  w.postMessage(j.pos||('position fen '+j.fen));
   var go='go';
   if(j.depth)go+=' depth '+j.depth;
   if(j.movetime)go+=' movetime '+j.movetime;
@@ -77098,6 +77647,7 @@ V72.build=function(site,user,text){
  gs=gs.slice(-60);
  if(gs.length<5)return {err:gs.length?'só encontrei '+gs.length+' partida'+(gs.length>1?'s':'')+' sua'+(gs.length>1?'s':'')+' nessa época; preciso de pelo menos 5':'não encontrei partidas suas nessa época'};
  var rs=[],n=0,fast=0,timed=0,msS=0,msK=0,agg=0,ks=0,qs=0,cnS=0,cast=0,qx=0,dates=[],cnt={1:{},'-1':{}};
+ V72._samp=V72._samp||{};V72._samp[site]=V72.sample(gs);
  gs.forEach(function(r){
   var el=r.col===1?r.we:r.be;if(el>0)rs.push(el);
   var t=V32.dateOf(r);if(t)dates.push(t);
@@ -77126,6 +77676,46 @@ V72.build=function(site,user,text){
   bp:null,bb:null,bq:null,bL:null,bw:null,vs:-1,ow:lines(1),ob:lines(-1),ax:null,g:gs.length,
   from:dates[0]||0,to:dates[dates.length-1]||0};
 };
+/* ---------- v73: erros de verdade ----------
+   Sorteia lances seus das partidas importadas (até 40 por fase) e mede cada um com o Stockfish, em segundo plano:
+   quanto a chance de vitória caiu em relação ao melhor lance. Erro = queda de 5 pontos ou mais (8 na abertura, onde aqui os lances de livro são perdoados); gafe = 15 ou mais
+   (a mesma régua das partidas jogadas aqui). O resultado substitui a estimativa pelo rating. */
+V72.phase=function(fen){var t=fen.split(' '),n=0,b=t[0];for(var i=0;i<b.length;i++)if('nbrqNBRQ'.indexOf(b[i])>=0)n++;return n<=6?2:((+t[5]||1)<=12?0:1);};
+V72.sample=function(gs){
+ var by=[[],[],[]];
+ gs.forEach(function(r){for(var k=0;k<r.u.length;k++){if((k%2===0?1:-1)!==r.col)continue;if(k<8)continue;var f=r.f[k];if(!f)continue;by[V72.phase(f)].push({f:f,u:r.u[k]});}});
+ var out=[];by.forEach(function(a,ph){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t;}a.slice(0,40).forEach(function(x){x.ph=ph;out.push(x);});});
+ return out;
+};
+V72.measure=function(site){
+ var smp=V72._samp&&V72._samp[site],slot=V72.d()[site];
+ if(!smp||!smp.length||!slot||!slot.dna||typeof SF==='undefined'||SF.failed)return;
+ var tok=(V72._mtok=V72._mtok||{});tok[site]=(tok[site]||0)+1;var my=tok[site];
+ var cnt=[[0,0],[0,0],[0,0]],bl=0,n=0,i=0;
+ slot.dna.meas=0;
+ var fin=function(){
+  var s2=V72.d()[site];if(!s2||!s2.dna||tok[site]!==my||n<30)return;
+  var d=s2.dna,all=cnt[0][0]+cnt[1][0]+cnt[2][0],base=all/n;
+  d.ph=cnt.map(function(c){return Math.round((c[1]>=8?c[0]/c[1]:base)*1000)/10;});
+  d.bl=Math.round(bl*1000/n)/10;d.real=n;delete d.meas;Profile.save();
+  try{if(UiJs.cur&&UiJs.cur.querySelector('.v72'))Dna.rival();}catch(e){}
+ };
+ var next=function(){
+  if(tok[site]!==my)return;
+  if(i>=smp.length){fin();return;}
+  var x=smp[i++];
+  SF.go({fen:x.f,depth:11,movetime:140},function(r){
+   if(tok[site]!==my)return;
+   if(!r||!r.lines.length||!r.best){if(SF.failed){fin();return;}next();return;}
+   var bs=SF.score(r.lines[0]);
+   var done=function(ms){var loss=Math.max(0,Coach.winPct(bs)-Coach.winPct(ms));n++;cnt[x.ph][1]++;if(loss>=(x.ph===0?8:5))cnt[x.ph][0]++;if(loss>=15)bl++;
+    var s2=V72.d()[site];if(s2&&s2.dna&&s2.dna.real==null)s2.dna.meas=Math.round(100*i/smp.length);next();};
+   if(x.u===r.best){done(bs);return;}
+   SF.go({fen:x.f,depth:10,movetime:120,searchmoves:x.u},function(r2){if(tok[site]!==my)return;if(!r2||!r2.lines.length){next();return;}done(Math.min(bs,SF.score(r2.lines[0])));},true);
+  },true);
+ };
+ next();
+};
 V72.importSite=function(site,btn){
  var u=V72.user(site);if(!u){UiJs.toast('Coloque o seu usuário do '+V72.SITES[site].n+' primeiro.');return;}
  if(V72.busy)return;V72.busy=site;
@@ -77138,6 +77728,7 @@ V72.importSite=function(site,btn){
   /* as mesmas partidas entram no "Analisar jogadas" */
   try{V26.addName(u);V26.importText(text,site==='li'?'lichess':'chesscom',function(){});}catch(e){}
   V72.busy=null;UiJs.toast('Pronto: você de '+Dna.monthLabel(dna.m)+' no '+V72.SITES[site].n+' ('+dna.g+' partidas).');Dna.rival();
+  try{V72.measure(site);}catch(e){}
  }).catch(function(e){V72.busy=null;UiJs.toast('Não consegui buscar: '+(e&&e.message||'sem conexão')+'.');Dna.rival();});
 };
 V72.play=function(site){
@@ -77161,6 +77752,9 @@ V72.block=function(box){
    var d=x.dna,ln=UiJs.el('div','v72-in',row);
    ln.innerHTML='<b>'+Dna.monthLabel(d.m)+'</b> · '+d.g+' partidas · rating '+d.site+' no '+S.n+' → nível <b>'+d.e+'</b> aqui · placar '+Dna.scoreTxt('ext:'+s+':'+d.m);
    var ds=Dna.describe(d,'você').filter(function(t){return !/^Erra |^Gafes|Pontos cegos|^Sem pontos cegos/.test(t);}).slice(0,3);
+   /* v73: erros medidos de verdade pelo Stockfish (ou a estimativa, enquanto a medição não termina) */
+   if(d.real)ds.unshift('Erros medidos em '+d.real+' lances seus: '+d.ph[0]+' a cada 100 na abertura, '+d.ph[1]+' no meio-jogo, '+d.ph[2]+' no final; gafes: '+d.bl+'.');
+   else ds.push(d.meas!=null?'Medindo os seus erros de verdade… '+d.meas+'%':'Erros estimados pelo rating (toque em Atualizar para medir de verdade).');
    if(ds.length){var ul=UiJs.el('ul','v72-ds',row);ds.forEach(function(t){UiJs.el('li','',ul,t);});}
    var bs=UiJs.el('div','v72-bs',row);
    var b1=UiJs.el('button','btn pri',bs,'Desafiar você de '+Dna.monthLabel(d.m));b1.onclick=function(){V72.play(s);};
@@ -77175,7 +77769,7 @@ V72.block=function(box){
  if(any){var tg=UiJs.el('button','v72-tog',fw,'Contas do Lichess e do Chess.com ›');var inner=UiJs.el('div','v72-inner',fw);inner.style.display='none';
   tg.onclick=function(){var o=inner.style.display==='none';inner.style.display=o?'':'none';tg.textContent='Contas do Lichess e do Chess.com '+(o?'⌄':'›');if(o&&!inner.firstChild)V32.chessForm(inner);};}
  else{UiJs.el('div','p v72-tx v72-hint',fw,'Só o nome de usuário, sem senha. Ligou aqui, vale no jogo inteiro: Painel, Analisar jogadas e Conta.');V32.chessForm(fw);}
- UiJs.p('O nível de erros desse fantasma é estimado pelo seu rating da época; as aberturas, a pressa, o estilo e o roque vêm das suas partidas de verdade. O duelo não muda o seu Elo.','muted small');
+ UiJs.p('As aberturas, a pressa, o estilo e o roque vêm das suas partidas de verdade. Os erros são medidos pelo Stockfish numa amostra de lances seus (leva cerca de um minuto, em segundo plano); até terminar, vale uma estimativa pelo rating da época. O duelo não muda o seu Elo.','muted small');
  UiJs.cur=keep;
 };
 (function(){
@@ -77193,6 +77787,51 @@ V72.block=function(box){
    box.addEventListener('change',function(ev){if(ev.target&&ev.target.classList.contains('fi'))setTimeout(function(){if(document.body.contains(box))Dna.rival();},60);});
   }catch(e){}
   return r;
+ };
+})();
+
+/* ======================= v73 — Stockfish joga nos níveis mais altos =======================
+ * Níveis 5 (Grande Mestre, força limitada) e 6 (Stockfish, força máxima) são jogados pelo Stockfish que já vem no jogo.
+ * Os lances de abertura continuam vindo do livro de mestres (variedade). O Stockfish recebe a partida inteira,
+ * para enxergar repetições. Se ele não carregar neste aparelho, joga o motor do jogo e a tela avisa.
+ */
+var V73={};
+/* 2900 na escala do próprio Stockfish equivale a cerca de 2500 na escala dos níveis do jogo (medido contra o nível Mestre) */
+V73.LV={5:{elo:2900,ms:500},6:{elo:0,ms:900}};
+V73.warned=false;
+V73.posCmd=function(q){
+ try{
+  if(q.ucis&&q.ucis.length){
+   var p=Engine.posFromFEN(q.start||'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'),ok=true;
+   for(var i=0;i<q.ucis.length;i++){var m=Engine.uciToMove(p,q.ucis[i]);if(m<0){ok=false;break;}Engine.makeMove(p,m);}
+   if(ok&&Engine.toFEN(p).split(' ').slice(0,4).join(' ')===q.fen.split(' ').slice(0,4).join(' '))
+    return 'position '+(q.start?'fen '+q.start:'startpos')+' moves '+q.ucis.join(' ');
+  }
+ }catch(e){}
+ return 'position fen '+q.fen;
+};
+(function(){
+ var prev=Think.run;
+ Think.run=function(q,cb){
+  var cfg=q&&q.cmd==='cpu'&&q.elo==null?V73.LV[q.level]:null;
+  if(!cfg||typeof SF==='undefined'||SF.failed){
+   if(cfg&&!V73.warned){V73.warned=true;try{UiJs.toast('O Stockfish não carregou neste aparelho: este nível joga com o motor do jogo, que é mais fraco.');}catch(e){}}
+   return prev(q,cb);
+  }
+  var qb={};for(var k in q)qb[k]=q[k];qb.bookOnly=true;
+  prev(qb,function(r){
+   if(r&&r.uci){cb(r);return;}
+   Think.busy++;
+   SF.go({fen:q.fen,pos:V73.posCmd(q),movetime:cfg.ms,elo:cfg.elo,play:true},function(res){
+    Think.busy--;
+    if(!res||!res.best){
+     if(!V73.warned){V73.warned=true;try{UiJs.toast('O Stockfish não carregou neste aparelho: este nível joga com o motor do jogo, que é mais fraco.');}catch(e){}}
+     prev(q,cb);return;
+    }
+    var sc=res.lines&&res.lines[0]?SF.score(res.lines[0]):null;
+    prev({cmd:'cpunote',fen:q.fen,uci:res.best,human:q.human,score:sc},cb);
+   });
+  });
  };
 })();
 

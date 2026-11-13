@@ -41,6 +41,7 @@ class Ctx {
   public var nodes:Int = 0;
   public var maxNodes:Int = 2000000000;
   public var repKeys:Map<String, Bool> = null;
+  public var hist:Map<Int, Int> = null;
   public var deadline:Float;
   public var stop:Bool = false;
   public var killers:Array<Array<Int>>;
@@ -113,13 +114,13 @@ class Engine {
   public static var ZS1:Int = 0; public static var ZS2:Int = 0;
   static var rngState:Int = 0x2545F491;
   static function rnd():Int { var x = rngState; x ^= x << 13; x ^= x >>> 17; x ^= x << 5; rngState = x; return x; }
-  public static inline var TT_BITS = 17;
-  public static inline var TT_SIZE = 131072;
+  public static inline var TT_BITS = 18;
+  public static inline var TT_SIZE = 262144;
   public static var ttCheck:Vector<Int>; public static var ttMove:Vector<Int>; public static var ttScore:Vector<Int>; public static var ttDF:Vector<Int>;
   public static var history:Vector<Int>;
   public static function clearTT() {
     for (i in 0...TT_SIZE) { ttCheck[i] = 0; ttMove[i] = 0; ttScore[i] = 0; ttDF[i] = -1; }
-    for (i in 0...4096) history[i] = 0;
+    for (i in 0...8192) history[i] = 0;
   }
 
   public static function init() {
@@ -148,7 +149,9 @@ class Engine {
     for (i in 0...8) { ZE1[i] = rnd(); ZE2[i] = rnd(); }
     ZS1 = rnd(); ZS2 = rnd();
     ttCheck = new Vector<Int>(TT_SIZE); ttMove = new Vector<Int>(TT_SIZE); ttScore = new Vector<Int>(TT_SIZE); ttDF = new Vector<Int>(TT_SIZE);
-    history = new Vector<Int>(4096);
+    history = new Vector<Int>(8192);
+    LMR = new Vector<Int>(64 * 64);
+    for (d in 0...64) for (n in 0...64) LMR[d * 64 + n] = (d < 1 || n < 1) ? 0 : Std.int(0.4 + Math.log(d) * Math.log(n) / 2.3);
     clearTT();
     for (i in 0...64) CM.push(15);
     CM[0] = 13; CM[4] = 12; CM[7] = 14; CM[56] = 7; CM[60] = 3; CM[63] = 11;
@@ -341,11 +344,43 @@ class Engine {
     return gain[0];
   }
 
+  static var _sg:Vector<Int> = new Vector<Int>(40);
+  static var _ssq:Vector<Int> = new Vector<Int>(40);
+  static var _spc:Vector<Int> = new Vector<Int>(40);
+  /* saldo material da sequência de trocas iniciada pelo lance m (sem alocar) */
+  public static function seeMove(pos:Pos, m:Int):Int {
+    var b = pos.board; var from = m & 63; var to = (m >> 6) & 63;
+    var aPiece = b[from]; var col = aPiece > 0 ? 1 : -1; var orig = b[to];
+    _sg[0] = (m >> 15) == FLAG_EP ? 100 : (orig != 0 ? VAL[pType(orig)] : 0);
+    var n = 0; var d = 0; var fsq = from;
+    while (fsq >= 0 && d < 30) {
+      d++;
+      _sg[d] = VAL[pType(aPiece)] - _sg[d - 1];
+      if (-_sg[d - 1] < 0 && _sg[d] < 0) break;
+      _ssq[n] = fsq; _spc[n] = aPiece; n++;
+      b[fsq] = 0; b[to] = aPiece;
+      col = -col;
+      fsq = leastAttackerSq(b, to, col);
+      if (fsq >= 0) aPiece = b[fsq];
+    }
+    d--;
+    while (d > 0) { var x = -_sg[d - 1]; var y = _sg[d]; _sg[d - 1] = -(x > y ? x : y); d--; }
+    while (n > 0) { n--; b[_ssq[n]] = _spc[n]; }
+    b[to] = orig;
+    return _sg[0];
+  }
+
   /* ---------- geração ---------- */
   static inline function mv(from:Int, to:Int, promo:Int, flag:Int):Int return from | (to << 6) | (promo << 12) | (flag << 15);
 
   public static function genPseudo(pos:Pos, capsOnly:Bool):Array<Int> {
-    var b = pos.board; var us = pos.turn; var moves:Array<Int> = [];
+    var moves:Array<Int> = [];
+    genInto(pos, capsOnly, moves);
+    return moves;
+  }
+  /* gera no vetor dado (reaproveitado pela busca) e devolve a quantidade */
+  public static function genInto(pos:Pos, capsOnly:Bool, moves:Array<Int>):Int {
+    var b = pos.board; var us = pos.turn; var n = 0;
     var dir = us * 8; var startRank = us == 1 ? 1 : 6; var promoRank = us == 1 ? 7 : 0;
     for (sq in 0...64) {
       var p = b[sq];
@@ -354,10 +389,10 @@ class Engine {
       if (t == PAWN) {
         var f = sq & 7; var r = sq >> 3; var to = sq + dir;
         if (b[to] == 0) {
-          if ((to >> 3) == promoRank) { moves.push(mv(sq, to, QUEEN, 0)); moves.push(mv(sq, to, ROOK, 0)); moves.push(mv(sq, to, BISHOP, 0)); moves.push(mv(sq, to, KNIGHT, 0)); }
+          if ((to >> 3) == promoRank) { moves[n++] = mv(sq, to, QUEEN, 0); moves[n++] = mv(sq, to, ROOK, 0); moves[n++] = mv(sq, to, BISHOP, 0); moves[n++] = mv(sq, to, KNIGHT, 0); }
           else if (!capsOnly) {
-            moves.push(mv(sq, to, 0, 0));
-            if (r == startRank && b[to + dir] == 0) moves.push(mv(sq, to + dir, 0, FLAG_DP));
+            moves[n++] = mv(sq, to, 0, 0);
+            if (r == startRank && b[to + dir] == 0) moves[n++] = mv(sq, to + dir, 0, FLAG_DP);
           }
         }
         var df = -1;
@@ -366,9 +401,9 @@ class Engine {
           if (nf >= 0 && nf <= 7) {
             var tt = to + df; var cp = b[tt];
             if (cp != 0 && (cp > 0) != (us > 0)) {
-              if ((tt >> 3) == promoRank) { moves.push(mv(sq, tt, QUEEN, 0)); moves.push(mv(sq, tt, ROOK, 0)); moves.push(mv(sq, tt, BISHOP, 0)); moves.push(mv(sq, tt, KNIGHT, 0)); }
-              else moves.push(mv(sq, tt, 0, 0));
-            } else if (cp == 0 && tt == pos.ep) moves.push(mv(sq, tt, 0, FLAG_EP));
+              if ((tt >> 3) == promoRank) { moves[n++] = mv(sq, tt, QUEEN, 0); moves[n++] = mv(sq, tt, ROOK, 0); moves[n++] = mv(sq, tt, BISHOP, 0); moves[n++] = mv(sq, tt, KNIGHT, 0); }
+              else moves[n++] = mv(sq, tt, 0, 0);
+            } else if (cp == 0 && tt == pos.ep) moves[n++] = mv(sq, tt, 0, FLAG_EP);
           }
           df += 2;
         }
@@ -376,16 +411,16 @@ class Engine {
         var tab = t == KNIGHT ? KNIGHT_T[sq] : KING_T[sq];
         for (i in 0...tab.length) {
           var to = tab[i]; var cp = b[to];
-          if (cp == 0) { if (!capsOnly) moves.push(mv(sq, to, 0, 0)); }
-          else if ((cp > 0) != (us > 0)) moves.push(mv(sq, to, 0, 0));
+          if (cp == 0) { if (!capsOnly) moves[n++] = mv(sq, to, 0, 0); }
+          else if ((cp > 0) != (us > 0)) moves[n++] = mv(sq, to, 0, 0);
         }
         if (t == KING && !capsOnly) {
           if (us == 1 && sq == 4) {
-            if ((pos.castling & 1) != 0 && b[5] == 0 && b[6] == 0 && b[7] == ROOK && !isAttacked(b, 4, -1) && !isAttacked(b, 5, -1) && !isAttacked(b, 6, -1)) moves.push(mv(4, 6, 0, FLAG_CASTLE));
-            if ((pos.castling & 2) != 0 && b[3] == 0 && b[2] == 0 && b[1] == 0 && b[0] == ROOK && !isAttacked(b, 4, -1) && !isAttacked(b, 3, -1) && !isAttacked(b, 2, -1)) moves.push(mv(4, 2, 0, FLAG_CASTLE));
+            if ((pos.castling & 1) != 0 && b[5] == 0 && b[6] == 0 && b[7] == ROOK && !isAttacked(b, 4, -1) && !isAttacked(b, 5, -1) && !isAttacked(b, 6, -1)) moves[n++] = mv(4, 6, 0, FLAG_CASTLE);
+            if ((pos.castling & 2) != 0 && b[3] == 0 && b[2] == 0 && b[1] == 0 && b[0] == ROOK && !isAttacked(b, 4, -1) && !isAttacked(b, 3, -1) && !isAttacked(b, 2, -1)) moves[n++] = mv(4, 2, 0, FLAG_CASTLE);
           } else if (us == -1 && sq == 60) {
-            if ((pos.castling & 4) != 0 && b[61] == 0 && b[62] == 0 && b[63] == -ROOK && !isAttacked(b, 60, 1) && !isAttacked(b, 61, 1) && !isAttacked(b, 62, 1)) moves.push(mv(60, 62, 0, FLAG_CASTLE));
-            if ((pos.castling & 8) != 0 && b[59] == 0 && b[58] == 0 && b[57] == 0 && b[56] == -ROOK && !isAttacked(b, 60, 1) && !isAttacked(b, 59, 1) && !isAttacked(b, 58, 1)) moves.push(mv(60, 58, 0, FLAG_CASTLE));
+            if ((pos.castling & 4) != 0 && b[61] == 0 && b[62] == 0 && b[63] == -ROOK && !isAttacked(b, 60, 1) && !isAttacked(b, 61, 1) && !isAttacked(b, 62, 1)) moves[n++] = mv(60, 62, 0, FLAG_CASTLE);
+            if ((pos.castling & 8) != 0 && b[59] == 0 && b[58] == 0 && b[57] == 0 && b[56] == -ROOK && !isAttacked(b, 60, 1) && !isAttacked(b, 59, 1) && !isAttacked(b, 58, 1)) moves[n++] = mv(60, 58, 0, FLAG_CASTLE);
           }
         }
       } else {
@@ -394,13 +429,13 @@ class Engine {
           var ray = RAYS[sq][d];
           for (i in 0...ray.length) {
             var to = ray[i]; var cp = b[to];
-            if (cp == 0) { if (!capsOnly) moves.push(mv(sq, to, 0, 0)); }
-            else { if ((cp > 0) != (us > 0)) moves.push(mv(sq, to, 0, 0)); break; }
+            if (cp == 0) { if (!capsOnly) moves[n++] = mv(sq, to, 0, 0); }
+            else { if ((cp > 0) != (us > 0)) moves[n++] = mv(sq, to, 0, 0); break; }
           }
         }
       }
     }
-    return moves;
+    return n;
   }
 
   static inline function zx(pos:Pos, p:Int, sq:Int) { pos.h1 ^= ZK1[(p + 6) * 64 + sq]; pos.h2 ^= ZK2[(p + 6) * 64 + sq]; }
@@ -574,85 +609,149 @@ class Engine {
     for (i in 0...64) { var t = pType(b[i]); if (t > 1 && t < 6) n += VAL[t]; }
     return n <= 2600;
   }
+  static var KZ:Vector<Int> = null;
+  static var MOBM = [0, 0, 4, 5, 2, 1, 0]; static var MOBE = [0, 0, 4, 5, 4, 2, 0]; static var MOB0 = [0, 0, 4, 6, 7, 13, 0];
+  static var KAW = [0, 0, 2, 2, 3, 4, 0]; static var PHW = [0, 0, 1, 1, 2, 4, 0];
+  static function initKZ() {
+    KZ = new Vector<Int>(64 * 64);
+    for (i in 0...(64 * 64)) KZ[i] = 0;
+    for (k in 0...64) { KZ[k * 64 + k] = 1; for (t in KING_T[k]) KZ[k * 64 + t] = 1; }
+  }
+  /* avaliação gradual: mistura a nota de meio-jogo com a de final conforme o material que resta;
+     soma material, casas, estrutura de peões, par de bispos, torres em colunas abertas,
+     mobilidade das peças e pressão sobre o rei */
+  static inline var EC_SIZE = 65536;
+  static var ecKey:Vector<Int> = null; static var ecVal:Vector<Int> = null;
+  /* a mesma posição aparece muitas vezes na busca: a nota fica guardada numa tabela pequena */
   public static function evaluate(pos:Pos):Int {
+    if (ecKey == null) { ecKey = new Vector<Int>(EC_SIZE); ecVal = new Vector<Int>(EC_SIZE); for (i in 0...EC_SIZE) { ecKey[i] = 0; ecVal[i] = 0; } }
+    var i = pos.h1 & (EC_SIZE - 1);
+    if (ecKey[i] == pos.h2 && pos.h2 != 0) return ecVal[i];
+    var v = evalFull(pos);
+    ecKey[i] = pos.h2; ecVal[i] = v;
+    return v;
+  }
+  public static function evalFull(pos:Pos):Int {
     var b = pos.board;
+    if (KZ == null) initKZ();
     for (i in 0...16) _pc[i] = 0;
-    var np0 = 0; var np1 = 0; var nr0 = 0; var nr1 = 0; var s = 0; var npmW = 0; var npmB = 0; var wb = 0; var bb = 0;
+    var np0 = 0; var np1 = 0; var nr0 = 0; var nr1 = 0; var mg = 0; var eg = 0; var npmW = 0; var npmB = 0; var wb = 0; var bb = 0; var ph = 0;
+    var wk = pos.king[0]; var bk = pos.king[1]; var zw = wk * 64; var zb = bk * 64;
+    var atkW = 0; var cntW = 0; var atkB = 0; var cntB = 0;
     for (sq in 0...64) {
       var p = b[sq]; if (p == 0) continue;
       if (p > 0) {
         if (p == KING) continue;
-        s += VAL[p] + PSTW[p][sq];
-        if (p == PAWN) { _pc[sq & 7]++; _ps0[np0++] = sq; }
-        else { npmW += VAL[p]; if (p == BISHOP) wb++; else if (p == ROOK) _rk0[nr0++] = sq; }
+        var v = VAL[p] + PSTW[p][sq]; mg += v; eg += v;
+        if (p == PAWN) { _pc[sq & 7]++; _ps0[np0++] = sq; continue; }
+        npmW += VAL[p]; ph += PHW[p];
+        var mob = 0; var ka = 0;
+        if (p == KNIGHT) {
+          var tab = KNIGHT_T[sq];
+          for (i in 0...tab.length) { var t = tab[i]; if (b[t] <= 0) { mob++; if (KZ[zb + t] != 0) ka++; } }
+        } else {
+          if (p == BISHOP) wb++; else if (p == ROOK) _rk0[nr0++] = sq;
+          var d0 = p == BISHOP ? 4 : 0; var d1 = p == ROOK ? 4 : 8; var rays = RAYS[sq];
+          for (d in d0...d1) {
+            var ray = rays[d];
+            for (i in 0...ray.length) { var t = ray[i]; var q = b[t]; if (q <= 0) { mob++; if (KZ[zb + t] != 0) ka++; } if (q != 0) break; }
+          }
+        }
+        mob -= MOB0[p]; mg += MOBM[p] * mob; eg += MOBE[p] * mob;
+        if (ka > 0) { cntW++; atkW += KAW[p] * ka; }
       } else {
-        var t = -p; if (t == KING) continue;
-        s -= VAL[t] + PSTB[t][sq];
-        if (t == PAWN) { _pc[8 + (sq & 7)]++; _ps1[np1++] = sq; }
-        else { npmB += VAL[t]; if (t == BISHOP) bb++; else if (t == ROOK) _rk1[nr1++] = sq; }
+        var t0 = -p; if (t0 == KING) continue;
+        var v = VAL[t0] + PSTB[t0][sq]; mg -= v; eg -= v;
+        if (t0 == PAWN) { _pc[8 + (sq & 7)]++; _ps1[np1++] = sq; continue; }
+        npmB += VAL[t0]; ph += PHW[t0];
+        var mob = 0; var ka = 0;
+        if (t0 == KNIGHT) {
+          var tab = KNIGHT_T[sq];
+          for (i in 0...tab.length) { var t = tab[i]; if (b[t] >= 0) { mob++; if (KZ[zw + t] != 0) ka++; } }
+        } else {
+          if (t0 == BISHOP) bb++; else if (t0 == ROOK) _rk1[nr1++] = sq;
+          var d0 = t0 == BISHOP ? 4 : 0; var d1 = t0 == ROOK ? 4 : 8; var rays = RAYS[sq];
+          for (d in d0...d1) {
+            var ray = rays[d];
+            for (i in 0...ray.length) { var t = ray[i]; var q = b[t]; if (q >= 0) { mob++; if (KZ[zw + t] != 0) ka++; } if (q != 0) break; }
+          }
+        }
+        mob -= MOB0[t0]; mg -= MOBM[t0] * mob; eg -= MOBE[t0] * mob;
+        if (ka > 0) { cntB++; atkB += KAW[t0] * ka; }
       }
     }
     if (np0 == 0 && np1 == 0 && npmW <= 330 && npmB <= 330) return 0;
-    if (wb >= 2) s += 30;
-    if (bb >= 2) s -= 30;
+    if (wb >= 2) { mg += 30; eg += 45; }
+    if (bb >= 2) { mg -= 30; eg -= 45; }
     for (i in 0...np0) {
       var sq = _ps0[i]; var f = sq & 7; var r = sq >> 3;
-      if (_pc[f] > 1) s -= 8;
-      if ((f > 0 ? _pc[f - 1] : 0) == 0 && (f < 7 ? _pc[f + 1] : 0) == 0) s -= 12;
+      if (_pc[f] > 1) { mg -= 8; eg -= 15; }
+      if ((f > 0 ? _pc[f - 1] : 0) == 0 && (f < 7 ? _pc[f + 1] : 0) == 0) { mg -= 12; eg -= 15; }
       var passed = true;
       for (j in 0...np1) { var bs = _ps1[j]; var bf = bs & 7; if (bf >= f - 1 && bf <= f + 1 && (bs >> 3) > r) { passed = false; break; } }
-      if (passed) s += PASSED[r];
+      if (passed) { var pb = PASSED[r]; mg += pb >> 1; eg += pb + (pb >> 2); }
     }
     for (i in 0...np1) {
       var sq = _ps1[i]; var f = sq & 7; var r = sq >> 3;
-      if (_pc[8 + f] > 1) s += 8;
-      if ((f > 0 ? _pc[8 + f - 1] : 0) == 0 && (f < 7 ? _pc[8 + f + 1] : 0) == 0) s += 12;
+      if (_pc[8 + f] > 1) { mg += 8; eg += 15; }
+      if ((f > 0 ? _pc[8 + f - 1] : 0) == 0 && (f < 7 ? _pc[8 + f + 1] : 0) == 0) { mg += 12; eg += 15; }
       var passed = true;
       for (j in 0...np0) { var ws = _ps0[j]; var wf = ws & 7; if (wf >= f - 1 && wf <= f + 1 && (ws >> 3) < r) { passed = false; break; } }
-      if (passed) s -= PASSED[7 - r];
+      if (passed) { var pb = PASSED[7 - r]; mg -= pb >> 1; eg -= pb + (pb >> 2); }
     }
-    for (i in 0...nr0) { var f = _rk0[i] & 7; if (_pc[f] == 0) s += _pc[8 + f] == 0 ? 20 : 10; }
-    for (i in 0...nr1) { var f = _rk1[i] & 7; if (_pc[8 + f] == 0) s -= _pc[f] == 0 ? 20 : 10; }
-    var wk = pos.king[0]; var bk = pos.king[1];
-    var eg = (npmW + npmB) <= 2600;
-    if (eg) {
-      s += KEG_W[wk] - KEG_B[bk];
-      if (s > 250 || s < -250) {
-        var win = s > 0 ? 0 : 1; var wK = pos.king[win]; var lK = pos.king[1 - win];
-        var lf = lK & 7; var lr = lK >> 3;
-        var cd = Std.int(Math.max(3 - lf, lf - 4) + Math.max(3 - lr, lr - 4));
-        var md = Std.int(Math.abs((wK & 7) - lf) + Math.abs((wK >> 3) - lr));
-        var bonus = cd * 10 + (14 - md) * 4;
-        s += win == 0 ? bonus : -bonus;
-      }
-    } else {
-      s += PSTW[KING][wk] - PSTB[KING][bk];
-      if ((wk >> 3) == 0) { var f = wk & 7; for (df in -1...2) { var nf = f + df; if (nf < 0 || nf > 7) continue; if (b[8 + nf] == PAWN) s += 10; else if (b[16 + nf] == PAWN) s += 5; } }
-      if ((bk >> 3) == 7) { var f = bk & 7; for (df in -1...2) { var nf = f + df; if (nf < 0 || nf > 7) continue; if (b[48 + nf] == -PAWN) s -= 10; else if (b[40 + nf] == -PAWN) s -= 5; } }
+    for (i in 0...nr0) { var f = _rk0[i] & 7; if (_pc[f] == 0) { var o = _pc[8 + f] == 0 ? 20 : 10; mg += o; eg += o >> 1; } }
+    for (i in 0...nr1) { var f = _rk1[i] & 7; if (_pc[8 + f] == 0) { var o = _pc[f] == 0 ? 20 : 10; mg -= o; eg -= o >> 1; } }
+    /* rei: no meio-jogo vale o abrigo de peões e a pressão das peças inimigas; no final, a centralização */
+    mg += PSTW[KING][wk] - PSTB[KING][bk];
+    eg += KEG_W[wk] - KEG_B[bk];
+    if ((wk >> 3) == 0) { var f = wk & 7; for (df in -1...2) { var nf = f + df; if (nf < 0 || nf > 7) continue; if (b[8 + nf] == PAWN) mg += 10; else if (b[16 + nf] == PAWN) mg += 5; } }
+    if ((bk >> 3) == 7) { var f = bk & 7; for (df in -1...2) { var nf = f + df; if (nf < 0 || nf > 7) continue; if (b[48 + nf] == -PAWN) mg -= 10; else if (b[40 + nf] == -PAWN) mg -= 5; } }
+    if (cntW >= 2) { var pen = (atkW * atkW) >> 1; mg += pen > 350 ? 350 : pen; }
+    if (cntB >= 2) { var pen = (atkB * atkB) >> 1; mg -= pen > 350 ? 350 : pen; }
+    if (ph > 24) ph = 24;
+    var s = Std.int((mg * ph + eg * (24 - ph)) / 24);
+    /* final ganho: empurra o rei fraco para o canto e aproxima o rei forte */
+    if ((npmW + npmB) <= 2600 && (s > 250 || s < -250)) {
+      var win = s > 0 ? 0 : 1; var wK = pos.king[win]; var lK = pos.king[1 - win];
+      var lf = lK & 7; var lr = lK >> 3;
+      var cd = Std.int(Math.max(3 - lf, lf - 4) + Math.max(3 - lr, lr - 4));
+      var md = Std.int(Math.abs((wK & 7) - lf) + Math.abs((wK >> 3) - lr));
+      var bonus = cd * 10 + (14 - md) * 4;
+      s += win == 0 ? bonus : -bonus;
     }
-    return pos.turn == 1 ? s : -s;
+    return (pos.turn == 1 ? s : -s) + 8;
   }
 
   /* ---------- busca ---------- */
   static inline var TT_EXACT = 0; static inline var TT_LOWER = 1; static inline var TT_UPPER = 2;
-  static function scoreMoves(pos:Pos, moves:Array<Int>, ply:Int, ctx:Ctx, ttm:Int):Array<Int> {
-    var b = pos.board; var k = ctx.killers[ply]; var sc:Array<Int> = [];
-    for (i in 0...moves.length) {
+  static inline var BADCAP = -900000;
+  static var LMR:Vector<Int>;
+  static var mvBuf:Array<Array<Int>> = [for (i in 0...(MAXPLY + 8)) []];
+  static var scBuf:Array<Array<Int>> = [for (i in 0...(MAXPLY + 8)) []];
+  static var qtBuf:Array<Array<Int>> = [for (i in 0...(MAXPLY + 8)) []];
+  static function scoreMoves(pos:Pos, moves:Array<Int>, n:Int, sc:Array<Int>, ply:Int, ctx:Ctx, ttm:Int) {
+    var b = pos.board; var k = ctx.killers[ply]; var hb = pos.turn == 1 ? 0 : 4096;
+    for (i in 0...n) {
       var m = moves[i]; var to = (m >> 6) & 63; var from = m & 63; var cap = b[to]; var promo = (m >> 12) & 7;
       var s = 0;
       if (m == ttm) s = 3000000;
-      else if (cap != 0) s = 1000000 + VAL[pType(cap)] * 10 - pType(b[from]);
-      else if ((m >> 15) == FLAG_EP) s = 1000999;
-      else if (k != null && (k[0] == m || k[1] == m)) s = 900000;
-      else { s = history[from * 64 + to]; if (s > 800000) s = 800000; }
-      if (promo != 0 && m != ttm) s += 850000 + promo;
-      sc.push(s);
+      else if (cap != 0 || (m >> 15) == FLAG_EP) {
+        var vv = cap != 0 ? VAL[pType(cap)] : 100; var av = VAL[pType(b[from])];
+        s = vv * 10 - pType(b[from]);
+        /* troca que perde material vai para o fim da fila */
+        if (vv < av && promo == 0 && seeMove(pos, m) < 0) s += BADCAP; else s += 1000000;
+        if (promo != 0) s += promo == QUEEN ? 900000 : -1500000;
+      }
+      else if (promo != 0) s = promo == QUEEN ? 1900000 : -500000 + promo;
+      else if (k[0] == m) s = 900000;
+      else if (k[1] == m) s = 899000;
+      else s = history[hb + from * 64 + to];
+      sc[i] = s;
     }
-    return sc;
   }
-  static inline function pickBest(moves:Array<Int>, sc:Array<Int>, from:Int):Int {
+  static inline function pickBest(moves:Array<Int>, sc:Array<Int>, from:Int, n:Int):Int {
     var bi = from; var bs = sc[from];
-    for (j in (from + 1)...moves.length) if (sc[j] > bs) { bs = sc[j]; bi = j; }
+    for (j in (from + 1)...n) if (sc[j] > bs) { bs = sc[j]; bi = j; }
     if (bi != from) { var tm = moves[from]; moves[from] = moves[bi]; moves[bi] = tm; var ts = sc[from]; sc[from] = sc[bi]; sc[bi] = ts; }
     return moves[from];
   }
@@ -666,6 +765,40 @@ class Engine {
   static inline function tick(ctx:Ctx) {
     if ((++ctx.nodes & 1023) == 0 && (now() > ctx.deadline || ctx.nodes > ctx.maxNodes)) ctx.stop = true;
   }
+  /* as posições já vistas na partida viram hashes, para a busca enxergar repetição em qualquer profundidade */
+  static function buildHist(ctx:Ctx) {
+    var h = new Map<Int, Int>();
+    ctx.hist = h;
+    if (ctx.repKeys == null) return;
+    var p = new Pos();
+    for (key in ctx.repKeys.keys()) {
+      if (key.length < 68) continue;
+      for (i in 0...64) p.board[i] = key.charCodeAt(i) - 70;
+      var t = key.substr(64).split(",");
+      if (t.length < 3) continue;
+      p.turn = Std.parseInt(t[0]) == -1 ? -1 : 1;
+      var c = Std.parseInt(t[1]); p.castling = c == null ? 0 : c;
+      var e = t[2] == "-" ? null : Std.parseInt(t[2]); p.ep = e == null ? -1 : e;
+      computeHash(p);
+      h.set(p.h1, p.h2);
+    }
+  }
+  static function isDrawRep(pos:Pos, ply:Int, ctx:Ctx):Bool {
+    var st = pos.stack; var h1 = pos.h1; var h2 = pos.h2; var lim = pos.half;
+    var i = st.length - 1; var c = 1; var clean = true;
+    while (i >= 0 && c <= lim) {
+      var u = st[i];
+      if (u.m == 0) { clean = false; break; }
+      if ((c & 1) == 0 && u.h1 == h1 && u.h2 == h2) return true;
+      i--; c++;
+    }
+    if (clean && lim >= ply && ctx.repKeys != null) {
+      if (ctx.hist == null) buildHist(ctx);
+      var v = ctx.hist.get(h1);
+      if (v != null && v == h2) return true;
+    }
+    return false;
+  }
   public static function quiesce(pos:Pos, alpha:Int, beta:Int, ply:Int, ctx:Ctx):Int {
     ctx.pvLen[ply] = ply;
     tick(ctx);
@@ -675,11 +808,13 @@ class Engine {
     if (stand >= beta) return stand;
     if (stand > alpha) alpha = stand;
     var us = pos.turn; var ki = sideIdx(us); var b = pos.board;
-    var moves = genPseudo(pos, true);
-    var sc = scoreMoves(pos, moves, ply, ctx, 0);
+    var moves = mvBuf[ply]; var sc = scBuf[ply];
+    var n = genInto(pos, true, moves);
+    scoreMoves(pos, moves, n, sc, ply, ctx, 0);
     var best = stand;
-    for (i in 0...moves.length) {
-      var m = pickBest(moves, sc, i);
+    for (i in 0...n) {
+      var m = pickBest(moves, sc, i, n);
+      if (sc[i] < -400000) break; /* só sobraram trocas que perdem material */
       var cap = b[(m >> 6) & 63];
       if (((m >> 12) & 7) == 0 && stand + (cap != 0 ? VAL[pType(cap)] : 100) + 200 < alpha) continue;
       makeMove(pos, m);
@@ -695,6 +830,22 @@ class Engine {
     }
     return best;
   }
+  /* xeque direto da peça que se move (sem fazer o lance); xeque descoberto não é contado */
+  static function directCheck(b:Vector<Int>, m:Int, ksq:Int):Bool {
+    var from = m & 63; var to = (m >> 6) & 63; var p = b[from]; var promo = (m >> 12) & 7;
+    var us = p > 0 ? 1 : -1; var t = promo != 0 ? promo : (p > 0 ? p : -p);
+    var df = (ksq & 7) - (to & 7); var dr = (ksq >> 3) - (to >> 3);
+    if (t == PAWN) return dr == us && (df == 1 || df == -1);
+    var af = df < 0 ? -df : df; var ar = dr < 0 ? -dr : dr;
+    if (t == KNIGHT) return (af == 1 && ar == 2) || (af == 2 && ar == 1);
+    if (t == KING) return false;
+    var line = df == 0 || dr == 0; var diag = af == ar;
+    if (!(line && t != BISHOP) && !(diag && t != ROOK)) return false;
+    var step = (dr > 0 ? 8 : (dr < 0 ? -8 : 0)) + (df > 0 ? 1 : (df < 0 ? -1 : 0));
+    var s = to + step;
+    while (s != ksq) { if (b[s] != 0 && s != from) return false; s += step; }
+    return true;
+  }
   static function hasPieces(pos:Pos, us:Int):Bool {
     var b = pos.board;
     for (i in 0...64) { var p = b[i] * us; if (p > PAWN && p < KING) return true; }
@@ -705,10 +856,12 @@ class Engine {
     tick(ctx);
     if (ctx.stop) return 0;
     var us = pos.turn; var ki = sideIdx(us);
+    /* empate por repetição ou 50 lances, em qualquer ponto da árvore */
+    if (ply > 0 && pos.half >= 2 && (pos.half >= 100 || isDrawRep(pos, ply, ctx))) return 0;
     var chk = isAttacked(pos.board, pos.king[ki], -us);
     if (chk && ply < 40) depth++;
     if (depth <= 0 || ply >= MAXPLY - 2) return quiesce(pos, alpha, beta, ply, ctx);
-    if (pos.half >= 100) return 0;
+    var pvNode = beta - alpha > 1;
     // tabela de transposição
     var idx = pos.h1 & (TT_SIZE - 1);
     var ttm = 0;
@@ -718,29 +871,57 @@ class Engine {
       if (td >= depth && ply > 0) {
         var ts = ttScore[idx];
         if (ts > MATE - 200) ts -= ply; else if (ts < -MATE + 200) ts += ply;
-        var cut = (tf == TT_EXACT) || (tf == TT_LOWER && ts >= beta) || (tf == TT_UPPER && ts <= alpha);
+        var cut = (tf == TT_EXACT) || (!pvNode && ((tf == TT_LOWER && ts >= beta) || (tf == TT_UPPER && ts <= alpha)));
         if (cut) {
           if (ttm != 0 && tf != TT_UPPER) { ctx.pv[ply][ply] = ttm; ctx.pvLen[ply] = ply + 1; }
           return ts;
         }
       }
     }
-    // lance nulo
-    if (!noNull && !chk && depth >= 3 && ply > 0 && beta < MATE - 200 && beta > -MATE + 200 && hasPieces(pos, us) && evaluate(pos) >= beta) {
-      var R = depth > 6 ? 3 : 2;
-      makeNull(pos);
-      var ns = -negamax(pos, depth - 1 - R, -beta, -beta + 1, ply + 1, ctx, true);
-      unmakeNull(pos);
-      if (ctx.stop) return 0;
-      if (ns >= beta) return beta;
+    var ev = 0;
+    var sane = beta < MATE - 200 && beta > -MATE + 200 && alpha > -MATE + 200;
+    if (!chk) {
+      ev = evaluate(pos);
+      if (!pvNode && sane && ply > 0) {
+        /* posição já boa demais: o adversário não deixaria chegar aqui */
+        if (depth <= 6 && ev - 85 * depth >= beta) return ev;
+        /* posição ruim demais: só as capturas podem salvar */
+        if (depth <= 2 && ev + 260 * depth < alpha) {
+          var q = quiesce(pos, alpha, beta, ply, ctx);
+          if (ctx.stop) return 0;
+          if (q < alpha) return q;
+        }
+        /* lance nulo */
+        if (!noNull && depth >= 3 && ev >= beta && hasPieces(pos, us)) {
+          var R = 3 + (depth >> 2) + (ev - beta > 200 ? 1 : 0);
+          makeNull(pos);
+          var ns = -negamax(pos, depth - R, -beta, -beta + 1, ply + 1, ctx, true);
+          unmakeNull(pos);
+          if (ctx.stop) return 0;
+          if (ns >= beta) return beta;
+        }
+      }
     }
-    var moves = genPseudo(pos, false);
-    var sc = scoreMoves(pos, moves, ply, ctx, ttm);
+    /* sem lance sugerido pela tabela, vale menos aprofundar */
+    if (ttm == 0 && depth >= 5) depth--;
+    var moves = mvBuf[ply]; var sc = scBuf[ply]; var qt = qtBuf[ply]; var nq = 0;
+    var n = genInto(pos, false, moves);
+    scoreMoves(pos, moves, n, sc, ply, ctx, ttm);
     var legal = 0; var best = -INF; var bestM = 0; var alpha0 = alpha;
-    var k = ctx.killers[ply];
-    for (i in 0...moves.length) {
-      var m = pickBest(moves, sc, i);
+    var k = ctx.killers[ply]; var hb = us == 1 ? 0 : 4096;
+    var prune = !pvNode && !chk && sane && ply > 0;
+    var futile = prune && depth <= 6 && ev + 110 + 95 * depth <= alpha;
+    var lmp = 4 + depth * depth;
+    var oks = pos.king[1 - ki];
+    for (i in 0...n) {
+      var m = pickBest(moves, sc, i, n);
+      var msc = sc[i];
       var quiet = pos.board[(m >> 6) & 63] == 0 && ((m >> 12) & 7) == 0 && (m >> 15) != FLAG_EP;
+      /* lances calmos muito atrás na fila, em profundidade rasa: nem tenta */
+      if (prune && quiet && depth <= 5 && legal > lmp && best > -MATE + 200) continue;
+      var gives = directCheck(pos.board, m, oks);
+      /* sem esperança de alcançar alfa (lance calmo) ou troca que perde material em profundidade rasa */
+      if (prune && legal > 0 && !gives && best > -MATE + 200 && (quiet ? futile : (depth <= 3 && msc < -400000))) continue;
       makeMove(pos, m);
       if (isAttacked(pos.board, pos.king[ki], -us)) { unmakeMove(pos); continue; }
       legal++;
@@ -748,7 +929,13 @@ class Engine {
       if (legal == 1) s2 = -negamax(pos, depth - 1, -beta, -alpha, ply + 1, ctx);
       else {
         var red = 0;
-        if (depth >= 3 && legal >= 4 && quiet && !chk && m != k[0] && m != k[1] && !isAttacked(pos.board, pos.king[sideIdx(pos.turn)], us)) red = legal >= 10 && depth >= 5 ? 2 : 1;
+        if (depth >= 3 && legal >= 3 && quiet && !chk && !gives) {
+          red = LMR[(depth > 63 ? 63 : depth) * 64 + (legal > 63 ? 63 : legal)];
+          if (pvNode) red--;
+          if (m == k[0] || m == k[1]) red--;
+          if (msc > 6000) red--; else if (msc < -6000) red++;
+          if (red < 0) red = 0; else if (red > depth - 2) red = depth - 2;
+        }
         s2 = -negamax(pos, depth - 1 - red, -alpha - 1, -alpha, ply + 1, ctx);
         if (!ctx.stop && s2 > alpha && (red > 0 || s2 < beta)) s2 = -negamax(pos, depth - 1, -beta, -alpha, ply + 1, ctx);
       }
@@ -760,20 +947,24 @@ class Engine {
         if (s2 >= beta) {
           if (quiet) {
             if (k[0] != m) { k[1] = k[0]; k[0] = m; }
-            var hi = (m & 63) * 64 + ((m >> 6) & 63);
-            history[hi] += depth * depth;
+            var bonus = depth * depth; if (bonus > 400) bonus = 400;
+            var hi = hb + (m & 63) * 64 + ((m >> 6) & 63);
+            history[hi] += bonus - Std.int(history[hi] * bonus / 16384);
+            /* os lances calmos tentados antes e que não cortaram perdem crédito */
+            for (j in 0...nq) { var q2 = qt[j]; var h2 = hb + (q2 & 63) * 64 + ((q2 >> 6) & 63); history[h2] -= bonus + Std.int(history[h2] * bonus / 16384); }
           }
           break;
         }
       }
+      if (quiet && nq < 60) qt[nq++] = m;
     }
     if (legal == 0) return chk ? -MATE + ply : 0;
     // grava na tabela
     var flag = best >= beta ? TT_LOWER : (best > alpha0 ? TT_EXACT : TT_UPPER);
     var st = best;
     if (st > MATE - 200) st += ply; else if (st < -MATE + 200) st -= ply;
-    if (ttCheck[idx] != pos.h2 || (ttDF[idx] >> 2) <= depth) {
-      ttCheck[idx] = pos.h2; ttMove[idx] = bestM; ttScore[idx] = st; ttDF[idx] = (depth << 2) | flag;
+    if (ttCheck[idx] != pos.h2 || (ttDF[idx] >> 2) <= depth || flag == TT_EXACT) {
+      ttCheck[idx] = pos.h2; ttMove[idx] = bestM != 0 ? bestM : ttm; ttScore[idx] = st; ttDF[idx] = (depth << 2) | flag;
     }
     return best;
   }
@@ -807,6 +998,28 @@ class Engine {
   }
   public static var lastDepth:Int = 0;
   public static var lastNodes:Int = 0;
+  static var rsMove:Int = -1; static var rsScore:Int = 0; static var rsPv:Array<Int> = null;
+  /* uma passada pela raiz com a janela [lo, hi]; o resultado fica em rsMove/rsScore/rsPv */
+  static function rootSearch(pos:Pos, d:Int, lo:Int, hi:Int, order:Array<Int>, ctx:Ctx) {
+    var alpha = lo; var first = true;
+    rsMove = -1; rsScore = -INF; rsPv = null;
+    for (m in order) {
+      makeMove(pos, m);
+      var sc:Int; var pv:Array<Int> = null;
+      if (isRep(pos, ctx)) { sc = 0; pv = [m]; }
+      else if (first) { sc = -negamax(pos, d - 1, -hi, -alpha, 1, ctx); if (sc > alpha) pv = childPV(m, ctx); }
+      else {
+        sc = -negamax(pos, d - 1, -alpha - 1, -alpha, 1, ctx);
+        if (!ctx.stop && sc > alpha) { sc = -negamax(pos, d - 1, -hi, -alpha, 1, ctx); if (sc > alpha) pv = childPV(m, ctx); }
+      }
+      unmakeMove(pos);
+      if (ctx.stop) return;
+      first = false;
+      if (sc > rsScore) { rsScore = sc; rsMove = m; rsPv = pv != null ? pv : [m]; }
+      if (sc > alpha) alpha = sc;
+      if (sc >= hi) return;
+    }
+  }
   public static function searchBest(pos:Pos, maxDepth:Int, timeMs:Float, ?maxNodes:Int, ?repKeys:Map<String, Bool>):Scored {
     var ctx = new Ctx(timeMs, maxNodes);
     ctx.repKeys = repKeys;
@@ -815,34 +1028,31 @@ class Engine {
     var best = new Scored(order[0], 0, [order[0]]);
     var bestDepth = 0;
     for (d in 1...(maxDepth + 1)) {
-      var alpha = -INF; var cur = -1; var curScore = -INF; var curPv:Array<Int> = null;
-      var first = true;
-      for (m in order) {
-        makeMove(pos, m);
-        var sc:Int; var pv:Array<Int> = null;
-        if (isRep(pos, ctx)) { sc = 0; pv = [m]; }
-        else if (first) { sc = -negamax(pos, d - 1, -INF, -alpha, 1, ctx); if (sc > alpha) pv = childPV(m, ctx); }
-        else {
-          sc = -negamax(pos, d - 1, -alpha - 1, -alpha, 1, ctx);
-          if (!ctx.stop && sc > alpha) { sc = -negamax(pos, d - 1, -INF, -alpha, 1, ctx); if (sc > alpha) pv = childPV(m, ctx); }
-        }
-        unmakeMove(pos);
+      /* janela de aspiração: começa estreita em volta da nota anterior e abre se a nota escapar */
+      var lo = -INF; var hi = INF; var delta = 30;
+      if (d >= 4 && best.score > -MATE + 300 && best.score < MATE - 300) { lo = best.score - delta; hi = best.score + delta; }
+      var done = false;
+      while (true) {
+        rootSearch(pos, d, lo, hi, order, ctx);
         if (ctx.stop) break;
-        first = false;
-        if (sc > curScore) { curScore = sc; cur = m; curPv = pv != null ? pv : [m]; }
-        if (sc > alpha) alpha = sc;
+        if (rsScore <= lo && lo > -INF) { delta *= 3; lo = delta > 800 ? -INF : rsScore - delta; }
+        else if (rsScore >= hi && hi < INF) {
+          delta *= 3; hi = delta > 800 ? INF : rsScore + delta;
+          var no = [rsMove]; for (x in order) if (x != rsMove) no.push(x); order = no;
+        }
+        else { done = true; break; }
       }
-      if (ctx.stop) {
+      if (!done) {
         // aproveita a iteração parcial se o melhor lance já mudou com nota maior
-        if (cur >= 0 && cur != best.m && curScore > best.score && bestDepth > 0) { best = new Scored(cur, curScore, curPv); }
+        if (rsMove >= 0 && rsMove != best.m && rsScore > best.score && rsScore > lo && bestDepth > 0) best = new Scored(rsMove, rsScore, rsPv);
         break;
       }
-      best = new Scored(cur, curScore, curPv);
+      best = new Scored(rsMove, rsScore, rsPv);
       bestDepth = d;
-      var no = [cur];
-      for (x in order) if (x != cur) no.push(x);
+      var no = [rsMove];
+      for (x in order) if (x != rsMove) no.push(x);
       order = no;
-      if (Math.abs(curScore) > MATE - 100) break;
+      if (Math.abs(rsScore) > MATE - 100) break;
     }
     lastDepth = bestDepth;
     lastNodes = ctx.nodes;
@@ -850,19 +1060,22 @@ class Engine {
   }
 
   /* ---------- níveis do computador ---------- */
-  public static var LEVEL_NAMES = ["", "Fácil", "Médio", "Difícil", "Grande Mestre"];
-  public static var LEVEL_ELO = [0, 800, 1200, 1600, 1850];
+  /* níveis 1 a 3: adversário que erra como humano; 4: motor do jogo com busca completa;
+     5 e 6: Stockfish (força limitada e força máxima) — sem ele, o motor do jogo com orçamento maior */
+  public static var LEVEL_NAMES = ["", "Fácil", "Médio", "Difícil", "Mestre", "Grande Mestre", "Stockfish"];
+  public static var LEVEL_ELO = [0, 800, 1200, 1600, 2000, 2500, 3200];
   public static var lastScore:Int = 0;
   public static var lastScoreValid:Bool = false;
-  public static var LV_DEPTH = [0, 1, 2, 14, 14];
-  public static var LV_NOISE = [0, 80, 80, 0, 0];
-  public static var LV_NODES = [0, 0, 0, 6000, 90000];
-  public static var LV_TIME:Array<Float> = [0, 3000, 3000, 4000, 7000];
+  public static var LV_DEPTH = [0, 1, 2, 14, 30, 40, 40];
+  public static var LV_NOISE = [0, 80, 80, 0, 0, 0, 0];
+  public static var LV_NODES = [0, 0, 0, 1500, 20000, 250000, 700000];
+  public static var LV_TIME:Array<Float> = [0, 3000, 3000, 4000, 6000, 7000, 9000];
   /* ---------- adversário que erra como humano (aproximação no estilo do Maia) ----------
      Em vez de ruído aleatório, o computador: (1) às vezes não enxerga as respostas do adversário
      (lê só um lance), com chance maior nos níveis baixos; (2) prefere lances "naturais" (capturas, xeques)
      e enxerga pior recuos e lances longos; (3) escolhe por sorteio ponderado, mais preciso quanto maior o Elo. */
   public static var HUMAN_NODES:Float = 1.0;
+  public static var HUM_ADJ:Float = 0.2; public static var HUM_CAP:Float = 160;
   public static var HUM:Array<Float> = [70, 0.045, 0.18, 0.00015, 1.0];
   public static function chooseHuman(pos:Pos, elo:Int, keys:Array<String>):Int {
     var legal = legalMoves(pos);
@@ -870,11 +1083,14 @@ class Engine {
     if (legal.length <= 1) return legal.length == 0 ? -1 : legal[0];
     var rep = new Map<String, Bool>();
     if (keys != null) for (k in keys) rep.set(k, true);
-    var x = Math.max(0, Math.min(1, (elo - 600) / 1400));
-    var pBlind = Math.max(0.0, HUM[2] - (elo - 600) * HUM[3]);
+    /* v73: a busca e a avaliação novas deixariam estes adversários mais fortes que o rótulo;
+       a precisão é ajustada para manter a força de cada nível (medido em partidas contra a versão anterior) */
+    var ee = elo - Math.max(0, Math.min(HUM_CAP, (elo - 800) * HUM_ADJ));
+    var x = Math.max(0, Math.min(1, (ee - 600) / 1400));
+    var pBlind = Math.max(0.0, HUM[2] - (ee - 600) * HUM[3]);
     var blind = Math.random() < pBlind;
     var depth = blind ? 1 : (elo < 900 ? 1 : (elo < 1300 ? 2 : 3));
-    var ctx = new Ctx(2500, Std.int(60000 * HUMAN_NODES));
+    var ctx = new Ctx(2500, 60000);
     ctx.repKeys = rep;
     var res = rootScores(pos, depth, ctx, legal);
     if (res == null) { var c2 = new Ctx(4000); c2.repKeys = rep; res = rootScores(pos, 1, c2, legal); }
@@ -883,7 +1099,7 @@ class Engine {
       var best = searchBest(pos, 30, 3000, nodes, rep);
       if (best != null) for (r in res) if (r.m == best.m && best.score > r.score) r.score = best.score;
     }
-    var T = Math.max(6, HUM[0] - (elo - 600) * HUM[1]);
+    var T = Math.max(6, HUM[0] - (ee - 600) * HUM[1]);
     var bk = HUM[4];
     var w:Array<Float> = []; var mx = -1e9;
     var b = pos.board; var us = pos.turn;
@@ -952,7 +1168,7 @@ class Engine {
     if (tilted) rate *= Math.max(1, Math.min(3, dnaF(dna, "tl", 1.3)));
     var depth = elo < 900 ? 1 : (elo < 1300 ? 2 : 3);
     if (fast && depth > 1) depth--;
-    var ctx = new Ctx(2500, Std.int(60000 * HUMAN_NODES));
+    var ctx = new Ctx(2500, 60000);
     ctx.repKeys = rep;
     var res = rootScores(pos, depth, ctx, legal);
     if (res == null) { var c2 = new Ctx(4000); c2.repKeys = rep; res = rootScores(pos, 1, c2, legal); }

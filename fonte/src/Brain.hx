@@ -12,11 +12,16 @@ class Brain {
     if (inited) return;
     inited = true;
     Engine.init(); Coach.init();
+    /* v73: a busca nova resolve mais com menos nós (cada nó custa mais tempo): metade do orçamento
+       dá análises mais fortes que antes em tempo parecido */
     #if flash
-    SCALE = 0.45;
+    SCALE = 0.25;
+    #else
+    SCALE = 0.5;
     #end
     Coach.AN_NODES = Std.int(60000 * SCALE);
-    Engine.HUMAN_NODES = SCALE;
+    /* os adversários "humanos" mantêm a força calibrada: um quarto dos nós equivale ao orçamento antigo */
+    Engine.HUMAN_NODES = SCALE * 0.5;
   }
   static function keysMap(keys:Array<String>):Map<String, Bool> {
     var m = new Map<String, Bool>();
@@ -33,16 +38,27 @@ class Brain {
           var keys:Array<String> = q.keys;
           var m = -1;
           /* abertura: lances de mestres sorteados (variedade, como um humano que conhece teoria) */
-          if (q.elo != null && pos.full <= 8 && Math.random() < 0.9) {
-            var share = q.elo < 1000 ? 0.12 : 0.05;
+          var strong = q.elo == null && q.level != null && q.level >= 4;
+          if ((q.elo != null || strong) && pos.full <= 8 && Math.random() < 0.9) {
+            var share = (q.elo != null && q.elo < 1000) ? 0.12 : 0.05;
             var u = Book.pickMaster(pos, share, 1.2);
             if (u != null) m = Engine.uciToMove(pos, u);
           }
+          /* níveis do Stockfish: aqui só sai o lance de livro; o resto é jogado por ele (camada web) */
+          if (m < 0 && q.bookOnly == true) return { nobook: true };
           if (m < 0) m = q.elo != null ? Engine.chooseHuman(pos, q.elo, keys) : Engine.chooseWithKeys(pos, q.level, keys);
           if (m < 0) return { uci: null };
           var san = Engine.moveToSAN(pos, m);
           var note = q.human != null ? Coach.opponentNote(pos, m, q.human) : null;
           return { uci: Engine.moveToUCI(m), san: san, score: Engine.lastScoreValid ? Engine.lastScore : null, note: note };
+        }
+        case "cpunote": {
+          /* lance escolhido fora daqui (Stockfish): devolve a notação e a explicação do lance */
+          var pos = Engine.posFromFEN(q.fen);
+          var m = Engine.uciToMove(pos, q.uci);
+          if (m < 0) return { uci: null };
+          var note = q.human != null ? Coach.opponentNote(pos, m, q.human) : null;
+          return { uci: q.uci, san: Engine.moveToSAN(pos, m), score: q.score, note: note };
         }
         case "ghost": {
           var pos = Engine.posFromFEN(q.fen);

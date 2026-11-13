@@ -378,3 +378,12 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 - O jogo monta o seu DNA daquela época — aberturas que você jogava (por cor), ritmo (quando o PGN tem relógio), estilo, roque, trocas de dama — e o nível pelo seu rating de então. Você joga contra ele; o duelo tem placar próprio e não muda o seu Elo.
 - Não precisa ter 20 partidas aqui: o fantasma deste jogo continua disponível como alternativa.
 - As contas são as mesmas do jogo todo: ligou aqui, vale no Painel, em Analisar jogadas e na Conta (e vice-versa). As partidas importadas também entram em Analisar jogadas.
+
+## v73 — Motor aprimorado
+Medido em partidas do motor novo contra o anterior (80 partidas, 40 aberturas com as duas cores, 0,1 s por lance): **+168 Elo** (intervalo de 95%: +98 a +255).
+- **Repetição dentro da busca:** o motor enxerga empate por repetição (e 50 lances) em qualquer profundidade. Teste: com torre a menos e xeque perpétuo disponível, o motor antigo jogava Rf1 (−4,4); o novo acha Dd8+ (0,0).
+- **Busca:** janela de aspiração, poda de futilidade (direta e reversa), poda de lances tardios, trocas que perdem material vão para o fim da fila (avaliação de trocas sem alocar memória), reduções por tabela, histórico por cor com penalidade, lance nulo adaptativo. Em 2 s chega a 12–13 lances de profundidade (antes 9–10).
+- **Avaliação gradual:** mistura meio-jogo e final conforme o material; mobilidade das peças; pressão sobre o rei; peões passados valem mais no final. Cache de avaliações.
+- **Memória:** geração de lances e notas em vetores reaproveitados (sem criar listas a cada posição); tabela de transposição 2× maior.
+- **Níveis:** Fácil 800, Médio 1200, Difícil 1600 (mesma força de antes, recalibrados), **Mestre 2000** (motor do jogo), **Grande Mestre 2500** e **Stockfish 3200** (jogados pelo Stockfish que já vinha no jogo; se ele não carregar, joga o motor do jogo e a tela avisa). Os rótulos dos três últimos são aproximados.
+- **Fantasma com erros de verdade:** ao importar do Lichess/Chess.com, o Stockfish mede em segundo plano até 120 lances seus e a taxa de erros por fase substitui a estimativa pelo rating.
