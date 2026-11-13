@@ -274,3 +274,6 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 ## v44 (12.11.2026)
 - Tela Nova partida (Jogar) cabe sem rolar no celular: opções compactas, tabuleiros numa linha só (o nome aparece no título), textos de ajuda em até 2 linhas.
 - Botão "Começar nova partida" e, no fim, "Continuar partida" (quando houver partida em andamento).
+
+## v45 (12.11.2026)
+- Nova partida: botões de opção mais baixos e tabuleiros maiores (2 fileiras de 5), ainda sem rolagem no celular.

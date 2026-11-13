@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v44</title>
+<title>Xadrez · Rota do Mestre — v45</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1289,6 +1289,25 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .col.v34-setup .v34-ctx b{font-size:15px}
 .col.v34-setup .v34-ctx i{font-size:12px}
 @media (max-height:620px){.col.v34-setup .segn{display:none}.col.v34-setup .sb{min-height:34px}}
+
+/* v45: botões de opção menores e tabuleiros maiores (2 fileiras de 5), ainda sem rolagem */
+.col.v34-setup .seg{margin:0 0 clamp(5px,.9vh,8px)}
+.col.v34-setup .segl{margin-bottom:3px;font-size:12px}
+.col.v34-setup .sb{min-height:clamp(32px,4.6vh,38px);padding:2px}
+.col.v34-setup .sbt{font-size:clamp(12px,3.3vw,13.5px)}
+.col.v34-setup .sbs{font-size:10.5px;line-height:1.1}
+.col.v34-setup .segn{font-size:11px;margin-top:2px;-webkit-line-clamp:1}
+.col.v34-setup .theme-picker .sw-labeled{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.col.v34-setup .theme-tile{padding:3px;border-radius:10px}
+.col.v34-setup .theme-tile .theme-preview{aspect-ratio:auto;height:clamp(38px,6.6vh,56px);border-radius:7px}
+.col.v34-setup .theme-tile .theme-check{font-size:13px}
+.col.v34-setup .v33-fxd{font-size:11px;margin-top:4px;-webkit-line-clamp:2}
+.col.v34-setup .btns{margin-top:clamp(5px,1vh,10px)}
+.col.v34-setup .btns .btn{min-height:42px;padding-top:6px;padding-bottom:6px}
+.col.v34-setup .v34-cont{margin-top:6px;padding:6px 12px}
+.col.v34-setup .v34-cic{width:28px;height:28px}
+.col.v34-setup .v34-ctx b{font-size:14.5px}
+@media (max-height:660px){.col.v34-setup .segn,.col.v34-setup .v33-fxd{display:none}}
 </style>
 </head>
 <body>
