@@ -32512,32 +32512,47 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
 /* sair da tela de assistir pelo menu também desliga os ouvintes */
 (function(){var o=App.menu;App.menu=function(){if(V35.wc)V35.wStop();return o.apply(this,arguments);};})();
 
-/* v54: tela "Jogar online" apresenta a ligação por áudio, o assistir e as reações (com destaque para professores) */
+/* v55: tela "Jogar online" numa tela só, sem rolar: destaque das funções, opções compactas e botão grande */
 (function(){
  if(typeof V31==='undefined')return;
- var oH=V31.home;V31.home=function(){
-  var r=oH.apply(this,arguments);
-  try{
-   if(!V31.ready())return r;
-   var cur=UiJs.cur,hero=cur.querySelector('.v31-hero');
-   var box=document.createElement('div');box.className='v35-feat';
-   box.innerHTML='<div class="v35-fh"><span class="v35-fi"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="#fff" d="M6.6 10.8a15.2 15.2 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z"/></svg></span>'
-    +'<div><b>Jogue conversando por áudio</b><span>Durante a partida, um toque abre a ligação pelo WhatsApp com quem você convidou.</span></div></div>'
-    +'<ul class="v35-fl2">'
-    +'<li><i>📞</i><span><b>Ligação pelo WhatsApp</b>Cada um libera o próprio número se quiser. Só o adversário vê, e o número é apagado quando a partida acaba.</span></li>'
-    +'<li><i>👁</i><span><b>Partida para assistir</b>Mande o link "Chamar para assistir": quem abre acompanha ao vivo, sem instalar nada.</span></li>'
-    +'<li><i>👏</i><span><b>Reações no tabuleiro</b>👍 😮 😂 👏 🤝 🔥 aparecem na hora para os jogadores e para quem assiste.</span></li>'
-    +'</ul>'
-    +'<div class="v35-prof"><b>🎓 Para professores de xadrez</b><span>Dê aula a distância: jogue com o aluno conversando por áudio e explique cada lance na hora. A turma assiste ao vivo pelo link e reage aos lances. No fim, a partida fica no histórico de cada um para revisar.</span></div>';
-   var go=cur.querySelector('.v31-wa');
-   if(go&&go.nextSibling)cur.insertBefore(box,go.nextSibling);else cur.appendChild(box);
-   /* aviso curto logo abaixo do topo, que leva ao quadro completo */
-   var tz=document.createElement('button');tz.type='button';tz.className='v35-tz';
-   tz.innerHTML='<span>📞</span><b>Converse por áudio no WhatsApp durante a partida</b><i>ver como ›</i>';
-   tz.onclick=function(){box.scrollIntoView({behavior:'smooth',block:'start'});box.classList.add('pulse');setTimeout(function(){box.classList.remove('pulse');},1400);};
-   if(hero&&hero.nextSibling)cur.insertBefore(tz,hero.nextSibling);
-  }catch(e){}
-  return r;
+ var oH=V31.home;
+ V31.home=function(){
+  if(!V31.ready())return oH.apply(this,arguments);
+  V31.close();
+  UiJs.page('Jogar online',App.menu);
+  var cur=UiJs.cur;cur.classList.add('v35-home');
+  V31.init().catch(function(){});
+  /* topo */
+  var hd=UiJs.el('div','v35-hh',cur);
+  hd.innerHTML='<span class="v35-hi">'+V31.WA+'</span><div><b>Xadrez ao vivo com um amigo</b><span>Mande o link pelo WhatsApp: ele toca e já está no tabuleiro. Sem instalar, sem cadastro.</span></div>';
+  /* funções em destaque */
+  var ft=UiJs.el('div','v35-fg',cur);
+  [['📞','Áudio no WhatsApp','conversem durante a partida','call'],['👁','Assistir ao vivo','qualquer um, pelo link','eye'],['👏','Reações','👍 😮 😂 🔥 no tabuleiro','fx'],['🎓','Ideal para aulas','explique os lances por áudio','prof']].forEach(function(x){
+   var c=UiJs.el('div','v35-fc '+x[3],ft);c.innerHTML='<i>'+x[0]+'</i><span><b>'+x[1]+'</b>'+x[2]+'</span>';
+  });
+  /* nome */
+  var nm=document.createElement('input');nm.className='v35-nm';nm.maxLength=30;nm.placeholder='Seu nome (como o amigo vai ver você)';nm.value=typeof Profile.d.name==='string'?Profile.d.name:'';
+  nm.oninput=function(){Profile.d.name=String(nm.value).trim();Profile.save();};cur.appendChild(nm);
+  /* ritmo e cor */
+  var seg=function(label,opts,on,pick){var w=UiJs.el('div','v35-sg',cur);UiJs.el('span','v35-sl',w,label);var g=UiJs.el('div','v35-so',w);g.style.gridTemplateColumns='repeat('+opts.length+',1fr)';
+   opts.forEach(function(o,i){var b=UiJs.el('button',on(o,i)?'on':'',g,o[0]);b.type='button';b.onclick=function(){pick(o,i);[].forEach.call(g.children,function(x){x.className='';});b.className='on';};});};
+  seg('Ritmo',V31.TCS.map(function(t){return [t[0]==='Sem relógio'?'Livre':t[0]];}),function(o,i){return V31.tc===i;},function(o,i){V31.tc=i;});
+  seg('Você joga de',[['♔ Brancas','w'],['♚ Pretas','b'],['🎲 Sorteio','r']],function(o){return V31.color===o[1];},function(o){V31.color=o[1];});
+  /* criar */
+  var go=document.createElement('button');go.type='button';go.className='btn pri wide v31-wa v35-go';go.innerHTML='<span class="v31-wai">'+V31.WA+'</span>Criar partida e convidar';
+  go.onclick=function(){if(go.disabled)return;go.disabled=true;go.lastChild.textContent='Criando…';
+   try{V30.fs();}catch(e){}
+   V31.create({tc:V31.TCS[V31.tc][1],color:V31.color}).then(function(code){V31.open(code);},function(e){go.disabled=false;go.lastChild.textContent='Criar partida e convidar';UiJs.toast(V31.err(e));});};
+  cur.appendChild(go);
+  /* código recebido + partidas abertas */
+  var row=UiJs.el('div','v35-cr',cur);
+  var ci=document.createElement('input');ci.className='v35-ci';ci.maxLength=8;ci.placeholder='Recebeu um código?';ci.autocapitalize='characters';ci.spellcheck=false;row.appendChild(ci);
+  var cb=UiJs.el('button','v35-cb',row,'Entrar');cb.type='button';
+  cb.onclick=function(){var c=String(ci.value).toUpperCase().replace(/[^A-Z0-9]/g,'');if(c.length===6)V31.invite(c);else{UiJs.toast('O código tem 6 letras e números.');ci.focus();}};
+  var open=V31.mine().filter(function(x){return x.st==='play'||x.st==='wait';}).slice(0,6);
+  if(open.length){var ob=UiJs.el('button','v35-ob',cur,'♟ '+(open.length===1?'1 partida sua aberta':open.length+' partidas suas abertas')+' · continuar ›');ob.type='button';
+   ob.onclick=function(){UiJs.page('Suas partidas abertas',V31.home);UiJs.items(open.map(function(x){return {t:(x.st==='wait'?'Convite '+x.c:'Contra '+(x.opp||'seu amigo')),d:(x.me?'você de '+V31.colName(x.me)+' · ':'')+V31.tcTxt(x.tc),r:'abrir ›',f:function(){V31.resume(x.c);}};}));};}
+  UiJs.el('div','v35-fp',cur,'Jogo justo: dicas e treinador desligados. O resultado vai para o seu histórico.');
  };
 })();
 

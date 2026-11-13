@@ -306,3 +306,6 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 
 ## v54 (13.11.2026)
 - Tela Jogar online: aviso "Converse por áudio no WhatsApp durante a partida" no topo e, abaixo do botão de criar, um quadro com ligação pelo WhatsApp, partida para assistir, reações e um destaque para professores de xadrez.
+
+## v55 (13.11.2026)
+- Tela Jogar online refeita numa tela só, sem rolar: topo "Xadrez ao vivo com um amigo", 4 destaques (Áudio no WhatsApp, Assistir ao vivo, Reações, Ideal para aulas), nome, ritmo e cor compactos, botão grande de criar e código recebido na mesma linha.

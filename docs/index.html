@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v54</title>
+<title>Xadrez · Rota do Mestre — v55</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1438,6 +1438,32 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v35-feat.pulse{box-shadow:0 0 0 3px rgba(76,210,138,.6);transition:box-shadow .3s}
 .v35-tz{display:flex;align-items:center;gap:8px;width:100%;text-align:left;margin:-2px 0 12px;padding:9px 12px;border-radius:12px;border:1px solid rgba(76,210,138,.5);background:rgba(47,154,114,.14);color:#dff5e8;cursor:pointer}
 .v35-tz span{font-size:17px}.v35-tz b{flex:1;font-size:13.5px;font-weight:700}.v35-tz i{font-style:normal;font-size:12px;color:#9fe3b8;white-space:nowrap}
+
+/* v55: Jogar online numa tela só */
+.v35-home{display:flex;flex-direction:column;gap:clamp(7px,1.3vh,11px)}
+.v35-home>*{margin:0!important}
+.v35-hh{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:14px;border:1px solid rgba(37,211,102,.45);background:linear-gradient(135deg,rgba(37,211,102,.16),rgba(10,30,20,.4))}
+.v35-hi{flex:0 0 44px;height:44px;display:block}.v35-hi svg{width:100%;height:100%}
+.v35-hh b{display:block;color:#fff;font-size:16.5px}.v35-hh span{display:block;color:#cfe9da;font-size:12.8px;line-height:1.3;margin-top:2px}
+.v35-fg{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.v35-fc{display:flex;gap:8px;align-items:center;padding:8px 9px;border-radius:12px;background:#151a20;border:1px solid #2a3038}
+.v35-fc i{font-style:normal;flex:0 0 30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:16px;background:rgba(255,255,255,.06)}
+.v35-fc span{font-size:11.3px;color:#9aa5ad;line-height:1.25;min-width:0}.v35-fc b{display:block;color:#f3d98c;font-size:13px}
+.v35-fc.call{border-color:rgba(47,191,106,.6);background:linear-gradient(135deg,rgba(47,191,106,.2),#151a20)}
+.v35-fc.call i{background:linear-gradient(180deg,#2fbf6a,#1f9150);animation:v35ring 2.4s ease-out infinite}
+.v35-fc.call b{color:#9fe3b8}
+.v35-nm,.v35-ci{width:100%;box-sizing:border-box;height:42px;border-radius:11px;border:1px solid #3d424b;background:#11151a;color:#eee;padding:0 12px;font:14.5px Inter,system-ui,sans-serif}
+.v35-sg{display:flex;flex-direction:column;gap:4px}
+.v35-sl{font-size:12px;font-weight:700;color:#d8b968}
+.v35-so{display:grid;gap:5px}
+.v35-so button{min-height:38px;border-radius:10px;border:1px solid #2e343d;background:#1b2028;color:#ddd;font-size:13.5px;font-weight:600;cursor:pointer;padding:0 2px}
+.v35-so button.on{border-color:#f3d98c;background:#2a2414;color:#f3d98c}
+.v35-go{min-height:52px;font-size:16.5px!important}
+.v35-cr{display:flex;gap:7px}.v35-cr .v35-ci{flex:1;text-transform:uppercase}.v35-cr .v35-ci::placeholder{text-transform:none}
+.v35-cb{flex:0 0 auto;padding:0 16px;border-radius:11px;border:1px solid #2e343d;background:#1b2028;color:#eee;font-weight:700;cursor:pointer}
+.v35-ob{min-height:38px;border-radius:11px;border:1px solid rgba(243,217,140,.5);background:rgba(243,217,140,.08);color:#f3d98c;font-weight:700;font-size:13.5px;cursor:pointer}
+.v35-fp{font-size:11.5px;color:#7d848c;text-align:center}
+@media (max-height:660px){.v35-hh div>span{display:none}.v35-fc span{font-size:0}.v35-fc span b{font-size:12.5px}.v35-fp{display:none}}
 </style>
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0d10"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" href="icons/icon-192.png"><link rel="icon" type="image/png" href="icons/icon-192.png">
 <style>#boot{position:fixed;inset:0;z-index:99;background:#050606;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#f3d98c;font-family:Georgia,serif}#boot .bt{font-size:26px;letter-spacing:2px}#boot .bb{width:min(70vw,320px);height:6px;border-radius:4px;background:#262c35;overflow:hidden}#boot .bb i{display:block;width:0;height:100%;background:linear-gradient(90deg,#b8852f,#f3d98c);transition:width .25s}#boot .bs{font:13px system-ui,sans-serif;color:#98a1ab}</style>
@@ -1505,7 +1531,7 @@ window.XHD=(function(){
 <script>
 /* carregador do site: baixa (ou pega do cache offline) os arquivos do jogo, mostra o progresso e inicia o app */
 (function(){
- var F={"res":[["res_content","data/content.json?v=facebd0421"],["res_lpuzzles","data/lpuzzles.txt?v=6a7f7438c2"],["res_openings","data/openings.txt?v=0433d98604"],["res_explorer","data/explorer.txt?v=a49e3a075b"],["res_models","data/models.txt?v=d4b717e2fe"],["res_sfjs","data/sf.js?v=81cc4511ff"]],"intro":[["introfr","data/introfr.json?v=361b412139"],["introau","data/introau.txt?v=ce6089d3a7"],["introhdx","data/introhdx.json?v=efe43de4ba"]],"hd":"data/intro_hd.bin?v=2f137ab566","hd16":"data/intro_hd16.bin?v=873ca44d34","hdx16":"data/introhdx16.json?v=ffb050a168","histau":"data/historia.mp3?v=87e853c025","wasm":"data/sf.wasm?v=c56761eebb","app":"data/app.js?v=7180eafe47"};
+ var F={"res":[["res_content","data/content.json?v=facebd0421"],["res_lpuzzles","data/lpuzzles.txt?v=6a7f7438c2"],["res_openings","data/openings.txt?v=0433d98604"],["res_explorer","data/explorer.txt?v=a49e3a075b"],["res_models","data/models.txt?v=d4b717e2fe"],["res_sfjs","data/sf.js?v=81cc4511ff"]],"intro":[["introfr","data/introfr.json?v=361b412139"],["introau","data/introau.txt?v=ce6089d3a7"],["introhdx","data/introhdx.json?v=efe43de4ba"]],"hd":"data/intro_hd.bin?v=2f137ab566","hd16":"data/intro_hd16.bin?v=873ca44d34","hdx16":"data/introhdx16.json?v=ffb050a168","histau":"data/historia.mp3?v=87e853c025","wasm":"data/sf.wasm?v=c56761eebb","app":"data/app.js?v=400ec9cd39"};
  var c=navigator.connection||{},slow=!!(c.saveData||/(^|-)2g|3g/.test(c.effectiveType||''));
  var box=document.createElement('div');box.id='boot';box.innerHTML='<div class="bt">Rota do Mestre</div><div class="bb"><i></i></div><div class="bs">Preparando o tabuleiro…</div>';document.body.appendChild(box);
  var bar=box.querySelector('i'),msg=box.querySelector('.bs'),done=0,total=F.res.length+(slow?0:F.intro.length+1)+1;
