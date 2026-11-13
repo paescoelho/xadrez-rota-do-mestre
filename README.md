@@ -344,3 +344,10 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 
 ## v66 (13.11.2026)
 - Fim de partida (Mentor ou computador): barra fixa no rodapé com o resultado e os botões Revisar (ou Análise), Revanche quando houver, Nova partida e Menu, sempre visíveis sem rolar. Os botões completos continuam no fim do painel.
+
+## v67 (13.11.2026) — Elo com credibilidade
+- Nota por ritmo: começa do Elo estimado (ou 800) e só muda pelo resultado (fim da "performance" nas 5 primeiras, que dava 1200 numa derrota contra o Difícil). K 48/32/20; derrota pesa 50% a mais e tira no mínimo 16 (provisória) ou 10; vitória dá no mínimo 2.
+- Abandonar ou perder no tempo depois do primeiro lance conta como derrota.
+- Elo do Painel: derrota sempre tira (mínimo 10), vitória nunca tira; entre partidas pode cair mas não sobe sozinho (ganho do treino fica "a confirmar jogando"); teto com poucas partidas cresce só com vitórias e empates. Nivelamento novo ou Lichess confirmado recalculam.
+- Notas antigas recalculadas pela regra nova a partir do histórico.
+- Testes: perfil novo, sequência com nivelamento, partida real pelo app, abandono após 1 lance, treino sem jogar e simulação de 2.400 partidas aleatórias (40 perfis x 60) sem nenhuma violação.

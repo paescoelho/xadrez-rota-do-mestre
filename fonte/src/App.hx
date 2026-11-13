@@ -447,7 +447,8 @@ class App {
     #if js
     if (g.ghost != null && userMoves >= 3) Dna.record(g.gKey, score);
     #end
-    if (g.rated && userMoves >= 3) g.rc = Profile.recordRated(g.cat, g.elo, score);
+    /* v67: abandonar ou perder no tempo depois do primeiro lance também conta (não dá para fugir da derrota) */
+    if (g.rated && (userMoves >= 3 || (score <= 0 && userMoves >= 1))) g.rc = Profile.recordRated(g.cat, g.elo, score);
     else if (g.unrated == null) g.unrated = "Partida curta demais para valer pontos.";
     if (g.adaptive && userMoves >= 5) Profile.adaptAfter(score);
     var accs:Array<Float> = [];

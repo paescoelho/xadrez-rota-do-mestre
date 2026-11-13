@@ -163,19 +163,36 @@ class Profile {
     dp = Math.max(-400, Math.min(400, dp));
     return Std.int(Math.max(100, Math.round(sumOpp / n + dp)));
   }
+  /* v67: pontuação Elo honesta e punitiva para derrotas.
+     - Começa do seu Elo estimado (ou 800) e muda só pelo resultado: derrota SEMPRE tira pontos, vitória SEMPRE dá pontos.
+     - K: 48 nas 5 primeiras partidas, 32 até 30 partidas, depois 20 (10 acima de 2400).
+     - Derrota pesa 50% a mais e tira no mínimo 16 (provisória) ou 10 pontos; vitória dá no mínimo 2. */
+  public static var START_DEFAULT = 800;
+  public static function startElo():Int {
+    var v = 0;
+    try { var c:Array<Dynamic> = combined(); v = c[0]; } catch (e:Dynamic) {}
+    if (v <= 0) v = START_DEFAULT;
+    return Std.int(Math.max(400, Math.min(2000, v)));
+  }
+  public static function kOf(r:Dynamic):Int { var g:Int = r.games; return g < PROVISIONAL ? 48 : (g < 30 ? 32 : ((r.elo : Int) >= 2400 ? 10 : 20)); }
+  public static function eloStep(r:Dynamic, opp:Int, score:Float):Int {
+    var k = kOf(r);
+    var delta = k * (score - expected(r.elo, opp));
+    if (score <= 0) { delta *= 1.5; delta = Math.min(delta, (r.games : Int) < PROVISIONAL ? -16.0 : -10.0); }
+    else if (score >= 1) delta = Math.max(delta, 2.0);
+    return Std.int(Math.max(100, Math.round((r.elo : Float) + delta)));
+  }
   public static function recordRated(cat:String, opp:Int, score:Float):Array<Int> {
-    var r = R(cat); var before:Int = r.elo;
-    if (r.games < PROVISIONAL) {
-      var po:Array<Int> = r.provOpp; var ps:Array<Float> = r.provScore;
-      po.push(opp); ps.push(score); r.games++;
-      r.elo = performance(r);
-    } else {
-      var k = kFactor(cat);
-      r.elo = Std.int(Math.max(100, Math.round(r.elo + k * (score - expected(r.elo, opp)))));
-      r.games++;
-    }
+    var r = R(cat);
+    if ((r.games : Int) == 0 || (r.elo : Int) <= 0) r.elo = startElo();
+    var before:Int = r.elo;
+    var po:Array<Int> = r.provOpp; var ps:Array<Float> = r.provScore;
+    if (po != null && po.length < PROVISIONAL) { po.push(opp); ps.push(score); }
+    r.elo = eloStep(r, opp, score);
+    r.games++;
     if (score >= 1) r.w++; else if (score <= 0) r.l++; else r.d++;
     if (r.elo > r.peak && r.games >= PROVISIONAL) r.peak = r.elo;
+    r.v67 = true;
     touch();
     return [before, r.elo];
   }
