@@ -372,3 +372,9 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 - XADREZ no topo do menu ~30% maior (304 px de largura no celular de 390 px; antes 234 px).
 - Selo "Integrado com ♞ Lichess · ♟ Chess.com" abaixo de "Rota do Mestre"; ao tocar, abre "Analisar jogadas". Sem logos, só nomes, peças e cores.
 - Menu continua cabendo sem rolar (testado em 390×844, 360×740 e 1366×768).
+
+## v72 — "Seu maior adversário" com Lichess e Chess.com
+- Novo bloco no topo da tela: coloque o usuário do Lichess ou do Chess.com (sem senha) e importe as suas partidas de ~3 meses atrás (janela de 2 a 4 meses; se faltar, as mais antigas antes de 1 mês).
+- O jogo monta o seu DNA daquela época — aberturas que você jogava (por cor), ritmo (quando o PGN tem relógio), estilo, roque, trocas de dama — e o nível pelo seu rating de então. Você joga contra ele; o duelo tem placar próprio e não muda o seu Elo.
+- Não precisa ter 20 partidas aqui: o fantasma deste jogo continua disponível como alternativa.
+- As contas são as mesmas do jogo todo: ligou aqui, vale no Painel, em Analisar jogadas e na Conta (e vice-versa). As partidas importadas também entram em Analisar jogadas.
