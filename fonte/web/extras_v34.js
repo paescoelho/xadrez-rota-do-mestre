@@ -106,9 +106,9 @@ App.training=function(){
  var m=UiJs.root.querySelector('.menu.hub');if(!m)return;
  m.classList.add('v34-ct');
  var g0=m.querySelector('.mgrid');if(g0)g0.parentNode.removeChild(g0);
- /* relógio de estudo e treino sugerido pelo Raio-X, logo abaixo da legenda */
+ /* topo: Analisar jogadas do Lichess e Chess (com animação das partidas chegando dos sites); depois o treino sugerido pelo Raio-X */
  var cap=m.querySelector('.ctcap'),after=cap;
- try{var card=V23.studyCard(m);card.onclick=V23.studyPage;card.setAttribute('role','button');if(after&&after.nextSibling)m.insertBefore(card,after.nextSibling);after=card;}catch(e){}
+ try{var top=V34.aeBanner(ms);if(after&&after.nextSibling)m.insertBefore(top,after.nextSibling);else m.appendChild(top);after=top;}catch(e){}
  try{var sug=V24.suggest();if(sug&&sug.length){var x=sug[0],sc=UiJs.el('div','v24-sug',null);sc.innerHTML='<b>Treino sugerido pelo Raio-X</b><span>'+V34.esc(x.t)+'</span>';sc.onclick=x.f;sc.setAttribute('role','button');if(after&&after.nextSibling)m.insertBefore(sc,after.nextSibling);else m.appendChild(sc);}}catch(e){}
  var sec=function(n,title,items){
   var w=UiJs.el('div','v34-sec',m),h=UiJs.el('div','v34-sh',w);h.innerHTML='<i>'+n+'</i><span>'+title+'</span>';
@@ -122,10 +122,12 @@ App.training=function(){
   {t:'Nivelamento',d:s.placed?'Refaça e confira seu nível':'Descubra seu nível',f:Pages.placementIntro,ico:'lvl',hl:!s.placed},
   {t:'Como pensar',d:'Processo dos mestres',f:Pages.think}
  ]);
- sec(2,'Sua rotina',[
+ var g2=sec(2,'Sua rotina',[
   {t:'Plano do dia',d:s.placed&&!s.dailyAll?'Próximo passo · 15, 30 ou 60 min':'15, 30 ou 60 min',f:Pages.daily,hl:s.placed&&!s.dailyAll},
   {t:'Trilha',d:'10 etapas até mestre',f:Pages.trail}
  ]);
+ /* Estudo sério hoje: dentro de "Sua rotina", antes do Plano do dia */
+ try{var w2=g2.parentNode,card=V23.studyCard(w2);card.onclick=V23.studyPage;card.setAttribute('role','button');card.classList.add('v34-clock');w2.insertBefore(card,g2);}catch(e){}
  sec(3,'Treinos por tema',[
   {t:'Treino de visão',d:'Casas e memória',f:V23.vision},
   {t:'Táticas',d:'Temas, Storm, Rush',f:Pages.tactics},
@@ -135,16 +137,34 @@ App.training=function(){
   {t:'Finais',d:'Ganhar e defender',f:Pages.endgames},
   {t:'Partidas de mestres',d:'Adivinhe o lance',f:Pages.models}
  ]);
- var g4=sec(4,'Seus erros e seu pensamento',[
-  {t:'Analisar jogadas do Lichess e Chess',d:'Conecte suas contas: o jogo importa as partidas e monta aulas sobre os seus erros'+dueTxt,f:V34.erros,wide:true,ico:'v34err',hl:ms.due>0},
+ sec(4,'Seu pensamento',[
   {t:'Laboratório do Pensamento',d:'Descubra como você pensa',f:V26.lab,wide:true,ico:'eye'}
  ]);
- try{var ae=V34.findItem(g4,'Analisar jogadas do Lichess e Chess');if(ae){ae.classList.add('v34-ae');V34.addIcon(ae,'mico v34-eic',V34.ERR_ICO);}}catch(e){}
  sec(5,'Alto rendimento',[
   {t:'Laboratório de alto rendimento',d:'Desafios progressivos · cálculo profundo · biblioteca dos mestres',f:Mestre.hub,wide:true,ico:'ct'}
  ]);
 };
 
+
+/* ---------- banner do topo do Centro de Treino: partidas saindo do Lichess e do Chess.com, passando pela lupa e virando aula ---------- */
+V34.AE_SVG='<svg viewBox="0 0 132 64" aria-hidden="true"><defs>'
+ +'<path id="v34p1" d="M50,16 C68,16 72,30 92,31"/><path id="v34p2" d="M58,48 C72,48 76,34 92,33"/></defs>'
+ +'<path d="M50,16 C68,16 72,30 92,31 M58,48 C72,48 76,34 92,33" fill="none" stroke="rgba(243,217,140,.35)" stroke-width="1" stroke-dasharray="2 3"><animate attributeName="stroke-dashoffset" from="10" to="0" dur="1s" repeatCount="indefinite"/></path>'
+ +'<g class="v34-src"><rect x="1" y="7" width="49" height="18" rx="9" fill="#14181e" stroke="rgba(243,217,140,.7)"/><text x="25.5" y="19.4" text-anchor="middle" font-size="9" font-weight="700" fill="#f2f2f2" font-family="Inter,system-ui,sans-serif">Lichess</text>'
+ +'<rect x="1" y="39" width="57" height="18" rx="9" fill="#14181e" stroke="rgba(140,224,170,.75)"/><text x="29.5" y="51.4" text-anchor="middle" font-size="9" font-weight="700" fill="#d9f5e3" font-family="Inter,system-ui,sans-serif">Chess.com</text></g>'
+ +'<g class="v34-fly"><text font-size="15" fill="#fff1c4" text-anchor="middle" dy="5" stroke="#1b1406" stroke-width=".5">♞<animateMotion dur="2.4s" repeatCount="indefinite" begin="0s"><mpath href="#v34p1"/></animateMotion><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.15;.8;1" dur="2.4s" repeatCount="indefinite" begin="0s"/></text>'
+ +'<text font-size="15" fill="#d9f5e3" text-anchor="middle" dy="5" stroke="#0c241b" stroke-width=".5">♟<animateMotion dur="2.4s" repeatCount="indefinite" begin="1.2s"><mpath href="#v34p2"/></animateMotion><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.15;.8;1" dur="2.4s" repeatCount="indefinite" begin="1.2s"/></text></g>'
+ +'<g><circle cx="104" cy="31" r="13" fill="rgba(10,14,12,.8)" stroke="#f3d98c" stroke-width="2"/><path d="M113.5,40.5 L121,48" stroke="#f3d98c" stroke-width="3.2" stroke-linecap="round"/>'
+ +'<path d="M99,26 L109,36 M109,26 L99,36" stroke="#ff8a7a" stroke-width="2.4" stroke-linecap="round"><animate attributeName="opacity" values="1;1;0;0;1" keyTimes="0;.45;.55;.95;1" dur="2.4s" repeatCount="indefinite"/></path>'
+ +'<path d="M98.5,31.5 L102.5,35.5 L110,27" fill="none" stroke="#7fe0a8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;.45;.55;.95;1" dur="2.4s" repeatCount="indefinite"/></path></g>'
+ +'</svg>';
+V34.aeBanner=function(ms){
+ var b=document.createElement('button');b.type='button';b.className='v34-aeb'+(ms&&ms.due?' due':'');
+ var due=ms&&ms.due?'<em>'+ms.due+(ms.due===1?' erro seu volta hoje':' erros seus voltam hoje')+'</em>':'';
+ b.innerHTML='<span class="v34-aea">'+V34.AE_SVG+'</span><span class="v34-aet"><b>Analisar jogadas do Lichess e Chess</b><i>Conecte suas contas: o jogo importa as partidas e monta aulas sobre os seus erros</i>'+due+'</span><span class="v34-aer" aria-hidden="true">›</span>';
+ b.onclick=function(){V34.erros();};
+ return b;
+};
 /* ---------- Analisar erros (Lichess, Chess.com e outros sites) ---------- */
 V34.PRIV='Privacidade: as partidas e as análises ficam neste aparelho (e na sua conta Google, se você entrar). Se você informou seu usuário no Lichess ou no Chess.com, o jogo busca as partidas públicas novas de lá ao abrir. Nenhuma senha é pedida, e partidas em andamento nunca são analisadas.';
 V34.stats=function(st,cr,all){

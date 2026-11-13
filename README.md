@@ -259,3 +259,7 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 
 ## v40 (12.11.2026)
 - Centro de Treino: o botão "Analisar erros" virou "Analisar jogadas do Lichess e Chess", com a explicação "Conecte suas contas: o jogo importa as partidas e monta aulas sobre os seus erros".
+
+## v41 (12.11.2026)
+- Centro de Treino: "Analisar jogadas do Lichess e Chess" vai para o topo, como banner verde com animação (peças saindo do Lichess e do Chess.com, passando pela lupa: o erro vira acerto).
+- "Estudo sério hoje" foi para a seção 2 · Sua rotina, acima do Plano do dia. A seção 4 virou "Seu pensamento".
