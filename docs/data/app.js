@@ -31947,17 +31947,21 @@ App.menu=function(){
  }catch(e){}
 };
 
-/* ---------- Jogar: "Continuar" no topo da tela Nova partida ---------- */
+/* ---------- Jogar (v44): tela Nova partida cabe sem rolar no celular; "Começar nova partida" e, no fim, "Continuar partida" ---------- */
 (function(){var o=App.setupGame;App.setupGame=function(){
  var r=o.apply(this,arguments);
- try{var c=V34.cont(),cur=UiJs.cur;if(c&&cur){
-  var b=document.createElement('button');b.type='button';b.className='v34-cont';
-  b.innerHTML='<span class="v34-cic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg></span><span class="v34-ctx"><b>Continuar partida</b><i>'+V34.esc(c.d)+'</i></span><em aria-hidden="true">›</em>';
-  b.onclick=function(){c.f();};
-  cur.insertBefore(b,cur.firstChild);
-  var sep=document.createElement('div');sep.className='v34-or';sep.textContent='ou comece uma nova partida';
-  cur.insertBefore(sep,b.nextSibling);
- }}catch(e){}
+ try{
+  var cur=UiJs.cur;if(!cur)return r;
+  cur.classList.add('v34-setup');
+  [].forEach.call(cur.querySelectorAll('.btn'),function(x){if(/^Começar partida/.test(x.textContent))x.textContent='Começar nova partida';});
+  var c=V34.cont();
+  if(c){
+   var bt=document.createElement('button');bt.type='button';bt.className='v34-cont';
+   bt.innerHTML='<span class="v34-cic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg></span><span class="v34-ctx"><b>Continuar partida</b><i>'+V34.esc(c.d)+'</i></span><em aria-hidden="true">›</em>';
+   bt.onclick=function(){c.f();};
+   cur.appendChild(bt);
+  }
+ }catch(e){}
  return r;
 };})();
 

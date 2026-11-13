@@ -270,3 +270,7 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 ## v43 (12.11.2026)
 - Nova narração da História do xadrez (45 s).
 - Jogar online: saiu o botão "Prefere jogar por mensagens?".
+
+## v44 (12.11.2026)
+- Tela Nova partida (Jogar) cabe sem rolar no celular: opções compactas, tabuleiros numa linha só (o nome aparece no título), textos de ajuda em até 2 linhas.
+- Botão "Começar nova partida" e, no fim, "Continuar partida" (quando houver partida em andamento).
