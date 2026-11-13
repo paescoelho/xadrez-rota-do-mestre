@@ -363,3 +363,7 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 - **Treino sobe pouco:** problemas ganham 40% do normal e perdem 150%; precisão, problemas e "adivinhe o lance" nunca passam 100 acima da sua nota em partidas.
 - **Teto:** até 30 partidas valendo pontos, nível + 12 por vitória e nunca acima da sua nota em partidas; depois, no máximo 50 acima dela.
 - **Número estável:** entre partidas ele não sobe nem desce com treino; só muda jogando (ou com a inatividade).
+
+## v70 — Todos começam no mínimo
+- Sem pergunta de nível: todo perfil começa em **400** e só sobe vencendo, devagar. Perfis antigos (inclusive quem escolheu nível na v69) são refeitos uma vez a partir de 400.
+- Regras da v69 mantidas: vitória vale metade (máx. +12, depois +8), derrota vale o dobro (mín. −20, depois −12), treino sobe pouco.

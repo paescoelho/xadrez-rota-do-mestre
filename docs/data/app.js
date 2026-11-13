@@ -32804,7 +32804,7 @@ var V67={};
 /* v69: nível escolhido na primeira vez (como no Chess.com) */
 V67.LV={novo:{s:400,n:'Novo no xadrez',d:'Estou aprendendo as regras ou jogo muito pouco'},regras:{s:800,n:'Sei jogar',d:'Conheço as regras e jogo de vez em quando'},freq:{s:1200,n:'Jogo com frequência',d:'Jogo bastante e conheço táticas básicas'}};
 V67.CAPN=30;
-V67.start=function(){var l=Profile.d&&Profile.d.v69lvl;return l&&V67.LV[l]?V67.LV[l].s:400;};
+V67.start=function(){return 400;}; /* v70: começa sempre no mínimo */
 V67.wins=function(){var w=0,dr=0,l=0;(Profile.CATS||['std','rapid','classic','online']).forEach(function(c){var r=Profile.d.r&&Profile.d.r[c];if(r){w+=r.w||0;dr+=r.d||0;l+=r.l||0;}});return {w:w,d:dr,l:l};};
 V67.rated=function(){var n=0;(Profile.CATS||['std','rapid','classic','online']).forEach(function(c){var r=Profile.d.r&&Profile.d.r[c];if(r)n+=r.games||0;});return n;};
 /* cálculo bruto (o da v29, com o teto por resultados em vez de por partidas jogadas) */
@@ -32840,7 +32840,7 @@ V67.raw=function(){
 V67.main=function(){var m=0;(Profile.CATS||['std','rapid','classic','online']).forEach(function(c){var r=Profile.d.r&&Profile.d.r[c];if(r&&r.games>0&&r.elo>m)m=r.elo;});return m;};
 
 /* o que, se mudar, recalcula o número do zero (nivelamento novo, conta do Lichess confirmada) */
-V67.sig=function(){var d=Profile.d,pl=d.place,li=null;try{li=V32.d().li;}catch(e){}return ['v69',d.v69lvl||'-',pl&&(pl.t||pl.est)||0,li&&li.ver?(li.t||1):0].join('|');};
+V67.sig=function(){var d=Profile.d,pl=d.place,li=null;try{li=V32.d().li;}catch(e){}return ['v70',pl&&(pl.t||pl.est)||0,li&&li.ver?(li.t||1):0].join('|');};
 V67.state=function(){var d=Profile.d;if(!d.v67||typeof d.v67!=='object')d.v67={};return d.v67;};
 Profile.combined=function(){
  var r=V67.raw(),st=V67.state(),sig=V67.sig();
@@ -32940,20 +32940,10 @@ V67.setLevel=function(l){
  });
  d.v67={};d.v67mig=1;Profile.save();
 };
-V67.ask=function(done){
- if(document.querySelector('.v69-ov'))return;
- var ov=document.createElement('div');ov.className='v69-ov';
- var h='<div class="v69-card" role="dialog" aria-modal="true" aria-labelledby="v69t"><div class="v69-ico">♞</div><h2 id="v69t">Qual é o seu nível no xadrez?</h2>'+
-  '<p>Isso define seu ponto de partida no ranking. Aqui subir é difícil: vitória vale pouco, derrota custa caro.</p><div class="v69-ops">';
- Object.keys(V67.LV).forEach(function(k){var v=V67.LV[k];h+='<button class="v69-op" data-l="'+k+'"><b>'+v.n+'</b><i>'+v.d+'</i><span>'+v.s+'</span></button>';});
- h+='</div><small>Escolha com honestidade: a escolha vale para este perfil.</small></div>';
- ov.innerHTML=h;document.body.appendChild(ov);
- ov.querySelectorAll('.v69-op').forEach(function(b){b.onclick=function(){V67.setLevel(b.getAttribute('data-l'));ov.remove();try{if(done)done();}catch(e){}};});
-};
-(function(){
- var o=App.menu;
- App.menu=function(){var r=o.apply(this,arguments);try{if(Profile.d&&!Profile.d.v69lvl)setTimeout(function(){if(Profile.d&&!Profile.d.v69lvl)V67.ask(function(){App.menu();});},350);}catch(e){}return r;};
-})();
+/* v70: sem pergunta — todo perfil começa em 400 (o mínimo) e perfis antigos são refeitos uma vez a partir daí */
+V67.force=function(){var d=Profile.d;if(!d||d.v70)return;V67.setLevel('novo');d.v70=1;Profile.save();};
+if(typeof Profile!=='undefined'){try{if(Profile.d)V67.force();}catch(e){}
+ var oL70=Profile.load;Profile.load=function(){var r=oL70.apply(this,arguments);try{V67.force();}catch(e){}return r;};}
 
 Main.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
