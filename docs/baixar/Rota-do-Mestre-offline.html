@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v67</title>
+<title>Xadrez · Rota do Mestre — v68</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -76895,7 +76895,8 @@ V67.raw=function(){
  var d=Profile.d,parts=[],bestGame=0,games=0;
  (Profile.CATS||['std','rapid','classic','online']).forEach(function(c){var r=d.r&&d.r[c];if(!r)return;if(r.games>=5&&r.elo>bestGame)bestGame=r.elo;games+=r.games||0;});
  var ac=d.v29acc;
- if(ac&&ac.n>=3){var f=Math.min(1,ac.n/10);parts.push(['Precisão nas partidas',ac.perf,1.4*f*f]);games+=ac.imp||0;}
+ /* v68: a precisão sozinha não prova força: fica no máximo 150 acima do que os resultados mostram (ou 1000 sem resultados) */
+ if(ac&&ac.n>=3){var f=Math.min(1,ac.n/10),ap=Math.min(ac.perf,bestGame>0?bestGame+150:1000);parts.push(['Precisão nas partidas',ap,1.4*f*f]);games+=ac.imp||0;}
  if(bestGame>0)parts.push(['Partidas',bestGame,0.7*Math.min(1,games/20)]);
  if(d.pzN>=20)parts.push(['Problemas',V28.toGame(d.pzElo),0.2*Math.min(1,d.pzN/100)]);
  var md=d.model||[];
@@ -76905,14 +76906,16 @@ V67.raw=function(){
  try{if(typeof V32!=='undefined'&&V32.ext)V32.ext().forEach(function(x){parts.push(x);});}catch(e){}
  var sw=0,sv=0;parts.forEach(function(p){sw+=p[2];sv+=p[1]*p[2];});
  var val=sw>0?Math.round(sv/sw):0;
- if(val>0&&games<10&&!(ac&&ac.n>=10)&&!(typeof V32!=='undefined'&&V32.verified&&V32.verified())){var wr=V67.wins();val=Math.min(val,1000+25*wr.w+10*wr.d);}
+ /* v68: quem está começando parte de 800 e só sobe com vitórias (+25) e empates (+10) até 20 partidas valendo pontos,
+    a menos que tenha a conta do Lichess confirmada */
+ if(val>0&&V67.rated()<20&&!(typeof V32!=='undefined'&&V32.verified&&V32.verified())){var wr=V67.wins();var cap=800+25*wr.w+10*wr.d;if(val>cap){val=cap;parts.push(['Limite de iniciante (sobe com vitórias)',cap,0]);}}
  var out=parts.map(function(p){return [p[0],Math.round(p[1]),p[2]];});
  var dc=val>0?V29.decay():{amt:0};
  if(dc.amt>0){val=Math.max(100,val-dc.amt);out.push(['Inatividade',-dc.amt,0]);}
  return [val,out];
 };
 /* o que, se mudar, recalcula o número do zero (nivelamento novo, conta do Lichess confirmada) */
-V67.sig=function(){var d=Profile.d,pl=d.place,li=null;try{li=V32.d().li;}catch(e){}return [pl&&(pl.t||pl.est)||0,li&&li.ver?(li.t||1):0].join('|');};
+V67.sig=function(){var d=Profile.d,pl=d.place,li=null;try{li=V32.d().li;}catch(e){}return ['v68',pl&&(pl.t||pl.est)||0,li&&li.ver?(li.t||1):0].join('|');};
 V67.state=function(){var d=Profile.d;if(!d.v67||typeof d.v67!=='object')d.v67={};return d.v67;};
 Profile.combined=function(){
  var r=V67.raw(),st=V67.state(),sig=V67.sig();

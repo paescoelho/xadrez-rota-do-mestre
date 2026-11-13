@@ -351,3 +351,8 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 - Elo do Painel: derrota sempre tira (mínimo 10), vitória nunca tira; entre partidas pode cair mas não sobe sozinho (ganho do treino fica "a confirmar jogando"); teto com poucas partidas cresce só com vitórias e empates. Nivelamento novo ou Lichess confirmado recalculam.
 - Notas antigas recalculadas pela regra nova a partir do histórico.
 - Testes: perfil novo, sequência com nivelamento, partida real pelo app, abandono após 1 lance, treino sem jogar e simulação de 2.400 partidas aleatórias (40 perfis x 60) sem nenhuma violação.
+
+## v68 — Elo honesto para iniciante
+- Até 20 partidas valendo pontos (ou até confirmar a conta do Lichess), o Elo exibido tem teto de **800 + 25 por vitória + 10 por empate**.
+- A precisão das jogadas não pode passar do melhor resultado real em mais de 150 pontos (máx. 1000 sem vitórias).
+- O Painel mostra a linha "Limite de iniciante (sobe com vitórias)" quando o teto está ativo.
