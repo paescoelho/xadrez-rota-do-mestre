@@ -49,6 +49,38 @@ service cloud.firestore {
         && okSize(request.resource.data);
 
       allow delete: if false;
+
+      // ---- extras da sala ----
+      function sala() { return get(/databases/$(database)/documents/salas/$(code)).data; }
+      function jogadorDe(c) { return sala().hostColor == c ? sala().host : sala().guest; }
+      function ehJogador() { return signedIn() && (request.auth.uid == sala().host || request.auth.uid == sala().guest); }
+
+      // telefone para a ligação pelo WhatsApp: cada jogador grava o próprio; só os dois jogadores leem; qualquer um deles apaga no fim
+      match /privado/{cor} {
+        allow read, delete: if ehJogador();
+        allow create, update: if signedIn() && cor in ['w', 'b'] && request.auth.uid == jogadorDe(cor)
+          && request.resource.data.keys().hasOnly(['tel', 't'])
+          && request.resource.data.tel is string && request.resource.data.tel.matches('^[0-9]{10,15}$');
+      }
+      // quem está assistindo: cada um marca a própria presença
+      match /plateia/{uid} {
+        allow read: if signedIn();
+        allow create, update: if signedIn() && request.auth.uid == uid
+          && request.resource.data.keys().hasOnly(['t']) && request.resource.data.t == request.time;
+        allow delete: if false;
+      }
+      // reações (emojis): jogadores pela própria cor, plateia como 'p'
+      match /reacoes/{id} {
+        allow read: if signedIn();
+        allow create: if signedIn()
+          && request.resource.data.keys().hasOnly(['e', 'de', 't', 'uid'])
+          && request.resource.data.e in ['👍', '😮', '😂', '👏', '🤝', '🔥']
+          && request.resource.data.de in ['w', 'b', 'p']
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.t == request.time
+          && (request.resource.data.de == 'p' || request.auth.uid == jogadorDe(request.resource.data.de));
+        allow update, delete: if false;
+      }
     }
 
     // conta Google: perfil e partidas na nuvem. Cada pessoa só lê e grava o que é dela (anônimos não usam a nuvem).

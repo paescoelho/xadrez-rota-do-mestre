@@ -299,3 +299,7 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 
 ## v52 (13.11.2026)
 - Menu: Centro de Treino "Aprenda a pensar como um mestre"; História do xadrez "1.500 anos · 18 jogos ancestrais para jogar".
+
+## v53 (13.11.2026)
+- Jogar online: ligação pelo WhatsApp entre os dois jogadores (cada um libera o próprio número; só o adversário vê; apagado no fim), reações 👍 😮 😂 👏 🤝 🔥 no tabuleiro e partida para assistir ao vivo pelo link "?ver=CÓDIGO" (sem login, só ver; os jogadores veem quantos estão assistindo).
+- Regras do Firestore: subcoleções privado, plateia e reacoes dentro de cada sala.

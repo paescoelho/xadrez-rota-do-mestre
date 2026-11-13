@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v51</title>
+<title>Xadrez · Rota do Mestre — v53</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1245,6 +1245,38 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 
 /* v51: no computador (tela larga e baixa) as explicações dos botões aparecem sempre */
 @media (min-width:700px){.mitem .md,.mitem.lt .md,.mitem:not(.hero):not(.evo) .md{display:block!important}}
+
+/* ================= v53: ligação pelo WhatsApp, reações e assistir ================= */
+.v35-tools{margin:10px 0 6px;display:flex;flex-direction:column;gap:8px}
+.v35-call{display:flex;align-items:center;justify-content:center;gap:10px;min-height:48px;border-radius:12px;background:linear-gradient(180deg,#2fbf6a,#1f9150);color:#fff;font-weight:700;font-size:15px;text-decoration:none;box-shadow:0 0 0 2px rgba(76,210,138,.25),0 6px 14px rgba(31,145,80,.3);padding:0 12px;text-align:center}
+.v35-call:active{transform:scale(.98)}
+.v35-lib{min-height:42px;border-radius:12px;border:1px dashed rgba(76,210,138,.6);background:rgba(47,154,114,.12);color:#9fe3b8;font-weight:700;font-size:14px;cursor:pointer}
+.v35-wait{font-size:12.5px;color:#9fe3b8;background:rgba(47,154,114,.1);border-radius:10px;padding:8px 10px}
+.v35-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.v35-tb{min-height:38px;padding:0 12px;border-radius:10px;background:#1b2028;border:1px solid #2e343d;color:#ddd;font-size:13.5px;cursor:pointer}
+.v35-eye{margin-left:auto;font-size:12.5px;color:#f3d98c;border:1px solid rgba(243,217,140,.5);border-radius:12px;padding:3px 9px;white-space:nowrap}
+.v35-emo{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:6px 0}
+.v35-emo button{min-height:40px;border-radius:10px;background:#1b2028;border:1px solid #2e343d;font-size:20px;cursor:pointer;line-height:1}
+.v35-emo button:active{transform:scale(.9)}
+.board .v35-fl{position:absolute;bottom:18%;z-index:9;pointer-events:none;display:flex;flex-direction:column;align-items:center;animation:v35fl 2.2s ease-out forwards}
+.board .v35-fl b{font-size:44px;line-height:1;filter:drop-shadow(0 4px 8px rgba(0,0,0,.6))}
+.board .v35-fl i{font-style:normal;font-size:11px;font-weight:700;color:#fff;background:rgba(0,0,0,.6);border-radius:8px;padding:1px 6px;margin-top:2px}
+@keyframes v35fl{0%{transform:translateY(20px) scale(.5);opacity:0}15%{transform:translateY(0) scale(1.15);opacity:1}30%{transform:scale(1)}80%{opacity:1}100%{transform:translateY(-90px);opacity:0}}
+.v35-ov{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px}
+.v35-md{width:min(420px,100%);background:#161a20;border:1px solid rgba(220,181,92,.5);border-radius:16px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.8)}
+.v35-md b{display:block;color:#f3d98c;font-size:17px;margin-bottom:6px}
+.v35-md p{font-size:13.5px;color:#cfd3d8;line-height:1.4;margin:6px 0 10px}.v35-md em{font-style:normal;color:#7fe0a8;font-weight:700}
+.v35-tel{display:flex;align-items:center;gap:8px;border:1px solid #3d424b;background:#0f1216;border-radius:10px;padding:0 10px;height:46px}
+.v35-tel span{color:#aaa;font-size:14px;white-space:nowrap}.v35-tel input{flex:1;min-width:0;background:none;border:0;color:#eee;font:16px Inter,system-ui,sans-serif;outline:none}
+.v35-ck{display:flex;gap:8px;align-items:center;font-size:12.5px;color:#aab;margin:10px 0 4px}
+.v35-md .btn{margin-top:8px}
+.v35-live,.v35-end{display:inline-flex;align-items:center;gap:4px;background:#d93a32;color:#fff;font:800 10px Inter,system-ui,sans-serif;letter-spacing:.08em;padding:3px 7px;border-radius:5px}
+.v35-live:before{content:'';width:6px;height:6px;border-radius:50%;background:#fff;animation:v34lv 1.2s ease-in-out infinite}
+.v35-end{background:#555}
+.v35-whd{display:flex;align-items:center;gap:8px;margin:4px 0 8px}.v35-whd b{color:#f3d98c;font-size:15px}.v35-whd b i{font-style:normal;color:#888;margin:0 3px}
+.v35-whd .v35-eye{margin-left:auto}
+.v35-wwait{display:flex;flex-direction:column;gap:8px;align-items:flex-start;border:1px solid rgba(220,181,92,.3);border-radius:14px;padding:14px;background:rgba(0,0,0,.2)}.v35-wwait b{color:#f3d98c;font-size:16px}.v35-wwait span:last-child{color:#bbb;font-size:13.5px}
+@media (prefers-reduced-motion:reduce){.board .v35-fl{animation-duration:.01s}}
 </style>
 </head>
 <body>
