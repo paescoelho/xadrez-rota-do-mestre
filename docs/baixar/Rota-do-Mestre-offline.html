@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v55</title>
+<title>Xadrez · Rota do Mestre — v56</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1464,6 +1464,23 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v35-ob{min-height:38px;border-radius:11px;border:1px solid rgba(243,217,140,.5);background:rgba(243,217,140,.08);color:#f3d98c;font-weight:700;font-size:13.5px;cursor:pointer}
 .v35-fp{font-size:11.5px;color:#7d848c;text-align:center}
 @media (max-height:660px){.v35-hh div>span{display:none}.v35-fc span{font-size:0}.v35-fc span b{font-size:12.5px}.v35-fp{display:none}}
+
+/* v56: botões Jogar via Lichess.org / Chess.com (em desenvolvimento) */
+.v35-ext{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.v35-xb{position:relative;display:flex;align-items:center;gap:8px;min-height:50px;padding:6px 9px;border-radius:12px;text-align:left;cursor:pointer;overflow:hidden}
+.v35-xb i{font-style:normal;flex:0 0 32px;height:32px;border-radius:8px;display:grid;place-items:center;font-size:21px;line-height:1}
+.v35-xb span{display:flex;flex-direction:column;min-width:0;line-height:1.1}
+.v35-xb small{font-size:10.5px;opacity:.75}.v35-xb b{font-size:14.5px}.v35-xb em{font-style:normal;font-size:10.5px;font-weight:700;margin-top:2px}
+.v35-xb.li{background:linear-gradient(180deg,#2b2925,#161512);border:1px solid #4d4a44;color:#e8e6e3}
+.v35-xb.li i{background:#f5f5f5;color:#161512}
+.v35-xb.li em{color:#f3d98c}
+.v35-xb.cc{background:linear-gradient(180deg,#3d5a2a,#26381a);border:1px solid #81b64c;color:#fff}
+.v35-xb.cc i{background:#81b64c;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.35)}
+.v35-xb.cc em{color:#d6f0b8}
+.v35-xb:after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.035) 0 8px,transparent 8px 16px);pointer-events:none}
+.v35-xb em{white-space:nowrap;font-size:10px;letter-spacing:-.1px}.v35-xb{padding:6px 8px;gap:7px}.v35-xb i{flex-basis:30px;height:30px}
+@media (max-height:700px){.v35-fg .v35-fc span{font-size:0}.v35-fg .v35-fc span b{font-size:12.5px}.v35-fc{padding:6px 8px}}
+@media (max-height:660px){.v35-hh{padding:7px 10px}.v35-hi{flex-basis:36px;height:36px}.v35-so button{min-height:34px}.v35-go{min-height:46px}.v35-nm,.v35-ci{height:38px}}
 </style>
 </head>
 <body>
@@ -76532,6 +76549,13 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
   var open=V31.mine().filter(function(x){return x.st==='play'||x.st==='wait';}).slice(0,6);
   if(open.length){var ob=UiJs.el('button','v35-ob',cur,'♟ '+(open.length===1?'1 partida sua aberta':open.length+' partidas suas abertas')+' · continuar ›');ob.type='button';
    ob.onclick=function(){UiJs.page('Suas partidas abertas',V31.home);UiJs.items(open.map(function(x){return {t:(x.st==='wait'?'Convite '+x.c:'Contra '+(x.opp||'seu amigo')),d:(x.me?'você de '+V31.colName(x.me)+' · ':'')+V31.tcTxt(x.tc),r:'abrir ›',f:function(){V31.resume(x.c);}};}));};}
+  /* em desenvolvimento: jogar via Lichess e via Chess.com */
+  var ex=UiJs.el('div','v35-ext',cur);
+  [['li','♞','Jogar via','Lichess.org','em breve aqui no seu tabuleiro'],['cc','♟','Jogar via','Chess.com','em breve, com importação na hora']].forEach(function(x){
+   var b=UiJs.el('button','v35-xb '+x[0],ex);b.type='button';b.setAttribute('aria-disabled','true');
+   b.innerHTML='<i>'+x[1]+'</i><span><small>'+x[2]+'</small><b>'+x[3]+'</b><em>Em desenvolvimento…</em></span>';
+   b.onclick=function(){UiJs.toast(x[0]==='li'?'Em desenvolvimento: em breve você joga no Lichess com o tabuleiro do Rota do Mestre.':'Em desenvolvimento: em breve o Chess.com abre daqui e a partida volta sozinha para a sua análise.');};
+  });
   UiJs.el('div','v35-fp',cur,'Jogo justo: dicas e treinador desligados. O resultado vai para o seu histórico.');
  };
 })();

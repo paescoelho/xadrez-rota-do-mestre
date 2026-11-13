@@ -243,6 +243,13 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
   var open=V31.mine().filter(function(x){return x.st==='play'||x.st==='wait';}).slice(0,6);
   if(open.length){var ob=UiJs.el('button','v35-ob',cur,'♟ '+(open.length===1?'1 partida sua aberta':open.length+' partidas suas abertas')+' · continuar ›');ob.type='button';
    ob.onclick=function(){UiJs.page('Suas partidas abertas',V31.home);UiJs.items(open.map(function(x){return {t:(x.st==='wait'?'Convite '+x.c:'Contra '+(x.opp||'seu amigo')),d:(x.me?'você de '+V31.colName(x.me)+' · ':'')+V31.tcTxt(x.tc),r:'abrir ›',f:function(){V31.resume(x.c);}};}));};}
+  /* em desenvolvimento: jogar via Lichess e via Chess.com */
+  var ex=UiJs.el('div','v35-ext',cur);
+  [['li','♞','Jogar via','Lichess.org','em breve aqui no seu tabuleiro'],['cc','♟','Jogar via','Chess.com','em breve, com importação na hora']].forEach(function(x){
+   var b=UiJs.el('button','v35-xb '+x[0],ex);b.type='button';b.setAttribute('aria-disabled','true');
+   b.innerHTML='<i>'+x[1]+'</i><span><small>'+x[2]+'</small><b>'+x[3]+'</b><em>Em desenvolvimento…</em></span>';
+   b.onclick=function(){UiJs.toast(x[0]==='li'?'Em desenvolvimento: em breve você joga no Lichess com o tabuleiro do Rota do Mestre.':'Em desenvolvimento: em breve o Chess.com abre daqui e a partida volta sozinha para a sua análise.');};
+  });
   UiJs.el('div','v35-fp',cur,'Jogo justo: dicas e treinador desligados. O resultado vai para o seu histórico.');
  };
 })();

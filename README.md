@@ -309,3 +309,6 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 
 ## v55 (13.11.2026)
 - Tela Jogar online refeita numa tela só, sem rolar: topo "Xadrez ao vivo com um amigo", 4 destaques (Áudio no WhatsApp, Assistir ao vivo, Reações, Ideal para aulas), nome, ritmo e cor compactos, botão grande de criar e código recebido na mesma linha.
+
+## v56 (13.11.2026)
+- Jogar online: no fim da tela, botões "Jogar via Lichess.org" (cinza-carvão com cavalo branco) e "Jogar via Chess.com" (verde com peão), marcados "Em desenvolvimento…", ainda sem ação (um toque mostra o aviso).
