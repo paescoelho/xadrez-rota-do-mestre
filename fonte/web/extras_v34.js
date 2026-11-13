@@ -384,7 +384,7 @@ V34.apoio=function(back){
  var row=UiJs.el('div','v34-apr',pc);
  var qr=UiJs.el('div','v34-apq',row);qr.innerHTML=V25.svg(code);
  var side=UiJs.el('div','v34-aps',row);
- var c1=UiJs.el('button','btn pri',side,'Copiar Pix copia e cola');c1.onclick=function(){V25.copy(code,'Código Pix copiado. Cole no app do banco em "Pix copia e cola".');try{V25.d().copied=(V25.d().copied||0)+1;Profile.save();}catch(e){}};
+ var c1=UiJs.el('button','btn pri',side,'Pix copia e cola');c1.onclick=function(){V25.copy(code,'Código Pix copiado. Cole no app do banco em "Pix copia e cola".');try{V25.d().copied=(V25.d().copied||0)+1;Profile.save();}catch(e){}};
  var c2=UiJs.el('button','btn',side,'Copiar chave Pix');c2.onclick=function(){V25.copy(V25.PIX.key,'Chave Pix copiada.');};
  UiJs.el('div','v34-apn',side,(sel>0?'R$ '+sel+',00 · ':'')+'Recebedor: Rodrigo Paes Coelho Santana');
  /* 2. Sugestão */

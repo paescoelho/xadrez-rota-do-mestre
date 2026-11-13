@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v48</title>
+<title>Xadrez · Rota do Mestre — v49</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1373,6 +1373,16 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v34-sgc .v34-send{margin-top:8px;min-height:44px}
 .v34-apf{font-size:11px;color:#7d848c;line-height:1.35}
 @media (max-height:640px){.v34-apf{display:none}.v34-ap .v34-aph i{display:none}}
+
+/* v49: Pix maior, ocupando o espaço livre da tela (sem rolar) */
+.v34-ap .v34-apc .v34-aph b{font-size:clamp(16px,2.6vh,19px)}
+.v34-apv{gap:6px;margin-bottom:clamp(8px,1.4vh,12px)}
+.v34-apv button{padding:clamp(6px,1.2vh,10px) 0;font-size:clamp(13px,2vh,15px)}
+.v34-apr{align-items:stretch;gap:12px}
+.v34-apq{flex:0 0 clamp(100px,calc(100vh - 505px),200px);max-width:52%;align-self:center;padding:5px}
+.v34-aps{justify-content:center;gap:clamp(6px,1.2vh,10px)}
+.v34-aps .btn{min-height:clamp(40px,6.4vh,52px);font-size:clamp(14px,2.1vh,15.5px)}
+.v34-apn{font-size:clamp(11.5px,1.8vh,13px)}
 </style>
 </head>
 <body>
@@ -76105,7 +76115,7 @@ V34.apoio=function(back){
  var row=UiJs.el('div','v34-apr',pc);
  var qr=UiJs.el('div','v34-apq',row);qr.innerHTML=V25.svg(code);
  var side=UiJs.el('div','v34-aps',row);
- var c1=UiJs.el('button','btn pri',side,'Copiar Pix copia e cola');c1.onclick=function(){V25.copy(code,'Código Pix copiado. Cole no app do banco em "Pix copia e cola".');try{V25.d().copied=(V25.d().copied||0)+1;Profile.save();}catch(e){}};
+ var c1=UiJs.el('button','btn pri',side,'Pix copia e cola');c1.onclick=function(){V25.copy(code,'Código Pix copiado. Cole no app do banco em "Pix copia e cola".');try{V25.d().copied=(V25.d().copied||0)+1;Profile.save();}catch(e){}};
  var c2=UiJs.el('button','btn',side,'Copiar chave Pix');c2.onclick=function(){V25.copy(V25.PIX.key,'Chave Pix copiada.');};
  UiJs.el('div','v34-apn',side,(sel>0?'R$ '+sel+',00 · ':'')+'Recebedor: Rodrigo Paes Coelho Santana');
  /* 2. Sugestão */
