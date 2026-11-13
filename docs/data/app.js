@@ -31965,6 +31965,28 @@ App.menu=function(){
  return r;
 };})();
 
+
+/* ---------- Aprenda antes de jogar (v46): tudo numa tela, sem rolar no celular ---------- */
+App.beginnerIntro=function(){
+ UiJs.page('Aprenda antes de jogar',App.setupGame);
+ var cur=UiJs.cur;cur.classList.add('v34-intro');
+ var hd=UiJs.el('div','v34-ih',cur);
+ hd.innerHTML='<b>Seu primeiro jogo de xadrez</b><span>Objetivo: dar <em>xeque-mate</em>, quando o rei está atacado e não tem para onde fugir. As brancas começam e cada lado tem 16 peças.</span>';
+ var P=[['♙','Peão','1 casa à frente (2 na primeira vez). Captura na diagonal e promove no fim.'],['♖','Torre','Em linha reta, quantas casas quiser.'],
+  ['♘','Cavalo','Em L. É a única peça que salta outras.'],['♗','Bispo','Nas diagonais, quantas casas quiser.'],
+  ['♕','Dama','Em qualquer direção, quantas casas quiser.'],['♔','Rei','1 casa em qualquer direção, nunca para casa atacada.']];
+ var g=UiJs.el('div','v34-ip',cur);
+ P.forEach(function(x){var c=UiJs.el('div','v34-ipc',g);c.innerHTML='<i>'+x[0]+'</i><span><b>'+x[1]+'</b>'+x[2]+'</span>';});
+ var how=UiJs.el('div','v34-ihow',cur);
+ how.innerHTML='<b>Como jogar:</b> toque numa peça sua e depois na casa marcada. <b>Dica</b> mostra lances e ameaças; toque na peça que o computador moveu para ver o motivo.<small>Regras especiais: roque (protege o rei), en passant (captura especial de peão) e promoção.</small>';
+ var row=UiJs.el('div','v34-ibt',cur);
+ var t=document.createElement('button');t.type='button';t.className='btn v30-train';
+ var n=0,tot=0;try{var dn=V30.done();tot=V30.T.length;n=V30.T.filter(function(x){return dn[x.id];}).length;}catch(e){}
+ t.innerHTML='♞ Treinar movimento das peças'+(n?'<small>'+(n===tot?'concluído ✓':n+' de '+tot+' peças')+'</small>':'');
+ t.onclick=function(){try{V30.tutOpen();}catch(e){}};row.appendChild(t);
+ var go=document.createElement('button');go.type='button';go.className='btn pri';go.textContent='Entendi · começar partida';go.onclick=function(){App.newGame();};row.appendChild(go);
+};
+
 /* ---------- Centro de Treino ---------- */
 App.training=function(){
  V34.ev('evento-centro-treino');

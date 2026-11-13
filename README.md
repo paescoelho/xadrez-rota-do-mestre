@@ -277,3 +277,6 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 
 ## v45 (12.11.2026)
 - Nova partida: botões de opção mais baixos e tabuleiros maiores (2 fileiras de 5), ainda sem rolagem no celular.
+
+## v46 (12.11.2026)
+- "Aprenda antes de jogar" numa tela só no celular: peças em 2 colunas com textos curtos, "Como jogar" num quadro, botões Treinar movimento e Entendi lado a lado na base (o voltar fica na seta).
