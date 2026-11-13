@@ -236,7 +236,7 @@ V23.account=function(){
  var cur=UiJs.cur;cur.classList.add('v23-acct','v34-acct');
  /* 1. Google */
  var g=V34.card(cur,null,'v34-ag');
- var hd=UiJs.el('div','v34-agh',g);hd.innerHTML='<span class="v34-agi">'+V34.G_ICO+'</span><span><b>'+(C&&C.user?'Conectado':'Conta Google')+'</b><i>'+(C&&C.user?V34.esc(C.user.email||C.user.displayName||'Google'):'Progresso salvo na nuvem, em qualquer aparelho')+'</i></span>';
+ var hd=UiJs.el('div','v34-agh',g);hd.innerHTML='<span class="v34-agi">'+V34.G_ICO+'</span><span><b'+(C&&C.user?' class="v34-on"><span class="v34-dot" aria-hidden="true"></span>Conectado · sincronizado':'>Conta Google')+'</b><i>'+(C&&C.user?V34.esc(C.user.email||C.user.displayName||'Google'):'Progresso salvo na nuvem, em qualquer aparelho')+'</i></span>';
  V34.inside(g,function(){
   if(!C||!C.configured())UiJs.p('O login com Google ainda não está disponível nesta versão. Use o backup abaixo.','muted small');
   else if(!C.web())UiJs.p('O login com Google funciona no site do jogo. Nesta versão em arquivo, use o backup abaixo.','muted small');

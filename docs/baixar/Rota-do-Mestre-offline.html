@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v37</title>
+<title>Xadrez · Rota do Mestre — v38</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1219,6 +1219,16 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v34-mb .btn{width:100%;text-align:left}
 .v34-acct .v32-acc>.p{display:none}
 .v34-acct .v32-acc .btns{margin:6px 0 4px}
+
+/* v38: Conectado em verde, piscando */
+.v34-agh b.v34-on{display:flex;align-items:center;gap:8px;color:#4cd28a;animation:v34blink 1.8s ease-in-out infinite}
+.v34-dot{position:relative;flex:0 0 10px;width:10px;height:10px;border-radius:50%;background:#4cd28a;box-shadow:0 0 8px #4cd28a}
+.v34-dot:after{content:'';position:absolute;inset:0;border-radius:50%;background:#4cd28a;animation:v34ping 1.8s ease-out infinite}
+@keyframes v34blink{0%,100%{opacity:1}50%{opacity:.55}}
+@keyframes v34ping{0%{transform:scale(1);opacity:.7}100%{transform:scale(2.6);opacity:0}}
+.v34-acct .v34-ag:has(.v34-on){border-color:rgba(76,210,138,.55);box-shadow:0 0 14px rgba(76,210,138,.15)}
+.v34-agh:has(.v34-on) .v34-agi{box-shadow:0 0 0 2px rgba(76,210,138,.6),0 0 10px rgba(76,210,138,.35)}
+@media (prefers-reduced-motion:reduce){.v34-agh b.v34-on,.v34-dot:after{animation:none}}
 </style>
 </head>
 <body>
@@ -75817,7 +75827,7 @@ V23.account=function(){
  var cur=UiJs.cur;cur.classList.add('v23-acct','v34-acct');
  /* 1. Google */
  var g=V34.card(cur,null,'v34-ag');
- var hd=UiJs.el('div','v34-agh',g);hd.innerHTML='<span class="v34-agi">'+V34.G_ICO+'</span><span><b>'+(C&&C.user?'Conectado':'Conta Google')+'</b><i>'+(C&&C.user?V34.esc(C.user.email||C.user.displayName||'Google'):'Progresso salvo na nuvem, em qualquer aparelho')+'</i></span>';
+ var hd=UiJs.el('div','v34-agh',g);hd.innerHTML='<span class="v34-agi">'+V34.G_ICO+'</span><span><b'+(C&&C.user?' class="v34-on"><span class="v34-dot" aria-hidden="true"></span>Conectado · sincronizado':'>Conta Google')+'</b><i>'+(C&&C.user?V34.esc(C.user.email||C.user.displayName||'Google'):'Progresso salvo na nuvem, em qualquer aparelho')+'</i></span>';
  V34.inside(g,function(){
   if(!C||!C.configured())UiJs.p('O login com Google ainda não está disponível nesta versão. Use o backup abaixo.','muted small');
   else if(!C.web())UiJs.p('O login com Google funciona no site do jogo. Nesta versão em arquivo, use o backup abaixo.','muted small');

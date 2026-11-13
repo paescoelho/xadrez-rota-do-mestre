@@ -250,3 +250,6 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 - Tela "Conta Google" em cartões: Google · Lichess e Chess.com (campos na própria tela) · Backup (Baixar / Restaurar…) · Instalar · "Mais opções" recolhido.
 - Saiu o código de transferência (Flash/Switch) e a seção "Apoiar o projeto" repetida.
 - O voltar respeita a origem: volta ao menu principal ou ao Painel de evolução, de onde a tela foi aberta.
+
+## v38 (12.11.2026)
+- Conta Google: "Conectado · sincronizado" em verde, com ponto pulsando; cartão e ícone com contorno verde.
