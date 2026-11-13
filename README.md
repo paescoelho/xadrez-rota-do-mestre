@@ -263,3 +263,6 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 ## v41 (12.11.2026)
 - Centro de Treino: "Analisar jogadas do Lichess e Chess" vai para o topo, como banner verde com animação (peças saindo do Lichess e do Chess.com, passando pela lupa: o erro vira acerto).
 - "Estudo sério hoje" foi para a seção 2 · Sua rotina, acima do Plano do dia. A seção 4 virou "Seu pensamento".
+
+## v42 (12.11.2026)
+- Botão Jogar online (variação D): radar grande girando com o WhatsApp no centro, dois pontos (você e o amigo) que acendem quando a varredura passa, e selo vermelho AO VIVO no canto superior direito com a bolinha piscando.

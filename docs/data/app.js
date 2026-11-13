@@ -31900,6 +31900,26 @@ V34.gRefresh=function(){
 };
 (function(){var C=V34.C();if(C&&C.refresh){var o=C.refresh;C.refresh=function(){var r=o.apply(this,arguments);V34.gRefresh();return r;};}})();
 
+
+/* ---------- Jogar online (v42): radar com o WhatsApp no centro e selo AO VIVO ---------- */
+V34.RADAR='<svg viewBox="0 0 70 70" width="100%" height="100%" aria-hidden="true"><defs>'
+ +'<radialGradient id="v34rg" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="rgba(76,210,138,.2)"/><stop offset="1" stop-color="rgba(76,210,138,0)"/></radialGradient>'
+ +'<linearGradient id="v34sw" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="rgba(76,210,138,0)"/><stop offset="1" stop-color="rgba(76,210,138,.6)"/></linearGradient></defs>'
+ +'<circle cx="35" cy="35" r="33" fill="url(#v34rg)" stroke="rgba(76,210,138,.4)"/><circle cx="35" cy="35" r="24" fill="none" stroke="rgba(76,210,138,.35)"/><circle cx="35" cy="35" r="15" fill="none" stroke="rgba(76,210,138,.35)"/>'
+ +'<path d="M35 2v66M2 35h66" stroke="rgba(76,210,138,.18)" stroke-width=".8"/>'
+ +'<g class="v34-sweep"><path d="M35 35L35 2A33 33 0 0 1 63.6 18.5Z" fill="url(#v34sw)"/></g>'
+ +'<g class="v34-blip b1"><circle cx="56" cy="15" r="3.2" fill="#4cd28a"/><circle class="v34-ring" cx="56" cy="15" r="6" fill="none" stroke="#4cd28a"/></g>'
+ +'<g class="v34-blip b2"><circle cx="14" cy="50" r="2.6" fill="#4cd28a"/><circle class="v34-ring" cx="14" cy="50" r="5" fill="none" stroke="#4cd28a"/></g>'
+ +'<circle cx="35" cy="35" r="13.5" fill="#25D366" stroke="#0b0a08" stroke-width="1.5"/>'
+ +'<path d="M28.6 42l1.1-3.4A7 7 0 1 1 32.1 40.8z" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/>'
+ +'<path d="M32.2 31.3c.35 2.1 2.45 4.6 5.25 5.5l1.1-1.25 1.7.85c-.2 1.1-1.1 1.8-2.25 1.7-3.35-.4-6.6-3.65-7-7-.15-1.1.55-2 1.7-2.25l.85 1.7z" fill="#fff"/></svg>';
+V34.onlineTile=function(m){
+ var b=V34.findItem(m,'Jogar online');if(!b||b.querySelector('.v34-rad'))return;
+ var old=b.querySelector('.mwa');if(old)old.parentNode.removeChild(old);
+ var r=document.createElement('span');r.className='mic v34-rad';r.innerHTML=V34.RADAR;b.insertBefore(r,b.firstChild);
+ var lv=document.createElement('span');lv.className='v34-live';lv.textContent='AO VIVO';b.appendChild(lv);
+ b.classList.add('v34-online');
+};
 /* ---------- menu principal ---------- */
 App.menu=function(){
  try{App.stopClock();}catch(e){}
@@ -31920,6 +31940,7 @@ App.menu=function(){
   var j=V34.findItem(m,'Jogar');if(j&&c)j.classList.add('v34-hascont');
   var g=V34.findItem(m,'Entrar com Google')||V34.findItem(m,'Conta Google');
   if(g){g.classList.add('v34-gt');if(V34.findItem(m,'Conta Google'))g.classList.add('on');V34.addIcon(g,'v34-gic',V34.G_ICO);}
+  V34.onlineTile(m);
   var h=V34.findItem(m,'Apoiar o projeto');if(h){h.classList.add('v25-item');V34.addIcon(h,'v25-mic',V34.HEART);}
   /* deixa o login do Google pronto para abrir no primeiro toque */
   var C=V34.C();

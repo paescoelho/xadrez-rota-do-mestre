@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v41</title>
+<title>Xadrez · Rota do Mestre — v42</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1108,6 +1108,25 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v34-aer{font-size:26px;line-height:1;color:#bfe9cf}
 .menu.hub.v34-ct .v34-clock{margin:0 0 8px;width:100%;max-width:none;box-sizing:border-box}
 @media (prefers-reduced-motion:reduce){.v34-fly{display:none}}
+
+/* ================= v42: botão Jogar online — radar com WhatsApp e AO VIVO ================= */
+.mitem.v34-online{position:relative}
+.mitem.v34-online .mic.v34-rad{width:clamp(58px,17vw,76px)!important;height:clamp(58px,17vw,76px)!important;flex:0 0 clamp(58px,17vw,76px)!important;margin-left:-6px;background:none!important;border-radius:0}
+.mitem.v34-online .mtx{margin-top:8px;margin-left:-4px}
+.v34-rad svg{display:block;overflow:visible}
+.v34-sweep{transform-origin:35px 35px;animation:v34sweep 2.6s linear infinite}
+@keyframes v34sweep{to{transform:rotate(360deg)}}
+.v34-blip{opacity:.35;animation:v34blip 2.6s linear infinite}
+.v34-blip.b2{animation-delay:1.55s}
+@keyframes v34blip{0%{opacity:1}12%{opacity:1}60%,100%{opacity:.3}}
+.v34-ring{transform-box:fill-box;transform-origin:center;animation:v34ringp 2.6s ease-out infinite;opacity:0}
+.b2 .v34-ring{animation-delay:1.55s}
+@keyframes v34ringp{0%{transform:scale(.5);opacity:.8}50%,100%{transform:scale(1.6);opacity:0}}
+.v34-live{position:absolute;top:7px;right:8px;display:flex;align-items:center;gap:4px;background:#d93a32;color:#fff;font:800 9px/1 Inter,system-ui,sans-serif;letter-spacing:.09em;padding:3px 6px 3px 5px;border-radius:5px;box-shadow:0 2px 6px rgba(0,0,0,.45);pointer-events:none}
+.v34-live:before{content:'';width:6px;height:6px;border-radius:50%;background:#fff;animation:v34lv 1.2s ease-in-out infinite}
+@keyframes v34lv{50%{opacity:.25}}
+@media (min-width:700px){.mitem.v34-online .mic.v34-rad{width:64px!important;height:64px!important;flex-basis:64px!important;margin-left:4px}}
+@media (prefers-reduced-motion:reduce){.v34-sweep,.v34-blip,.v34-ring,.v34-live:before{animation:none}.v34-blip{opacity:1}}
 </style>
 </head>
 <body>

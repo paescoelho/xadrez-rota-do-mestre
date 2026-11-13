@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v41</title>
+<title>Xadrez · Rota do Mestre — v42</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1249,6 +1249,25 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v34-aer{font-size:26px;line-height:1;color:#bfe9cf}
 .menu.hub.v34-ct .v34-clock{margin:0 0 8px;width:100%;max-width:none;box-sizing:border-box}
 @media (prefers-reduced-motion:reduce){.v34-fly{display:none}}
+
+/* ================= v42: botão Jogar online — radar com WhatsApp e AO VIVO ================= */
+.mitem.v34-online{position:relative}
+.mitem.v34-online .mic.v34-rad{width:clamp(58px,17vw,76px)!important;height:clamp(58px,17vw,76px)!important;flex:0 0 clamp(58px,17vw,76px)!important;margin-left:-6px;background:none!important;border-radius:0}
+.mitem.v34-online .mtx{margin-top:8px;margin-left:-4px}
+.v34-rad svg{display:block;overflow:visible}
+.v34-sweep{transform-origin:35px 35px;animation:v34sweep 2.6s linear infinite}
+@keyframes v34sweep{to{transform:rotate(360deg)}}
+.v34-blip{opacity:.35;animation:v34blip 2.6s linear infinite}
+.v34-blip.b2{animation-delay:1.55s}
+@keyframes v34blip{0%{opacity:1}12%{opacity:1}60%,100%{opacity:.3}}
+.v34-ring{transform-box:fill-box;transform-origin:center;animation:v34ringp 2.6s ease-out infinite;opacity:0}
+.b2 .v34-ring{animation-delay:1.55s}
+@keyframes v34ringp{0%{transform:scale(.5);opacity:.8}50%,100%{transform:scale(1.6);opacity:0}}
+.v34-live{position:absolute;top:7px;right:8px;display:flex;align-items:center;gap:4px;background:#d93a32;color:#fff;font:800 9px/1 Inter,system-ui,sans-serif;letter-spacing:.09em;padding:3px 6px 3px 5px;border-radius:5px;box-shadow:0 2px 6px rgba(0,0,0,.45);pointer-events:none}
+.v34-live:before{content:'';width:6px;height:6px;border-radius:50%;background:#fff;animation:v34lv 1.2s ease-in-out infinite}
+@keyframes v34lv{50%{opacity:.25}}
+@media (min-width:700px){.mitem.v34-online .mic.v34-rad{width:64px!important;height:64px!important;flex-basis:64px!important;margin-left:4px}}
+@media (prefers-reduced-motion:reduce){.v34-sweep,.v34-blip,.v34-ring,.v34-live:before{animation:none}.v34-blip{opacity:1}}
 </style>
 </head>
 <body>
@@ -75665,6 +75684,26 @@ V34.gRefresh=function(){
 };
 (function(){var C=V34.C();if(C&&C.refresh){var o=C.refresh;C.refresh=function(){var r=o.apply(this,arguments);V34.gRefresh();return r;};}})();
 
+
+/* ---------- Jogar online (v42): radar com o WhatsApp no centro e selo AO VIVO ---------- */
+V34.RADAR='<svg viewBox="0 0 70 70" width="100%" height="100%" aria-hidden="true"><defs>'
+ +'<radialGradient id="v34rg" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="rgba(76,210,138,.2)"/><stop offset="1" stop-color="rgba(76,210,138,0)"/></radialGradient>'
+ +'<linearGradient id="v34sw" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="rgba(76,210,138,0)"/><stop offset="1" stop-color="rgba(76,210,138,.6)"/></linearGradient></defs>'
+ +'<circle cx="35" cy="35" r="33" fill="url(#v34rg)" stroke="rgba(76,210,138,.4)"/><circle cx="35" cy="35" r="24" fill="none" stroke="rgba(76,210,138,.35)"/><circle cx="35" cy="35" r="15" fill="none" stroke="rgba(76,210,138,.35)"/>'
+ +'<path d="M35 2v66M2 35h66" stroke="rgba(76,210,138,.18)" stroke-width=".8"/>'
+ +'<g class="v34-sweep"><path d="M35 35L35 2A33 33 0 0 1 63.6 18.5Z" fill="url(#v34sw)"/></g>'
+ +'<g class="v34-blip b1"><circle cx="56" cy="15" r="3.2" fill="#4cd28a"/><circle class="v34-ring" cx="56" cy="15" r="6" fill="none" stroke="#4cd28a"/></g>'
+ +'<g class="v34-blip b2"><circle cx="14" cy="50" r="2.6" fill="#4cd28a"/><circle class="v34-ring" cx="14" cy="50" r="5" fill="none" stroke="#4cd28a"/></g>'
+ +'<circle cx="35" cy="35" r="13.5" fill="#25D366" stroke="#0b0a08" stroke-width="1.5"/>'
+ +'<path d="M28.6 42l1.1-3.4A7 7 0 1 1 32.1 40.8z" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/>'
+ +'<path d="M32.2 31.3c.35 2.1 2.45 4.6 5.25 5.5l1.1-1.25 1.7.85c-.2 1.1-1.1 1.8-2.25 1.7-3.35-.4-6.6-3.65-7-7-.15-1.1.55-2 1.7-2.25l.85 1.7z" fill="#fff"/></svg>';
+V34.onlineTile=function(m){
+ var b=V34.findItem(m,'Jogar online');if(!b||b.querySelector('.v34-rad'))return;
+ var old=b.querySelector('.mwa');if(old)old.parentNode.removeChild(old);
+ var r=document.createElement('span');r.className='mic v34-rad';r.innerHTML=V34.RADAR;b.insertBefore(r,b.firstChild);
+ var lv=document.createElement('span');lv.className='v34-live';lv.textContent='AO VIVO';b.appendChild(lv);
+ b.classList.add('v34-online');
+};
 /* ---------- menu principal ---------- */
 App.menu=function(){
  try{App.stopClock();}catch(e){}
@@ -75685,6 +75724,7 @@ App.menu=function(){
   var j=V34.findItem(m,'Jogar');if(j&&c)j.classList.add('v34-hascont');
   var g=V34.findItem(m,'Entrar com Google')||V34.findItem(m,'Conta Google');
   if(g){g.classList.add('v34-gt');if(V34.findItem(m,'Conta Google'))g.classList.add('on');V34.addIcon(g,'v34-gic',V34.G_ICO);}
+  V34.onlineTile(m);
   var h=V34.findItem(m,'Apoiar o projeto');if(h){h.classList.add('v25-item');V34.addIcon(h,'v25-mic',V34.HEART);}
   /* deixa o login do Google pronto para abrir no primeiro toque */
   var C=V34.C();
