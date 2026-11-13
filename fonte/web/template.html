@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v33</title>
+<title>Xadrez · Rota do Mestre — v34</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -971,6 +971,47 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .theme-preview-praca{background:conic-gradient(#cfccc5 0 25%,#3f4a52 0 50%,#cfccc5 0 75%,#3f4a52 0)!important}
 .theme-preview-daltonico{background:conic-gradient(#f0f0f0 0 25%,#3d6e9e 0 50%,#f0f0f0 0 75%,#3d6e9e 0)!important}
 @media (prefers-reduced-motion:reduce){.board .v33-fx,.board.bt-turquesa .sq.lm:after,.board.bt-praia:after,.board.bt-origami .dust:after,.board.bt-nanquim .dust:before,.board.bt-bic .dust:before,.board.bt-bic .dust:after{display:none!important;animation:none!important}}
+
+/* ================= v34: menus reorganizados ================= */
+.menu.hub.v34-ct{justify-content:flex-start;padding-bottom:calc(18px + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.menu.hub.v34-ct .cthero{width:min(100%,calc(19vh * 360 / 170),460px)}
+.v34-sec{flex:0 0 auto;width:100%;max-width:560px;margin-top:clamp(10px,1.8vh,16px);animation:rise .9s ease-out both}
+.v34-sec:nth-of-type(2){animation-delay:.08s}.v34-sec:nth-of-type(3){animation-delay:.16s}.v34-sec:nth-of-type(4){animation-delay:.24s}.v34-sec:nth-of-type(5){animation-delay:.32s}
+.v34-sh{display:flex;align-items:center;gap:8px;margin:0 2px 7px;font:600 11.5px/1.2 Georgia,serif;letter-spacing:.13em;text-transform:uppercase;color:var(--gold2,#f3d98c)}
+.v34-sh i{font-style:normal;flex:0 0 20px;height:20px;border-radius:50%;display:inline-grid;place-items:center;font:700 11px/1 Inter,system-ui,sans-serif;letter-spacing:0;color:#1b1406;background:linear-gradient(180deg,#f3d98c,#c49434);box-shadow:0 0 8px rgba(240,200,110,.3)}
+.v34-sh:after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(220,181,92,.45),transparent)}
+.menu.hub.v34-ct .v34-sec .mgrid{flex:none;grid-auto-rows:minmax(clamp(56px,8.6vh,76px),auto);animation:none}
+.menu.hub.v34-ct .v34-sec .mitem{min-height:clamp(56px,8.6vh,76px);padding-top:8px;padding-bottom:8px}
+.menu.hub.v34-ct .v34-sec .mitem.irow{flex-direction:row;justify-content:center;gap:10px}
+.mitem.v34-ae{border-color:rgba(140,224,170,.55);background:linear-gradient(180deg,rgba(30,92,68,.9),rgba(12,36,27,.92))}
+.mitem.v34-ae.hl{box-shadow:0 0 14px rgba(120,220,160,.28)}
+.v34-eic .v34-lens{transform-origin:18.5px 17.5px;animation:v34lens 3.4s ease-in-out infinite}
+@keyframes v34lens{0%,100%{transform:translate(0,0)}35%{transform:translate(-4px,-3px)}70%{transform:translate(-1px,1px)}}
+/* Entrar com Google: o G sobre um círculo branco */
+.v34-gic{display:flex;align-items:center;justify-content:center;border-radius:50%;background:#fff!important;box-shadow:0 0 0 2px rgba(243,217,140,.35),0 0 10px rgba(240,200,110,.25)}
+.v34-gic svg{width:66%;height:66%}
+.mitem.v34-gt.on .md{color:#9fe3b8}
+/* Jogar com partida em andamento: selo ▶ no canto */
+.mitem.hero.v34-hascont:after{content:'▶';position:absolute;top:6px;right:8px;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:9px;color:#fff;background:#2f9a72;box-shadow:0 0 0 2px rgba(255,255,255,.55);animation:v34pul 2s ease-in-out infinite}
+@keyframes v34pul{50%{transform:scale(1.15)}}
+/* Nova partida: Continuar no topo */
+.v34-cont{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;width:100%;text-align:left;margin:2px 0 4px;padding:12px 14px;border-radius:14px;border:1px solid rgba(140,224,170,.6);background:linear-gradient(180deg,#2f9a72,#1f7556);color:#fff;cursor:pointer;box-shadow:0 4px 14px rgba(31,117,86,.35)}
+.v34-cic{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.18)}
+.v34-cic svg{width:20px;height:20px;color:#fff}
+.v34-ctx b{display:block;font-size:16px}
+.v34-ctx i{display:block;font-style:normal;font-size:12.5px;opacity:.9;margin-top:1px}
+.v34-cont em{font-style:normal;font-size:26px;line-height:1;opacity:.85}
+.v34-or{display:flex;align-items:center;gap:8px;margin:8px 0 2px;font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:.1em}
+.v34-or:before,.v34-or:after{content:'';flex:1;height:1px;background:rgba(220,181,92,.25)}
+/* Conta e backup: atalho para as contas de xadrez */
+.v34-accl{display:flex;flex-direction:column;gap:4px;margin:10px 0;padding:10px 12px;border:1px solid rgba(220,181,92,.3);border-radius:12px;background:rgba(0,0,0,.18)}
+.v34-accl span{font-size:13px;color:var(--mu)}
+.v34-accl .btn{align-self:flex-start;margin-top:4px}
+.menu.hub.v34-ct .v34-sec{max-width:640px!important}
+.menu.hub.v34-ct .v34-sec .mgrid{grid-template-columns:1fr 1fr!important;max-width:none}
+.menu.hub.v34-ct .v34-sec .mitem.wide{grid-column:1/-1}
+.menu.hub.v34-ct .v34-sec .mitem.lone{grid-column:1/-1;justify-self:center;width:calc(50% - 4px)}
+@media (prefers-reduced-motion:reduce){.v34-sec,.v34-eic .v34-lens,.mitem.hero.v34-hascont:after{animation:none}}
 </style>
 </head>
 <body>

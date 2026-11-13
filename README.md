@@ -231,3 +231,10 @@ Dez tabuleiros, nesta ordem, cada um com peças, textura, moldura e efeitos pró
 
 Os temas antigos (Madeira, Nogueira, Verde, Céu, Lavanda, Rubi, Laranja, Diagrama) passam automaticamente para o
 Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "reduzir movimento" do aparelho.
+
+## v34 — menus reorganizados (12.11.2026)
+- Menu principal: Jogar · Jogar online · Centro de Treino · Seu maior adversário · Entrar com Google · Apoiar o projeto (lado a lado) + Painel de evolução e História do xadrez (grandes).
+- "Continuar" fica dentro do Jogar, no topo da tela Nova partida; o botão Jogar ganha um selo ▶ quando há partida em andamento.
+- Centro de Treino em 5 seções numeradas, com rolagem: Comece por aqui (Nivelamento, Como pensar) · Sua rotina (Plano do dia, Trilha) · Treinos por tema · Seus erros e seu pensamento (Analisar erros, Laboratório do Pensamento) · Alto rendimento.
+- Novo "Analisar erros": contas Lichess/Chess.com, importação, Aula da semana e Reconstrua seu Pensamento, em sequência.
+- Laboratório do Pensamento fica com Primeiras observações, Mapa do seu pensamento e Raio-X.

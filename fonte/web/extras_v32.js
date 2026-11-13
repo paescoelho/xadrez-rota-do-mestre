@@ -369,7 +369,7 @@ V32.panelBox=function(anchor){
   var row=document.createElement('div');row.className='btns';box.appendChild(row);
   var btn=function(txt,fn,cls){var b=document.createElement('button');b.type='button';b.className='btn '+(cls||'');b.textContent=txt;b.onclick=fn;row.appendChild(b);};
   if(C&&!C.user&&C.configured()&&C.web())btn('Salvar progresso com Google',function(){V23.account();},'pri');
-  btn(a.lichess||a.chesscom?'Contas e sincronização':'Ligar Lichess / Chess.com',function(){V23.account();});
+  btn(a.lichess||a.chesscom?'Contas Lichess e Chess.com':'Ligar Lichess / Chess.com',function(){if(typeof V34!=='undefined')V34.contas();else V23.account();});
   btn('Aula da semana',function(){V32.lesson(Pages.profile);});
  };
  box.__fill();
