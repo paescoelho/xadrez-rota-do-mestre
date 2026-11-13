@@ -32627,52 +32627,64 @@ V36.san=function(s){
 V36.first=function(arr){return Array.isArray(arr)&&arr.length?String(arr[0]).replace(/\s*\(.*?\)\s*/g,' ').trim():'';};
 V36.short=function(t,max){t=String(t||'').trim();max=max||140;if(t.length<=max)return t;var k=t.lastIndexOf('.',max);return (k>40?t.slice(0,k+1):t.slice(0,max).replace(/\s+\S*$/,'')+'.');};
 
+/* ---------- leitura de ameaças (curta, como um treinador ao lado) ---------- */
+V36.NM=['','peão','cavalo','bispo','torre','dama','rei'];
+V36.MASC=[0,1,1,1,0,0,1];
+/* peças de "side" que o outro lado ganha capturando (troca desfavorável incluída), da mais valiosa para a menos */
+V36.hanging=function(pos,side){
+ var out=[],b=pos.board;
+ for(var sq=0;sq<64;sq++){var p=b[sq];if(!p||(p>0?1:-1)!==side)continue;var t=Math.abs(p);if(t===6)continue;
+  var g=0;try{g=Engine.see(pos,sq,-side);}catch(e){}
+  if(g>0&&(t>=2||g>=200))out.push({sq:sq,t:t,g:g});}
+ out.sort(function(x,y){return y.t-x.t||y.g-x.g;});return out;
+};
+V36.pick=function(arr){return arr[Math.floor(Math.random()*arr.length)];};
+V36.mine=function(h){var x=h[0],n=V36.NM[x.t];
+ if(h.length>=2)return V36.pick(['Você tem '+(h.length===2?'duas':h.length===3?'três':h.length)+' peças ameaçadas. Analise com calma.','Atenção: '+(h.length===2?'duas':'várias')+' peças suas estão em perigo. Calma antes de mover.']);
+ return V36.pick([(V36.MASC[x.t]?'Seu ':'Sua ')+n+' está '+(V36.MASC[x.t]?'ameaçado':'ameaçada')+'.','Cuidado com '+(V36.MASC[x.t]?'o seu ':'a sua ')+n+'.',(V36.MASC[x.t]?'Seu ':'Sua ')+n+' está em perigo. Proteja ou mova.']);};
+V36.theirs=function(h){var x=h[0],n=V36.NM[x.t];
+ if(h.length>=2)return 'Tem mais de uma peça dele desprotegida. Procure!';
+ return V36.pick([(V36.MASC[x.t]?'O ':'A ')+n+' dele está '+(V36.MASC[x.t]?'desprotegido':'desprotegida')+'. Procure!','Olhe bem: dá para ganhar material.']);};
+V36.GRADE={best:['Boa!','Muito bem!','Excelente lance!','Isso mesmo!'],great:['Ótimo lance!','Muito bom!'],good:['Bom lance.','Certo.'],book:['Lance de livro.','Boa abertura.'],forced:['Era o único lance.'],
+ inaccuracy:['Hmm, havia algo melhor.','Dava para fazer melhor.'],mistake:['Cuidado, esse lance custou caro.','Esse não foi bom.'],blunder:['Ops! Esse foi um erro grave.','Opa, esse lance foi um erro sério.']};
+
 /* ---------- o que falar a cada redesenho da partida ---------- */
 V36.watch=function(){
  var g=App.G;if(!g||!g.adaptive||!V36.enabled())return;
- /* 1. avaliação do seu lance */
+ /* 1. seu lance: uma frase de avaliação + a ameaça que você criou */
  var fb=g.lastFb,rec=g.lastRec;
- if(fb&&rec&&g._v36fb!==rec&&g.coach!==false){
+ if(fb&&rec&&g._v36fb!==rec){
   g._v36fb=rec;
-  var t=fb.headline||fb.label||'';
-  if(fb.bad){
-   var pr=V36.first(fb.problems);
-   t+=(pr?' '+pr:'')+(fb.bestSan?' Melhor era '+V36.san(fb.bestSan)+'.':'');
-  }else{var gd=V36.first(fb.good);if(gd&&fb.grade==='best')t+=' '+gd;}
-  V36.say(V36.short(t,170));
+  var t=V36.pick(V36.GRADE[fb.grade]||[fb.bad?'Cuidado.':'Bom lance.']);
+  if(fb.bad&&(fb.grade==='mistake'||fb.grade==='blunder')&&fb.bestSan)t+=' Melhor era '+V36.san(fb.bestSan)+'.';
+  else if(g._v36my&&g._v36my.rec===rec.san&&g._v36my.h.length){var x=g._v36my.h[0];t+=' E você ameaça '+(V36.MASC[x.t]?'o ':'a ')+V36.NM[x.t]+' dele!';}
+  V36.say(t);
  }
- /* 2. lance do Mentor (com o motivo principal, quando a análise encontra um) */
+ /* 2. lance do Mentor + como ficou a posição para você */
  var ck=String(g.cpuSan||'');
- if(g.cpuSan&&g._v36c!==ck&&g.over==null&&!g.learner){
-  g._v36c=ck;var chk2=false;try{chk2=Engine.inCheck(g.pos);}catch(e){}
+ if(g.cpuSan&&g._v36c!==ck&&g.over==null){
+  g._v36c=ck;
   var mv=String(g.cpuSan).replace(/^\d+(\.|…|\.\.\.)\s*/,'');
-  var why=V36.first(g.note&&g.note.reasons),al2=V36.first(g.note&&g.note.alerts);
-  var line='Mentor jogou '+V36.san(mv)+'.'+(chk2?' Você está em xeque!':'');
-  if(V36.d().n==null)V36.d().n=0;
-  if(why)line+=' '+V36.short(why,120);else if(al2)line+=' Atenção: '+V36.short(al2,110);
+  var line='Mentor jogou '+V36.san(mv)+'.',me=g.human,chk=false;
+  try{chk=Engine.inCheck(g.pos);}catch(e){}
+  if(chk)line=line.replace(/, xeque(-mate)?\.$/,'.')+' Você está em xeque!';
+  else if(g.pos.turn===me){
+   var mineH=V36.hanging(g.pos,me),theirH=V36.hanging(g.pos,-me);
+   if(mineH.length)line+=' '+V36.mine(mineH);
+   else if(theirH.length)line+=' '+V36.theirs(theirH);
+  }
   V36.say(line);
  }
- /* 2b. (modo Aprendiz) fases da explicação */
- var a=g.learner;
- if(a&&g.over==null){
-  var k=a.phase;
-  if(g._v36l!==a){g._v36l=a;g._v36p=0;}
-  if(g._v36p!==k){
-   g._v36p=k;
-   if(k===1){var chk=false;try{chk=Engine.inCheck(g.pos);}catch(e){}
-    V36.say('Mentor jogou '+V36.san(a.move)+'.'+(chk?' Você está em xeque!':'')+' Por que ele escolheu esse lance?');}
-   else if(k===3){var r=V36.first(a.note&&a.note.reasons),al=V36.first(a.note&&a.note.alerts);
-    V36.say(r?'O motivo: '+V36.short(r,150):(al?'Atenção: '+V36.short(al,150):'Pense em desenvolvimento, centro e segurança do rei.'));}
-  }
- }
  /* 3. fim da partida */
- if(g.over!=null&&!g._v36end){g._v36end=1;var sc=g.over.score;V36.say(sc>=1?'Vitória! Parabéns.':(sc<=0?'Fim de partida. Vamos revisar e aprender com ela.':'Empate.'),{cut:false});}
+ if(g.over!=null&&!g._v36end){g._v36end=1;var sc=g.over.score;V36.say(sc>=1?'Vitória! Parabéns.':(sc<=0?'Fim de partida. Vamos revisar e aprender com ela.':'Empate.'));}
 };
 (function(){
  if(typeof App==='undefined')return;
  var oD=App.drawGame;App.drawGame=function(){var r=oD.apply(this,arguments);try{V36.watch();V36.btn();}catch(e){}return r;};
  /* seu lance corta a fala anterior */
- var oP=App.playUser;App.playUser=function(){if(V36.enabled())V36.stop();return oP.apply(this,arguments);};
+ var oP=App.playUser;App.playUser=function(){if(V36.enabled())V36.stop();var r=oP.apply(this,arguments);
+  try{var g=App.G;if(g&&g.adaptive&&V36.enabled()&&g.pos.turn===-g.human&&g.lastRec)g._v36my={rec:g.lastRec.san,h:V36.hanging(g.pos,-g.human)};}catch(e){}
+  return r;};
  var oN=App.newGame;App.newGame=function(){V36.stop();return oN.apply(this,arguments);};
  var oM=App.menu;App.menu=function(){V36.stop();return oM.apply(this,arguments);};
 })();
