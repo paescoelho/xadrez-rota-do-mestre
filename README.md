@@ -325,3 +325,6 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 
 ## v60 (13.11.2026)
 - Jogar online: separador "Ou jogue também em" em selo dourado (letras Cinzel, losangos e brilho), com linhas douradas e uma luz que corre por elas.
+
+## v61 (13.11.2026)
+- Botão Jogar: "Jogue com Mentor ou contra IA".
