@@ -135,7 +135,9 @@ class Dna {
         opts.set(u, (opts.exists(u) ? opts.get(u) : 0) + c); tot += c;
       }
     }
-    if (tot == 0 || Math.random() > 0.92) return null;
+    /* fidelidade ao repertório: fantasmas de pessoas saem do livro às vezes; as Lendas (bk = 1) nunca */
+    var keep:Float = dna.bk != null ? (dna.bk : Float) : 0.92;
+    if (tot == 0 || Math.random() > keep) return null;
     var r = Math.random() * tot;
     for (u in opts.keys()) {
       r -= opts.get(u);

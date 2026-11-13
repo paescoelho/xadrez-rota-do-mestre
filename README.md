@@ -387,3 +387,11 @@ Medido em partidas do motor novo contra o anterior (80 partidas, 40 aberturas co
 - **Memória:** geração de lances e notas em vetores reaproveitados (sem criar listas a cada posição); tabela de transposição 2× maior.
 - **Níveis:** Fácil 800, Médio 1200, Difícil 1600 (mesma força de antes, recalibrados), **Mestre 2000** (motor do jogo), **Grande Mestre 2500** e **Stockfish 3200** (jogados pelo Stockfish que já vinha no jogo; se ele não carregar, joga o motor do jogo e a tela avisa). Os rótulos dos três últimos são aproximados.
 - **Fantasma com erros de verdade:** ao importar do Lichess/Chess.com, o Stockfish mede em segundo plano até 120 lances seus e a taxa de erros por fase substitui a estimativa pelo rating.
+
+## v74 — Lendas: enfrente os maiores jogadores
+- Em **Nova partida**, botão **Lendas ▾** depois do Stockfish. Abre uma lista com busca (nome ou país) e filtros (Todos, Campeões mundiais, Em atividade, Clássicos).
+- **24 jogadores**: Carlsen, Kasparov, Fischer, Karpov, Capablanca, Alekhine, Lasker, Botvinnik, Tal, Petrosian, Spassky, Smyslov, Steinitz, Morphy, Kramnik, Anand, Caruana, Nakamura, Ding, Gukesh, Judit Polgár, Korchnoi, Mequinho e Firouzja.
+- Cada um joga com o **repertório de aberturas** dele (76 linhas, validadas lance a lance pelo motor) e o **estilo** (agressividade, trocas de dama, roque, taxa de erros).
+- Quem joga é o motor do jogo no modo fantasma: imita repertório e estilo, **não a força real** do jogador. O duelo não muda o Elo e tem placar próprio por lenda.
+- Os ratings anteriores a 1970 são estimativas históricas (marcados como "estimado").
+- `fonte/lendas/gen.js` gera `lendas_data.js`.
