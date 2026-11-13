@@ -293,3 +293,6 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 
 ## v50 (13.11.2026)
 - Painel do criador: os 5 toques na versão só abrem o painel quando o jogo está logado na conta Google do criador.
+
+## v51 (13.11.2026)
+- Computador: as explicações embaixo do nome dos botões voltam a aparecer em telas largas e baixas (notebooks).
