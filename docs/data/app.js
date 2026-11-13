@@ -32531,8 +32531,8 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
    var c=UiJs.el('div','v35-fc '+x[3],ft);c.innerHTML='<i>'+x[0]+'</i><span><b>'+x[1]+'</b>'+x[2]+'</span>';
   });
   /* nome */
-  var nm=document.createElement('input');nm.className='v35-nm';nm.maxLength=30;nm.placeholder='Seu nome (como o amigo vai ver você)';nm.value=typeof Profile.d.name==='string'?Profile.d.name:'';
-  nm.oninput=function(){Profile.d.name=String(nm.value).trim();Profile.save();};cur.appendChild(nm);
+  var nm=document.createElement('input');nm.className='v35-nm';nm.maxLength=30;nm.placeholder='Seu nome (como o amigo vai ver você)';nm.value=V35.nome();nm.autocomplete='nickname';
+  nm.oninput=function(){V35.setNome(nm.value);};nm.onblur=function(){nm.value=V35.nome();};cur.appendChild(nm);
   /* ritmo e cor */
   var seg=function(label,opts,on,pick){var w=UiJs.el('div','v35-sg',cur);UiJs.el('span','v35-sl',w,label);var g=UiJs.el('div','v35-so',w);g.style.gridTemplateColumns='repeat('+opts.length+',1fr)';
    opts.forEach(function(o,i){var b=UiJs.el('button',on(o,i)?'on':'',g,o[0]);b.type='button';b.onclick=function(){pick(o,i);[].forEach.call(g.children,function(x){x.className='';});b.className='on';};});};
@@ -32561,6 +32561,16 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
   });
   UiJs.el('div','v35-fp',cur,'Jogo justo: dicas e treinador desligados. O resultado vai para o seu histórico.');
  };
+})();
+
+/* v57: o nome do Jogar online fica salvo (último preenchido), também fora do perfil para não se perder numa sincronização */
+V35.nome=function(){var n='';try{n=typeof Profile.d.name==='string'?Profile.d.name.trim():'';}catch(e){}if(!n){try{n=localStorage.getItem('rdm-nome')||'';}catch(e){}if(n){try{Profile.d.name=n;Profile.save();}catch(e){}}}return n;};
+V35.setNome=function(v){v=String(v||'').trim().slice(0,30);if(!v)return;try{Profile.d.name=v;Profile.save();}catch(e){}try{localStorage.setItem('rdm-nome',v);}catch(e){}};
+(function(){
+ if(typeof V31==='undefined')return;
+ V31.name=function(){var n=V35.nome();return n?n.slice(0,24):'';};
+ /* tela do convite: o campo de nome também usa e grava o último nome */
+ var oI=V31.invite;V31.invite=function(){var r=oI.apply(this,arguments);var fix=function(){try{[].forEach.call(document.querySelectorAll('.fld input, input.fi'),function(i){var l=i.closest('label');if(l&&/Seu nome/.test(l.textContent)&&!i.__v57){i.__v57=1;if(!i.value)i.value=V35.nome();i.addEventListener('input',function(){V35.setNome(i.value);});}});}catch(e){}};fix();setTimeout(fix,600);setTimeout(fix,1800);return r;};
 })();
 
 Main.main();

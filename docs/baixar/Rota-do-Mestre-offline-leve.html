@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v56</title>
+<title>Xadrez · Rota do Mestre — v57</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1481,6 +1481,26 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v35-xb em{white-space:nowrap;font-size:10px;letter-spacing:-.1px}.v35-xb{padding:6px 8px;gap:7px}.v35-xb i{flex-basis:30px;height:30px}
 @media (max-height:700px){.v35-fg .v35-fc span{font-size:0}.v35-fg .v35-fc span b{font-size:12.5px}.v35-fc{padding:6px 8px}}
 @media (max-height:660px){.v35-hh{padding:7px 10px}.v35-hi{flex-basis:36px;height:36px}.v35-so button{min-height:34px}.v35-go{min-height:46px}.v35-nm,.v35-ci{height:38px}}
+
+/* v57: botões Lichess / Chess.com maiores e animados */
+.v35-ext{gap:9px}
+.v35-xb{min-height:64px;padding:9px 11px;gap:10px;border-radius:14px;transition:transform .15s}
+.v35-xb:active{transform:scale(.97)}
+.v35-xb i{flex:0 0 40px;height:40px;border-radius:10px;font-size:26px;animation:v57bob 3.2s ease-in-out infinite}
+.v35-xb.cc i{animation-delay:1.6s}
+.v35-xb b{font-size:16.5px}.v35-xb small{font-size:11px}.v35-xb em{font-size:10.8px}
+.v35-xb:after{background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.16) 48%,transparent 66%) 0 0/250% 100% no-repeat;animation:v57shine 4.2s ease-in-out infinite}
+.v35-xb.cc:after{animation-delay:2.1s}
+.v35-xb.li{box-shadow:0 0 0 0 rgba(243,217,140,0);animation:v57glowli 4.2s ease-in-out infinite}
+.v35-xb.cc{animation:v57glowcc 4.2s ease-in-out 2.1s infinite}
+.v35-xb em{animation:v57blink 2.4s ease-in-out infinite}@keyframes v57blink{50%{opacity:.55}}
+@keyframes v57shine{0%,55%{background-position:120% 0}85%,100%{background-position:-60% 0}}
+@keyframes v57bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-2px) rotate(-6deg)}}
+@keyframes v57glowli{0%,55%,100%{box-shadow:0 0 0 0 rgba(243,217,140,0)}75%{box-shadow:0 0 14px 0 rgba(243,217,140,.28)}}
+@keyframes v57glowcc{0%,55%,100%{box-shadow:0 0 0 0 rgba(129,182,76,0)}75%{box-shadow:0 0 16px 0 rgba(129,182,76,.45)}}
+@media (max-height:660px){.v35-xb{min-height:56px;padding:7px 9px}.v35-xb i{flex-basis:34px;height:34px;font-size:22px}.v35-xb b{font-size:15px}}
+@media (prefers-reduced-motion:reduce){.v35-xb,.v35-xb i,.v35-xb:after,.v35-xb em:after{animation:none}}
+.v35-xb em{font-size:10px!important;letter-spacing:-.2px}.v35-xb{gap:8px}.v35-xb i{flex-basis:36px;height:36px}
 </style>
 </head>
 <body>
@@ -76515,8 +76535,8 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
    var c=UiJs.el('div','v35-fc '+x[3],ft);c.innerHTML='<i>'+x[0]+'</i><span><b>'+x[1]+'</b>'+x[2]+'</span>';
   });
   /* nome */
-  var nm=document.createElement('input');nm.className='v35-nm';nm.maxLength=30;nm.placeholder='Seu nome (como o amigo vai ver você)';nm.value=typeof Profile.d.name==='string'?Profile.d.name:'';
-  nm.oninput=function(){Profile.d.name=String(nm.value).trim();Profile.save();};cur.appendChild(nm);
+  var nm=document.createElement('input');nm.className='v35-nm';nm.maxLength=30;nm.placeholder='Seu nome (como o amigo vai ver você)';nm.value=V35.nome();nm.autocomplete='nickname';
+  nm.oninput=function(){V35.setNome(nm.value);};nm.onblur=function(){nm.value=V35.nome();};cur.appendChild(nm);
   /* ritmo e cor */
   var seg=function(label,opts,on,pick){var w=UiJs.el('div','v35-sg',cur);UiJs.el('span','v35-sl',w,label);var g=UiJs.el('div','v35-so',w);g.style.gridTemplateColumns='repeat('+opts.length+',1fr)';
    opts.forEach(function(o,i){var b=UiJs.el('button',on(o,i)?'on':'',g,o[0]);b.type='button';b.onclick=function(){pick(o,i);[].forEach.call(g.children,function(x){x.className='';});b.className='on';};});};
@@ -76545,6 +76565,16 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
   });
   UiJs.el('div','v35-fp',cur,'Jogo justo: dicas e treinador desligados. O resultado vai para o seu histórico.');
  };
+})();
+
+/* v57: o nome do Jogar online fica salvo (último preenchido), também fora do perfil para não se perder numa sincronização */
+V35.nome=function(){var n='';try{n=typeof Profile.d.name==='string'?Profile.d.name.trim():'';}catch(e){}if(!n){try{n=localStorage.getItem('rdm-nome')||'';}catch(e){}if(n){try{Profile.d.name=n;Profile.save();}catch(e){}}}return n;};
+V35.setNome=function(v){v=String(v||'').trim().slice(0,30);if(!v)return;try{Profile.d.name=v;Profile.save();}catch(e){}try{localStorage.setItem('rdm-nome',v);}catch(e){}};
+(function(){
+ if(typeof V31==='undefined')return;
+ V31.name=function(){var n=V35.nome();return n?n.slice(0,24):'';};
+ /* tela do convite: o campo de nome também usa e grava o último nome */
+ var oI=V31.invite;V31.invite=function(){var r=oI.apply(this,arguments);var fix=function(){try{[].forEach.call(document.querySelectorAll('.fld input, input.fi'),function(i){var l=i.closest('label');if(l&&/Seu nome/.test(l.textContent)&&!i.__v57){i.__v57=1;if(!i.value)i.value=V35.nome();i.addEventListener('input',function(){V35.setNome(i.value);});}});}catch(e){}};fix();setTimeout(fix,600);setTimeout(fix,1800);return r;};
 })();
 
 Main.main();

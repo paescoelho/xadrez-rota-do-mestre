@@ -312,3 +312,7 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 
 ## v56 (13.11.2026)
 - Jogar online: no fim da tela, botões "Jogar via Lichess.org" (cinza-carvão com cavalo branco) e "Jogar via Chess.com" (verde com peão), marcados "Em desenvolvimento…", ainda sem ação (um toque mostra o aviso).
+
+## v57 (13.11.2026)
+- Jogar online: o nome fica salvo (último preenchido), também numa cópia à parte para não se perder; a tela do convite usa e grava o mesmo nome.
+- Botões Lichess.org e Chess.com maiores, com brilho que passa, ícone que balança e contorno que acende, alternando entre os dois.
