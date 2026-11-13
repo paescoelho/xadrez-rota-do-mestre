@@ -280,3 +280,6 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 
 ## v46 (12.11.2026)
 - "Aprenda antes de jogar" numa tela só no celular: peças em 2 colunas com textos curtos, "Como jogar" num quadro, botões Treinar movimento e Entendi lado a lado na base (o voltar fica na seta).
+
+## v47 (12.11.2026)
+- Ícone do botão Entrar com Google: G original numa casa escura quadrada com moldura dourada (sem fundo branco).
