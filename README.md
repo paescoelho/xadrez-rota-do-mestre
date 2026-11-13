@@ -296,3 +296,6 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 
 ## v51 (13.11.2026)
 - Computador: as explicações embaixo do nome dos botões voltam a aparecer em telas largas e baixas (notebooks).
+
+## v52 (13.11.2026)
+- Menu: Centro de Treino "Aprenda a pensar como um mestre"; História do xadrez "1.500 anos · 18 jogos ancestrais para jogar".

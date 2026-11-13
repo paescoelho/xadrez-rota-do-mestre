@@ -75828,13 +75828,13 @@ App.menu=function(){
  var c=V34.cont(),s=V34.state(),it=[];
  it.push({t:'Jogar',d:c?'Continue sua partida':'Contra o computador',f:App.setupGame,hero:true});
  it.push({t:'Jogar online',d:'Convide um amigo',f:function(){if(typeof V31!=='undefined')V31.home();else Online.home();},ico:'whats'});
- it.push({t:'Centro de Treino',d:!s.placed?'Comece pelo Nivelamento':(!s.dailyAll?'Próximo passo: Plano do dia':'Treinos, Nivelamento e seus erros'),f:App.training,ico:'ct',hl:!s.placed||!s.dailyAll});
+ it.push({t:'Centro de Treino',d:'Aprenda a pensar como um mestre',f:App.training,ico:'ct',hl:!s.placed||!s.dailyAll});
  it.push({t:'Seu maior adversário',d:'Você de 3 meses atrás',f:Dna.rival,ico:'ghost'});
  it.push(V34.gItem());
  it.push({t:'Apoiar o projeto',d:'Ajude o jogo a evoluir',f:function(){V25.page(App.menu);},ico:'v34heart'});
  var pd=null;try{pd=App.panelData();}catch(e){}
  if(pd)it.push({t:'Painel de evolução',d:'Perfil em teia, evolução mês a mês e dicas',f:Pages.profile,wide:true,ico:'pnl',pnl:pd});
- it.push({t:'História do xadrez',d:'1.500 anos · 18 jogos para jogar',f:Pages.history,wide:true,ico:'hist'});
+ it.push({t:'História do xadrez',d:'1.500 anos · 18 jogos ancestrais para jogar',f:Pages.history,wide:true,ico:'hist'});
  UiJs.menu(it,'');
  try{
   var m=UiJs.root.querySelector('.menu');
