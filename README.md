@@ -319,3 +319,6 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 
 ## v58 (13.11.2026)
 - Jogar online: linha "ou jogue também em" separando os botões Lichess.org e Chess.com, que agora crescem até ocupar o espaço livre da tela (sem rolar).
+
+## v59 (13.11.2026)
+- Jogar online: sem o texto final "Jogo justo…"; os botões Lichess/Chess.com ganham esse espaço.

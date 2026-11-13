@@ -32560,7 +32560,6 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
    b.innerHTML='<i>'+x[1]+'</i><span><small>'+x[2]+'</small><b>'+x[3]+'</b><em>Em desenvolvimento…</em></span>';
    b.onclick=function(){UiJs.toast(x[0]==='li'?'Em desenvolvimento: em breve você joga no Lichess com o tabuleiro do Rota do Mestre.':'Em desenvolvimento: em breve o Chess.com abre daqui e a partida volta sozinha para a sua análise.');};
   });
-  UiJs.el('div','v35-fp',cur,'Jogo justo: dicas e treinador desligados. O resultado vai para o seu histórico.');
   /* os botões Lichess/Chess.com crescem até ocupar o espaço livre da tela (sem criar rolagem) */
   var fit=function(){try{var m=cur.closest('.main')||cur.parentNode;if(!m||!ex.isConnected)return;ex.style.height='';var free=m.clientHeight-cur.offsetHeight;var h=ex.offsetHeight+Math.max(0,free-6);ex.style.height=Math.min(104,Math.max(56,h))+'px';}catch(e){}};
   requestAnimationFrame(function(){requestAnimationFrame(fit);});
