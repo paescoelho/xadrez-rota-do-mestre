@@ -65,8 +65,8 @@ service cloud.firestore {
     }
 
     // caixa de sugestões: qualquer jogador ENVIA (com login anônimo ou Google); só a conta do criador LÊ, marca e apaga.
-    // Para liberar a leitura, ponha o uid da conta Google do criador na lista abaixo.
-    function criador() { return signedIn() && request.auth.uid in []; }
+    // A lista abaixo tem o uid da conta Google do criador (não é senha: só identifica a conta).
+    function criador() { return signedIn() && request.auth.uid in ['yQcB43kSJcbxnJorS1QsJsJtP5x1']; }
     match /sugestoes/{id} {
       allow create: if signedIn()
         && request.resource.data.keys().hasOnly(['tipo', 'msg', 'contato', 'versao', 'aparelho', 't', 'uid'])
