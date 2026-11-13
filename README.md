@@ -328,3 +328,7 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 
 ## v61 (13.11.2026)
 - Botão Jogar: "Jogue com Mentor ou contra IA".
+
+## v62 (13.11.2026)
+- Botão Jogar do menu sempre com "Jogue com Mentor ou contra IA".
+- Nova partida: "Começar nova partida" e "Continuar partida" com a mesma altura fixa (56 px).

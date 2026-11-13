@@ -79,7 +79,7 @@ App.menu=function(){
  try{App.stopClock();}catch(e){}
  V34.errCtx=false;
  var c=V34.cont(),s=V34.state(),it=[];
- it.push({t:'Jogar',d:c?'Continue sua partida':'Jogue com Mentor ou contra IA',f:App.setupGame,hero:true});
+ it.push({t:'Jogar',d:'Jogue com Mentor ou contra IA',f:App.setupGame,hero:true});
  it.push({t:'Jogar online',d:'Convide um amigo',f:function(){if(typeof V31!=='undefined')V31.home();else Online.home();},ico:'whats'});
  it.push({t:'Centro de Treino',d:'Aprenda a pensar como um mestre',f:App.training,ico:'ct',hl:!s.placed||!s.dailyAll});
  it.push({t:'Seu maior adversário',d:'Você de 3 meses atrás',f:Dna.rival,ico:'ghost'});

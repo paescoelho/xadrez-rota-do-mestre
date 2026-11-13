@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v61</title>
+<title>Xadrez · Rota do Mestre — v62</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1527,6 +1527,12 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 @media (max-height:660px){.v35-sep span{padding:4px 11px;font-size:11px}}
 @media (prefers-reduced-motion:reduce){.v35-sep i:after{animation:none;display:none}}
 .mitem.hero .md{-webkit-line-clamp:3!important}
+
+/* v62: Começar nova partida e Continuar partida do mesmo tamanho (maior, fixo) */
+.col.v34-setup .btns .btn,.col.v34-setup .v34-cont{min-height:56px!important;height:56px;box-sizing:border-box;margin-top:8px}
+.col.v34-setup .btns{margin-top:clamp(5px,1vh,10px)}
+.col.v34-setup .btns .btn{font-size:17px;padding-top:0;padding-bottom:0}
+.col.v34-setup .v34-cont{padding:0 12px}
 </style>
 </head>
 <body>
@@ -75967,7 +75973,7 @@ App.menu=function(){
  try{App.stopClock();}catch(e){}
  V34.errCtx=false;
  var c=V34.cont(),s=V34.state(),it=[];
- it.push({t:'Jogar',d:c?'Continue sua partida':'Jogue com Mentor ou contra IA',f:App.setupGame,hero:true});
+ it.push({t:'Jogar',d:'Jogue com Mentor ou contra IA',f:App.setupGame,hero:true});
  it.push({t:'Jogar online',d:'Convide um amigo',f:function(){if(typeof V31!=='undefined')V31.home();else Online.home();},ico:'whats'});
  it.push({t:'Centro de Treino',d:'Aprenda a pensar como um mestre',f:App.training,ico:'ct',hl:!s.placed||!s.dailyAll});
  it.push({t:'Seu maior adversário',d:'Você de 3 meses atrás',f:Dna.rival,ico:'ghost'});
