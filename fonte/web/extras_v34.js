@@ -357,3 +357,102 @@ Pages.sync=V23.account;
 
 /* ---------- Nivelamento volta para o Centro de Treino ---------- */
 (function(){var o=Pages.placementIntro;Pages.placementIntro=function(){var r=o.apply(this,arguments);V34.reback(App.training);return r;};})();
+
+/* ======================= v48: Apoio ou sugestão ======================= *
+ * Tela com duas abas: ♥ Apoiar (Pix, primeiro) e 💬 Sugestão (caixa que só o criador lê, no Painel do criador).
+ * As sugestões vão para a coleção "sugestoes" do Firebase: qualquer pessoa pode CRIAR; só a conta do criador LÊ, marca e apaga. */
+V34.ADMIN=[];/* identificador (uid) da conta Google do criador: preenchido depois do primeiro login dele */
+V34.TIPOS=[['ideia','💡 Ideia'],['erro','🐞 Erro'],['elogio','👍 Elogio'],['outro','Outro']];
+V34.sug={tipo:'ideia',msg:'',contato:''};
+V34.device=function(){var u=navigator.userAgent||'',d=/iPhone|iPad/.test(u)?(/iPad/.test(u)?'iPad':'iPhone'):/Android/.test(u)?'Android':/Windows/.test(u)?'Windows':/Mac/.test(u)?'Mac':/Linux/.test(u)?'Linux':'outro';
+ var b=/Edg\//.test(u)?'Edge':/SamsungBrowser/.test(u)?'Samsung':/CriOS|Chrome\//.test(u)?'Chrome':/Firefox|FxiOS/.test(u)?'Firefox':/Safari/.test(u)?'Safari':'navegador';return d+' · '+b;};
+V34.ver=function(){try{var v=document.querySelector('.menu-version');if(v)return v.textContent.replace(/^Versão:\s*/,'');}catch(e){}return '12.11.2026';};
+V34.sentToday=function(){try{var o=JSON.parse(localStorage.getItem('rdm-sug')||'{}'),k=new Date().toDateString();return o.d===k?o.n:0;}catch(e){return 0;}};
+V34.markSent=function(){try{var k=new Date().toDateString(),n=V34.sentToday()+1;localStorage.setItem('rdm-sug',JSON.stringify({d:k,n:n}));}catch(e){}};
+/* uma tela só, sem abas e sem rolar: Pix em cima (primeiro), caixa de sugestão embaixo */
+V34.apoio=function(back){
+ back=back||App.menu;V25.back=back;
+ UiJs.page('Apoio ou sugestão',back);
+ var cur=UiJs.cur,S=V34.sug;cur.classList.add('v34-ap');
+ try{V25.d().seen=Date.now();Profile.save();}catch(e){}
+ /* 1. Pix */
+ var pc=UiJs.el('div','v34-apc',cur);
+ var sel=V25.sel==null?10:V25.sel,code=V25.payload(sel);
+ pc.innerHTML='<div class="v34-aph"><span>♥</span><b>Apoie com Pix</b><i>jogo grátis e sem anúncios</i></div>';
+ var vals=UiJs.el('div','v34-apv',pc);
+ V25.VALUES.concat([0]).forEach(function(v){var b=UiJs.el('button',sel===v?'on':'',vals,v?'R$ '+v:'Outro');b.type='button';b.onclick=function(){V25.sel=v;V34.apoio(back);};});
+ var row=UiJs.el('div','v34-apr',pc);
+ var qr=UiJs.el('div','v34-apq',row);qr.innerHTML=V25.svg(code);
+ var side=UiJs.el('div','v34-aps',row);
+ var c1=UiJs.el('button','btn pri',side,'Copiar Pix copia e cola');c1.onclick=function(){V25.copy(code,'Código Pix copiado. Cole no app do banco em "Pix copia e cola".');try{V25.d().copied=(V25.d().copied||0)+1;Profile.save();}catch(e){}};
+ var c2=UiJs.el('button','btn',side,'Copiar chave Pix');c2.onclick=function(){V25.copy(V25.PIX.key,'Chave Pix copiada.');};
+ UiJs.el('div','v34-apn',side,(sel>0?'R$ '+sel+',00 · ':'')+'Recebedor: Rodrigo Paes Coelho Santana');
+ /* 2. Sugestão */
+ var sc=UiJs.el('div','v34-sgc',cur);
+ sc.innerHTML='<div class="v34-aph"><span>💬</span><b>Mande uma sugestão</b><i>só o criador lê</i></div>';
+ var ch=UiJs.el('div','v34-chips',sc);
+ V34.TIPOS.forEach(function(x){var b=UiJs.el('button',x[0]===S.tipo?'on':'',ch,x[1]);b.type='button';b.onclick=function(){S.tipo=x[0];[].forEach.call(ch.children,function(c){c.className='';});b.className='on';};});
+ var ta=document.createElement('textarea');ta.className='v34-ta';ta.maxLength=1000;ta.placeholder='Sua ideia, o erro que encontrou ou o que achou do jogo…';ta.value=S.msg;ta.oninput=function(){S.msg=ta.value;};sc.appendChild(ta);
+ var inp=document.createElement('input');inp.className='v34-in';inp.maxLength=80;inp.placeholder='Seu nome ou contato (opcional)';inp.value=S.contato;inp.oninput=function(){S.contato=inp.value;};sc.appendChild(inp);
+ var bt=UiJs.el('button','btn pri wide v34-send',sc,'Enviar sugestão');
+ bt.onclick=function(){
+  var msg=S.msg.trim();if(msg.length<3){UiJs.toast('Escreva a sua mensagem antes de enviar.');ta.focus();return;}
+  if(V34.sentToday()>=5){UiJs.toast('Você já mandou 5 sugestões hoje. Obrigado! Amanhã dá para mandar mais.');return;}
+  bt.disabled=true;bt.textContent='Enviando…';
+  V31.init().then(function(){
+   var fb=window.firebase,u=fb.auth().currentUser;
+   return fb.firestore().collection('sugestoes').add({tipo:S.tipo,msg:msg,contato:S.contato.trim().slice(0,80),versao:V34.ver(),aparelho:S.tipo==='erro'?V34.device():'',t:fb.firestore.FieldValue.serverTimestamp(),uid:u.uid});
+  }).then(function(){
+   V34.markSent();V34.sug={tipo:'ideia',msg:'',contato:''};
+   sc.innerHTML='<div class="v34-ok"><b>✓ Sugestão enviada!</b><span>Obrigado por ajudar o Rota do Mestre a evoluir. Ela chegou direto para o criador do jogo.</span></div>';
+   var again=UiJs.el('button','btn wide',sc,'Mandar outra sugestão');again.onclick=function(){V34.apoio(back);};
+  }).catch(function(e){bt.disabled=false;bt.textContent='Enviar sugestão';UiJs.toast(/config/.test(String(e&&e.message))?'O envio ainda não está ligado nesta versão.':'Não deu para enviar agora. Confira a internet e tente de novo.');});
+ };
+ UiJs.el('div','v34-apf',cur,'Se for um erro, o jogo junta a versão e o tipo de aparelho. Nada é cobrado nem guardado no Pix: o código é gerado aqui mesmo.');
+};
+if(typeof V25!=='undefined')V25.page=function(back){V34.apoio(back);};
+/* menu: "Apoio ou sugestão" */
+(function(){var o=App.menu;App.menu=function(){var r=o.apply(this,arguments);try{var b=V34.findItem(UiJs.root.querySelector('.menu'),'Apoiar o projeto');if(b){b.querySelector('.mt').textContent='Apoio ou sugestão';}}catch(e){}return r;};})();
+
+/* ---------- Painel do criador › Caixa de sugestões (só a conta do criador lê) ---------- */
+V34.inbox=function(){
+ UiJs.page('Caixa de sugestões',function(){V27.panel();});
+ var cur=UiJs.cur;cur.classList.add('v34-inb');
+ var C=V23.Cloud;
+ var msg=function(t,cls){UiJs.el('div','p '+(cls||'muted'),cur,t);};
+ if(!C||!C.user){
+  msg('Para ler as sugestões, entre com a sua conta Google (a do criador do jogo).','gold');
+  UiJs.btns([['Entrar com Google',function(){V23.account();},'pri']]);return;
+ }
+ var wait=UiJs.el('div','p muted',cur,'Carregando…');
+ V31.fbBoot().then(function(){return window.firebase.firestore().collection('sugestoes').orderBy('t','desc').limit(200).get();}).then(function(qs){
+  wait.remove();
+  var all=[];qs.forEach(function(d){var x=d.data();x.id=d.id;x.ref=d.ref;all.push(x);});
+  var nNew=all.filter(function(x){return !x.lida;}).length,cnt=function(t){return all.filter(function(x){return x.tipo===t;}).length;};
+  var st=UiJs.el('div','v34-ist',cur);st.innerHTML='<span><b>'+nNew+'</b>novas</span><span><b>'+all.length+'</b>no total</span><span><b>'+cnt('ideia')+'</b>ideias</span><span><b>'+cnt('erro')+'</b>erros</span>';
+  if(!all.length){msg('Nenhuma sugestão ainda.');return;}
+  var TAG={ideia:'IDEIA',erro:'ERRO',elogio:'ELOGIO',outro:'OUTRO'};
+  all.sort(function(a,b){return (a.guardada?0:1)-(b.guardada?0:1);});
+  all.forEach(function(x){
+   var c=UiJs.el('div','v34-icard'+(x.lida?'':' novo'),cur);
+   var when=x.t&&x.t.toDate?x.t.toDate().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
+   var meta=[x.contato||'anônimo',x.versao?'v'+x.versao:'',x.aparelho||''].filter(Boolean).join(' · ');
+   c.innerHTML='<div class="v34-it"><span>'+(x.lida?'':'<i class="v34-dotn"></i>')+'<em class="t-'+V34.esc(x.tipo)+'">'+(TAG[x.tipo]||'OUTRO')+'</em>'+(x.guardada?' ⭐':'')+'</span><span>'+when+'</span></div><p></p><div class="v34-im">'+V34.esc(meta)+'</div><div class="v34-ia"></div>';
+   c.querySelector('p').textContent=x.msg||'';
+   var ac=c.querySelector('.v34-ia');
+   var add=function(txt,fn){var b=document.createElement('button');b.type='button';b.textContent=txt;b.onclick=fn;ac.appendChild(b);};
+   if(!x.lida)add('✓ Lida',function(){x.ref.update({lida:true}).then(V34.inbox,function(){UiJs.toast('Não deu para marcar.');});});
+   add(x.guardada?'☆ Tirar dos guardados':'⭐ Guardar',function(){x.ref.update({guardada:!x.guardada}).then(V34.inbox,function(){UiJs.toast('Não deu para guardar.');});});
+   add('🗑 Apagar',function(){UiJs.modal('Apagar esta sugestão?','Não dá para desfazer.',[['Apagar',function(){x.ref.delete().then(V34.inbox,function(){UiJs.toast('Não deu para apagar.');});},'warn'],['Cancelar',null,'pri']]);});
+  });
+ }).catch(function(e){
+  wait.remove();
+  if(/permission/i.test(String(e&&(e.code||e.message)))){
+   msg('Esta conta ainda não está liberada para ler as sugestões.','warn');
+   msg('Envie este identificador ao Claude para liberar a sua conta (não é senha, é só o número da conta no Firebase):');
+   var id=UiJs.el('div','v34-uid',cur,C.user.uid);
+   UiJs.btns([['Copiar identificador',function(){try{navigator.clipboard.writeText(C.user.uid);UiJs.toast('Copiado.');}catch(err){}},'pri']]);
+  }else msg('Não deu para carregar agora. Confira a internet.','warn');
+ });
+};
+if(typeof V27!=='undefined'&&V27.panel){var oP34=V27.panel;V27.panel=function(){var r=oP34.apply(this,arguments);try{var cur=UiJs.cur,dev=cur.querySelector('.v27-dev');var b=document.createElement('button');b.type='button';b.className='v34-inbtn';b.innerHTML='<b>💬 Caixa de sugestões</b><span>Ideias, erros e elogios enviados pelos jogadores. Só a sua conta Google lê.</span><i>›</i>';b.onclick=V34.inbox;if(dev&&dev.nextSibling)cur.insertBefore(b,dev.nextSibling);else cur.insertBefore(b,cur.firstChild);}catch(e){}return r;};}

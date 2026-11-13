@@ -1,12 +1,88 @@
 rules_version = '2';
+// Regras do Xadrez · Rota do Mestre.
+// Salas de partida ao vivo: qualquer pessoa com login anônimo pode ler uma sala (precisa saber o código),
+// só o criador cria, só UMA pessoa entra como convidada e, depois disso, só os dois jogadores mexem na sala.
+// Ninguém apaga nada pelo app (as salas antigas podem expirar pela política de TTL no campo "expira").
 service cloud.firestore {
   match /databases/{database}/documents {
-    // cada jogador só lê e grava os próprios dados
+
+    function signedIn() { return request.auth != null; }
+    function okSize(d) {
+      return d.moves is list && d.moves.size() <= 700
+        && d.hostName is string && d.hostName.size() <= 30
+        && d.guestName is string && d.guestName.size() <= 30;
+    }
+
+    match /salas/{code} {
+      allow read: if signedIn() && code.size() == 6;
+
+      allow create: if signedIn() && code.size() == 6
+        && request.resource.data.host == request.auth.uid
+        && request.resource.data.guest == null
+        && request.resource.data.status == 'wait'
+        && request.resource.data.moves.size() == 0
+        && request.resource.data.hostColor in ['w', 'b']
+        && okSize(request.resource.data);
+
+      // entrar como convidado: só enquanto a sala espera, e só estes campos
+      allow update: if signedIn()
+        && resource.data.status == 'wait' && resource.data.guest == null
+        && request.auth.uid != resource.data.host
+        && request.resource.data.guest == request.auth.uid
+        && request.resource.data.status == 'play'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['guest', 'guestName', 'guestElo', 'status'])
+        && okSize(request.resource.data);
+
+      // durante e depois da partida: só os dois jogadores, sem trocar quem é quem nem as cores
+      allow update: if signedIn()
+        && (request.auth.uid == resource.data.host || (resource.data.guest != null && request.auth.uid == resource.data.guest))
+        && request.resource.data.host == resource.data.host
+        && request.resource.data.guest == resource.data.guest
+        && request.resource.data.hostColor == resource.data.hostColor
+        && request.resource.data.tc == resource.data.tc
+        && request.resource.data.moves.size() >= resource.data.moves.size()
+        && request.resource.data.moves.size() <= resource.data.moves.size() + 1
+        // um lance novo só pode vir de quem tem a vez
+        && (request.resource.data.moves.size() == resource.data.moves.size()
+            || (((resource.data.moves.size() % 2 == 0) == (resource.data.hostColor == 'w')) && request.auth.uid == resource.data.host)
+            || (((resource.data.moves.size() % 2 == 0) != (resource.data.hostColor == 'w')) && request.auth.uid == resource.data.guest))
+        && okSize(request.resource.data);
+
+      allow delete: if false;
+    }
+
+    // conta Google: perfil e partidas na nuvem. Cada pessoa só lê e grava o que é dela (anônimos não usam a nuvem).
+    function owner(uid) {
+      return signedIn() && request.auth.uid == uid && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
     match /users/{uid} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
-      match /games/{gameId} {
-        allow read, write: if request.auth != null && request.auth.uid == uid;
+      allow read, delete: if owner(uid);
+      allow create, update: if owner(uid) && request.resource.data.d is string && request.resource.data.d.size() < 900000;
+      match /games/{gid} {
+        allow read, delete: if owner(uid);
+        allow create, update: if owner(uid) && request.resource.data.rec is string && request.resource.data.rec.size() < 60000;
       }
+    }
+
+    // caixa de sugestões: qualquer jogador ENVIA (com login anônimo ou Google); só a conta do criador LÊ, marca e apaga.
+    // Para liberar a leitura, ponha o uid da conta Google do criador na lista abaixo.
+    function criador() { return signedIn() && request.auth.uid in []; }
+    match /sugestoes/{id} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['tipo', 'msg', 'contato', 'versao', 'aparelho', 't', 'uid'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.tipo in ['ideia', 'erro', 'elogio', 'outro']
+        && request.resource.data.msg is string && request.resource.data.msg.size() >= 3 && request.resource.data.msg.size() <= 1000
+        && request.resource.data.contato is string && request.resource.data.contato.size() <= 80
+        && request.resource.data.versao is string && request.resource.data.versao.size() <= 40
+        && request.resource.data.aparelho is string && request.resource.data.aparelho.size() <= 60
+        && request.resource.data.t == request.time;
+      allow read, delete: if criador();
+      allow update: if criador() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lida', 'guardada']);
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

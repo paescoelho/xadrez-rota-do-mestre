@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v47</title>
+<title>Xadrez · Rota do Mestre — v48</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1187,6 +1187,51 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 /* v47: ícone do Entrar com Google como casa do tabuleiro (G original, fundo escuro, moldura dourada) */
 .mitem.v34-gt .mic.v34-gic{width:40px!important;height:40px!important;flex:0 0 40px!important;border-radius:9px!important;background:#14110a!important;border:2px solid #c8963a;box-sizing:border-box;box-shadow:0 0 0 3px rgba(10,8,4,.9),0 0 10px rgba(240,200,110,.3)!important;margin:0 4px 0 2px}
 .mitem.v34-gt .mic.v34-gic svg{width:72%!important;height:72%!important}
+
+/* ================= v48: Apoio ou sugestão ================= */
+.v34-tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:#161a20;border-radius:12px;padding:4px;margin:0 0 12px}
+.v34-tabs button{padding:10px;border-radius:9px;font-weight:700;font-size:14.5px;color:#aab;background:none;border:1px solid transparent;cursor:pointer}
+.v34-tabs button.on{background:#2a2414;color:#f3d98c;border-color:rgba(243,217,140,.5)}
+.v34-sl{font-size:13px;color:#d8b968;font-weight:700;margin:10px 0 5px}
+.v34-chips{display:flex;flex-wrap:wrap;gap:6px}
+.v34-chips button{font-size:14px;padding:7px 12px;border-radius:18px;border:1px solid #3d424b;background:#191d23;color:#dde;cursor:pointer}
+.v34-chips button.on{border-color:#f3d98c;color:#f3d98c;background:#2a2414}
+.v34-ta{width:100%;box-sizing:border-box;min-height:120px;border-radius:10px;border:1px solid #3d424b;background:#11151a;color:#eee;padding:10px;font:14.5px/1.4 Inter,system-ui,sans-serif;resize:vertical}
+.v34-cnt{text-align:right;font-size:11px;color:#777;margin-top:2px}
+.v34-in{width:100%;box-sizing:border-box;height:42px;border-radius:10px;border:1px solid #3d424b;background:#11151a;color:#eee;padding:0 10px;font:14px Inter,system-ui,sans-serif}
+.v34-send{margin-top:14px}
+.v34-ok{border:1px solid rgba(140,224,170,.55);background:rgba(47,154,114,.15);border-radius:14px;padding:14px;margin:6px 0 10px}.v34-ok b{display:block;color:#7fe0a8;font-size:17px;margin-bottom:4px}.v34-ok span{color:#cfe9da;font-size:14px}
+.v34-inbtn{display:grid;grid-template-columns:1fr auto;gap:2px 10px;width:100%;text-align:left;margin:10px 0;padding:12px 14px;border-radius:14px;border:1px solid rgba(220,181,92,.5);background:linear-gradient(180deg,rgba(42,36,20,.9),rgba(20,17,10,.9));color:#eee;cursor:pointer}
+.v34-inbtn b{color:#f3d98c;font-size:15.5px}.v34-inbtn span{grid-column:1;font-size:12.5px;color:#bbb}.v34-inbtn i{grid-row:1/3;grid-column:2;align-self:center;font-style:normal;font-size:24px;color:#f3d98c}
+.v34-ist{display:flex;gap:6px;margin-bottom:10px}.v34-ist span{flex:1;text-align:center;border:1px solid #2c323b;border-radius:10px;padding:6px;font-size:11px;color:#999}.v34-ist b{display:block;font-size:19px;color:#f3d98c}
+.v34-icard{border:1px solid #2c323b;border-radius:12px;background:#151920;padding:10px 12px;margin-bottom:9px}.v34-icard.novo{border-color:rgba(76,210,138,.45)}
+.v34-it{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#8d949c;margin-bottom:5px}
+.v34-it em{font-style:normal;font-size:11px;font-weight:700;padding:2px 7px;border-radius:5px;background:#333;color:#ddd}
+.v34-it .t-ideia{background:#21364f;color:#8cc2ff}.v34-it .t-erro{background:#4a2020;color:#ff9a8f}.v34-it .t-elogio{background:#1f4030;color:#8ce0aa}
+.v34-dotn{display:inline-block;width:8px;height:8px;border-radius:50%;background:#4cd28a;margin-right:6px}
+.v34-icard p{margin:0;font-size:14.5px;line-height:1.4;color:#eee;white-space:pre-wrap;overflow-wrap:anywhere}
+.v34-im{font-size:12px;color:#8d949c;margin-top:6px}
+.v34-ia{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.v34-ia button{font-size:12.5px;padding:5px 9px;border-radius:7px;background:#222831;color:#ccc;border:1px solid #333a44;cursor:pointer}
+.v34-uid{font:13px ui-monospace,monospace;background:#11151a;border:1px dashed #c8963a;border-radius:8px;padding:10px;margin:8px 0;overflow-wrap:anywhere;color:#f3d98c}
+
+/* v48b: Apoio ou sugestão numa tela só, sem rolar */
+.v34-ap .v34-aph{display:flex;align-items:baseline;gap:7px;margin-bottom:7px}
+.v34-ap .v34-aph span{font-size:16px;color:#e3605a}.v34-ap .v34-aph b{font-size:16px;color:#f3d98c}.v34-ap .v34-aph i{font-style:normal;font-size:12px;color:#8d949c;margin-left:auto}
+.v34-apc,.v34-sgc{border:1px solid rgba(220,181,92,.3);border-radius:14px;background:linear-gradient(180deg,rgba(28,34,43,.9),rgba(16,19,24,.9));padding:10px 12px;margin-bottom:10px}
+.v34-apv{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:8px}
+.v34-apv button{padding:6px 0;border-radius:9px;border:1px solid #3d424b;background:#191d23;color:#dde;font-weight:700;font-size:13px;cursor:pointer}
+.v34-apv button.on{border-color:#f3d98c;color:#1b1406;background:linear-gradient(#f3d98c,#c49434)}
+.v34-apr{display:flex;gap:10px;align-items:center}
+.v34-apq{flex:0 0 clamp(96px,26vw,124px);background:#fff;border-radius:10px;padding:4px}.v34-apq svg{display:block;width:100%;height:auto}
+.v34-aps{flex:1;display:flex;flex-direction:column;gap:6px;min-width:0}
+.v34-aps .btn{margin:0;width:100%;min-height:40px;font-size:14px;padding:6px 8px}
+.v34-apn{font-size:11.5px;color:#9aa;line-height:1.3}
+.v34-sgc .v34-chips{margin-bottom:7px}.v34-sgc .v34-chips button{padding:5px 10px;font-size:13px}
+.v34-sgc .v34-ta{min-height:0;height:clamp(64px,11vh,96px);resize:none}
+.v34-sgc .v34-in{margin-top:6px;height:38px}
+.v34-sgc .v34-send{margin-top:8px;min-height:44px}
+.v34-apf{font-size:11px;color:#7d848c;line-height:1.35}
+@media (max-height:640px){.v34-apf{display:none}.v34-ap .v34-aph i{display:none}}
 </style>
 </head>
 <body>

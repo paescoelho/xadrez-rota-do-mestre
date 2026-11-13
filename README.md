@@ -283,3 +283,7 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 
 ## v47 (12.11.2026)
 - Ícone do botão Entrar com Google: G original numa casa escura quadrada com moldura dourada (sem fundo branco).
+
+## v48 (13.11.2026)
+- "Apoiar o projeto" virou "Apoio ou sugestão": numa tela só, sem rolar, com o Pix em cima e a caixa de sugestão embaixo (Ideia, Erro, Elogio, Outro; nome opcional; até 5 por dia).
+- Painel do criador › Caixa de sugestões: só a conta Google do criador lê, marca como lida, guarda e apaga. Regra nova no firebase/firestore.rules (coleção sugestoes).

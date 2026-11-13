@@ -64,6 +64,23 @@ service cloud.firestore {
       }
     }
 
+    // caixa de sugestões: qualquer jogador ENVIA (com login anônimo ou Google); só a conta do criador LÊ, marca e apaga.
+    // Para liberar a leitura, ponha o uid da conta Google do criador na lista abaixo.
+    function criador() { return signedIn() && request.auth.uid in []; }
+    match /sugestoes/{id} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['tipo', 'msg', 'contato', 'versao', 'aparelho', 't', 'uid'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.tipo in ['ideia', 'erro', 'elogio', 'outro']
+        && request.resource.data.msg is string && request.resource.data.msg.size() >= 3 && request.resource.data.msg.size() <= 1000
+        && request.resource.data.contato is string && request.resource.data.contato.size() <= 80
+        && request.resource.data.versao is string && request.resource.data.versao.size() <= 40
+        && request.resource.data.aparelho is string && request.resource.data.aparelho.size() <= 60
+        && request.resource.data.t == request.time;
+      allow read, delete: if criador();
+      allow update: if criador() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lida', 'guardada']);
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }
