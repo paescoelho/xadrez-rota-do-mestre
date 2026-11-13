@@ -266,3 +266,7 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 
 ## v42 (12.11.2026)
 - Botão Jogar online (variação D): radar grande girando com o WhatsApp no centro, dois pontos (você e o amigo) que acendem quando a varredura passa, e selo vermelho AO VIVO no canto superior direito com a bolinha piscando.
+
+## v43 (12.11.2026)
+- Nova narração da História do xadrez (45 s).
+- Jogar online: saiu o botão "Prefere jogar por mensagens?".

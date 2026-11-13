@@ -31297,7 +31297,6 @@ V31.home=function(){
  var code='';UiJs.field('Código da sala',code,'Ex.: K7P2QX','text',function(v){code=String(v).toUpperCase().replace(/[^A-Z0-9]/g,'');});
  UiJs.btns([['Entrar',function(){if(code.length===6)V31.invite(code);else UiJs.toast('O código tem 6 letras e números.');}]]);
  UiJs.p('Jogo justo: durante a partida as dicas e o treinador ficam desligados. O resultado entra no seu histórico e você pode revisar a partida depois.','muted small');
- UiJs.btns([['Prefere jogar por mensagens?',Online.home]]);
 };
 V31.resume=function(code){
  UiJs.page('Jogar online',V31.home);UiJs.p('Abrindo a partida…','muted');
