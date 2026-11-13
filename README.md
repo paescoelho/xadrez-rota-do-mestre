@@ -367,3 +367,8 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 ## v70 — Todos começam no mínimo
 - Sem pergunta de nível: todo perfil começa em **400** e só sobe vencendo, devagar. Perfis antigos (inclusive quem escolheu nível na v69) são refeitos uma vez a partir de 400.
 - Regras da v69 mantidas: vitória vale metade (máx. +12, depois +8), derrota vale o dobro (mín. −20, depois −12), treino sobe pouco.
+
+## v71 — Título maior e selo de integração
+- XADREZ no topo do menu ~30% maior (304 px de largura no celular de 390 px; antes 234 px).
+- Selo "Integrado com ♞ Lichess · ♟ Chess.com" abaixo de "Rota do Mestre"; ao tocar, abre "Analisar jogadas". Sem logos, só nomes, peças e cores.
+- Menu continua cabendo sem rolar (testado em 390×844, 360×740 e 1366×768).

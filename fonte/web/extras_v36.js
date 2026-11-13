@@ -164,3 +164,20 @@ V36.endBar=function(){
  try{var hb=document.querySelector('.v36-hb');if(hb)hb.style.display='none';}catch(e){}
 };
 (function(){if(typeof App==='undefined')return;var oD=App.drawGame;App.drawGame=function(){var r=oD.apply(this,arguments);try{V36.endBar();}catch(e){}return r;};})();
+
+/* v71: selo no topo do menu — "Integrado com Lichess · Chess.com" (toque abre Analisar jogadas) */
+(function(){
+ var o=App.menu;
+ App.menu=function(){
+  var r=o.apply(this,arguments);
+  try{var t=UiJs.root.querySelector('.menu .mtop');
+   if(t&&!t.querySelector('.v71-int')){
+    var b=document.createElement('button');b.className='v71-int';b.type='button';
+    b.setAttribute('aria-label','Integrado com Lichess e Chess.com: analisar suas partidas');
+    b.innerHTML='Integrado com <span class="v71-li">♞ Lichess</span><i>·</i><span class="v71-cc">♟ Chess.com</span>';
+    b.onclick=function(){try{UiJs.sfx&&UiJs.sfx('tap');}catch(e){}V34.erros();};
+    var w=document.createElement('div');w.className='v71-wrap';w.appendChild(b);t.appendChild(w);}
+  }catch(e){}
+  return r;
+ };
+})();
