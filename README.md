@@ -338,3 +338,6 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 
 ## v64 (13.11.2026)
 - Treinador por voz fala como um treinador ao lado, sem ler os textos: uma frase sobre o seu lance (Boa!, Dava para fazer melhor, Ops! erro grave + o melhor lance), a ameaça que você criou ("E você ameaça o bispo dele!") e, depois do lance do Mentor, o perigo para você ("Você tem duas peças ameaçadas. Analise com calma.", "Sua dama está ameaçada.", "Você está em xeque!") ou a chance ("O cavalo dele está desprotegido. Procure!"). Peões só entram quando a troca vale.
+
+## v65 (13.11.2026)
+- Jogar online: o aviso dos botões Lichess.org e Chess.com fica o dobro do tempo na tela (4,4 s).
