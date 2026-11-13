@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v57</title>
+<title>Xadrez · Rota do Mestre — v58</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1501,6 +1501,16 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 @media (max-height:660px){.v35-xb{min-height:56px;padding:7px 9px}.v35-xb i{flex-basis:34px;height:34px;font-size:22px}.v35-xb b{font-size:15px}}
 @media (prefers-reduced-motion:reduce){.v35-xb,.v35-xb i,.v35-xb:after,.v35-xb em:after{animation:none}}
 .v35-xb em{font-size:10px!important;letter-spacing:-.2px}.v35-xb{gap:8px}.v35-xb i{flex-basis:36px;height:36px}
+
+/* v58: linha separando Lichess/Chess.com e botões mais altos */
+.v35-sep{display:flex;align-items:center;gap:10px;font-size:11.5px;color:#9a8f78;letter-spacing:.08em;text-transform:uppercase}
+.v35-sep:before,.v35-sep:after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(220,181,92,.5))}
+.v35-sep:after{background:linear-gradient(90deg,rgba(220,181,92,.5),transparent)}
+.v35-xb{min-height:56px}
+.v35-xb i{flex-basis:42px!important;height:42px!important;font-size:27px}
+@media (max-height:660px){.v35-sep{font-size:10.5px}.v35-xb i{flex-basis:34px!important;height:34px!important;font-size:22px}}
+.v35-home .v35-ext{align-items:stretch}.v35-home .v35-xb{height:100%}
+.col.v35-home{padding-bottom:calc(6px + env(safe-area-inset-bottom))!important}
 </style>
 </head>
 <body>
@@ -76557,6 +76567,7 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
   if(open.length){var ob=UiJs.el('button','v35-ob',cur,'♟ '+(open.length===1?'1 partida sua aberta':open.length+' partidas suas abertas')+' · continuar ›');ob.type='button';
    ob.onclick=function(){UiJs.page('Suas partidas abertas',V31.home);UiJs.items(open.map(function(x){return {t:(x.st==='wait'?'Convite '+x.c:'Contra '+(x.opp||'seu amigo')),d:(x.me?'você de '+V31.colName(x.me)+' · ':'')+V31.tcTxt(x.tc),r:'abrir ›',f:function(){V31.resume(x.c);}};}));};}
   /* em desenvolvimento: jogar via Lichess e via Chess.com */
+  var sep=UiJs.el('div','v35-sep',cur);sep.innerHTML='<span>ou jogue também em</span>';
   var ex=UiJs.el('div','v35-ext',cur);
   [['li','♞','Jogar via','Lichess.org','em breve aqui no seu tabuleiro'],['cc','♟','Jogar via','Chess.com','em breve, com importação na hora']].forEach(function(x){
    var b=UiJs.el('button','v35-xb '+x[0],ex);b.type='button';b.setAttribute('aria-disabled','true');
@@ -76564,6 +76575,11 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
    b.onclick=function(){UiJs.toast(x[0]==='li'?'Em desenvolvimento: em breve você joga no Lichess com o tabuleiro do Rota do Mestre.':'Em desenvolvimento: em breve o Chess.com abre daqui e a partida volta sozinha para a sua análise.');};
   });
   UiJs.el('div','v35-fp',cur,'Jogo justo: dicas e treinador desligados. O resultado vai para o seu histórico.');
+  /* os botões Lichess/Chess.com crescem até ocupar o espaço livre da tela (sem criar rolagem) */
+  var fit=function(){try{var m=cur.closest('.main')||cur.parentNode;if(!m||!ex.isConnected)return;ex.style.height='';var free=m.clientHeight-cur.offsetHeight;var h=ex.offsetHeight+Math.max(0,free-6);ex.style.height=Math.min(104,Math.max(56,h))+'px';}catch(e){}};
+  requestAnimationFrame(function(){requestAnimationFrame(fit);});
+  if(!V35.fitOn){V35.fitOn=1;window.addEventListener('resize',function(){var e=document.querySelector('.v35-home .v35-ext');if(e&&V35.fitNow)V35.fitNow();});}
+  V35.fitNow=fit;
  };
 })();
 

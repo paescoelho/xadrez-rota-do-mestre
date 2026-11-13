@@ -32553,6 +32553,7 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
   if(open.length){var ob=UiJs.el('button','v35-ob',cur,'♟ '+(open.length===1?'1 partida sua aberta':open.length+' partidas suas abertas')+' · continuar ›');ob.type='button';
    ob.onclick=function(){UiJs.page('Suas partidas abertas',V31.home);UiJs.items(open.map(function(x){return {t:(x.st==='wait'?'Convite '+x.c:'Contra '+(x.opp||'seu amigo')),d:(x.me?'você de '+V31.colName(x.me)+' · ':'')+V31.tcTxt(x.tc),r:'abrir ›',f:function(){V31.resume(x.c);}};}));};}
   /* em desenvolvimento: jogar via Lichess e via Chess.com */
+  var sep=UiJs.el('div','v35-sep',cur);sep.innerHTML='<span>ou jogue também em</span>';
   var ex=UiJs.el('div','v35-ext',cur);
   [['li','♞','Jogar via','Lichess.org','em breve aqui no seu tabuleiro'],['cc','♟','Jogar via','Chess.com','em breve, com importação na hora']].forEach(function(x){
    var b=UiJs.el('button','v35-xb '+x[0],ex);b.type='button';b.setAttribute('aria-disabled','true');
@@ -32560,6 +32561,11 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
    b.onclick=function(){UiJs.toast(x[0]==='li'?'Em desenvolvimento: em breve você joga no Lichess com o tabuleiro do Rota do Mestre.':'Em desenvolvimento: em breve o Chess.com abre daqui e a partida volta sozinha para a sua análise.');};
   });
   UiJs.el('div','v35-fp',cur,'Jogo justo: dicas e treinador desligados. O resultado vai para o seu histórico.');
+  /* os botões Lichess/Chess.com crescem até ocupar o espaço livre da tela (sem criar rolagem) */
+  var fit=function(){try{var m=cur.closest('.main')||cur.parentNode;if(!m||!ex.isConnected)return;ex.style.height='';var free=m.clientHeight-cur.offsetHeight;var h=ex.offsetHeight+Math.max(0,free-6);ex.style.height=Math.min(104,Math.max(56,h))+'px';}catch(e){}};
+  requestAnimationFrame(function(){requestAnimationFrame(fit);});
+  if(!V35.fitOn){V35.fitOn=1;window.addEventListener('resize',function(){var e=document.querySelector('.v35-home .v35-ext');if(e&&V35.fitNow)V35.fitNow();});}
+  V35.fitNow=fit;
  };
 })();
 

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v57</title>
+<title>Xadrez · Rota do Mestre — v58</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1360,6 +1360,16 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 @media (max-height:660px){.v35-xb{min-height:56px;padding:7px 9px}.v35-xb i{flex-basis:34px;height:34px;font-size:22px}.v35-xb b{font-size:15px}}
 @media (prefers-reduced-motion:reduce){.v35-xb,.v35-xb i,.v35-xb:after,.v35-xb em:after{animation:none}}
 .v35-xb em{font-size:10px!important;letter-spacing:-.2px}.v35-xb{gap:8px}.v35-xb i{flex-basis:36px;height:36px}
+
+/* v58: linha separando Lichess/Chess.com e botões mais altos */
+.v35-sep{display:flex;align-items:center;gap:10px;font-size:11.5px;color:#9a8f78;letter-spacing:.08em;text-transform:uppercase}
+.v35-sep:before,.v35-sep:after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(220,181,92,.5))}
+.v35-sep:after{background:linear-gradient(90deg,rgba(220,181,92,.5),transparent)}
+.v35-xb{min-height:56px}
+.v35-xb i{flex-basis:42px!important;height:42px!important;font-size:27px}
+@media (max-height:660px){.v35-sep{font-size:10.5px}.v35-xb i{flex-basis:34px!important;height:34px!important;font-size:22px}}
+.v35-home .v35-ext{align-items:stretch}.v35-home .v35-xb{height:100%}
+.col.v35-home{padding-bottom:calc(6px + env(safe-area-inset-bottom))!important}
 </style>
 </head>
 <body>
