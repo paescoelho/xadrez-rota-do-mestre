@@ -322,3 +322,6 @@ Turquesa (Diagrama vai para o Nanquim). Todos os efeitos respeitam a opção "re
 
 ## v59 (13.11.2026)
 - Jogar online: sem o texto final "Jogo justo…"; os botões Lichess/Chess.com ganham esse espaço.
+
+## v60 (13.11.2026)
+- Jogar online: separador "Ou jogue também em" em selo dourado (letras Cinzel, losangos e brilho), com linhas douradas e uma luz que corre por elas.

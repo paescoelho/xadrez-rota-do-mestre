@@ -244,7 +244,7 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
   if(open.length){var ob=UiJs.el('button','v35-ob',cur,'♟ '+(open.length===1?'1 partida sua aberta':open.length+' partidas suas abertas')+' · continuar ›');ob.type='button';
    ob.onclick=function(){UiJs.page('Suas partidas abertas',V31.home);UiJs.items(open.map(function(x){return {t:(x.st==='wait'?'Convite '+x.c:'Contra '+(x.opp||'seu amigo')),d:(x.me?'você de '+V31.colName(x.me)+' · ':'')+V31.tcTxt(x.tc),r:'abrir ›',f:function(){V31.resume(x.c);}};}));};}
   /* em desenvolvimento: jogar via Lichess e via Chess.com */
-  var sep=UiJs.el('div','v35-sep',cur);sep.innerHTML='<span>ou jogue também em</span>';
+  var sep=UiJs.el('div','v35-sep',cur);sep.innerHTML='<i class="l"></i><span><em>◆</em>Ou jogue também em<em>◆</em></span><i class="r"></i>';
   var ex=UiJs.el('div','v35-ext',cur);
   [['li','♞','Jogar via','Lichess.org','em breve aqui no seu tabuleiro'],['cc','♟','Jogar via','Chess.com','em breve, com importação na hora']].forEach(function(x){
    var b=UiJs.el('button','v35-xb '+x[0],ex);b.type='button';b.setAttribute('aria-disabled','true');

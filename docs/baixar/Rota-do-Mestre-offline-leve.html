@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v59</title>
+<title>Xadrez · Rota do Mestre — v60</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1511,6 +1511,21 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 @media (max-height:660px){.v35-sep{font-size:10.5px}.v35-xb i{flex-basis:34px!important;height:34px!important;font-size:22px}}
 .v35-home .v35-ext{align-items:stretch}.v35-home .v35-xb{height:100%}
 .col.v35-home{padding-bottom:calc(6px + env(safe-area-inset-bottom))!important}
+
+/* v60: separador "Ou jogue também em" mais evidente */
+.v35-sep{gap:0!important;margin:2px 0!important}
+.v35-sep:before,.v35-sep:after{display:none}
+.v35-sep i{flex:1;height:2px;border-radius:2px;position:relative}
+.v35-sep i.l{background:linear-gradient(90deg,transparent,#c8963a 70%,#f3d98c)}
+.v35-sep i.r{background:linear-gradient(90deg,#f3d98c,#c8963a 30%,transparent)}
+.v35-sep i:after{content:'';position:absolute;top:-1px;width:30px;height:4px;border-radius:4px;background:radial-gradient(ellipse,#fff6d8,rgba(243,217,140,0) 70%);animation:v60run 3.6s ease-in-out infinite}
+.v35-sep i.l:after{left:0}.v35-sep i.r:after{right:0;animation-name:v60runr}
+@keyframes v60run{0%{left:0;opacity:0}20%{opacity:1}70%,100%{left:calc(100% - 30px);opacity:0}}
+@keyframes v60runr{0%{right:0;opacity:0}20%{opacity:1}70%,100%{right:calc(100% - 30px);opacity:0}}
+.v35-sep span{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:5px 14px;border:1px solid rgba(243,217,140,.65);border-radius:20px;background:linear-gradient(180deg,rgba(60,44,12,.9),rgba(24,18,6,.9));box-shadow:0 0 12px rgba(240,200,110,.22),inset 0 1px 0 rgba(255,246,216,.15);font:600 12px/1 Cinzel,Georgia,serif;letter-spacing:.14em;text-transform:uppercase;color:#f3d98c;text-shadow:0 0 8px rgba(240,200,110,.35)}
+.v35-sep em{font-style:normal;font-size:8px;color:#c8963a}
+@media (max-height:660px){.v35-sep span{padding:4px 11px;font-size:11px}}
+@media (prefers-reduced-motion:reduce){.v35-sep i:after{animation:none;display:none}}
 </style>
 </head>
 <body>
@@ -76567,7 +76582,7 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
   if(open.length){var ob=UiJs.el('button','v35-ob',cur,'♟ '+(open.length===1?'1 partida sua aberta':open.length+' partidas suas abertas')+' · continuar ›');ob.type='button';
    ob.onclick=function(){UiJs.page('Suas partidas abertas',V31.home);UiJs.items(open.map(function(x){return {t:(x.st==='wait'?'Convite '+x.c:'Contra '+(x.opp||'seu amigo')),d:(x.me?'você de '+V31.colName(x.me)+' · ':'')+V31.tcTxt(x.tc),r:'abrir ›',f:function(){V31.resume(x.c);}};}));};}
   /* em desenvolvimento: jogar via Lichess e via Chess.com */
-  var sep=UiJs.el('div','v35-sep',cur);sep.innerHTML='<span>ou jogue também em</span>';
+  var sep=UiJs.el('div','v35-sep',cur);sep.innerHTML='<i class="l"></i><span><em>◆</em>Ou jogue também em<em>◆</em></span><i class="r"></i>';
   var ex=UiJs.el('div','v35-ext',cur);
   [['li','♞','Jogar via','Lichess.org','em breve aqui no seu tabuleiro'],['cc','♟','Jogar via','Chess.com','em breve, com importação na hora']].forEach(function(x){
    var b=UiJs.el('button','v35-xb '+x[0],ex);b.type='button';b.setAttribute('aria-disabled','true');
