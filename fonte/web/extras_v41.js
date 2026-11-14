@@ -138,15 +138,30 @@ V41.unlockAudio=function(){
   .catch(function(){V41.needsTap=true;V41.show('connected');});
 };
 V41.subscribe=function(ticket){
+ // Regras Firestore concedem acesso a /voz/w e /voz/b, não a uma consulta
+ // irrestrita à coleção. Dois listeners de documento evitam permission-denied
+ // porque as regras não são filtros para consultas de coleção.
  var ref=V41.db().collection('salas').doc(V41.code).collection('voz');
- V41.unsub=ref.onSnapshot(function(snapshot){
+ var listeners=[],peers={};
+ var denied=function(e){
   if(ticket!==V41.token||!V41.enabled)return;
-  var peers={};
-  snapshot.forEach(function(doc){if(doc.id==='w'||doc.id==='b')peers[doc.id]=doc.data();});
-  V41.participants=peers;V41.maybeConnect();
- },function(e){
-  if(ticket===V41.token&&V41.enabled)V41.fail('Firebase bloqueou a sala de voz. Publique as regras da coleção /voz.',e);
+  V41.fail(e&&e.code==='permission-denied'
+   ?'Acesso à voz negado pelo Firebase. Verifique as regras publicadas de salas/{codigo}/voz/{cor} e entre novamente na partida.'
+   :'Falha ao acompanhar a sala de voz. Verifique a conexão com o Firebase.',e);
+ };
+ ['w','b'].forEach(function(cor){
+  listeners.push(ref.doc(cor).onSnapshot(function(doc){
+   if(ticket!==V41.token||!V41.enabled)return;
+   if(doc.exists)peers[cor]=doc.data();
+   else delete peers[cor];
+   V41.participants=Object.assign({},peers);
+   V41.maybeConnect();
+  },denied));
  });
+ V41.unsub=function(){
+  listeners.forEach(function(unsub){try{unsub();}catch(e){}});
+  listeners=[];
+ };
 };
 V41.publish=function(ticket){
  if(ticket!==V41.token||!V41.peerId)return Promise.resolve();
