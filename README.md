@@ -3,6 +3,18 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## Lendas Vivas — charges animadas (v76 · 14.11.2026)
+
+O modo **Jogar › Lendas** mantém as 24 personalidades históricas já disponíveis e adiciona uma charge animada de cada lenda à área abaixo do tabuleiro (no celular), ou ao painel da partida (no desktop).
+
+- Retratos artísticos personalizados e estilos visuais inspirados em **Pixel art (1), Cartoon clássico (2), Charge de jornal (3), Graphic novel (5), Minimalista (6), Aquarela (7), Anime (9) e Pôster vintage (10)**.
+- A lenda reage visualmente à abertura, reflexão, lance, captura, xeque, avaliação do lance do aluno, final e encerramento da partida. Os movimentos são feitos por CSS, sem vídeos ou bibliotecas externas.
+- O texto da lenda aparece no **balão de fala**. As informações do treinador e análises continuam acessíveis em **Ver comentários e análise detalhada**, sem prejudicar botões e controles.
+- Botão para **pausar/reativar animações**; respeita automaticamente a preferência de movimento reduzido do sistema.
+- Imagens em `docs/data/lendas-portraits.webp`, um atlas compacto com 24 retratos (menos de 8 KB) carregado uma única vez; o service worker permite reutilização offline.
+- **Importante:** as falas são **ficcionais, dramatizadas e inspiradas nos estilos enxadrísticos**. Não são declarações ou citações históricas verificadas. A jogabilidade é uma simulação baseada nos repertórios e parâmetros existentes, não a reprodução da inteligência real das pessoas.
+- O recurso só é ativado para jogos identificados com `leg:`; outros modos de jogo permanecem iguais.
+
 ## Áudio integrado durante partidas online (v75)
 
 - A partida abre com o áudio desligado. Cada jogador toca **Ativar áudio** e autoriza o microfone no navegador.
