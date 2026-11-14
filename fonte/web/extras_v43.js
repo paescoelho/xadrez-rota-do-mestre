@@ -14,9 +14,9 @@ var V43=(function(){
   '.v43-card .v42-meta b{font-size:10px;letter-spacing:.12em;color:#edcb81}',
   '.v43-card .v42-meta em{font-size:10.5px;line-height:1.2;flex:1;text-align:right}',
   '.v43-card .v42-scene{gap:clamp(9px,2vw,16px)!important;align-items:stretch!important}',
-  '.v43-card .v42-portrait{width:var(--v43-size)!important;height:var(--v43-size)!important;flex:0 0 var(--v43-size)!important;border-radius:13px!important;background-image:url("data/lendas-portraits.webp")!important;overflow:hidden;animation:none!important;transform:none!important;box-shadow:0 0 0 1px rgba(249,219,157,.36),0 7px 18px rgba(0,0,0,.42)!important}',
+  '.v43-card .v42-portrait{width:var(--v43-size)!important;height:var(--v43-size)!important;flex:0 0 var(--v43-size)!important;border-radius:13px!important;background-image:var(--v43-atlas, url("data/lendas-portraits.webp"))!important;overflow:hidden;animation:none!important;transform:none!important;box-shadow:0 0 0 1px rgba(249,219,157,.36),0 7px 18px rgba(0,0,0,.42)!important}',
   '.v43-card .v42-portrait:after{z-index:3;box-shadow:inset 0 0 0 1px rgba(255,226,163,.23),inset 0 0 15px rgba(0,0,0,.12)!important}',
-  '.v43-card .v43-figure,.v43-card .v43-face{position:absolute;inset:-1px;display:block;pointer-events:none;border-radius:inherit;background-image:url("data/lendas-portraits.webp");background-repeat:no-repeat;background-size:400% 600%;background-color:transparent;backface-visibility:hidden;transform-origin:50% 70%;will-change:transform}',
+  '.v43-card .v43-figure,.v43-card .v43-face{position:absolute;inset:-1px;display:block;pointer-events:none;border-radius:inherit;background-image:var(--v43-atlas, url("data/lendas-portraits.webp"));background-repeat:no-repeat;background-size:400% 600%;background-color:transparent;backface-visibility:hidden;transform-origin:50% 70%;will-change:transform}',
   '.v43-card .v42-portrait{background-color:#202631!important;filter:none!important}',
   '.v43-card .v43-figure{z-index:1;animation:v43breath 4.2s ease-in-out infinite;filter:contrast(1.07) saturate(1.07)}',
   '.v43-card .v43-face{z-index:2;opacity:.88;mask-image:radial-gradient(ellipse 48% 45% at 52% 38%,black 0%,black 42%,transparent 84%);-webkit-mask-image:radial-gradient(ellipse 48% 45% at 52% 38%,black 0%,black 42%,transparent 84%);animation:v43look 7s ease-in-out infinite}',
@@ -55,10 +55,24 @@ var V43=(function(){
   ].join('\n');
   document.head.appendChild(el);
  };
+ api.hdChecked=false;
+ api.useHdIfPresent=function(){
+  if(api.hdChecked||typeof Image==='undefined')return;
+  api.hdChecked=true;
+  // Usa o atlas de alta definição quando presente; mantém o anterior como reserva.
+  var probe=new Image();
+  probe.onload=function(){
+   if(probe.naturalWidth<700)return;
+   document.documentElement.style.setProperty('--v43-atlas','url("data/lendas-portraits-hd.webp?v=v77-20261114")');
+  };
+  probe.onerror=function(){}; // O pacote antigo funciona sem o arquivo opcional.
+  probe.src='data/lendas-portraits-hd.webp?v=v77-20261114';
+ };
  api.decorate=function(){
   var card=document.querySelector('.v42-card');
   if(!card)return;
   api.style();
+  api.useHdIfPresent();
   card.classList.add('v43-card');
   var pic=card.querySelector('.v42-portrait');
   if(pic&&!pic.querySelector('.v43-figure')){
