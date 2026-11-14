@@ -3,42 +3,24 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
-## Lendas Vivas — charges animadas (v76 · 14.11.2026)
+## v80 — Chamada de voz PeerJS entre dois jogadores (14.11.2026)
 
-O modo **Jogar › Lendas** mantém as 24 personalidades históricas já disponíveis e adiciona uma charge animada de cada lenda à área abaixo do tabuleiro (no celular), ou ao painel da partida (no desktop).
+O modo **Jogar online** usa [PeerJS 1.5.5](https://github.com/peers/peerjs) (licença MIT) para chamadas **somente de áudio** durante uma partida. O WhatsApp **continua apenas como convite**. A biblioteca é carregada sob demanda de uma versão fixa no jsDelivr, com fallback no unpkg; sem internet, a chamada não funciona.
 
-- Retratos artísticos personalizados e estilos visuais inspirados em **Pixel art (1), Cartoon clássico (2), Charge de jornal (3), Graphic novel (5), Minimalista (6), Aquarela (7), Anime (9) e Pôster vintage (10)**.
-- A lenda reage visualmente à abertura, reflexão, lance, captura, xeque, avaliação do lance do aluno, final e encerramento da partida. Os movimentos são feitos por CSS, sem vídeos ou bibliotecas externas.
-- O texto da lenda aparece no **balão de fala**. As informações do treinador e análises continuam acessíveis em **Ver comentários e análise detalhada**, sem prejudicar botões e controles.
-- Botão para **pausar/reativar animações**; respeita automaticamente a preferência de movimento reduzido do sistema.
-- Imagens em `docs/data/lendas-portraits.webp`, um atlas compacto com 24 retratos (menos de 8 KB) carregado uma única vez; o service worker permite reutilização offline.
-- **Importante:** as falas são **ficcionais, dramatizadas e inspiradas nos estilos enxadrísticos**. Não são declarações ou citações históricas verificadas. A jogabilidade é uma simulação baseada nos repertórios e parâmetros existentes, não a reprodução da inteligência real das pessoas.
-- O recurso só é ativado para jogos identificados com `leg:`; outros modos de jogo permanecem iguais.
+**Funcionamento:** os jogadores entram na sala e cada um toca **Ativar voz**, liberando o microfone. Quando ambos estiverem prontos, as Brancas iniciam uma conexão PeerJS e as Pretas atendem; um único canal de áudio é estabelecido automaticamente, sem sair do tabuleiro. Ambos podem silenciar, reativar, liberar reprodução de som e encerrar. Em alguns celulares (especialmente iPhone), o navegador pode exigir um toque adicional em **Ativar som**. O jogo **não solicita câmera**, **não armazena nem grava áudio** e não exige divulgar telefone.
 
-## Áudio integrado durante partidas online (v75)
+**Limite de duas pessoas:** somente os dois participantes da sala com login Firebase autorizado podem publicar ou ler os identificadores temporários do PeerJS em salas/{codigo}/voz/{w|b}. A validação inclui a cor do jogador, o UID da conta, a sala e o ID remoto esperado; espectadores não têm acesso a esses documentos. A chamada chega somente ao segundo jogador autorizado. O Firestore guarda apenas os campos uid, enabled, sid, sdp vazio, ice vazio e t; esses campos de SDP e ICE ficam vazios para compatibilidade com as regras anteriores. A sinalização WebRTC é feita pelo **PeerServer externo**, não pelo Firestore. Os IDs não constituem autenticação criptográfica do PeerServer; a autorização é aplicada pelo aplicativo e pelas regras Firestore.
 
-- A partida abre com o áudio desligado. Cada jogador toca **Ativar áudio** e autoriza o microfone no navegador.
-- Após a autorização dos dois, o WebRTC negocia a conexão automaticamente; o tabuleiro permanece aberto.
-- Os controles permitem silenciar, reativar e encerrar. O áudio não é gravado pelo aplicativo.
-- O WhatsApp serve apenas para convidar outro jogador; a voz **não** depende de uma chamada do WhatsApp.
-- **Obrigatório:** publicar as regras atualizadas de `firebase/firestore.rules` no projeto Firebase `xadrez-whatsapp`, antes de usar o áudio. Alterar regras apenas no GitHub **não** atualiza o Firestore.
-- Exemplo com Firebase CLI autenticado e projeto autorizado: `firebase deploy --only firestore:rules --project xadrez-whatsapp` (configurar `firebase.json` ou usar a interface do Firebase para publicar as regras completas do arquivo).
-- O padrão utiliza servidores STUN públicos; pode falhar em redes NAT restritivas. Para produção confiável, configurar `window.RDM_VOICE_ICE_SERVERS` com STUN e TURN próprios/gerenciados **antes de iniciar a chamada**. Não colocar senha TURN estática permanente em arquivos públicos: use credenciais temporárias.
-- Em alguns navegadores móveis, a reprodução do áudio depende de um toque do usuário; o botão **Ativar som** oferece essa ação.
-- O modo online depende de conexão à internet; o treinamento offline continua funcionando sem voz.
+**Dependências de produção:**
+- É preciso que as regras da coleção /voz existentes em firebase/firestore.rules **já estejam publicadas** no Firebase xadrez-whatsapp. Apenas atualizar o GitHub **não publica regras**. Se não foram aplicadas, publicar o arquivo completo no console Firebase ou pela Firebase CLI autenticada com o projeto correto.
+- Por padrão, PeerJS usa o **PeerServer Cloud** (0.peerjs.com) para sinalizar e servidores públicos STUN para descoberta de rede. Para uso profissional e confiabilidade em redes móveis/restritas, configure um **PeerServer próprio** e um serviço **TURN com credenciais temporárias**. Opções configuráveis antes da chamada: window.RDM_PEERJS_OPTIONS para host, port, path, secure e window.RDM_PEERJS_ICE_SERVERS para o conjunto de ICE servers. Nunca salvar senha TURN fixa em arquivos públicos.
+- A disponibilidade do PeerServer, acesso ao microfone, HTTPS, permissões no dispositivo e rede afetam a ligação. A implementação foi validada com simulações; **testes reais entre dois aparelhos** ainda são necessários.
 
-## Lendas Vivas — painel de personagem (v77)
+Arquivos: fonte/web/extras_v41.js (PeerJS e controles), fonte/web/extras_v35.js (convites, espectadores e reações), fonte/web/build.js, docs/data/app.js, docs/index.html e docs/sw.js. O código antigo de negociação manual foi substituído. O áudio é um recurso **online**; o treinamento offline continua intacto.
 
-Ao enfrentar um dos 24 mestres na modalidade Lendas, o jogo apresenta um painel ilustrado abaixo do tabuleiro no celular (ou na região lateral da partida em telas largas):
+## v79 — Lendas Vivas HD (retratos estáticos)
 
-- Retrato ampliado e quase na altura completa do painel, com balão de fala e nome do adversário;
-- Movimentos sutis de personagem e rosto: respiração, reflexão, avanço ao atacar, surpresa, tensão e vitória, sem alterar as peças de xadrez;
-- Nenhum rótulo de técnica artística aparece na interface; as falas ficcionais preservam a personalidade enxadrística configurada;
-- Botão de pausar/retomar animações, com suporte a `prefers-reduced-motion`;
-- O atlas original continua funcionando, mas o painel prioriza `docs/data/lendas-portraits-hd.webp` (4 colunas × 6 linhas, idealmente 1024 × 1536 px) quando esse arquivo existe;
-- Para futuras compilações, manter uma cópia em `fonte/web/lendas-portraits-hd.webp`: `fonte/web/build.js` a copia automaticamente para o site.
-
-As artes são representações estilizadas; não são fotografias e as falas não são citações históricas. A presença do módulo v77 **não significa** que o arquivo HD já tenha sido publicado: confira se ele existe na pasta `docs/data`.
+O modo **Jogar → Lendas** conserva os 24 personagens e seus oito estilos artísticos. Os retratos usam o atlas HD docs/data/lendas-portraits-hd.webp, com dimensão ampliada, sem animações de rosto, cabeça ou mãos. Nome, epíteto e balão de fala permanecem; o texto informa situações da partida, não falas autênticas dos enxadristas. O recurso não altera a jogabilidade.
 
 ## Estrutura do repositório
 
