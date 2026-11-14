@@ -97,6 +97,12 @@ const files={};
 function put(name,buf){fs.writeFileSync(S+'/data/'+name,buf);files[name]=crypto.createHash('md5').update(buf).digest('hex').slice(0,10);}
 put('app.js',Buffer.from(app,'utf8'));
 fs.copyFileSync(__dirname+'/lendas-portraits.webp',S+'/data/lendas-portraits.webp');
+/* A arte HD é opcional: ao publicá-la na pasta fonte/web, o build a inclui no site. */
+if(fs.existsSync(__dirname+'/lendas-portraits-hd.webp')){
+ const hd=fs.readFileSync(__dirname+'/lendas-portraits-hd.webp');
+ put('lendas-portraits-hd.webp',hd);
+}
+
 for(const n of ['content','lpuzzles','openings','explorer','models']){const ext=n==='content'?'json':'txt';put(n+'.'+ext,fs.readFileSync(__dirname+'/../res/'+n+'.'+ext));}
 put('sf.js',fs.readFileSync(__dirname+'/../sf/bin/stockfish-19-lite-single.js'));
 put('sf.wasm',fs.readFileSync(__dirname+'/../sf/bin/stockfish-19-lite-single.wasm'));
