@@ -63,8 +63,9 @@ service cloud.firestore {
           && request.resource.data.tel is string && request.resource.data.tel.matches('^[0-9]{10,15}$');
       }
 
-      // Sinalização WebRTC de áudio: só os dois participantes autenticados.
-      // Nenhuma gravação, número telefônico ou mídia é armazenada aqui.
+      // PeerJS v80: somente os 2 jogadores leem/publicam IDs temporários.
+      // sid = ID PeerJS; sdp='' e ice=[] são campos de compatibilidade legada.
+      // O áudio é transmitido via WebRTC e não é gravado no Firestore.
       match /voz/{cor} {
         allow read: if ehJogador() && cor in ['w', 'b'];
         allow create, update: if ehJogador() && cor in ['w', 'b']
