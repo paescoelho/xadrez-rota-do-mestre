@@ -79,8 +79,10 @@ if(/<\/script|<!--/i.test(sfjs))throw new Error('texto proibido no stockfish.js'
 const sfwasm=fs.readFileSync(__dirname+'/../sf/bin/stockfish-19-lite-single.wasm').toString('base64');
 const sfTags='<script type="text/plain" id="res_sfjs">'+sfjs+'</script>\n<script type="text/plain" id="res_sfwasm">'+sfwasm+'</script>\n';
 const base=t;
+const lendasWebp=fs.readFileSync(__dirname+'/lendas-portraits.webp');
+const lendasUri='data:image/webp;base64,'+lendasWebp.toString('base64');
 function make(lite){let t=base;
-t=t.replace('FONTS_CSS',()=>fonts).replace('PIECES_CSS',()=>css).replace('MENU_BG',()=>'"data:image/jpeg;base64,'+bg+'"').replace('INTRO_FRAMES',()=>lite?'[]':JSON.stringify(frames)).replace('INTRO_AUDIO',()=>lite?'':aud).replace('INTRO_HDX16',()=>lite?'null':hdx16).replace('INTRO_HD16',()=>lite?'':hd16).replace('INTRO_HDX',()=>lite?'null':hdx).replace('INTRO_HD',()=>lite?'':hd).replace('INTRO_LITE',()=>lite?'true':'false').replace('RES_TAGS',()=>res+(lite?'':sfTags)).replace('APP_JS',()=>app);
+t=t.replace('FONTS_CSS',()=>fonts).replace('PIECES_CSS',()=>css).replace('MENU_BG',()=>'"data:image/jpeg;base64,'+bg+'"').replace('INTRO_FRAMES',()=>lite?'[]':JSON.stringify(frames)).replace('INTRO_AUDIO',()=>lite?'':aud).replace('INTRO_HDX16',()=>lite?'null':hdx16).replace('INTRO_HD16',()=>lite?'':hd16).replace('INTRO_HDX',()=>lite?'null':hdx).replace('INTRO_HD',()=>lite?'':hd).replace('INTRO_LITE',()=>lite?'true':'false').replace('RES_TAGS',()=>res+(lite?'':sfTags)).replace('APP_JS',()=>app.replace('url("data/lendas-portraits.webp")',()=> 'url("'+lendasUri+'")'));
 return t;}
 for(const [lite,name] of [[false,'xadrez-treinador.html'],[true,'xadrez-treinador-leve.html']]){const t=make(lite);fs.writeFileSync(__dirname+'/../out/'+name,t);console.log(name,(t.length/1e6).toFixed(2)+'MB');}
 
@@ -94,6 +96,7 @@ fs.rmSync(S,{recursive:true,force:true});fs.mkdirSync(S+'/data',{recursive:true}
 const files={};
 function put(name,buf){fs.writeFileSync(S+'/data/'+name,buf);files[name]=crypto.createHash('md5').update(buf).digest('hex').slice(0,10);}
 put('app.js',Buffer.from(app,'utf8'));
+fs.copyFileSync(__dirname+'/lendas-portraits.webp',S+'/data/lendas-portraits.webp');
 for(const n of ['content','lpuzzles','openings','explorer','models']){const ext=n==='content'?'json':'txt';put(n+'.'+ext,fs.readFileSync(__dirname+'/../res/'+n+'.'+ext));}
 put('sf.js',fs.readFileSync(__dirname+'/../sf/bin/stockfish-19-lite-single.js'));
 put('sf.wasm',fs.readFileSync(__dirname+'/../sf/bin/stockfish-19-lite-single.wasm'));
@@ -142,7 +145,7 @@ for(const f of fs.readdirSync(__dirname+'/icons'))fs.copyFileSync(__dirname+'/ic
 fs.writeFileSync(S+'/manifest.webmanifest',JSON.stringify({name:'Xadrez · Rota do Mestre',short_name:'Rota do Mestre',description:'Treinador de xadrez: jogue, aprenda e acompanhe o seu pensamento.',lang:'pt-BR',start_url:'./',scope:'./',display:'standalone',orientation:'portrait',background_color:'#0b0d10',theme_color:'#0b0d10',
  icons:[{src:'icons/icon-192.png',sizes:'192x192',type:'image/png'},{src:'icons/icon-512.png',sizes:'512x512',type:'image/png'},{src:'icons/icon-maskable-512.png',sizes:'512x512',type:'image/png',purpose:'maskable'}]},null,1));
 /* a abertura 16:9 (5,7 MB) não entra no pré-cache: quem usa computador guarda ao abrir; o celular não baixa à toa */
-const core=['./','index.html','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png'].concat(Object.keys(files).filter(n=>n!=='intro_hd16.bin'&&n!=='introhdx16.json').map(U));
+const core=['./','index.html','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png','data/lendas-portraits.webp'].concat(Object.keys(files).filter(n=>n!=='intro_hd16.bin'&&n!=='introhdx16.json').map(U));
 const ver=crypto.createHash('md5').update(idx+JSON.stringify(files)).digest('hex').slice(0,10);
 fs.writeFileSync(S+'/sw.js',`/* cache offline do Rota do Mestre (gerado pelo build) */
 const V='rdm-${ver}';
