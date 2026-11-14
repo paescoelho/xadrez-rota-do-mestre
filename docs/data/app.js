@@ -32893,13 +32893,10 @@ V34.ADMIN_UID='yQcB43kSJcbxnJorS1QsJsJtP5x1';
 V34.isAdmin=function(){try{var u=V23.Cloud&&V23.Cloud.user;return !!(u&&u.uid===V34.ADMIN_UID);}catch(e){return false;}};
 if(typeof V27!=='undefined'&&V27.panel){var oP50=V27.panel;V27.panel=function(){if(!V34.isAdmin())return;return oP50.apply(this,arguments);};}
 
-/* Rota do Mestre — v53: jogo ao vivo com ligação pelo WhatsApp, reações e partida para assistir.
- * 1) Ligação: cada jogador decide se libera o próprio número (salas/{code}/privado/{cor}); só os dois jogadores leem.
- *    O botão verde abre a conversa com o adversário no WhatsApp (o WhatsApp não deixa um site iniciar a ligação sozinho).
- *    Os números são apagados da sala quando a partida termina.
- * 2) Reações: 👍 😮 😂 👏 🤝 🔥 aparecem por 2 segundos no tabuleiro de todos (salas/{code}/reacoes), com limite por pessoa.
- * 3) Assistir: link "?ver=CODE" abre a partida só para ver (sem login, sem mexer, sem dicas, sem telefones).
- *    Quem assiste marca presença em salas/{code}/plateia/{uid} a cada 90 s; os jogadores veem "👁 N assistindo".
+/* Rota do Mestre — modo online: reações, convite e plateia.
+ * Chamadas de voz 1:1 são tratadas exclusivamente pelo PeerJS (V41).
+ * O WhatsApp é usado apenas para compartilhamento do convite.
+ * Não coleta número telefônico nem solicita autorização de contato.
  */
 var V35={EMO:['👍','😮','😂','👏','🤝','🔥'],un:[],code:null,tel:{},plat:{},lastFx:0,fxN:0,w:null};
 V35.esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -32907,13 +32904,6 @@ V35.ev=function(k){try{if(typeof V27!=='undefined'&&V27.ev)V27.ev(k);}catch(e){}
 V35.db=function(){return window.firebase.firestore();};
 V35.TS=function(){return window.firebase.firestore.FieldValue.serverTimestamp();};
 V35.link=function(code){return V31.base()+'?ver='+code;};
-V35.digits=function(s){var d=String(s||'').replace(/\D/g,'');if(d.length===10||d.length===11)d='55'+d;return d;};
-V35.validTel=function(d){return /^[0-9]{12,15}$/.test(d);};
-V35.fmt=function(d){if(!d)return '';var m=d.match(/^55(\d\d)(\d{4,5})(\d{4})$/);return m?'('+m[1]+') '+m[2]+'-'+m[3]:'+'+d;};
-V35.myTelLS=function(){try{return localStorage.getItem('rdm-tel')||'';}catch(e){return '';}};
-V35.asked=function(code){try{return localStorage.getItem('rdm-telask-'+code)==='1';}catch(e){return false;}};
-V35.setAsked=function(code){try{localStorage.setItem('rdm-telask-'+code,'1');}catch(e){}};
-
 /* ---------- ouvintes da sala (jogadores) ---------- */
 V35.stop=function(){V35.un.forEach(function(f){try{f();}catch(e){}});V35.un=[];V35.code=null;V35.tel={};V35.plat={};clearInterval(V35.pt);V35.pt=null;};
 V35.listen=function(code,asPlayer){
@@ -32946,31 +32936,7 @@ V35.react=function(e,de){
 };
 V35.emoRow=function(parent,de){var row=UiJs.el('div','v35-emo',parent);V35.EMO.forEach(function(e){var b=UiJs.el('button','',row,e);b.type='button';b.setAttribute('aria-label','Reagir '+e);b.onclick=function(){V35.react(e,de);};});return row;};
 
-/* ---------- ligação pelo WhatsApp ---------- */
-V35.telAsk=function(code){
- if(document.querySelector('.v35-ov'))return;
- var ov=document.createElement('div');ov.className='v35-ov';
- var saved=V35.myTelLS();
- ov.innerHTML='<div class="v35-md" role="dialog" aria-modal="true"><b>📞 Liberar ligação pelo WhatsApp?</b><p>Assim vocês podem conversar por áudio durante a partida. O seu número aparece <em>só para o seu adversário</em>, nunca para quem estiver assistindo, e é apagado da sala quando a partida termina.</p>'
-  +'<label class="v35-tel"><span>🇧🇷 +55</span><input type="tel" inputmode="tel" autocomplete="tel-national" maxlength="20" placeholder="(75) 9 9999-9999"></label>'
-  +'<label class="v35-ck"><input type="checkbox" checked> Lembrar meu número neste aparelho</label>'
-  +'<button type="button" class="btn pri wide v35-ok">Liberar ligação</button><button type="button" class="btn wide v35-no">Agora não</button></div>';
- document.body.appendChild(ov);
- var inp=ov.querySelector('input[type=tel]'),ck=ov.querySelector('input[type=checkbox]');
- if(saved)inp.value=V35.fmt(saved).replace(/^\+/,'');
- var close=function(){ov.remove();};
- ov.querySelector('.v35-no').onclick=function(){V35.setAsked(code);close();};
- ov.onclick=function(ev){if(ev.target===ov){V35.setAsked(code);close();}};
- ov.querySelector('.v35-ok').onclick=function(){
-  var d=V35.digits(inp.value);
-  if(!V35.validTel(d)){UiJs.toast('Confira o número: DDD + celular.');inp.focus();return;}
-  try{if(ck.checked)localStorage.setItem('rdm-tel',d);else localStorage.removeItem('rdm-tel');}catch(e){}
-  V35.setAsked(code);close();
-  V35.db().collection('salas').doc(code).collection('privado').doc(V31.me).set({tel:d,t:V35.TS()})
-   .then(function(){UiJs.toast('Ligação liberada. Quando o adversário liberar também, o botão verde aparece.');},function(){UiJs.toast('Não deu para liberar agora. Tente de novo.');});
- };
- setTimeout(function(){if(!inp.value)inp.focus();},120);
-};
+/* Remoção de números antigos, apenas ao encerrar partidas criadas antes do PeerJS. */
 V35.telOff=function(code){var ref=V35.db().collection('salas').doc(code).collection('privado');['w','b'].forEach(function(c){ref.doc(c).delete().catch(function(){});});};
 
 /* ---------- ferramentas na tela do jogador ---------- */
@@ -34154,8 +34120,7 @@ V41.stop=function(notify){
 };
 (function(){
  if(typeof V31==='undefined'||typeof V35==='undefined')return;
- // Legado de número de telefone: não exibir nem solicitar no modo online.
- V35.asked=function(){return true;};
+ // A interface antiga de chamadas telefônicas foi retirada de V35.
  var decorate=V35.decorate;
  V35.decorate=function(){
   var result=decorate.apply(this,arguments);
