@@ -189,11 +189,13 @@ V41.start=async function(){
    V41.peerReady=true;V41.peerId=id;V41.publish(ticket);
   });
   peer.on('call',function(c){
-   if(ticket!==V41.token||!V41.enabled||V41.me!=='b'||!V41.published||!V31.room||V31.room.status!=='play'){
+   if(ticket!==V41.token||!V41.enabled||V41.me!=='b'||!V31.room||V31.room.status!=='play'){
     try{c.close();}catch(e){}return;
    }
    // Apenas as Pretas atendem; só o Peer ID validado no Firestore pode ligar.
    if(V41.call||V41.pending){try{c.close();}catch(e){}return;}
+   // Aceita aguardar até 4,5 s enquanto o Firebase confirma nosso ID.
+   // A resposta final só ocorre depois de ambos publicarem /voz.
    V41.pending=c;V41.maybeConnect();
    if(V41.pending===c)V41.pendingTimer=setTimeout(function(){
     if(V41.pending===c){V41.pending=null;try{c.close();}catch(e){}}
