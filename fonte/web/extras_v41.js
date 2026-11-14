@@ -336,8 +336,7 @@ V41.stop=function(notify){
 };
 (function(){
  if(typeof V31==='undefined'||typeof V35==='undefined')return;
- // Legado de número de telefone: não exibir nem solicitar no modo online.
- V35.asked=function(){return true;};
+ // A interface antiga de chamadas telefônicas foi retirada de V35.
  var decorate=V35.decorate;
  V35.decorate=function(){
   var result=decorate.apply(this,arguments);
