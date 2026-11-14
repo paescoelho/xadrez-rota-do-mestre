@@ -23,9 +23,7 @@ V35.setAsked=function(code){try{localStorage.setItem('rdm-telask-'+code,'1');}ca
 V35.stop=function(){V35.un.forEach(function(f){try{f();}catch(e){}});V35.un=[];V35.code=null;V35.tel={};V35.plat={};clearInterval(V35.pt);V35.pt=null;};
 V35.listen=function(code,asPlayer){
  V35.stop();V35.code=code;var ref=V35.db().collection('salas').doc(code);
- if(asPlayer){
-  V35.un.push(ref.collection('privado').onSnapshot(function(qs){V35.tel={};qs.forEach(function(d){V35.tel[d.id]=d.data().tel;});V35.decorate();},function(){}));
- }
+ // A voz usa PeerJS e a colecao /voz; numeros privados nao sao mais lidos.
  V35.un.push(ref.collection('plateia').onSnapshot(function(qs){V35.plat={};qs.forEach(function(d){var t=d.data().t;V35.plat[d.id]=t&&t.toMillis?t.toMillis():Date.now();});V35.watchers();},function(){}));
  var since=window.firebase.firestore.Timestamp.fromMillis(Date.now()-4000);
  V35.un.push(ref.collection('reacoes').where('t','>',since).onSnapshot(function(qs){
@@ -86,17 +84,7 @@ V35.decorate=function(){
  var old=cur.querySelector('.v35-tools');if(old)old.remove();
  if(r.status==='over'){if(V35.code&&!V35.cleared){V35.cleared=V35.code;V35.telOff(V35.code);}}
  var box=document.createElement('div');box.className='v35-tools';
- var opp=V31.other(me),mine=V35.tel[me],his=V35.tel[opp],play=r.status==='play';
- if(play&&mine&&his){
-  var a=document.createElement('a');a.className='v35-call';a.href='https://wa.me/'+his;a.target='_blank';a.rel='noopener';
-  a.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="#fff" d="M6.6 10.8a15.2 15.2 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z"/></svg><span>Ligar para '+V35.esc(V31.oppName(r))+' no WhatsApp</span>';
-  a.onclick=function(){V35.ev('ligacao-whatsapp');UiJs.toast('Abrindo a conversa: toque no telefone no topo do WhatsApp para ligar.');};
-  box.appendChild(a);
- }else if(play&&!mine){
-  var b=UiJs.el('button','v35-lib',box,'📞 Liberar ligação pelo WhatsApp');b.type='button';b.onclick=function(){V35.telAsk(V31.code);};
- }else if(play&&mine&&!his){
-  UiJs.el('div','v35-wait',box,'📞 Ligação liberada por você. Esperando '+V31.oppName(r)+' liberar também.');
- }
+ var play=r.status==='play';
  var row=UiJs.el('div','v35-row',box);
  var sh=UiJs.el('button','v35-tb',row,'🔗 Chamar para assistir');sh.type='button';sh.onclick=V35.shareWatch;
  var eye=UiJs.el('span','v35-eye',row,'');eye.style.display='none';
@@ -120,9 +108,7 @@ V35.shareWatch=function(){
  var oClose=V31.close;V31.close=function(){V35.stop();var x=document.querySelector('.v35-ov');if(x)x.remove();return oClose.apply(this,arguments);};
  var oGP=V31.gamePage;V31.gamePage=function(){
   var r=oGP.apply(this,arguments);
-  try{V35.decorate();
-   var rm=V31.room;if(rm&&rm.status==='play'&&V31.me&&!V35.tel[V31.me]&&!V35.asked(V31.code)&&(rm.moves||[]).length<4)setTimeout(function(){if(V31.room&&V31.room.status==='play'&&!V35.tel[V31.me]&&!V35.asked(V31.code))V35.telAsk(V31.code);},900);
-  }catch(e){}
+  try{V35.decorate();}catch(e){}
   return r;
  };
 })();
