@@ -84,7 +84,7 @@ V42.style=function(){
  '.v42-meta b{font:700 10px/1.2 system-ui,sans-serif;color:#e5c788;letter-spacing:.065em;text-transform:uppercase}',
  '.v42-meta em{font:normal 10px/1.2 system-ui,sans-serif;color:#aeb6b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
  '.v42-scene{display:flex;align-items:center;gap:10px;min-width:0}',
- '.v42-portrait{width:90px;height:90px;flex:0 0 90px;border-radius:12px;background-image:url("data/lendas-portraits.webp");background-size:400% 600%;background-repeat:no-repeat;background-color:#30313c;border:1px solid rgba(255,221,148,.45);position:relative;isolation:isolate;box-shadow:0 5px 15px rgba(0,0,0,.38);animation:v42breathe 5s ease-in-out infinite;transform-origin:50% 85%}',
+ '.v42-portrait{width:90px;height:90px;flex:0 0 90px;border-radius:12px;background-image:url("data/lendas-portraits-hd.webp?v=v79-static-20261114");background-size:400% 600%;background-repeat:no-repeat;background-color:#30313c;border:1px solid rgba(255,221,148,.45);position:relative;isolation:isolate;box-shadow:0 5px 15px rgba(0,0,0,.38);animation:none;transform:none}',
  '.v42-portrait:after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;box-shadow:inset 0 0 15px rgba(9,12,18,.23)}',
  '.v42-s1 .v42-portrait{image-rendering:pixelated}.v42-s3 .v42-portrait{filter:sepia(.27) contrast(1.08)}',
  '.v42-s5 .v42-portrait{filter:saturate(1.16) contrast(1.1)}.v42-s6 .v42-portrait{filter:saturate(.88)}',
@@ -93,58 +93,34 @@ V42.style=function(){
  '.v42-phrase{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}',
  '.v42-name{font:700 13.5px/1.15 Georgia,serif;color:#f7d98d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
  '.v42-epithet{font:11px/1.15 system-ui,sans-serif;color:#bac2c1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
- '.v42-balloon{position:relative;background:#f3ecde;color:#26222b;padding:9px 11px;border-radius:11px 11px 11px 4px;min-height:44px;font:500 clamp(11px,2.9vw,13px)/1.35 system-ui,sans-serif;box-shadow:0 3px 10px rgba(0,0,0,.25);display:flex;align-items:center;animation:v42reveal .24s ease-out}',
+ '.v42-balloon{position:relative;background:#f3ecde;color:#26222b;padding:9px 11px;border-radius:11px 11px 11px 4px;min-height:44px;font:500 clamp(11px,2.9vw,13px)/1.35 system-ui,sans-serif;box-shadow:0 3px 10px rgba(0,0,0,.25);display:flex;align-items:center;animation:none}',
  '.v42-balloon:before{content:"";position:absolute;left:-7px;top:50%;border-top:7px solid transparent;border-bottom:7px solid transparent;border-right:8px solid #f3ecde;transform:translateY(-50%)}',
- '.v42-foot{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:7px;font:10px/1.2 system-ui,sans-serif;color:#aaa799}',
- '.v42-foot span{border-radius:8px;padding:4px 6px;border:1px solid rgba(224,185,106,.2);background:rgba(234,195,120,.05)}',
- '.v42-foot strong{font-weight:600;color:#ddc78d}.v42-foot button{font:inherit;color:#c7bfa9;background:transparent;border:0;text-decoration:underline;padding:3px;margin-left:auto;cursor:pointer}',
  '.v42-details{border:1px solid rgba(205,170,112,.16);border-radius:11px;background:rgba(255,255,255,.025);margin:1px 0 9px;padding:5px 9px}',
  '.v42-details summary{cursor:pointer;font:11px/1.2 system-ui,sans-serif;color:#a9b0b5;list-style:auto;padding:4px 0}',
  '.v42-details .v42-more{padding:8px 0 3px}.v42-details .p,.v42-details .h,.v42-details .ul{margin-top:5px}',
- '.v42-fx{position:absolute;right:-4px;top:-9px;font-size:24px;filter:drop-shadow(0 1px 4px #000);pointer-events:none;animation:v42spark 1s ease-out infinite}',
- '.v42-thinking .v42-portrait{animation:v42think 2.7s ease-in-out infinite}.v42-attacking .v42-portrait{animation:v42attack .9s cubic-bezier(.1,.65,.3,1) 1,v42breathe 4s ease-in-out .9s infinite}',
- '.v42-surprised .v42-portrait{animation:v42surprise .65s ease-out 1,v42breathe 5s ease-in-out .65s infinite}',
- '.v42-victory .v42-portrait{animation:v42win .9s ease-out 1,v42breathe 5s ease-in-out .9s infinite}',
- '.v42-pressured .v42-portrait{animation:v42think 3s ease-in-out infinite}',
- '@keyframes v42breathe{0%,100%{transform:translateY(0) rotate(-.6deg)}50%{transform:translateY(-3px) rotate(.7deg)}}',
- '@keyframes v42think{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-3px) rotate(1deg)}}',
- '@keyframes v42attack{0%{transform:scale(.94) translateX(-5px)}32%{transform:scale(1.09) rotate(-3deg)}70%{transform:scale(1.03) rotate(1deg)}100%{transform:scale(1)}}',
- '@keyframes v42surprise{0%{transform:translateY(5px) scale(.95)}42%{transform:translateY(-7px) scale(1.07)}100%{transform:none}}',
- '@keyframes v42win{0%{transform:translateY(0)}45%{transform:translateY(-8px) scale(1.07)}100%{transform:none}}',
- '@keyframes v42spark{0%{transform:translateY(5px) scale(.5);opacity:0}40%{transform:translateY(-4px) scale(1.04);opacity:1}100%{transform:translateY(-12px) scale(.9);opacity:0}}',
- '@keyframes v42reveal{from{opacity:.6;transform:translateY(4px)}to{opacity:1;transform:none}}',
  '@media(max-width:420px){.v42-card{padding:7px;margin:2px 0 5px}.v42-meta{margin-bottom:4px}.v42-scene{gap:8px}.v42-portrait{width:72px;height:72px;flex-basis:72px}.v42-name{font-size:12.5px}.v42-epithet{font-size:10px}.v42-balloon{font-size:11px;padding:7px 8px;min-height:39px}.v42-foot{margin-top:5px;gap:4px;font-size:9px}}',
  '@media(max-height:660px){.v42-portrait{width:68px;height:68px;flex-basis:68px}.v42-foot{display:none}.v42-meta{margin-bottom:3px}.v42-balloon{padding:6px 8px}}',
- '@media(prefers-reduced-motion:reduce){.v42-card *, .v42-card *:before,.v42-card *:after{animation:none!important;transition:none!important}}',
- '.v42-still .v42-portrait,.v42-still .v42-fx,.v42-still .v42-balloon{animation:none!important}'
  ].join('\n');
  document.head.appendChild(c);
 };
-V42.reduced=function(){try{return localStorage.getItem('rdm-lendas-anim')==='0';}catch(e){return false;}};
-V42.toggled=function(){try{localStorage.setItem('rdm-lendas-anim',V42.reduced()?'1':'0');}catch(e){}V42.render();};
 V42.render=function(){
  var g=App.G,a=V42.byGame(g),cur=UiJs.cur;
  if(!a||!cur||!UiJs.panelEl||!UiJs.panelEl.contains(cur))return;
  V42.style();
  var state=V42.choose(a,g),idx=a.index,col=idx%4,row=(idx/4)|0,style=a.words[0];
  var tone={attack:'attacking',think:'thinking',surprise:'surprised',win:'victory',sad:'pressured',confident:'confident',calm:'',idle:''}[state.kind]||'';
- var card=UiJs.el('section','v42-card v42-s'+style+' '+(tone?'v42-'+tone:'')+(V42.reduced()?' v42-still':''),null);
+ var card=UiJs.el('section','v42-card v42-s'+style+' '+(tone?'v42-'+tone:''),null);
  card.setAttribute('aria-label','Lendas Vivas: '+a.p.n);card.style.setProperty('--v42-ac',style===9?'#87a6f2':style===7?'#b8a9e7':style===1?'#72c4b1':'#dab466');
  var meta=UiJs.el('div','v42-meta',card);
  UiJs.el('b','',meta,'✦ Lendas Vivas');UiJs.el('em','',meta,state.label);
  var scene=UiJs.el('div','v42-scene',card);
  var pic=UiJs.el('div','v42-portrait',scene);
- pic.style.backgroundPosition=(col*100/3)+'% '+(row*100/5)+'%';pic.setAttribute('role','img');pic.setAttribute('aria-label','Retrato artístico de '+a.p.n+', estilo '+V42.styles[style]);
- if(state.kind==='attack'||state.kind==='win'||state.kind==='surprise')UiJs.el('span','v42-fx',pic,state.kind==='attack'?'⚡':state.kind==='win'?'✦':'!');
+ pic.style.backgroundPosition=(col*100/3)+'% '+(row*100/5)+'%';pic.setAttribute('role','img');pic.setAttribute('aria-label','Retrato artístico em HD de '+a.p.n);
  var tx=UiJs.el('div','v42-phrase',scene);
  UiJs.el('div','v42-name',tx,a.p.c+' '+a.p.n);
  UiJs.el('div','v42-epithet',tx,a.words[1]);
  var bubble=UiJs.el('div','v42-balloon',tx,'“'+state.txt+'”');
  bubble.setAttribute('role','status');bubble.setAttribute('aria-live','polite');
- var foot=UiJs.el('div','v42-foot',card);
- UiJs.el('span','',foot,V42.styles[style]);
- UiJs.el('span','',foot,'♟ Estilo histórico simulado');
- var motion=UiJs.el('button','',foot,V42.reduced()?'Ativar animações':'Pausar animações');motion.type='button';motion.onclick=V42.toggled;
  if(cur.firstChild)cur.insertBefore(card,cur.firstChild);else cur.appendChild(card);
  // Mensagens antigas continuam disponíveis, mas deixam de competir visualmente.
  // Não recolhemos instruções obrigatórias dos passos guiados nem revisão de posições.
