@@ -62,6 +62,25 @@ service cloud.firestore {
           && request.resource.data.keys().hasOnly(['tel', 't'])
           && request.resource.data.tel is string && request.resource.data.tel.matches('^[0-9]{10,15}$');
       }
+
+      // Sinalização WebRTC de áudio: só os dois participantes autenticados.
+      // Nenhuma gravação, número telefônico ou mídia é armazenada aqui.
+      match /voz/{cor} {
+        allow read: if ehJogador() && cor in ['w', 'b'];
+        allow create, update: if ehJogador() && cor in ['w', 'b']
+          && request.auth.uid == jogadorDe(cor)
+          && request.resource.data.keys().hasOnly(['uid','enabled','sid','sdp','ice','t'])
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.enabled is bool
+          && request.resource.data.sid is string
+          && request.resource.data.sid.size() <= 80
+          && request.resource.data.sdp is string
+          && request.resource.data.sdp.size() <= 30000
+          && request.resource.data.ice is list
+          && request.resource.data.ice.size() <= 180
+          && request.resource.data.t == request.time;
+        allow delete: if false;
+      }
       // quem está assistindo: cada um marca a própria presença
       match /plateia/{uid} {
         allow read: if signedIn();
