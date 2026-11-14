@@ -27,6 +27,19 @@ O modo **Jogar › Lendas** mantém as 24 personalidades históricas já dispon�
 - Em alguns navegadores móveis, a reprodução do áudio depende de um toque do usuário; o botão **Ativar som** oferece essa ação.
 - O modo online depende de conexão à internet; o treinamento offline continua funcionando sem voz.
 
+## Lendas Vivas — painel de personagem (v77)
+
+Ao enfrentar um dos 24 mestres na modalidade Lendas, o jogo apresenta um painel ilustrado abaixo do tabuleiro no celular (ou na região lateral da partida em telas largas):
+
+- Retrato ampliado e quase na altura completa do painel, com balão de fala e nome do adversário;
+- Movimentos sutis de personagem e rosto: respiração, reflexão, avanço ao atacar, surpresa, tensão e vitória, sem alterar as peças de xadrez;
+- Nenhum rótulo de técnica artística aparece na interface; as falas ficcionais preservam a personalidade enxadrística configurada;
+- Botão de pausar/retomar animações, com suporte a `prefers-reduced-motion`;
+- O atlas original continua funcionando, mas o painel prioriza `docs/data/lendas-portraits-hd.webp` (4 colunas × 6 linhas, idealmente 1024 × 1536 px) quando esse arquivo existe;
+- Para futuras compilações, manter uma cópia em `fonte/web/lendas-portraits-hd.webp`: `fonte/web/build.js` a copia automaticamente para o site.
+
+As artes são representações estilizadas; não são fotografias e as falas não são citações históricas. A presença do módulo v77 **não significa** que o arquivo HD já tenha sido publicado: confira se ele existe na pasta `docs/data`.
+
 ## Estrutura do repositório
 
 | Pasta | O que tem |
