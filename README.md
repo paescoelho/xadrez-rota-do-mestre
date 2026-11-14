@@ -3,6 +3,18 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## Áudio integrado durante partidas online (v75)
+
+- A partida abre com o áudio desligado. Cada jogador toca **Ativar áudio** e autoriza o microfone no navegador.
+- Após a autorização dos dois, o WebRTC negocia a conexão automaticamente; o tabuleiro permanece aberto.
+- Os controles permitem silenciar, reativar e encerrar. O áudio não é gravado pelo aplicativo.
+- O WhatsApp serve apenas para convidar outro jogador; a voz **não** depende de uma chamada do WhatsApp.
+- **Obrigatório:** publicar as regras atualizadas de `firebase/firestore.rules` no projeto Firebase `xadrez-whatsapp`, antes de usar o áudio. Alterar regras apenas no GitHub **não** atualiza o Firestore.
+- Exemplo com Firebase CLI autenticado e projeto autorizado: `firebase deploy --only firestore:rules --project xadrez-whatsapp` (configurar `firebase.json` ou usar a interface do Firebase para publicar as regras completas do arquivo).
+- O padrão utiliza servidores STUN públicos; pode falhar em redes NAT restritivas. Para produção confiável, configurar `window.RDM_VOICE_ICE_SERVERS` com STUN e TURN próprios/gerenciados **antes de iniciar a chamada**. Não colocar senha TURN estática permanente em arquivos públicos: use credenciais temporárias.
+- Em alguns navegadores móveis, a reprodução do áudio depende de um toque do usuário; o botão **Ativar som** oferece essa ação.
+- O modo online depende de conexão à internet; o treinamento offline continua funcionando sem voz.
+
 ## Estrutura do repositório
 
 | Pasta | O que tem |
