@@ -425,6 +425,17 @@ Medido em partidas do motor novo contra o anterior (80 partidas, 40 aberturas co
 - **Níveis:** Fácil 800, Médio 1200, Difícil 1600 (mesma força de antes, recalibrados), **Mestre 2000** (motor do jogo), **Grande Mestre 2500** e **Stockfish 3200** (jogados pelo Stockfish que já vinha no jogo; se ele não carregar, joga o motor do jogo e a tela avisa). Os rótulos dos três últimos são aproximados.
 - **Fantasma com erros de verdade:** ao importar do Lichess/Chess.com, o Stockfish mede em segundo plano até 120 lances seus e a taxa de erros por fase substitui a estimativa pelo rating.
 
+
+## v78 — Lendas Vivas com microexpressões (10 FPS)
+
+- As **24 lendas** mantêm seus retratos HD e suas falas originais; a animação aparece **somente** nas partidas contra lendas (`g.gKey: leg:...`).
+- O módulo `fonte/web/extras_v44.js` acrescenta **16 comportamentos** (respiração, piscar, refletir, calcular, planejar, iniciativa, ataque, captura, xeque, reconhecimento, punição de erro, defesa, vitória, derrota, empate e final), com parâmetros individuais por lenda.
+- A renderização é procedural em Canvas 2D: **10 atualizações/segundo (100 ms/quadro)** com pequenas transformações independentes de cabeça, face, ombros e mãos onde visíveis. Não alterna imagens inteiras para simular vídeo e não utiliza servidores de IA durante o jogo.
+- Cabeça, piscar e gestos são **simulações 2D**, não capturas de movimento, vídeos reais ou animações faciais completas com rig ósseo. Sem novos arquivos de vídeo, preserva a leveza do aplicativo offline.
+- O modo de movimento reduzido e o botão de pausar animações permanecem respeitados. Em abas em segundo plano, a renderização é suspensa; navegadores podem limitar os timers.
+- O atlas principal continua `docs/data/lendas-portraits-hd.webp`; sem ele, há um fallback para `lendas-portraits.webp`.
+- Para alterar a biblioteca de movimentos, veja `V44.REACTIONS`, `V44.moves` e `V44.points`; para adicionar personagens, manter o mesmo identificador de `LENDAS` e `V42.people`.
+
 ## v74 — Lendas: enfrente os maiores jogadores
 - Em **Nova partida**, botão **Lendas ▾** depois do Stockfish. Abre uma lista com busca (nome ou país) e filtros (Todos, Campeões mundiais, Em atividade, Clássicos).
 - **24 jogadores**: Carlsen, Kasparov, Fischer, Karpov, Capablanca, Alekhine, Lasker, Botvinnik, Tal, Petrosian, Spassky, Smyslov, Steinitz, Morphy, Kramnik, Anand, Caruana, Nakamura, Ding, Gukesh, Judit Polgár, Korchnoi, Mequinho e Firouzja.
