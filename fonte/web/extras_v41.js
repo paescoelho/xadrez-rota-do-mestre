@@ -229,7 +229,7 @@ V41.process=async function(){
   if(offer&&offer.type==='offer'&&offer.for===V41.sid&&him.sid&&V41.offerSeen!==him.sdp&&!V41.answering){
    V41.answering=true;V41.remoteSid=him.sid;V41.show('connecting');
    try{
-    V41.closePeer();V41.remoteSid=him.sid;
+    V41.closePeer();V41.answering=true;V41.remoteSid=him.sid;
     var pc2=V41.peer();await pc2.setRemoteDescription({type:'offer',sdp:offer.sdp});
     V41.offerSeen=him.sdp;
     var ans=await pc2.createAnswer();await pc2.setLocalDescription(ans);
