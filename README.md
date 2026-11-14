@@ -3,6 +3,12 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## Correção de permissões da voz (14.11.2026)
+
+O listener anterior chamava `collection('voz').onSnapshot()`, mas as regras Firestore permitem somente os documentos `salas/{codigo}/voz/w` e `salas/{codigo}/voz/b`. Regras de segurança não filtram consultas; essa consulta inteira podia falhar com `permission-denied`. A correção usa `doc('w').onSnapshot()` e `doc('b').onSnapshot()` e encerra ambos os listeners ao desligar a voz. O site publicado recebeu um hotfix no carregador `docs/index.html` e a versão de cache em `docs/sw.js` foi atualizada.
+
+**Para concluir:** confira no Firebase Console do projeto `xadrez-whatsapp` em **Firestore Database → Regras** se o conteúdo integral de `firebase/firestore.rules` está publicado. Este repositório não publica automaticamente regras Firebase. Faça o teste com duas contas/dispositivos em uma sala de partida; ambos devem ativar o microfone. Um terceiro usuário não deve conseguir ler `/voz/w` ou `/voz/b`. Não substitua as regras por `allow read, write: if true`.
+
 ## v80 — Chamada de voz PeerJS entre dois jogadores (14.11.2026)
 
 O modo **Jogar online** usa [PeerJS 1.5.5](https://github.com/peers/peerjs) (licença MIT) para chamadas **somente de áudio** durante uma partida. O WhatsApp **continua apenas como convite**. A biblioteca é carregada sob demanda de uma versão fixa no jsDelivr, com fallback no unpkg; sem internet, a chamada não funciona.
