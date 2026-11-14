@@ -59,7 +59,7 @@ var V44=(function(){
    '.v43-card .v44-stage .v43-figure,.v43-card .v44-stage .v43-face{display:none!important}',
    '.v44-canvas{position:absolute;display:block;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;border-radius:inherit}',
    '.v43-card .v44-stage:after{z-index:3;pointer-events:none}',
-   '.v44-stage.v44-static{background-image:var(--v43-atlas,url("data/lendas-portraits-hd.webp"))!important}',
+   '.v43-card .v42-portrait.v44-stage.v44-static{background-image:var(--v43-atlas,url("data/lendas-portraits-hd.webp"))!important}',
    '.v43-card .v42-meta .v44-state{color:#f0d699;opacity:.9;font-size:10px}',
    '@media(prefers-reduced-motion:reduce){.v44-stage *{animation:none!important}}'
   ].join('\n');document.head.appendChild(el);
@@ -214,14 +214,14 @@ var V44=(function(){
    api.imageState=2;
    if(api.session&&api.session.canvas){
     api.session.stage.classList.remove('v44-static');
-    api.frame(api.session,performance.now());api.run();
+    api.frame(api.session,performance.now());if(!api.stopped())api.run();
    }
   };
   api.img.onerror=function(){
    // Atlas antigo apenas como fallback, ainda sem troca de fotografias.
    api.img.onload=function(){
     api.imageState=2;
-    if(api.session&&api.session.canvas){api.session.stage.classList.remove('v44-static');api.frame(api.session,performance.now());api.run();}
+    if(api.session&&api.session.canvas){api.session.stage.classList.remove('v44-static');api.frame(api.session,performance.now());if(!api.stopped())api.run();}
    };
    api.img.onerror=function(){api.imageState=-1;};
    api.img.src='data/lendas-portraits.webp';
