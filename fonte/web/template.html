@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v81</title>
+<title>Xadrez · Rota do Mestre — v82</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1461,11 +1461,16 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v74-tx b{font-size:15.5px;line-height:1.2}.v74-tx b u{text-decoration:none;color:#f3d98c;font-weight:700;margin-left:4px}
 .v74-tx i{font-style:normal;font-size:12px;color:#c9b27a}
 .v74-tx em{font-style:normal;font-size:12.5px;color:#b9b2a3;line-height:1.3}
-.v74-card .v74-op{font-size:11.5px;color:#8d877b}
+.v74-card .v74-op{font-size:11.5px;color:#8d877b}.v74-card .v74-tx b.v74-real{display:inline;font:600 11.5px/1.35 system-ui,sans-serif;color:#d9b866}
 .v74-card .v74-no{font-size:11px;color:#c9b27a;margin-top:2px}
 .v74-fs{flex:none}.v74-ls{flex:1;min-height:0}.v74-hd,.v74-q{flex:none}
 .v74-has .v33-fxd{display:none!important}
-@media (max-height:800px){.v74-card em:not(.v74-no){display:none}.v74-card{padding:7px 11px;margin-top:6px}.v74-card .v74-fl{font-size:22px}}
+/* v82: com uma lenda escolhida a tela de Nova partida cabe sem rolar: temas em uma fileira deslizante, cartões compactos */
+.v74-has .v36-card .v36-tx em,.v74-has .seg .segn{display:none}
+.v74-has .theme-picker .sw.sw-labeled{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.v74-has .theme-picker .sw.sw-labeled::-webkit-scrollbar{display:none}
+.v74-has .theme-picker .theme-tile{flex:0 0 calc((100% - 30px)/5.5)}
+@media (max-height:800px){.v74-card em:not(.v74-no):not(.v74-op){display:none}.v74-card .v74-ob{display:none}.v74-card{padding:7px 11px;margin-top:6px}.v74-card .v74-fl{font-size:22px}}
 @media (max-height:700px){.v74-card .v74-no{display:none}.v74-card{padding:6px 10px;margin-top:5px}}
 .v74-ch{flex:none;font-size:12px;color:#f3d98c;white-space:nowrap}
 .v74-ov{position:fixed;inset:0;z-index:9998;background:rgba(5,7,10,.72);display:flex;align-items:flex-end;justify-content:center;animation:v74f .2s ease}

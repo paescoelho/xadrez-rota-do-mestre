@@ -71,8 +71,8 @@ V74.open=function(){
     var sc='';try{sc=Dna.scoreTxt('leg:'+p.id);if(/^0V 0E 0D/.test(sc))sc='';}catch(e){}
     var c=document.createElement('button');c.className='v74-card';c.setAttribute('aria-label','Trocar de lenda');
     c.innerHTML='<span class="v74-fl" aria-hidden="true">'+p.c+'</span><span class="v74-tx"><b>'+V74.esc(p.n)+' <u>'+p.e+'</u></b><i>'+V74.esc(p.t)+'</i>'+
-     '<em>'+V74.esc(p.st)+'</em><em class="v74-op">De brancas: '+V74.esc(p.ow)+'.<br>De pretas: '+V74.esc(p.ob)+'.</em>'+
-     '<em class="v74-no">Imita o repertório e o estilo; a força é a do motor do jogo. Não muda o seu Elo'+(sc?' · seu placar: '+sc:'')+'.</em></span><span class="v74-ch">trocar ▾</span>';
+     '<em>'+V74.esc(p.st)+'</em><em class="v74-op">'+(p.ng?'<b class="v74-real">Repertório real · '+p.ng.toLocaleString('pt-BR')+' partidas ('+V74.esc(p.yr)+')</b>':'')+'<span class="v74-ob">'+(p.ng?'<br>':'')+'Brancas: '+V74.esc(p.ow)+'.<br>Pretas: '+V74.esc(p.ob)+'.</span></em>'+
+     '<em class="v74-no">Abre como nas partidas reais; depois, o motor do jogo segue no estilo dele. Não muda o seu Elo'+(sc?' · seu placar: '+sc:'')+'.</em></span><span class="v74-ch">trocar ▾</span>';
     c.onclick=function(){V74.open();};seg.appendChild(c);
     /* o cartão ocupa espaço: a nota do efeito do tabuleiro sai para a tela continuar sem rolar */
     setTimeout(function(){try{var fx=page.querySelector('.v33-fxd');if(fx)fx.style.display='none';}catch(e){}},0);

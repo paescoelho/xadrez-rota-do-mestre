@@ -1,0 +1,2674 @@
+{
+"alekhine": {
+"n": 1652,
+"nw": 1037,
+"nb": 615,
+"y0": 1906,
+"y1": 1946,
+"pos": 1409,
+"ag": 28,
+"cs": "k",
+"cn": 10,
+"qx": 16,
+"win": 57,
+"draw": 29,
+"fw": [
+[
+"Ruy Lopez (Espanhola)",
+12
+],
+[
+"Gambito da Dama Recusado",
+12
+],
+[
+"Defesa Índia",
+9
+],
+[
+"Jogo do Peão da Dama",
+7
+],
+[
+"Defesa Francesa",
+7
+],
+[
+"Defesa Siciliana",
+7
+]
+],
+"fb": [
+[
+"Ruy Lopez (Espanhola)",
+13
+],
+[
+"Defesa Índia",
+7
+],
+[
+"Defesa Francesa",
+7
+],
+[
+"Defesa Horwitz",
+6
+],
+[
+"Gambito da Dama Recusado",
+5
+],
+[
+"Defesa Nimzo-Índia",
+5
+]
+],
+"m1": [
+[
+"d2d4",
+48
+],
+[
+"e2e4",
+46
+],
+[
+"g1f3",
+4
+],
+[
+"c2c4",
+3
+]
+],
+"r1": [
+[
+"g8f6",
+31
+],
+[
+"e7e5",
+28
+],
+[
+"d7d5",
+18
+],
+[
+"e7e6",
+14
+],
+[
+"c7c5",
+5
+],
+[
+"c7c6",
+2
+]
+],
+"sacok": 11.3,
+"opp": 10.5
+},
+"anand": {
+"n": 4029,
+"nw": 2039,
+"nb": 1990,
+"y0": 1984,
+"y1": 2022,
+"pos": 2953,
+"ag": 25,
+"cs": "k",
+"cn": 9,
+"qx": 17,
+"win": 35,
+"draw": 51,
+"fw": [
+[
+"Defesa Siciliana",
+31
+],
+[
+"Ruy Lopez (Espanhola)",
+23
+],
+[
+"Defesa Francesa",
+8
+],
+[
+"Defesa Caro-Kann",
+6
+],
+[
+"Defesa Petrov's",
+5
+],
+[
+"Jogo Italiano",
+4
+]
+],
+"fb": [
+[
+"Defesa Siciliana",
+16
+],
+[
+"Ruy Lopez (Espanhola)",
+10
+],
+[
+"Abertura Zukertort",
+7
+],
+[
+"Abertura Inglesa",
+7
+],
+[
+"Gambito da Dama Recusado",
+5
+],
+[
+"Defesa da Dama Índia",
+5
+]
+],
+"m1": [
+[
+"e2e4",
+83
+],
+[
+"d2d4",
+11
+],
+[
+"g1f3",
+3
+],
+[
+"c2c4",
+2
+]
+],
+"r1": [
+[
+"g8f6",
+32
+],
+[
+"e7e5",
+22
+],
+[
+"c7c5",
+20
+],
+[
+"d7d5",
+17
+],
+[
+"c7c6",
+5
+],
+[
+"e7e6",
+2
+]
+],
+"sacok": 8.5,
+"opp": 11.4
+},
+"botvinnik": {
+"n": 891,
+"nw": 454,
+"nb": 437,
+"y0": 1926,
+"y1": 1970,
+"pos": 988,
+"ag": 25,
+"cs": "k",
+"cn": 10,
+"qx": 16,
+"win": 46,
+"draw": 42,
+"fw": [
+[
+"Abertura Inglesa",
+32
+],
+[
+"Defesa Nimzo-Índia",
+11
+],
+[
+"Abertura Zukertort",
+7
+],
+[
+"Defesa do Rei Índia",
+6
+],
+[
+"Jogo do Peão da Dama",
+4
+],
+[
+"Gambito da Dama Recusado",
+4
+]
+],
+"fb": [
+[
+"Defesa Francesa",
+15
+],
+[
+"Defesa Siciliana",
+11
+],
+[
+"Abertura Inglesa",
+8
+],
+[
+"Defesa Horwitz",
+8
+],
+[
+"Defesa Caro-Kann",
+8
+],
+[
+"Defesa Nimzo-Índia",
+7
+]
+],
+"m1": [
+[
+"d2d4",
+45
+],
+[
+"c2c4",
+33
+],
+[
+"e2e4",
+10
+],
+[
+"g1f3",
+10
+]
+],
+"r1": [
+[
+"g8f6",
+28
+],
+[
+"e7e6",
+24
+],
+[
+"c7c5",
+13
+],
+[
+"e7e5",
+10
+],
+[
+"c7c6",
+8
+],
+[
+"d7d5",
+7
+]
+],
+"sacok": 6.3,
+"opp": 6.7
+},
+"capablanca": {
+"n": 596,
+"nw": 308,
+"nb": 288,
+"y0": 1901,
+"y1": 1941,
+"pos": 577,
+"ag": 28,
+"cs": "k",
+"cn": 10,
+"qx": 23,
+"win": 51,
+"draw": 42,
+"fw": [
+[
+"Ruy Lopez (Espanhola)",
+13
+],
+[
+"Gambito da Dama Recusado",
+12
+],
+[
+"Jogo do Peão da Dama",
+10
+],
+[
+"Defesa Índia",
+7
+],
+[
+"Defesa Nimzo-Índia",
+7
+],
+[
+"Abertura Zukertort",
+6
+]
+],
+"fb": [
+[
+"Defesa Índia",
+17
+],
+[
+"Ruy Lopez (Espanhola)",
+12
+],
+[
+"Jogo do Peão da Dama",
+8
+],
+[
+"Gambito da Dama Recusado",
+7
+],
+[
+"Defesa Nimzo-Índia",
+6
+],
+[
+"Jogo dos Quatro Cavalos",
+5
+]
+],
+"m1": [
+[
+"d2d4",
+54
+],
+[
+"e2e4",
+33
+],
+[
+"g1f3",
+8
+],
+[
+"c2c4",
+4
+]
+],
+"r1": [
+[
+"g8f6",
+43
+],
+[
+"e7e5",
+24
+],
+[
+"d7d5",
+21
+],
+[
+"e7e6",
+5
+],
+[
+"c7c6",
+4
+],
+[
+"c7c5",
+2
+]
+],
+"sacok": 7.2,
+"opp": 6.4
+},
+"carlsen": {
+"n": 4307,
+"nw": 2186,
+"nb": 2121,
+"y0": 2001,
+"y1": 2022,
+"pos": 2949,
+"ag": 27,
+"cs": "k",
+"cn": 9,
+"qx": 18,
+"win": 46,
+"draw": 38,
+"fw": [
+[
+"Defesa Siciliana",
+18
+],
+[
+"Ruy Lopez (Espanhola)",
+11
+],
+[
+"Abertura Inglesa",
+8
+],
+[
+"Gambito da Dama Recusado",
+7
+],
+[
+"Defesa Índia",
+6
+],
+[
+"Abertura Zukertort",
+5
+]
+],
+"fb": [
+[
+"Defesa Siciliana",
+18
+],
+[
+"Ruy Lopez (Espanhola)",
+14
+],
+[
+"Gambito da Dama Recusado",
+7
+],
+[
+"Abertura Zukertort",
+6
+],
+[
+"Abertura Inglesa",
+5
+],
+[
+"Defesa Índia",
+5
+]
+],
+"m1": [
+[
+"e2e4",
+46
+],
+[
+"d2d4",
+35
+],
+[
+"c2c4",
+9
+],
+[
+"g1f3",
+8
+]
+],
+"r1": [
+[
+"g8f6",
+34
+],
+[
+"e7e5",
+23
+],
+[
+"c7c5",
+20
+],
+[
+"d7d5",
+12
+],
+[
+"g7g6",
+3
+],
+[
+"e7e6",
+3
+]
+],
+"sacok": 10.6,
+"opp": 8.9
+},
+"caruana": {
+"n": 3424,
+"nw": 1733,
+"nb": 1691,
+"y0": 2002,
+"y1": 2022,
+"pos": 2656,
+"ag": 25,
+"cs": "k",
+"cn": 9,
+"qx": 15,
+"win": 41,
+"draw": 37,
+"fw": [
+[
+"Defesa Siciliana",
+23
+],
+[
+"Ruy Lopez (Espanhola)",
+20
+],
+[
+"Defesa Francesa",
+7
+],
+[
+"Abertura Inglesa",
+6
+],
+[
+"Defesa Caro-Kann",
+5
+],
+[
+"Defesa Nimzo-Índia",
+3
+]
+],
+"fb": [
+[
+"Defesa Siciliana",
+15
+],
+[
+"Ruy Lopez (Espanhola)",
+12
+],
+[
+"Abertura Inglesa",
+8
+],
+[
+"Abertura Zukertort",
+7
+],
+[
+"Defesa Índia",
+6
+],
+[
+"Defesa Francesa",
+5
+]
+],
+"m1": [
+[
+"e2e4",
+68
+],
+[
+"d2d4",
+20
+],
+[
+"c2c4",
+6
+],
+[
+"g1f3",
+5
+]
+],
+"r1": [
+[
+"g8f6",
+30
+],
+[
+"e7e5",
+26
+],
+[
+"c7c5",
+17
+],
+[
+"d7d5",
+14
+],
+[
+"e7e6",
+7
+],
+[
+"d7d6",
+2
+]
+],
+"sacok": 8.3,
+"opp": 10.7
+},
+"ding": {
+"n": 1869,
+"nw": 940,
+"nb": 929,
+"y0": 2001,
+"y1": 2022,
+"pos": 1730,
+"ag": 26,
+"cs": "k",
+"cn": 9,
+"qx": 19,
+"win": 33,
+"draw": 49,
+"fw": [
+[
+"Abertura Inglesa",
+19
+],
+[
+"Gambito da Dama Recusado",
+13
+],
+[
+"Abertura Zukertort",
+8
+],
+[
+"Defesa Eslava",
+7
+],
+[
+"Defesa Índia",
+7
+],
+[
+"Defesa do Rei Índia",
+7
+]
+],
+"fb": [
+[
+"Ruy Lopez (Espanhola)",
+16
+],
+[
+"Defesa do Rei Índia",
+10
+],
+[
+"Gambito da Dama Recusado",
+8
+],
+[
+"Defesa Siciliana",
+7
+],
+[
+"Defesa Caro-Kann",
+7
+],
+[
+"Abertura Inglesa",
+7
+]
+],
+"m1": [
+[
+"d2d4",
+60
+],
+[
+"c2c4",
+19
+],
+[
+"g1f3",
+14
+],
+[
+"e2e4",
+6
+]
+],
+"r1": [
+[
+"g8f6",
+39
+],
+[
+"e7e5",
+27
+],
+[
+"d7d5",
+10
+],
+[
+"c7c5",
+8
+],
+[
+"c7c6",
+7
+],
+[
+"e7e6",
+6
+]
+],
+"sacok": 9.4,
+"opp": 6.3
+},
+"firouzja": {
+"n": 1954,
+"nw": 1001,
+"nb": 953,
+"y0": 2014,
+"y1": 2022,
+"pos": 1200,
+"ag": 26,
+"cs": "k",
+"cn": 9,
+"qx": 14,
+"win": 50,
+"draw": 26,
+"fw": [
+[
+"Defesa Siciliana",
+18
+],
+[
+"Ruy Lopez (Espanhola)",
+14
+],
+[
+"Jogo do Peão da Dama",
+6
+],
+[
+"Defesa Francesa",
+5
+],
+[
+"Ataque do Rei Índia",
+5
+],
+[
+"Jogo Italiano",
+4
+]
+],
+"fb": [
+[
+"Defesa Siciliana",
+25
+],
+[
+"Defesa Índia",
+8
+],
+[
+"Defesa do Rei Índia",
+8
+],
+[
+"Abertura Inglesa",
+7
+],
+[
+"Defesa Caro-Kann",
+7
+],
+[
+"Abertura Zukertort",
+6
+]
+],
+"m1": [
+[
+"e2e4",
+57
+],
+[
+"d2d4",
+30
+],
+[
+"g1f3",
+9
+],
+[
+"c2c4",
+2
+]
+],
+"r1": [
+[
+"g8f6",
+37
+],
+[
+"c7c5",
+26
+],
+[
+"e7e5",
+12
+],
+[
+"d7d5",
+8
+],
+[
+"c7c6",
+7
+],
+[
+"g7g6",
+4
+]
+],
+"sacok": 9.2,
+"opp": 12.7
+},
+"fischer": {
+"n": 825,
+"nw": 431,
+"nb": 394,
+"y0": 1955,
+"y1": 1992,
+"pos": 836,
+"ag": 28,
+"cs": "k",
+"cn": 8,
+"qx": 18,
+"win": 58,
+"draw": 31,
+"fw": [
+[
+"Defesa Siciliana",
+34
+],
+[
+"Ruy Lopez (Espanhola)",
+26
+],
+[
+"Defesa Francesa",
+11
+],
+[
+"Defesa Caro-Kann",
+9
+],
+[
+"Ataque do Rei Índia",
+3
+],
+[
+"Abertura Zukertort",
+2
+]
+],
+"fb": [
+[
+"Defesa Siciliana",
+29
+],
+[
+"Defesa do Rei Índia",
+20
+],
+[
+"Abertura Inglesa",
+12
+],
+[
+"Abertura Zukertort",
+6
+],
+[
+"Gambito da Dama Recusado",
+5
+],
+[
+"Defesa Nimzo-Índia",
+5
+]
+],
+"m1": [
+[
+"e2e4",
+92
+],
+[
+"g1f3",
+5
+],
+[
+"c2c4",
+1
+],
+[
+"b2b3",
+1
+]
+],
+"r1": [
+[
+"g8f6",
+57
+],
+[
+"c7c5",
+32
+],
+[
+"g7g6",
+5
+],
+[
+"d7d5",
+3
+],
+[
+"e7e5",
+3
+],
+[
+"d7d6",
+0
+]
+],
+"sacok": 10.2,
+"opp": 13.2
+},
+"gukesh": {
+"n": 290,
+"nw": 150,
+"nb": 140,
+"y0": 2020,
+"y1": 2024,
+"pos": 303,
+"ag": 26,
+"cs": "k",
+"cn": 10,
+"qx": 12,
+"win": 58,
+"draw": 32,
+"fw": [
+[
+"Gambito da Dama Recusado",
+22
+],
+[
+"Abertura Inglesa",
+11
+],
+[
+"Defesa do Rei Índia",
+8
+],
+[
+"Defesa Índia",
+7
+],
+[
+"Jogo do Peão da Dama",
+6
+],
+[
+"Defesa Grünfeld",
+6
+]
+],
+"fb": [
+[
+"Defesa Siciliana",
+26
+],
+[
+"Gambito da Dama Recusado",
+16
+],
+[
+"Defesa Caro-Kann",
+13
+],
+[
+"Defesa Índia",
+9
+],
+[
+"Abertura Inglesa",
+8
+],
+[
+"Defesa Nimzo-Índia",
+4
+]
+],
+"m1": [
+[
+"d2d4",
+70
+],
+[
+"c2c4",
+11
+],
+[
+"e2e4",
+10
+],
+[
+"g1f3",
+8
+]
+],
+"r1": [
+[
+"g8f6",
+32
+],
+[
+"c7c5",
+27
+],
+[
+"c7c6",
+13
+],
+[
+"d7d5",
+12
+],
+[
+"e7e6",
+9
+],
+[
+"e7e5",
+5
+]
+],
+"sacok": 9.7,
+"opp": 9.7
+},
+"karpov": {
+"n": 3438,
+"nw": 1797,
+"nb": 1641,
+"y0": 1961,
+"y1": 2022,
+"pos": 3111,
+"ag": 24,
+"cs": "k",
+"cn": 9,
+"qx": 17,
+"win": 38,
+"draw": 47,
+"fw": [
+[
+"Defesa Siciliana",
+11
+],
+[
+"Abertura Inglesa",
+9
+],
+[
+"Abertura Zukertort",
+8
+],
+[
+"Defesa do Rei Índia",
+7
+],
+[
+"Defesa da Dama Índia",
+7
+],
+[
+"Gambito da Dama Recusado",
+7
+]
+],
+"fb": [
+[
+"Defesa Caro-Kann",
+17
+],
+[
+"Defesa da Dama Índia",
+11
+],
+[
+"Abertura Inglesa",
+10
+],
+[
+"Ruy Lopez (Espanhola)",
+10
+],
+[
+"Defesa Nimzo-Índia",
+10
+],
+[
+"Abertura Zukertort",
+9
+]
+],
+"m1": [
+[
+"d2d4",
+55
+],
+[
+"e2e4",
+27
+],
+[
+"c2c4",
+9
+],
+[
+"g1f3",
+9
+]
+],
+"r1": [
+[
+"g8f6",
+48
+],
+[
+"e7e5",
+22
+],
+[
+"c7c6",
+17
+],
+[
+"c7c5",
+7
+],
+[
+"d7d5",
+4
+],
+[
+"e7e6",
+2
+]
+],
+"sacok": 4.7,
+"opp": 5.9
+},
+"kasparov": {
+"n": 1923,
+"nw": 1023,
+"nb": 900,
+"y0": 1976,
+"y1": 2021,
+"pos": 1994,
+"ag": 26,
+"cs": "k",
+"cn": 10,
+"qx": 16,
+"win": 47,
+"draw": 44,
+"fw": [
+[
+"Defesa Siciliana",
+13
+],
+[
+"Abertura Inglesa",
+11
+],
+[
+"Ruy Lopez (Espanhola)",
+8
+],
+[
+"Gambito da Dama Recusado",
+7
+],
+[
+"Defesa Nimzo-Índia",
+7
+],
+[
+"Defesa da Dama Índia",
+7
+]
+],
+"fb": [
+[
+"Defesa Siciliana",
+34
+],
+[
+"Defesa do Rei Índia",
+13
+],
+[
+"Abertura Zukertort",
+13
+],
+[
+"Defesa Grünfeld",
+7
+],
+[
+"Abertura Inglesa",
+6
+],
+[
+"Gambito da Dama Recusado",
+4
+]
+],
+"m1": [
+[
+"d2d4",
+45
+],
+[
+"e2e4",
+38
+],
+[
+"c2c4",
+11
+],
+[
+"g1f3",
+6
+]
+],
+"r1": [
+[
+"g8f6",
+42
+],
+[
+"c7c5",
+36
+],
+[
+"d7d5",
+12
+],
+[
+"g7g6",
+5
+],
+[
+"e7e5",
+3
+],
+[
+"c7c6",
+2
+]
+],
+"sacok": 13.4,
+"opp": 9.4
+},
+"korchnoi": {
+"n": 4550,
+"nw": 2294,
+"nb": 2256,
+"y0": 1950,
+"y1": 2015,
+"pos": 4241,
+"ag": 25,
+"cs": "k",
+"cn": 10,
+"qx": 15,
+"win": 41,
+"draw": 42,
+"fw": [
+[
+"Abertura Inglesa",
+28
+],
+[
+"Abertura Zukertort",
+11
+],
+[
+"Defesa do Rei Índia",
+8
+],
+[
+"Defesa Nimzo-Índia",
+8
+],
+[
+"Gambito da Dama Recusado",
+6
+],
+[
+"Defesa Eslava",
+4
+]
+],
+"fb": [
+[
+"Defesa Francesa",
+18
+],
+[
+"Defesa Siciliana",
+11
+],
+[
+"Abertura Zukertort",
+9
+],
+[
+"Abertura Inglesa",
+8
+],
+[
+"Defesa Nimzo-Índia",
+8
+],
+[
+"Ruy Lopez (Espanhola)",
+7
+]
+],
+"m1": [
+[
+"d2d4",
+52
+],
+[
+"c2c4",
+28
+],
+[
+"g1f3",
+13
+],
+[
+"e2e4",
+5
+]
+],
+"r1": [
+[
+"g8f6",
+40
+],
+[
+"e7e6",
+22
+],
+[
+"c7c5",
+14
+],
+[
+"e7e5",
+12
+],
+[
+"d7d5",
+6
+],
+[
+"c7c6",
+3
+]
+],
+"sacok": 7.0,
+"opp": 8.3
+},
+"kramnik": {
+"n": 3083,
+"nw": 1541,
+"nb": 1542,
+"y0": 1989,
+"y1": 2022,
+"pos": 2568,
+"ag": 26,
+"cs": "k",
+"cn": 9,
+"qx": 20,
+"win": 34,
+"draw": 50,
+"fw": [
+[
+"Abertura Zukertort",
+32
+],
+[
+"Defesa Siciliana",
+7
+],
+[
+"Abertura Inglesa",
+7
+],
+[
+"Ataque do Rei Índia",
+5
+],
+[
+"Gambito da Dama Recusado",
+4
+],
+[
+"Defesa Grünfeld",
+4
+]
+],
+"fb": [
+[
+"Defesa Siciliana",
+18
+],
+[
+"Ruy Lopez (Espanhola)",
+12
+],
+[
+"Gambito da Dama Recusado",
+9
+],
+[
+"Abertura Inglesa",
+9
+],
+[
+"Defesa Petrov's",
+7
+],
+[
+"Defesa Eslava",
+6
+]
+],
+"m1": [
+[
+"d2d4",
+39
+],
+[
+"g1f3",
+38
+],
+[
+"e2e4",
+17
+],
+[
+"c2c4",
+6
+]
+],
+"r1": [
+[
+"e7e5",
+26
+],
+[
+"g8f6",
+24
+],
+[
+"c7c5",
+21
+],
+[
+"d7d5",
+19
+],
+[
+"e7e6",
+6
+],
+[
+"d7d6",
+2
+]
+],
+"sacok": 10.0,
+"opp": 8.3
+},
+"lasker": {
+"n": 895,
+"nw": 525,
+"nb": 370,
+"y0": 1889,
+"y1": 1936,
+"pos": 769,
+"ag": 27,
+"cs": "k",
+"cn": 9,
+"qx": 20,
+"win": 54,
+"draw": 25,
+"fw": [
+[
+"Ruy Lopez (Espanhola)",
+29
+],
+[
+"Defesa Francesa",
+12
+],
+[
+"Defesa Siciliana",
+7
+],
+[
+"Gambito do Rei Aceito",
+7
+],
+[
+"Gambito da Dama Recusado",
+6
+],
+[
+"Jogo do Peão da Dama",
+5
+]
+],
+"fb": [
+[
+"Ruy Lopez (Espanhola)",
+23
+],
+[
+"Gambito da Dama Recusado",
+15
+],
+[
+"Jogo do Peão da Dama",
+9
+],
+[
+"Jogo Italiano",
+9
+],
+[
+"Defesa Siciliana",
+7
+],
+[
+"Jogo Escocês",
+4
+]
+],
+"m1": [
+[
+"e2e4",
+79
+],
+[
+"d2d4",
+18
+],
+[
+"c2c4",
+2
+],
+[
+"g1f3",
+1
+]
+],
+"r1": [
+[
+"e7e5",
+51
+],
+[
+"d7d5",
+31
+],
+[
+"c7c5",
+7
+],
+[
+"g8f6",
+6
+],
+[
+"e7e6",
+4
+],
+[
+"d7d6",
+1
+]
+],
+"sacok": 11.7,
+"opp": 10.2
+},
+"mequinho": {
+"n": 625,
+"nw": 317,
+"nb": 308,
+"y0": 1966,
+"y1": 2021,
+"pos": 745,
+"ag": 25,
+"cs": "k",
+"cn": 9,
+"qx": 19,
+"win": 35,
+"draw": 50,
+"fw": [
+[
+"Defesa Siciliana",
+13
+],
+[
+"Defesa do Rei Índia",
+8
+],
+[
+"Defesa Nimzo-Índia",
+8
+],
+[
+"Ruy Lopez (Espanhola)",
+7
+],
+[
+"Defesa Benoni",
+6
+],
+[
+"Defesa Eslava",
+6
+]
+],
+"fb": [
+[
+"Defesa Siciliana",
+30
+],
+[
+"Abertura Inglesa",
+10
+],
+[
+"Ruy Lopez (Espanhola)",
+9
+],
+[
+"Abertura Zukertort",
+7
+],
+[
+"Defesa do Rei Índia",
+6
+],
+[
+"Defesa Índia",
+4
+]
+],
+"m1": [
+[
+"d2d4",
+63
+],
+[
+"e2e4",
+31
+],
+[
+"c2c4",
+3
+],
+[
+"g1f3",
+3
+]
+],
+"r1": [
+[
+"g8f6",
+41
+],
+[
+"c7c5",
+30
+],
+[
+"e7e5",
+13
+],
+[
+"g7g6",
+7
+],
+[
+"d7d5",
+5
+],
+[
+"e7e6",
+3
+]
+],
+"sacok": 6.1,
+"opp": 8.5
+},
+"morphy": {
+"n": 201,
+"nw": 126,
+"nb": 75,
+"y0": 1848,
+"y1": 1866,
+"pos": 214,
+"ag": 34,
+"cs": "k",
+"cn": 9,
+"qx": 14,
+"win": 80,
+"draw": 9,
+"fw": [
+[
+"Jogo Italiano",
+29
+],
+[
+"Gambito do Rei Aceito",
+18
+],
+[
+"Defesa Siciliana",
+10
+],
+[
+"Defesa Philidor",
+9
+],
+[
+"Defesa Francesa",
+6
+],
+[
+"Gambito do Rei Recusado",
+6
+]
+],
+"fb": [
+[
+"Jogo Italiano",
+21
+],
+[
+"Ruy Lopez (Espanhola)",
+20
+],
+[
+"Gambito do Rei Aceito",
+12
+],
+[
+"Defesa Philidor",
+11
+],
+[
+"Jogo Escocês",
+5
+],
+[
+"Defesa Holandesa",
+5
+]
+],
+"m1": [
+[
+"e2e4",
+100
+]
+],
+"r1": [
+[
+"e7e5",
+87
+],
+[
+"f7f5",
+5
+],
+[
+"e7e6",
+4
+],
+[
+"d7d5",
+3
+],
+[
+"c7c5",
+1
+]
+],
+"sacok": 31.4,
+"opp": 7.6
+},
+"nakamura": {
+"n": 5562,
+"nw": 2824,
+"nb": 2738,
+"y0": 1997,
+"y1": 2022,
+"pos": 3537,
+"ag": 25,
+"cs": "k",
+"cn": 10,
+"qx": 16,
+"win": 50,
+"draw": 34,
+"fw": [
+[
+"Abertura Zukertort",
+19
+],
+[
+"Defesa Siciliana",
+15
+],
+[
+"Abertura Inglesa",
+7
+],
+[
+"Ruy Lopez (Espanhola)",
+7
+],
+[
+"Ataque Nimzo-Larsen",
+6
+],
+[
+"Gambito da Dama Recusado",
+5
+]
+],
+"fb": [
+[
+"Defesa Siciliana",
+14
+],
+[
+"Ruy Lopez (Espanhola)",
+11
+],
+[
+"Gambito da Dama Recusado",
+7
+],
+[
+"Abertura Zukertort",
+6
+],
+[
+"Jogo Italiano",
+6
+],
+[
+"Abertura Inglesa",
+6
+]
+],
+"m1": [
+[
+"e2e4",
+36
+],
+[
+"d2d4",
+26
+],
+[
+"g1f3",
+24
+],
+[
+"c2c4",
+7
+]
+],
+"r1": [
+[
+"g8f6",
+31
+],
+[
+"e7e5",
+21
+],
+[
+"c7c5",
+14
+],
+[
+"d7d5",
+11
+],
+[
+"g7g6",
+9
+],
+[
+"f7f5",
+4
+]
+],
+"sacok": 7.6,
+"opp": 8.9
+},
+"petrosian": {
+"n": 1892,
+"nw": 951,
+"nb": 941,
+"y0": 1945,
+"y1": 1983,
+"pos": 1968,
+"ag": 23,
+"cs": "k",
+"cn": 9,
+"qx": 14,
+"win": 35,
+"draw": 57,
+"fw": [
+[
+"Abertura Inglesa",
+30
+],
+[
+"Abertura Zukertort",
+8
+],
+[
+"Defesa do Rei Índia",
+7
+],
+[
+"Defesa Índia",
+6
+],
+[
+"Defesa Nimzo-Índia",
+6
+],
+[
+"Gambito da Dama Recusado",
+5
+]
+],
+"fb": [
+[
+"Defesa Siciliana",
+16
+],
+[
+"Defesa Francesa",
+15
+],
+[
+"Abertura Inglesa",
+14
+],
+[
+"Defesa Caro-Kann",
+9
+],
+[
+"Abertura Zukertort",
+5
+],
+[
+"Defesa Nimzo-Índia",
+5
+]
+],
+"m1": [
+[
+"d2d4",
+50
+],
+[
+"c2c4",
+31
+],
+[
+"g1f3",
+12
+],
+[
+"e2e4",
+6
+]
+],
+"r1": [
+[
+"g8f6",
+32
+],
+[
+"e7e6",
+18
+],
+[
+"c7c5",
+17
+],
+[
+"c7c6",
+10
+],
+[
+"d7d5",
+8
+],
+[
+"e7e5",
+7
+]
+],
+"sacok": 5.1,
+"opp": 6.9
+},
+"polgar": {
+"n": 1821,
+"nw": 926,
+"nb": 895,
+"y0": 1987,
+"y1": 2014,
+"pos": 1617,
+"ag": 25,
+"cs": "k",
+"cn": 9,
+"qx": 16,
+"win": 37,
+"draw": 37,
+"fw": [
+[
+"Defesa Siciliana",
+36
+],
+[
+"Ruy Lopez (Espanhola)",
+23
+],
+[
+"Defesa Francesa",
+12
+],
+[
+"Defesa Caro-Kann",
+9
+],
+[
+"Defesa Petrov's",
+5
+],
+[
+"Defesa Pirc",
+2
+]
+],
+"fb": [
+[
+"Defesa Siciliana",
+38
+],
+[
+"Defesa do Rei Índia",
+15
+],
+[
+"Abertura Zukertort",
+8
+],
+[
+"Abertura Inglesa",
+7
+],
+[
+"Defesa Nimzo-Índia",
+6
+],
+[
+"Defesa da Dama Índia",
+6
+]
+],
+"m1": [
+[
+"e2e4",
+97
+],
+[
+"g1f3",
+1
+],
+[
+"d2d4",
+1
+],
+[
+"c2c4",
+0
+]
+],
+"r1": [
+[
+"g8f6",
+50
+],
+[
+"c7c5",
+42
+],
+[
+"e7e5",
+2
+],
+[
+"e7e6",
+2
+],
+[
+"d7d5",
+2
+],
+[
+"g7g6",
+1
+]
+],
+"sacok": 10.8,
+"opp": 11.9
+},
+"smyslov": {
+"n": 2622,
+"nw": 1326,
+"nb": 1296,
+"y0": 1939,
+"y1": 2001,
+"pos": 2658,
+"ag": 25,
+"cs": "k",
+"cn": 9,
+"qx": 19,
+"win": 35,
+"draw": 54,
+"fw": [
+[
+"Abertura Inglesa",
+20
+],
+[
+"Defesa Siciliana",
+15
+],
+[
+"Abertura Zukertort",
+12
+],
+[
+"Defesa Índia",
+8
+],
+[
+"Ruy Lopez (Espanhola)",
+8
+],
+[
+"Defesa Francesa",
+4
+]
+],
+"fb": [
+[
+"Ruy Lopez (Espanhola)",
+16
+],
+[
+"Abertura Inglesa",
+11
+],
+[
+"Defesa Eslava",
+8
+],
+[
+"Defesa Nimzo-Índia",
+8
+],
+[
+"Defesa Siciliana",
+5
+],
+[
+"Abertura Zukertort",
+5
+]
+],
+"m1": [
+[
+"e2e4",
+32
+],
+[
+"d2d4",
+29
+],
+[
+"c2c4",
+21
+],
+[
+"g1f3",
+18
+]
+],
+"r1": [
+[
+"g8f6",
+33
+],
+[
+"e7e5",
+30
+],
+[
+"d7d5",
+19
+],
+[
+"c7c6",
+5
+],
+[
+"c7c5",
+5
+],
+[
+"e7e6",
+3
+]
+],
+"sacok": 4.9,
+"opp": 5.7
+},
+"spassky": {
+"n": 2227,
+"nw": 1108,
+"nb": 1119,
+"y0": 1952,
+"y1": 2009,
+"pos": 2364,
+"ag": 25,
+"cs": "k",
+"cn": 9,
+"qx": 15,
+"win": 32,
+"draw": 58,
+"fw": [
+[
+"Defesa Siciliana",
+24
+],
+[
+"Ruy Lopez (Espanhola)",
+11
+],
+[
+"Defesa Francesa",
+7
+],
+[
+"Defesa Nimzo-Índia",
+6
+],
+[
+"Defesa Caro-Kann",
+6
+],
+[
+"Defesa do Rei Índia",
+4
+]
+],
+"fb": [
+[
+"Ruy Lopez (Espanhola)",
+20
+],
+[
+"Abertura Inglesa",
+12
+],
+[
+"Defesa Siciliana",
+10
+],
+[
+"Gambito da Dama Recusado",
+9
+],
+[
+"Abertura Zukertort",
+7
+],
+[
+"Defesa Nimzo-Índia",
+6
+]
+],
+"m1": [
+[
+"e2e4",
+61
+],
+[
+"d2d4",
+35
+],
+[
+"c2c4",
+2
+],
+[
+"g1f3",
+1
+]
+],
+"r1": [
+[
+"g8f6",
+33
+],
+[
+"e7e5",
+28
+],
+[
+"d7d5",
+14
+],
+[
+"c7c5",
+12
+],
+[
+"e7e6",
+7
+],
+[
+"d7d6",
+2
+]
+],
+"sacok": 7.7,
+"opp": 9.4
+},
+"steinitz": {
+"n": 589,
+"nw": 312,
+"nb": 277,
+"y0": 1859,
+"y1": 1899,
+"pos": 555,
+"ag": 27,
+"cs": "k",
+"cn": 11,
+"qx": 13,
+"win": 55,
+"draw": 20,
+"fw": [
+[
+"Defesa Francesa",
+15
+],
+[
+"Jogo Italiano",
+12
+],
+[
+"Jogo Vienense",
+12
+],
+[
+"Gambito da Dama Recusado",
+11
+],
+[
+"Gambito do Rei Aceito",
+7
+],
+[
+"Ruy Lopez (Espanhola)",
+7
+]
+],
+"fb": [
+[
+"Ruy Lopez (Espanhola)",
+32
+],
+[
+"Jogo Italiano",
+29
+],
+[
+"Jogo Escocês",
+8
+],
+[
+"Gambito da Dama Recusado",
+5
+],
+[
+"Gambito do Rei Aceito",
+5
+],
+[
+"Abertura dos Três Cavalos",
+3
+]
+],
+"m1": [
+[
+"e2e4",
+74
+],
+[
+"d2d4",
+18
+],
+[
+"g1f3",
+5
+],
+[
+"c2c4",
+3
+]
+],
+"r1": [
+[
+"e7e5",
+87
+],
+[
+"d7d5",
+10
+],
+[
+"f7f5",
+2
+],
+[
+"e7e6",
+1
+],
+[
+"c7c5",
+0
+],
+[
+"g8f6",
+0
+]
+],
+"sacok": 14.8,
+"opp": 11.4
+},
+"tal": {
+"n": 2429,
+"nw": 1232,
+"nb": 1197,
+"y0": 1952,
+"y1": 1992,
+"pos": 2656,
+"ag": 26,
+"cs": "k",
+"cn": 9,
+"qx": 17,
+"win": 40,
+"draw": 48,
+"fw": [
+[
+"Defesa Siciliana",
+23
+],
+[
+"Ruy Lopez (Espanhola)",
+18
+],
+[
+"Abertura Inglesa",
+12
+],
+[
+"Abertura Zukertort",
+11
+],
+[
+"Defesa Caro-Kann",
+7
+],
+[
+"Defesa Francesa",
+6
+]
+],
+"fb": [
+[
+"Defesa Siciliana",
+26
+],
+[
+"Abertura Inglesa",
+12
+],
+[
+"Abertura Zukertort",
+12
+],
+[
+"Defesa Índia",
+6
+],
+[
+"Defesa Benoni",
+5
+],
+[
+"Defesa Nimzo-Índia",
+5
+]
+],
+"m1": [
+[
+"e2e4",
+61
+],
+[
+"g1f3",
+14
+],
+[
+"d2d4",
+13
+],
+[
+"c2c4",
+12
+]
+],
+"r1": [
+[
+"g8f6",
+43
+],
+[
+"c7c5",
+30
+],
+[
+"e7e5",
+9
+],
+[
+"g7g6",
+5
+],
+[
+"d7d5",
+4
+],
+[
+"e7e6",
+4
+]
+],
+"sacok": 12.8,
+"opp": 8.4
+}
+}

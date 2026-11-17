@@ -3,6 +3,17 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v82 — Lendas com repertório real e falas novas (17.11.2026)
+
+- **Repertório real:** as aberturas das 24 lendas saem de **51.694 partidas reais** (coleções do PgnMentor reunidas em [rozim/ChessData](https://github.com/rozim/ChessData); Gukesh em [NateSolon/hans](https://github.com/NateSolon/hans) + Mundial de 2024 em [rahulan-c/wcc-updates](https://github.com/rahulan-c/wcc-updates)). Simultâneas, partidas com vantagem material e repetidas ficam de fora; partidas rápidas valem metade.
+- **Como joga:** em cada posição até o lance 15 que a lenda conheceu (vista em 2+ partidas), ela sorteia entre os lances que jogou ali, na mesma proporção (lances com menos de 3% das escolhas saem). Fischer abre 1.e4 em 95% das vezes; Kasparov responde 1.e4 com a Siciliana em 88%; Morphy contra 1.d4 vai de Holandesa. Funciona com transposições (a chave é a posição, não a ordem dos lances). Fora do livro, o motor do jogo segue no estilo medido.
+- **Estilo medido nas partidas:** agressividade (capturas e xeques por lance + partidas em que jogou com material a menos sem perder), trocas de dama antes do lance 20 e lance médio do roque. Os números são ampliados em torno da média das 24 lendas para o motor sentir a diferença. A força continua sendo a do motor do jogo.
+- **Livros sob demanda:** `docs/data/lendas/<id>.json` (5 a 125 KB) só é baixado quando você enfrenta aquela lenda e fica no cache offline. Sem internet, ela abre com as linhas de reserva da v74.
+- **Cartão da lenda:** mostra quantas partidas reais formam o repertório, os primeiros lances com brancas e as respostas a 1.e4 e 1.d4, em porcentagem.
+- **Falas:** 553 falas novas, 2 a 3 variações por situação, no tom de cada lenda. Durante a abertura a lenda comenta a posição real ("Já estive nesta posição em 266 partidas") e avisa quando sai do próprio repertório.
+- Correções: o botão "Ver comentários" não mostra mais "0."; com uma lenda escolhida, a tela de Nova partida cabe sem rolar também em celulares pequenos (temas do tabuleiro em uma fileira deslizante).
+- Ferramentas: `fonte/lendas/real.py` (livros e estatísticas), `sac.py` (sacrifícios), `gen2.py` (atualiza `lendas_data.js`), `falas.py` (falas).
+
 ## v81 — Correções do modo online e do motor (17.11.2026)
 
 - **Motor de volta ao segundo plano:** uma linha do módulo de voz (`extras_v41.js`) quebrava o worker do motor, que passava a calcular na mesma linha da tela e a travá-la a cada lance do computador. O módulo agora só se instala onde existe `window`/`document`.
