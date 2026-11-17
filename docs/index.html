@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v80</title>
+<title>Xadrez · Rota do Mestre — v81</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1696,7 +1696,7 @@ window.XHD=(function(){
 <script>
 /* carregador do site: baixa (ou pega do cache offline) os arquivos do jogo, mostra o progresso e inicia o app */
 (function(){
- var F={"res":[["res_content","data/content.json?v=facebd0421"],["res_lpuzzles","data/lpuzzles.txt?v=6a7f7438c2"],["res_openings","data/openings.txt?v=0433d98604"],["res_explorer","data/explorer.txt?v=a49e3a075b"],["res_models","data/models.txt?v=d4b717e2fe"],["res_sfjs","data/sf.js?v=81cc4511ff"]],"intro":[["introfr","data/introfr.json?v=361b412139"],["introau","data/introau.txt?v=ce6089d3a7"],["introhdx","data/introhdx.json?v=efe43de4ba"]],"hd":"data/intro_hd.bin?v=2f137ab566","hd16":"data/intro_hd16.bin?v=873ca44d34","hdx16":"data/introhdx16.json?v=ffb050a168","histau":"data/historia.mp3?v=87e853c025","wasm":"data/sf.wasm?v=c56761eebb","app":"data/app.js?v=peerjs-audio-v80-20261114"};
+ var F={"res":[["res_content","data/content.json?v=facebd0421"],["res_lpuzzles","data/lpuzzles.txt?v=6a7f7438c2"],["res_openings","data/openings.txt?v=0433d98604"],["res_explorer","data/explorer.txt?v=a49e3a075b"],["res_models","data/models.txt?v=d4b717e2fe"],["res_sfjs","data/sf.js?v=81cc4511ff"]],"intro":[["introfr","data/introfr.json?v=361b412139"],["introau","data/introau.txt?v=ce6089d3a7"],["introhdx","data/introhdx.json?v=efe43de4ba"]],"hd":"data/intro_hd.bin?v=2f137ab566","hd16":"data/intro_hd16.bin?v=873ca44d34","hdx16":"data/introhdx16.json?v=ffb050a168","histau":"data/historia.mp3?v=87e853c025","wasm":"data/sf.wasm?v=c56761eebb","app":"data/app.js?v=1e1667bf6c"};
  var c=navigator.connection||{},slow=!!(c.saveData||/(^|-)2g|3g/.test(c.effectiveType||''));
  var box=document.createElement('div');box.id='boot';box.innerHTML='<div class="bt">Rota do Mestre</div><div class="bb"><i></i></div><div class="bs">Preparando o tabuleiro…</div>';document.body.appendChild(box);
  var bar=box.querySelector('i'),msg=box.querySelector('.bs'),done=0,total=F.res.length+(slow?0:F.intro.length+1)+1;
@@ -1713,33 +1713,6 @@ window.XHD=(function(){
   jobs.push(fetch(wide?F.hd16:F.hd).then(function(r){return r.ok?r.arrayBuffer():null;}).then(function(b){if(b){if(wide)window.XHDBUF16=new Uint8Array(b);else window.XHDBUF=new Uint8Array(b);}step();}).catch(function(){tag(wide?'introhdx16':'introhdx','null','application/json');step();}));}
  Promise.all(jobs).then(function(){return txt(F.app);}).then(function(code){
   msg.textContent='Abrindo…';var s=document.createElement('script');s.id='appjs';s.textContent=code;document.body.appendChild(s);
-  // Hotfix v80: a consulta de coleção /voz falha nas regras que autorizam
-  // somente os documentos /voz/w e /voz/b. O código-fonte foi corrigido
-  // em fonte/web/extras_v41.js; este ajuste protege o site já compilado.
-  if(window.V41&&window.V31){
-   V41.subscribe=function(ticket){
-    var ref=V41.db().collection('salas').doc(V41.code).collection('voz');
-    var listeners=[],peers={};
-    var denied=function(e){
-     if(ticket!==V41.token||!V41.enabled)return;
-     V41.fail(e&&e.code==='permission-denied'
-      ?'Acesso à voz negado pelo Firebase. Verifique as regras publicadas de salas/{codigo}/voz/{cor} e entre novamente na partida.'
-      :'Falha ao acompanhar a sala de voz. Verifique a conexão com o Firebase.',e);
-    };
-    ['w','b'].forEach(function(cor){
-     listeners.push(ref.doc(cor).onSnapshot(function(doc){
-      if(ticket!==V41.token||!V41.enabled)return;
-      if(doc.exists)peers[cor]=doc.data();else delete peers[cor];
-      V41.participants=Object.assign({},peers);
-      V41.maybeConnect();
-     },denied));
-    });
-    V41.unsub=function(){
-     listeners.forEach(function(unsub){try{unsub();}catch(e){}});
-     listeners=[];
-    };
-   };
-  }
   setTimeout(function(){box.remove();},300);
   /* o cache offline é montado depois que o jogo abriu, para não disputar a banda com o carregamento */
   if('serviceWorker' in navigator){var reg=function(){setTimeout(function(){navigator.serviceWorker.register('./sw.js').catch(function(){});},4000);};if(document.readyState==='complete')reg();else window.addEventListener('load',reg);}

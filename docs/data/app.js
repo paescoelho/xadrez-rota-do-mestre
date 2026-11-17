@@ -26278,7 +26278,7 @@ Mestre.placementResult=function(res){
 
 /* Gancho de tela, preservando o roteamento e lógica já existentes. */
 var _mOldMenu=UiJs.menu;
-UiJs.menu=function(items,info){_mOldMenu(items,info);var menu=UiJs.root.querySelector('.menu'),footer=menu&&menu.querySelector('.mfoot');if(footer){var v=UiJs.el('span','menu-version',footer,'Versão: 14.11.2026');v.setAttribute('aria-label','Versão de 14 de novembro de 2026');}};
+UiJs.menu=function(items,info){_mOldMenu(items,info);var menu=UiJs.root.querySelector('.menu'),footer=menu&&menu.querySelector('.mfoot');if(footer){var v=UiJs.el('span','menu-version',footer,'Versão: 17.11.2026');v.setAttribute('aria-label','Versão de 17 de novembro de 2026');}};
 var _mOldTraining=App.training;
 App.training=function(){_mOldTraining();var g=UiJs.root.querySelector('.menu.hub .mgrid');if(g){UiJs.mitem(g,{t:'Laboratório de alto rendimento',d:'Desafios progressivos · cálculo profundo · biblioteca dos mestres',f:Mestre.hub,wide:true,hl:true,ico:'ct'});}};
 Mestre.training=function(){var base=Mestre.clamp(Profile.d.pzElo||1200,650,2650),seen=Profile.seenMap(),tasks=[];for(var i=0;i<18;i++){var rating=Mestre.clamp(base-180+i*65,500,2900),tags=i%4===0?["endgame"]:i%3===0?["long","veryLong"]:null,ps=Puzzles.pick(tags,rating-100,rating+120,1,seen,i%3===0?4:0);if(!ps.length)continue;var p=ps[0];seen.h[p.id]=true;tasks.push(Study.pzTask(p,i%3===0,i%4===0?"finais":i%3===0?"calculo":"tatica"));}Drills.run('Treino de alto rendimento',tasks,{back:App.training});};
@@ -33065,7 +33065,7 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
   hd.innerHTML='<span class="v35-hi">'+V31.WA+'</span><div><b>Xadrez ao vivo com um amigo</b><span>Mande o link pelo WhatsApp: ele toca e já está no tabuleiro. Sem instalar, sem cadastro.</span></div>';
   /* funções em destaque */
   var ft=UiJs.el('div','v35-fg',cur);
-  [['📞','Áudio no WhatsApp','conversem durante a partida','call'],['👁','Assistir ao vivo','qualquer um, pelo link','eye'],['👏','Reações','👍 😮 😂 🔥 no tabuleiro','fx'],['🎓','Ideal para aulas','explique os lances por áudio','prof']].forEach(function(x){
+  [['🎙️','Voz na partida','conversem sem sair do tabuleiro','call'],['👁','Assistir ao vivo','qualquer um, pelo link','eye'],['👏','Reações','👍 😮 😂 🔥 no tabuleiro','fx'],['🎓','Ideal para aulas','explique os lances por áudio','prof']].forEach(function(x){
    var c=UiJs.el('div','v35-fc '+x[3],ft);c.innerHTML='<i>'+x[0]+'</i><span><b>'+x[1]+'</b>'+x[2]+'</span>';
   });
   /* nome */
@@ -33122,7 +33122,6 @@ V35.longToast=function(msg){
   var t=document.createElement('div');t.className='toast v35-lt';t.textContent=msg;(UiJs.root||document.body).appendChild(t);
   setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},4400);}catch(e){UiJs.toast(msg);}
 };
-
 
 /* Rota do Mestre v63 — Treinador por voz (modo Mentor).
  * Desligado por padrão. Liga em Nova partida (cartão "Treinador por voz", com o Mentor escolhido) ou no botão 🔊 da partida.
@@ -33781,7 +33780,6 @@ V74.open=function(){
  };
 })();
 
-
 /* Rota do Mestre v80 — chamada de voz 1:1 com PeerJS 1.5.5 (MIT).
  * Projeto: https://github.com/peers/peerjs — https://peerjs.com/
  *
@@ -33799,6 +33797,8 @@ var V41={
  call:null,pending:null,peerDoc:null,unsub:null,heartbeat:null,openTimer:null,pendingTimer:null,
  retryTimer:null,tries:0,remoteId:'',participants:{},needsTap:false,loadPromise:null
 };
+/* hash SHA-384 de peerjs@1.5.5/dist/peerjs.min.js (pacote npm oficial) */
+V41.SRI='sha384-x0YgkOr/3UOZP2CRDxGW9e0Q+2Qjyr3uJrm4xU32Y7ZCNAo7Cc7bjhrZMi/dwczu';
 V41.css=function(){
  if(document.getElementById('rdm-peerjs-style'))return;
  var st=document.createElement('style');st.id='rdm-peerjs-style';
@@ -33892,15 +33892,17 @@ V41.options=function(){
 V41.load=function(){
  if(window.Peer)return Promise.resolve(window.Peer);
  if(V41.loadPromise)return V41.loadPromise;
- // Dependência leve, carregada só após permissão do microfone. Versão fixa.
- var urls=['https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js',
+ // Dependência carregada só após permissão do microfone. Versão fixa 1.5.5:
+ // primeiro a cópia do próprio site, depois CDNs; todas conferidas pelo hash SRI
+ // (o navegador recusa o arquivo se ele tiver sido alterado).
+ var urls=['data/peerjs.min.js?v=1.5.5',
+           'https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js',
            'https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js'];
- if(typeof window.RDM_PEERJS_SCRIPT_URL==='string')urls.unshift(window.RDM_PEERJS_SCRIPT_URL);
  var use=function(i){
   if(window.Peer)return Promise.resolve(window.Peer);
   if(i>=urls.length)return Promise.reject(new Error('PeerJS indisponível: verifique a conexão com a internet.'));
   return new Promise(function(resolve,reject){
-   var s=document.createElement('script');s.src=urls[i];s.async=true;s.crossOrigin='anonymous';
+   var s=document.createElement('script');s.src=urls[i];s.async=true;s.crossOrigin='anonymous';s.integrity=V41.SRI;
    s.onload=function(){window.Peer?resolve(window.Peer):reject(new Error('Biblioteca PeerJS inválida.'));};
    s.onerror=function(){s.remove();reject(new Error('Falha ao carregar PeerJS'));};
    document.head.appendChild(s);
@@ -33922,15 +33924,30 @@ V41.unlockAudio=function(){
   .catch(function(){V41.needsTap=true;V41.show('connected');});
 };
 V41.subscribe=function(ticket){
+ // Regras Firestore concedem acesso a /voz/w e /voz/b, não a uma consulta
+ // irrestrita à coleção. Dois listeners de documento evitam permission-denied
+ // porque as regras não são filtros para consultas de coleção.
  var ref=V41.db().collection('salas').doc(V41.code).collection('voz');
- V41.unsub=ref.onSnapshot(function(snapshot){
+ var listeners=[],peers={};
+ var denied=function(e){
   if(ticket!==V41.token||!V41.enabled)return;
-  var peers={};
-  snapshot.forEach(function(doc){if(doc.id==='w'||doc.id==='b')peers[doc.id]=doc.data();});
-  V41.participants=peers;V41.maybeConnect();
- },function(e){
-  if(ticket===V41.token&&V41.enabled)V41.fail('Firebase bloqueou a sala de voz. Publique as regras da coleção /voz.',e);
+  V41.fail(e&&e.code==='permission-denied'
+   ?'Acesso à voz negado pelo Firebase. Verifique as regras publicadas de salas/{codigo}/voz/{cor} e entre novamente na partida.'
+   :'Falha ao acompanhar a sala de voz. Verifique a conexão com o Firebase.',e);
+ };
+ ['w','b'].forEach(function(cor){
+  listeners.push(ref.doc(cor).onSnapshot(function(doc){
+   if(ticket!==V41.token||!V41.enabled)return;
+   if(doc.exists)peers[cor]=doc.data();
+   else delete peers[cor];
+   V41.participants=Object.assign({},peers);
+   V41.maybeConnect();
+  },denied));
  });
+ V41.unsub=function(){
+  listeners.forEach(function(unsub){try{unsub();}catch(e){}});
+  listeners=[];
+ };
 };
 V41.publish=function(ticket){
  if(ticket!==V41.token||!V41.peerId)return Promise.resolve();
@@ -34051,7 +34068,7 @@ V41.scheduleRetry=function(){
  if(!V41.enabled)return;
  var active=V41.activeOther();
  if(!active){V41.tries=0;V41.show('waiting');return;}
- if(++V41.tries>4){V41.show('error','Não foi possível conectar. Encerre a voz e tente novamente.');return;}
+ if(++V41.tries>4){V41.show('error','Não foi possível conectar. Algumas redes de celular bloqueiam chamadas diretas: tente pelo Wi-Fi, encerre a voz e ative de novo.');return;}
  V41.show('reconnecting');
  clearTimeout(V41.retryTimer);
  var ticket=V41.token;
@@ -34119,6 +34136,9 @@ V41.stop=function(notify){
  }
 };
 (function(){
+ // O mesmo app.js roda no worker do motor, onde não há window/document:
+ // sem esta guarda o worker quebra e o motor passa a calcular na tela.
+ if(typeof window==='undefined'||typeof document==='undefined')return;
  if(typeof V31==='undefined'||typeof V35==='undefined')return;
  // A interface antiga de chamadas telefônicas foi retirada de V35.
  var decorate=V35.decorate;
@@ -34135,7 +34155,6 @@ V41.stop=function(notify){
  V31.close=function(){V41.stop(true);V41.code=null;V41.me=null;V41.uid=null;return close.apply(this,arguments);};
  window.addEventListener('pagehide',function(){if(V41.enabled)V41.stop(true);});
 })();
-
 
 /* ROTA DO MESTRE · LENDAS VIVAS v76
  * Retratos caricaturais organizados por oito linguagens visuais e falas ficcionais
@@ -34347,9 +34366,6 @@ var V43=(function(){
  }
  return api;
 })();
-
-
-
 
 Main.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);

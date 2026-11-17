@@ -15,6 +15,8 @@ var V41={
  call:null,pending:null,peerDoc:null,unsub:null,heartbeat:null,openTimer:null,pendingTimer:null,
  retryTimer:null,tries:0,remoteId:'',participants:{},needsTap:false,loadPromise:null
 };
+/* hash SHA-384 de peerjs@1.5.5/dist/peerjs.min.js (pacote npm oficial) */
+V41.SRI='sha384-x0YgkOr/3UOZP2CRDxGW9e0Q+2Qjyr3uJrm4xU32Y7ZCNAo7Cc7bjhrZMi/dwczu';
 V41.css=function(){
  if(document.getElementById('rdm-peerjs-style'))return;
  var st=document.createElement('style');st.id='rdm-peerjs-style';
@@ -108,15 +110,17 @@ V41.options=function(){
 V41.load=function(){
  if(window.Peer)return Promise.resolve(window.Peer);
  if(V41.loadPromise)return V41.loadPromise;
- // Dependência leve, carregada só após permissão do microfone. Versão fixa.
- var urls=['https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js',
+ // Dependência carregada só após permissão do microfone. Versão fixa 1.5.5:
+ // primeiro a cópia do próprio site, depois CDNs; todas conferidas pelo hash SRI
+ // (o navegador recusa o arquivo se ele tiver sido alterado).
+ var urls=['data/peerjs.min.js?v=1.5.5',
+           'https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js',
            'https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js'];
- if(typeof window.RDM_PEERJS_SCRIPT_URL==='string')urls.unshift(window.RDM_PEERJS_SCRIPT_URL);
  var use=function(i){
   if(window.Peer)return Promise.resolve(window.Peer);
   if(i>=urls.length)return Promise.reject(new Error('PeerJS indisponível: verifique a conexão com a internet.'));
   return new Promise(function(resolve,reject){
-   var s=document.createElement('script');s.src=urls[i];s.async=true;s.crossOrigin='anonymous';
+   var s=document.createElement('script');s.src=urls[i];s.async=true;s.crossOrigin='anonymous';s.integrity=V41.SRI;
    s.onload=function(){window.Peer?resolve(window.Peer):reject(new Error('Biblioteca PeerJS inválida.'));};
    s.onerror=function(){s.remove();reject(new Error('Falha ao carregar PeerJS'));};
    document.head.appendChild(s);
@@ -282,7 +286,7 @@ V41.scheduleRetry=function(){
  if(!V41.enabled)return;
  var active=V41.activeOther();
  if(!active){V41.tries=0;V41.show('waiting');return;}
- if(++V41.tries>4){V41.show('error','Não foi possível conectar. Encerre a voz e tente novamente.');return;}
+ if(++V41.tries>4){V41.show('error','Não foi possível conectar. Algumas redes de celular bloqueiam chamadas diretas: tente pelo Wi-Fi, encerre a voz e ative de novo.');return;}
  V41.show('reconnecting');
  clearTimeout(V41.retryTimer);
  var ticket=V41.token;
@@ -350,6 +354,9 @@ V41.stop=function(notify){
  }
 };
 (function(){
+ // O mesmo app.js roda no worker do motor, onde não há window/document:
+ // sem esta guarda o worker quebra e o motor passa a calcular na tela.
+ if(typeof window==='undefined'||typeof document==='undefined')return;
  if(typeof V31==='undefined'||typeof V35==='undefined')return;
  // A interface antiga de chamadas telefônicas foi retirada de V35.
  var decorate=V35.decorate;

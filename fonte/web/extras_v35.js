@@ -170,7 +170,7 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
   hd.innerHTML='<span class="v35-hi">'+V31.WA+'</span><div><b>Xadrez ao vivo com um amigo</b><span>Mande o link pelo WhatsApp: ele toca e já está no tabuleiro. Sem instalar, sem cadastro.</span></div>';
   /* funções em destaque */
   var ft=UiJs.el('div','v35-fg',cur);
-  [['📞','Áudio no WhatsApp','conversem durante a partida','call'],['👁','Assistir ao vivo','qualquer um, pelo link','eye'],['👏','Reações','👍 😮 😂 🔥 no tabuleiro','fx'],['🎓','Ideal para aulas','explique os lances por áudio','prof']].forEach(function(x){
+  [['🎙️','Voz na partida','conversem sem sair do tabuleiro','call'],['👁','Assistir ao vivo','qualquer um, pelo link','eye'],['👏','Reações','👍 😮 😂 🔥 no tabuleiro','fx'],['🎓','Ideal para aulas','explique os lances por áudio','prof']].forEach(function(x){
    var c=UiJs.el('div','v35-fc '+x[3],ft);c.innerHTML='<i>'+x[0]+'</i><span><b>'+x[1]+'</b>'+x[2]+'</span>';
   });
   /* nome */

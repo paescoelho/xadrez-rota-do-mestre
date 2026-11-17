@@ -97,6 +97,9 @@ const files={};
 function put(name,buf){fs.writeFileSync(S+'/data/'+name,buf);files[name]=crypto.createHash('md5').update(buf).digest('hex').slice(0,10);}
 put('app.js',Buffer.from(app,'utf8'));
 fs.copyFileSync(__dirname+'/lendas-portraits.webp',S+'/data/lendas-portraits.webp');
+/* PeerJS 1.5.5 (MIT) servido pelo próprio site: arquivo idêntico ao do npm, conferido por hash SRI em V41.load */
+fs.copyFileSync(__dirname+'/peerjs.min.js',S+'/data/peerjs.min.js');
+fs.copyFileSync(__dirname+'/peerjs-LICENSE.txt',S+'/data/peerjs-LICENSE.txt');
 /* A arte HD é opcional: ao publicá-la na pasta fonte/web, o build a inclui no site. */
 if(fs.existsSync(__dirname+'/lendas-portraits-hd.webp')){
  const hd=fs.readFileSync(__dirname+'/lendas-portraits-hd.webp');

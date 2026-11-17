@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v74</title>
+<title>Xadrez · Rota do Mestre — v81</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -70410,7 +70410,7 @@ Mestre.placementResult=function(res){
 
 /* Gancho de tela, preservando o roteamento e lógica já existentes. */
 var _mOldMenu=UiJs.menu;
-UiJs.menu=function(items,info){_mOldMenu(items,info);var menu=UiJs.root.querySelector('.menu'),footer=menu&&menu.querySelector('.mfoot');if(footer){var v=UiJs.el('span','menu-version',footer,'Versão: 13.11.2026');v.setAttribute('aria-label','Versão de 13 de novembro de 2026');}};
+UiJs.menu=function(items,info){_mOldMenu(items,info);var menu=UiJs.root.querySelector('.menu'),footer=menu&&menu.querySelector('.mfoot');if(footer){var v=UiJs.el('span','menu-version',footer,'Versão: 17.11.2026');v.setAttribute('aria-label','Versão de 17 de novembro de 2026');}};
 var _mOldTraining=App.training;
 App.training=function(){_mOldTraining();var g=UiJs.root.querySelector('.menu.hub .mgrid');if(g){UiJs.mitem(g,{t:'Laboratório de alto rendimento',d:'Desafios progressivos · cálculo profundo · biblioteca dos mestres',f:Mestre.hub,wide:true,hl:true,ico:'ct'});}};
 Mestre.training=function(){var base=Mestre.clamp(Profile.d.pzElo||1200,650,2650),seen=Profile.seenMap(),tasks=[];for(var i=0;i<18;i++){var rating=Mestre.clamp(base-180+i*65,500,2900),tags=i%4===0?["endgame"]:i%3===0?["long","veryLong"]:null,ps=Puzzles.pick(tags,rating-100,rating+120,1,seen,i%3===0?4:0);if(!ps.length)continue;var p=ps[0];seen.h[p.id]=true;tasks.push(Study.pzTask(p,i%3===0,i%4===0?"finais":i%3===0?"calculo":"tatica"));}Drills.run('Treino de alto rendimento',tasks,{back:App.training});};
@@ -77025,13 +77025,10 @@ V34.ADMIN_UID='yQcB43kSJcbxnJorS1QsJsJtP5x1';
 V34.isAdmin=function(){try{var u=V23.Cloud&&V23.Cloud.user;return !!(u&&u.uid===V34.ADMIN_UID);}catch(e){return false;}};
 if(typeof V27!=='undefined'&&V27.panel){var oP50=V27.panel;V27.panel=function(){if(!V34.isAdmin())return;return oP50.apply(this,arguments);};}
 
-/* Rota do Mestre — v53: jogo ao vivo com ligação pelo WhatsApp, reações e partida para assistir.
- * 1) Ligação: cada jogador decide se libera o próprio número (salas/{code}/privado/{cor}); só os dois jogadores leem.
- *    O botão verde abre a conversa com o adversário no WhatsApp (o WhatsApp não deixa um site iniciar a ligação sozinho).
- *    Os números são apagados da sala quando a partida termina.
- * 2) Reações: 👍 😮 😂 👏 🤝 🔥 aparecem por 2 segundos no tabuleiro de todos (salas/{code}/reacoes), com limite por pessoa.
- * 3) Assistir: link "?ver=CODE" abre a partida só para ver (sem login, sem mexer, sem dicas, sem telefones).
- *    Quem assiste marca presença em salas/{code}/plateia/{uid} a cada 90 s; os jogadores veem "👁 N assistindo".
+/* Rota do Mestre — modo online: reações, convite e plateia.
+ * Chamadas de voz 1:1 são tratadas exclusivamente pelo PeerJS (V41).
+ * O WhatsApp é usado apenas para compartilhamento do convite.
+ * Não coleta número telefônico nem solicita autorização de contato.
  */
 var V35={EMO:['👍','😮','😂','👏','🤝','🔥'],un:[],code:null,tel:{},plat:{},lastFx:0,fxN:0,w:null};
 V35.esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
@@ -77039,20 +77036,11 @@ V35.ev=function(k){try{if(typeof V27!=='undefined'&&V27.ev)V27.ev(k);}catch(e){}
 V35.db=function(){return window.firebase.firestore();};
 V35.TS=function(){return window.firebase.firestore.FieldValue.serverTimestamp();};
 V35.link=function(code){return V31.base()+'?ver='+code;};
-V35.digits=function(s){var d=String(s||'').replace(/\D/g,'');if(d.length===10||d.length===11)d='55'+d;return d;};
-V35.validTel=function(d){return /^[0-9]{12,15}$/.test(d);};
-V35.fmt=function(d){if(!d)return '';var m=d.match(/^55(\d\d)(\d{4,5})(\d{4})$/);return m?'('+m[1]+') '+m[2]+'-'+m[3]:'+'+d;};
-V35.myTelLS=function(){try{return localStorage.getItem('rdm-tel')||'';}catch(e){return '';}};
-V35.asked=function(code){try{return localStorage.getItem('rdm-telask-'+code)==='1';}catch(e){return false;}};
-V35.setAsked=function(code){try{localStorage.setItem('rdm-telask-'+code,'1');}catch(e){}};
-
 /* ---------- ouvintes da sala (jogadores) ---------- */
 V35.stop=function(){V35.un.forEach(function(f){try{f();}catch(e){}});V35.un=[];V35.code=null;V35.tel={};V35.plat={};clearInterval(V35.pt);V35.pt=null;};
 V35.listen=function(code,asPlayer){
  V35.stop();V35.code=code;var ref=V35.db().collection('salas').doc(code);
- if(asPlayer){
-  V35.un.push(ref.collection('privado').onSnapshot(function(qs){V35.tel={};qs.forEach(function(d){V35.tel[d.id]=d.data().tel;});V35.decorate();},function(){}));
- }
+ // A voz usa PeerJS e a colecao /voz; numeros privados nao sao mais lidos.
  V35.un.push(ref.collection('plateia').onSnapshot(function(qs){V35.plat={};qs.forEach(function(d){var t=d.data().t;V35.plat[d.id]=t&&t.toMillis?t.toMillis():Date.now();});V35.watchers();},function(){}));
  var since=window.firebase.firestore.Timestamp.fromMillis(Date.now()-4000);
  V35.un.push(ref.collection('reacoes').where('t','>',since).onSnapshot(function(qs){
@@ -77080,31 +77068,7 @@ V35.react=function(e,de){
 };
 V35.emoRow=function(parent,de){var row=UiJs.el('div','v35-emo',parent);V35.EMO.forEach(function(e){var b=UiJs.el('button','',row,e);b.type='button';b.setAttribute('aria-label','Reagir '+e);b.onclick=function(){V35.react(e,de);};});return row;};
 
-/* ---------- ligação pelo WhatsApp ---------- */
-V35.telAsk=function(code){
- if(document.querySelector('.v35-ov'))return;
- var ov=document.createElement('div');ov.className='v35-ov';
- var saved=V35.myTelLS();
- ov.innerHTML='<div class="v35-md" role="dialog" aria-modal="true"><b>📞 Liberar ligação pelo WhatsApp?</b><p>Assim vocês podem conversar por áudio durante a partida. O seu número aparece <em>só para o seu adversário</em>, nunca para quem estiver assistindo, e é apagado da sala quando a partida termina.</p>'
-  +'<label class="v35-tel"><span>🇧🇷 +55</span><input type="tel" inputmode="tel" autocomplete="tel-national" maxlength="20" placeholder="(75) 9 9999-9999"></label>'
-  +'<label class="v35-ck"><input type="checkbox" checked> Lembrar meu número neste aparelho</label>'
-  +'<button type="button" class="btn pri wide v35-ok">Liberar ligação</button><button type="button" class="btn wide v35-no">Agora não</button></div>';
- document.body.appendChild(ov);
- var inp=ov.querySelector('input[type=tel]'),ck=ov.querySelector('input[type=checkbox]');
- if(saved)inp.value=V35.fmt(saved).replace(/^\+/,'');
- var close=function(){ov.remove();};
- ov.querySelector('.v35-no').onclick=function(){V35.setAsked(code);close();};
- ov.onclick=function(ev){if(ev.target===ov){V35.setAsked(code);close();}};
- ov.querySelector('.v35-ok').onclick=function(){
-  var d=V35.digits(inp.value);
-  if(!V35.validTel(d)){UiJs.toast('Confira o número: DDD + celular.');inp.focus();return;}
-  try{if(ck.checked)localStorage.setItem('rdm-tel',d);else localStorage.removeItem('rdm-tel');}catch(e){}
-  V35.setAsked(code);close();
-  V35.db().collection('salas').doc(code).collection('privado').doc(V31.me).set({tel:d,t:V35.TS()})
-   .then(function(){UiJs.toast('Ligação liberada. Quando o adversário liberar também, o botão verde aparece.');},function(){UiJs.toast('Não deu para liberar agora. Tente de novo.');});
- };
- setTimeout(function(){if(!inp.value)inp.focus();},120);
-};
+/* Remoção de números antigos, apenas ao encerrar partidas criadas antes do PeerJS. */
 V35.telOff=function(code){var ref=V35.db().collection('salas').doc(code).collection('privado');['w','b'].forEach(function(c){ref.doc(c).delete().catch(function(){});});};
 
 /* ---------- ferramentas na tela do jogador ---------- */
@@ -77113,17 +77077,7 @@ V35.decorate=function(){
  var old=cur.querySelector('.v35-tools');if(old)old.remove();
  if(r.status==='over'){if(V35.code&&!V35.cleared){V35.cleared=V35.code;V35.telOff(V35.code);}}
  var box=document.createElement('div');box.className='v35-tools';
- var opp=V31.other(me),mine=V35.tel[me],his=V35.tel[opp],play=r.status==='play';
- if(play&&mine&&his){
-  var a=document.createElement('a');a.className='v35-call';a.href='https://wa.me/'+his;a.target='_blank';a.rel='noopener';
-  a.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="#fff" d="M6.6 10.8a15.2 15.2 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z"/></svg><span>Ligar para '+V35.esc(V31.oppName(r))+' no WhatsApp</span>';
-  a.onclick=function(){V35.ev('ligacao-whatsapp');UiJs.toast('Abrindo a conversa: toque no telefone no topo do WhatsApp para ligar.');};
-  box.appendChild(a);
- }else if(play&&!mine){
-  var b=UiJs.el('button','v35-lib',box,'📞 Liberar ligação pelo WhatsApp');b.type='button';b.onclick=function(){V35.telAsk(V31.code);};
- }else if(play&&mine&&!his){
-  UiJs.el('div','v35-wait',box,'📞 Ligação liberada por você. Esperando '+V31.oppName(r)+' liberar também.');
- }
+ var play=r.status==='play';
  var row=UiJs.el('div','v35-row',box);
  var sh=UiJs.el('button','v35-tb',row,'🔗 Chamar para assistir');sh.type='button';sh.onclick=V35.shareWatch;
  var eye=UiJs.el('span','v35-eye',row,'');eye.style.display='none';
@@ -77147,9 +77101,7 @@ V35.shareWatch=function(){
  var oClose=V31.close;V31.close=function(){V35.stop();var x=document.querySelector('.v35-ov');if(x)x.remove();return oClose.apply(this,arguments);};
  var oGP=V31.gamePage;V31.gamePage=function(){
   var r=oGP.apply(this,arguments);
-  try{V35.decorate();
-   var rm=V31.room;if(rm&&rm.status==='play'&&V31.me&&!V35.tel[V31.me]&&!V35.asked(V31.code)&&(rm.moves||[]).length<4)setTimeout(function(){if(V31.room&&V31.room.status==='play'&&!V35.tel[V31.me]&&!V35.asked(V31.code))V35.telAsk(V31.code);},900);
-  }catch(e){}
+  try{V35.decorate();}catch(e){}
   return r;
  };
 })();
@@ -77245,7 +77197,7 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
   hd.innerHTML='<span class="v35-hi">'+V31.WA+'</span><div><b>Xadrez ao vivo com um amigo</b><span>Mande o link pelo WhatsApp: ele toca e já está no tabuleiro. Sem instalar, sem cadastro.</span></div>';
   /* funções em destaque */
   var ft=UiJs.el('div','v35-fg',cur);
-  [['📞','Áudio no WhatsApp','conversem durante a partida','call'],['👁','Assistir ao vivo','qualquer um, pelo link','eye'],['👏','Reações','👍 😮 😂 🔥 no tabuleiro','fx'],['🎓','Ideal para aulas','explique os lances por áudio','prof']].forEach(function(x){
+  [['🎙️','Voz na partida','conversem sem sair do tabuleiro','call'],['👁','Assistir ao vivo','qualquer um, pelo link','eye'],['👏','Reações','👍 😮 😂 🔥 no tabuleiro','fx'],['🎓','Ideal para aulas','explique os lances por áudio','prof']].forEach(function(x){
    var c=UiJs.el('div','v35-fc '+x[3],ft);c.innerHTML='<i>'+x[0]+'</i><span><b>'+x[1]+'</b>'+x[2]+'</span>';
   });
   /* nome */
@@ -77958,6 +77910,593 @@ V74.open=function(){
   }catch(e){if(window.console)console.error(e);}
   return r;
  };
+})();
+
+/* Rota do Mestre v80 — chamada de voz 1:1 com PeerJS 1.5.5 (MIT).
+ * Projeto: https://github.com/peers/peerjs — https://peerjs.com/
+ *
+ * Só dois jogadores autenticados de uma partida em andamento podem
+ * publicar/ler o ID aleatório do PeerJS em salas/{code}/voz/{cor}.
+ * Reutiliza a estrutura e as regras de voz já existentes do Firebase:
+ *   {uid,enabled,sid,sdp:'',ice:[],t:serverTimestamp()}
+ * SDP e ICE não são armazenados no Firestore: o PeerServer faz sinalização.
+ * Consentimento explícito de ambos; stream apenas de áudio, sem câmera.
+ * O áudio não é gravado pelo aplicativo. Servidor PeerJS Cloud é externo.
+ */
+var V41={
+ code:null,me:null,uid:null,token:0,enabled:false,muted:false,state:'off',error:'',
+ peer:null,peerId:'',peerReady:false,published:false,local:null,remote:null,media:null,
+ call:null,pending:null,peerDoc:null,unsub:null,heartbeat:null,openTimer:null,pendingTimer:null,
+ retryTimer:null,tries:0,remoteId:'',participants:{},needsTap:false,loadPromise:null
+};
+/* hash SHA-384 de peerjs@1.5.5/dist/peerjs.min.js (pacote npm oficial) */
+V41.SRI='sha384-x0YgkOr/3UOZP2CRDxGW9e0Q+2Qjyr3uJrm4xU32Y7ZCNAo7Cc7bjhrZMi/dwczu';
+V41.css=function(){
+ if(document.getElementById('rdm-peerjs-style'))return;
+ var st=document.createElement('style');st.id='rdm-peerjs-style';
+ st.textContent=[
+ '.v41-wrap{padding:10px 12px;margin:0 0 8px;border:1px solid rgba(89,184,143,.4);border-radius:14px;background:linear-gradient(135deg,#1d3832,#151d22 80%);color:#edf8f1;box-sizing:border-box}',
+ '.v41-wrap.warn{border-color:rgba(226,159,86,.7)}.v41-head{display:flex;align-items:center;gap:9px}',
+ '.v41-symbol{display:grid;place-items:center;width:34px;height:34px;flex:none;border-radius:11px;background:#2e5949;font-size:18px}',
+ '.v41-text{flex:1;min-width:0}.v41-text strong{display:block;font:700 13px/1.4 system-ui,sans-serif;color:#eff9f2}',
+ '.v41-text small{display:block;font:11.5px/1.35 system-ui,sans-serif;color:#a6c5b6;margin-top:2px}',
+ '.v41-wrap.warn .v41-text small{color:#f3c09a}.v41-dot{width:8px;height:8px;flex:none;border-radius:50%;background:#909a9e}',
+ '.v41-dot.live{background:#32d78a;box-shadow:0 0 0 3px rgba(50,215,138,.16)}',
+ '.v41-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}',
+ '.v41-btn{flex:1;min-width:0;min-height:38px;border-radius:10px;padding:7px 9px;border:1px solid #517666;background:#234939;color:#edfff2;font:600 12px/1.2 system-ui,sans-serif;cursor:pointer}',
+ '.v41-btn.secondary{background:#1b2926;border-color:#466759}.v41-btn.hangup{background:#592d35;border-color:#ad636f;color:#fff1f2}',
+ '.v41-btn:disabled{opacity:.55;cursor:wait}.v41-tip{font:10.5px/1.35 system-ui,sans-serif;color:#a8baaf;margin-top:7px}',
+ '@media(max-width:390px){.v41-wrap{padding:8px 9px}.v41-btn{font-size:11px;padding:7px 5px}}'
+ ].join('\n');document.head.appendChild(st);
+};
+V41.statusText=function(){
+ switch(V41.state){
+ case 'asking':return 'Autorize o microfone no seu navegador.';
+ case 'loading':return 'Preparando chamada segura pelo PeerJS…';
+ case 'waiting':return 'Microfone ativado. Aguardando o outro jogador liberar a voz.';
+ case 'connecting':return 'Conectando os dois jogadores…';
+ case 'connected':return V41.needsTap?'Áudio conectado. Toque em “Ativar som” para ouvir.':'Voz conectada. Continue jogando enquanto conversam.';
+ case 'reconnecting':return 'Conexão interrompida. Tentando restabelecer o áudio…';
+ case 'error':return V41.error||'Não foi possível conectar a chamada.';
+ default:return 'Converse por voz sem sair da partida e sem compartilhar seu telefone.';
+ }
+};
+V41.prepare=function(){
+ var r=V31.room,c=V31.code,me=V31.me,valid=r&&c&&(me==='w'||me==='b')&&V31.view==='game'&&r.status==='play';
+ if(!valid){if(V41.enabled||V41.state==='asking'||V41.state==='loading')V41.stop(true);return false;}
+ if(V41.code!==c||V41.me!==me||V41.uid!==V31.uid){
+  V41.stop(true);V41.code=c;V41.me=me;V41.uid=V31.uid;
+ }
+ return true;
+};
+V41.render=function(){
+ V41.css();
+ var box=document.querySelector('.v35-tools');if(!box)return;
+ var prior=box.querySelector('.v41-wrap');if(prior)prior.remove();
+ if(!V41.prepare())return;
+ var card=document.createElement('section');card.className='v41-wrap'+(V41.state==='error'?' warn':'');
+ card.setAttribute('aria-label','Chamada de voz da partida');
+ var head=document.createElement('div');head.className='v41-head';card.appendChild(head);
+ var symbol=document.createElement('span');symbol.className='v41-symbol';symbol.textContent='🎙️';head.appendChild(symbol);
+ var titleBlock=document.createElement('span');titleBlock.className='v41-text';head.appendChild(titleBlock);
+ var name=document.createElement('strong');name.textContent='Voz com o adversário · PeerJS';titleBlock.appendChild(name);
+ var sub=document.createElement('small');sub.textContent=V41.statusText();sub.setAttribute('role','status');titleBlock.appendChild(sub);
+ var dot=document.createElement('span');dot.className='v41-dot'+(V41.state==='connected'?' live':'');head.appendChild(dot);
+ var actions=document.createElement('div');actions.className='v41-actions';card.appendChild(actions);
+ var button=function(label,variant,fn,disabled){
+  var b=document.createElement('button');b.type='button';b.className='v41-btn'+(variant?' '+variant:'');b.textContent=label;b.disabled=!!disabled;b.onclick=fn;actions.appendChild(b);
+ };
+ if(!V41.enabled){
+  button(V41.state==='asking'?'Pedindo permissão…':'🎙️ Ativar voz','',V41.start,V41.state==='asking'||V41.state==='loading');
+ }else{
+  button(V41.muted?'🔇 Reativar microfone':'🎙️ Silenciar','secondary',V41.toggleMute,false);
+  button('✕ Encerrar voz','hangup',function(){V41.stop(true);V41.render();},false);
+  if(V41.needsTap||V41.state==='connected')button('🔊 Ativar som','secondary',V41.unlockAudio,false);
+ }
+ var tip=document.createElement('div');tip.className='v41-tip';
+ tip.textContent='Somente os 2 jogadores • Sem vídeo ou número • Ambos precisam autorizar.';
+ card.appendChild(tip);box.insertBefore(card,box.firstChild);
+};
+V41.show=function(status,msg){V41.state=status;V41.error=msg||'';V41.render();};
+V41.db=function(){return V31.db||window.firebase.firestore();};
+V41.ts=function(){return window.firebase.firestore.FieldValue.serverTimestamp();};
+V41.ownRef=function(){return V41.db().collection('salas').doc(V41.code).collection('voz').doc(V41.me);};
+V41.other=function(){return V41.me==='w'?'b':'w';};
+V41.otherUid=function(){
+ var r=V31.room;if(!r)return null;return r.hostColor===V41.other()?r.host:r.guest;
+};
+V41.activeOther=function(){
+ var d=V41.participants[V41.other()],ts=d&&d.t&&d.t.toMillis?d.t.toMillis():0;
+ if(!d||!d.enabled||typeof d.sid!=='string'||d.sid.length<6||d.sid.length>80)return null;
+ if(d.uid!==V41.otherUid()||!d.uid||!ts||Date.now()-ts>95000||Date.now()-ts< -15000)return null;
+ if(d.sid===V41.peerId)return null;
+ return d;
+};
+V41.options=function(){
+ var ice=window.RDM_PEERJS_ICE_SERVERS||window.RDM_VOICE_ICE_SERVERS;
+ var options={debug:1,config:{iceServers:Array.isArray(ice)&&ice.length?ice:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]}};
+ var custom=window.RDM_PEERJS_OPTIONS;
+ if(custom&&typeof custom==='object'){
+  ['host','port','path','secure','key','pingInterval'].forEach(function(k){if(custom[k]!==undefined)options[k]=custom[k];});
+ }
+ return options;
+};
+V41.load=function(){
+ if(window.Peer)return Promise.resolve(window.Peer);
+ if(V41.loadPromise)return V41.loadPromise;
+ // Dependência carregada só após permissão do microfone. Versão fixa 1.5.5:
+ // primeiro a cópia do próprio site, depois CDNs; todas conferidas pelo hash SRI
+ // (o navegador recusa o arquivo se ele tiver sido alterado).
+ var urls=['data/peerjs.min.js?v=1.5.5',
+           'https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js',
+           'https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js'];
+ var use=function(i){
+  if(window.Peer)return Promise.resolve(window.Peer);
+  if(i>=urls.length)return Promise.reject(new Error('PeerJS indisponível: verifique a conexão com a internet.'));
+  return new Promise(function(resolve,reject){
+   var s=document.createElement('script');s.src=urls[i];s.async=true;s.crossOrigin='anonymous';s.integrity=V41.SRI;
+   s.onload=function(){window.Peer?resolve(window.Peer):reject(new Error('Biblioteca PeerJS inválida.'));};
+   s.onerror=function(){s.remove();reject(new Error('Falha ao carregar PeerJS'));};
+   document.head.appendChild(s);
+  }).catch(function(){return use(i+1);});
+ };
+ V41.loadPromise=use(0).catch(function(e){V41.loadPromise=null;throw e;});
+ return V41.loadPromise;
+};
+V41.audioNode=function(){
+ if(V41.remote)return V41.remote;
+ var a=document.createElement('audio');a.autoplay=true;a.playsInline=true;a.setAttribute('playsinline','');a.style.display='none';
+ document.body.appendChild(a);V41.remote=a;return a;
+};
+V41.unlockAudio=function(){
+ if(!V41.remote||!V41.remote.srcObject)return;
+ V41.remote.muted=false;
+ var p=V41.remote.play();
+ if(p&&p.then)p.then(function(){V41.needsTap=false;V41.show('connected');})
+  .catch(function(){V41.needsTap=true;V41.show('connected');});
+};
+V41.subscribe=function(ticket){
+ // Regras Firestore concedem acesso a /voz/w e /voz/b, não a uma consulta
+ // irrestrita à coleção. Dois listeners de documento evitam permission-denied
+ // porque as regras não são filtros para consultas de coleção.
+ var ref=V41.db().collection('salas').doc(V41.code).collection('voz');
+ var listeners=[],peers={};
+ var denied=function(e){
+  if(ticket!==V41.token||!V41.enabled)return;
+  V41.fail(e&&e.code==='permission-denied'
+   ?'Acesso à voz negado pelo Firebase. Verifique as regras publicadas de salas/{codigo}/voz/{cor} e entre novamente na partida.'
+   :'Falha ao acompanhar a sala de voz. Verifique a conexão com o Firebase.',e);
+ };
+ ['w','b'].forEach(function(cor){
+  listeners.push(ref.doc(cor).onSnapshot(function(doc){
+   if(ticket!==V41.token||!V41.enabled)return;
+   if(doc.exists)peers[cor]=doc.data();
+   else delete peers[cor];
+   V41.participants=Object.assign({},peers);
+   V41.maybeConnect();
+  },denied));
+ });
+ V41.unsub=function(){
+  listeners.forEach(function(unsub){try{unsub();}catch(e){}});
+  listeners=[];
+ };
+};
+V41.publish=function(ticket){
+ if(ticket!==V41.token||!V41.peerId)return Promise.resolve();
+ return V41.peerDoc.set({uid:V41.uid,enabled:true,sid:V41.peerId,sdp:'',ice:[],t:V41.ts()})
+ .then(function(){
+  if(ticket!==V41.token)return;
+  V41.published=true;V41.show('waiting');
+  V41.heartbeat=setInterval(function(){
+   if(V41.enabled&&V41.published&&V41.peerDoc)V41.peerDoc.update({t:V41.ts()}).catch(function(){});
+  },25000);
+  V41.maybeConnect();
+ }).catch(function(e){if(ticket===V41.token)V41.fail('Não foi possível ativar a voz no Firebase. Confira as regras /voz.',e);});
+};
+V41.start=async function(){
+ if(V41.enabled||V41.state==='asking'||V41.state==='loading'||!V41.prepare())return;
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.RTCPeerConnection){
+  V41.show('error','Este navegador não oferece chamadas WebRTC ou acesso ao microfone.');return;
+ }
+ var ticket=++V41.token,code=V41.code,me=V41.me;
+ V41.show('asking');
+ try{
+  // Chamada direta durante o clique, para preservar a ativação do usuário no iPhone.
+  var stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false});
+  if(ticket!==V41.token||V31.code!==code||V31.me!==me||!V31.room||V31.room.status!=='play'){
+   stream.getTracks().forEach(function(t){t.stop();});return;
+  }
+  V41.local=stream;V41.enabled=true;V41.muted=false;V41.needsTap=false;V41.tries=0;
+  V41.show('loading');
+  var PeerCtor=await V41.load();
+  if(ticket!==V41.token)return;
+  V41.peerDoc=V41.ownRef();V41.subscribe(ticket);V41.audioNode();
+  var peer=new PeerCtor(undefined,V41.options());V41.peer=peer;
+  V41.openTimer=setTimeout(function(){
+   if(ticket===V41.token&&!V41.peerReady)V41.fail('O PeerServer não respondeu. Tente novamente.',null);
+  },19000);
+  peer.on('open',function(id){
+   if(ticket!==V41.token)return;
+   clearTimeout(V41.openTimer);V41.openTimer=null;
+   if(typeof id!=='string'||id.length<6||id.length>80){V41.fail('O servidor PeerJS retornou um identificador inválido.');return;}
+   V41.peerReady=true;V41.peerId=id;V41.publish(ticket);
+  });
+  peer.on('call',function(c){
+   if(ticket!==V41.token||!V41.enabled||V41.me!=='b'||!V31.room||V31.room.status!=='play'){
+    try{c.close();}catch(e){}return;
+   }
+   // Apenas as Pretas atendem; só o Peer ID validado no Firestore pode ligar.
+   if(V41.call||V41.pending){try{c.close();}catch(e){}return;}
+   // Aceita aguardar até 4,5 s enquanto o Firebase confirma nosso ID.
+   // A resposta final só ocorre depois de ambos publicarem /voz.
+   V41.pending=c;V41.maybeConnect();
+   if(V41.pending===c)V41.pendingTimer=setTimeout(function(){
+    if(V41.pending===c){V41.pending=null;try{c.close();}catch(e){}}
+   },4500);
+  });
+  peer.on('disconnected',function(){
+   if(ticket!==V41.token||!V41.enabled)return;
+   if(V41.state!=='connected')V41.show('reconnecting');
+   if(!peer.destroyed)setTimeout(function(){
+    if(ticket===V41.token&&V41.enabled&&peer.disconnected&&!peer.destroyed){
+     try{peer.reconnect();}catch(e){V41.fail('Não foi possível reconectar ao PeerServer.',e);}
+    }
+   },2600);
+  });
+  peer.on('error',function(e){
+   if(ticket!==V41.token||!V41.enabled)return;
+   if(e&&e.type==='peer-unavailable'){
+    V41.dropCall();V41.scheduleRetry();return;
+   }
+   V41.fail('Falha no PeerServer ('+String(e&&e.type||'rede')+'). Tente novamente.',e);
+  });
+ }catch(e){
+  if(ticket!==V41.token)return;
+  var denied=e&&['NotAllowedError','PermissionDeniedError','SecurityError'].indexOf(e.name)>=0;
+  V41.fail(denied?'Microfone negado. Permita o acesso nas configurações do navegador.':
+    e&&e.message&&/PeerJS|cdn|internet/i.test(e.message)?e.message:
+    'Não foi possível iniciar a chamada. Verifique microfone e internet.',e);
+ }
+};
+V41.attachCall=function(call,remoteId){
+ if(!call||!V41.enabled)return;
+ V41.dropCall();V41.call=call;V41.remoteId=remoteId;V41.show('connecting');
+ var ticket=V41.token,opened=false;
+ call.on('stream',function(stream){
+  if(ticket!==V41.token||V41.call!==call)return;
+  if(!stream||!stream.getAudioTracks||!stream.getAudioTracks().length){V41.dropCall();return;}
+  V41.tries=0;opened=true;
+  var node=V41.audioNode();node.srcObject=stream;V41.needsTap=false;
+  var promise=node.play();
+  if(promise&&promise.then)promise.then(function(){
+   if(ticket===V41.token&&V41.call===call){V41.needsTap=false;V41.show('connected');}
+  }).catch(function(){
+   if(ticket===V41.token&&V41.call===call){V41.needsTap=true;V41.show('connected');}
+  });
+  else V41.show('connected');
+ });
+ call.on('close',function(){
+  if(ticket!==V41.token||V41.call!==call)return;
+  V41.dropCall();
+  if(V41.enabled) V41.scheduleRetry();
+ });
+ call.on('error',function(e){
+  if(ticket!==V41.token||V41.call!==call)return;
+  if(window.console)console.warn('[PeerJS áudio]',e);
+  V41.dropCall();V41.scheduleRetry();
+ });
+ V41.retryTimer=setTimeout(function(){
+  if(ticket===V41.token&&V41.call===call&&!opened){V41.dropCall();V41.scheduleRetry();}
+ },18000);
+};
+V41.dropCall=function(){
+ clearTimeout(V41.retryTimer);V41.retryTimer=null;
+ var old=V41.call;V41.call=null;V41.remoteId='';
+ if(old){try{old.close();}catch(e){}}
+ if(V41.remote){try{V41.remote.pause();V41.remote.srcObject=null;}catch(e){}}
+ V41.needsTap=false;
+};
+V41.scheduleRetry=function(){
+ if(!V41.enabled)return;
+ var active=V41.activeOther();
+ if(!active){V41.tries=0;V41.show('waiting');return;}
+ if(++V41.tries>4){V41.show('error','Não foi possível conectar. Algumas redes de celular bloqueiam chamadas diretas: tente pelo Wi-Fi, encerre a voz e ative de novo.');return;}
+ V41.show('reconnecting');
+ clearTimeout(V41.retryTimer);
+ var ticket=V41.token;
+ V41.retryTimer=setTimeout(function(){
+  V41.retryTimer=null;
+  if(ticket===V41.token&&V41.enabled)V41.maybeConnect();
+ },3000+V41.tries*1400);
+};
+V41.maybeConnect=function(){
+ if(!V41.enabled||!V41.published||!V41.peerReady||!V41.peer||!V31.room||V31.room.status!=='play')return;
+ var other=V41.activeOther();
+ if(!other){
+  if(V41.call)V41.dropCall();
+  if(V41.pending){try{V41.pending.close();}catch(e){}V41.pending=null;}
+  if(V41.state!=='waiting')V41.show('waiting');
+  return;
+ }
+ if(V41.call){
+  if(V41.remoteId===other.sid)return;
+  V41.dropCall();
+ }
+ if(V41.me==='b'){
+  var incoming=V41.pending;
+  if(incoming&&incoming.peer===other.sid&&incoming.metadata&&incoming.metadata.room===V41.code&&incoming.metadata.from==='w'){
+   V41.pending=null;clearTimeout(V41.pendingTimer);V41.pendingTimer=null;
+   V41.attachCall(incoming,other.sid);
+   try{incoming.answer(V41.local);}catch(e){V41.dropCall();V41.scheduleRetry();}
+  }
+  return;
+ }
+ // Só Brancas iniciam a chamada: impede colisão entre ofertas simultâneas.
+ if(V41.retryTimer||V41.tries>4)return;
+ try{
+  var call=V41.peer.call(other.sid,V41.local,{metadata:{room:V41.code,from:'w'}});
+  if(!call){V41.scheduleRetry();return;}
+  V41.attachCall(call,other.sid);
+ }catch(e){V41.scheduleRetry();}
+};
+V41.toggleMute=function(){
+ if(!V41.enabled||!V41.local)return;
+ V41.muted=!V41.muted;
+ V41.local.getAudioTracks().forEach(function(t){t.enabled=!V41.muted;});
+ V41.render();
+};
+V41.fail=function(message,error){
+ V41.stop(true);V41.state='error';V41.error=message;V41.render();
+ if(error&&window.console)console.warn('[Rota do Mestre / PeerJS]',error);
+};
+V41.stop=function(notify){
+ V41.token++;
+ var ref=V41.peerDoc,uid=V41.uid,was=V41.enabled;
+ V41.enabled=false;V41.peerReady=false;V41.published=false;
+ clearInterval(V41.heartbeat);clearTimeout(V41.openTimer);clearTimeout(V41.pendingTimer);clearTimeout(V41.retryTimer);
+ V41.heartbeat=V41.openTimer=V41.pendingTimer=V41.retryTimer=null;
+ if(V41.unsub){try{V41.unsub();}catch(e){}V41.unsub=null;}
+ if(V41.pending){try{V41.pending.close();}catch(e){}V41.pending=null;}
+ V41.dropCall();
+ if(V41.peer){try{V41.peer.destroy();}catch(e){}V41.peer=null;}
+ if(V41.local){V41.local.getTracks().forEach(function(t){t.stop();});V41.local=null;}
+ if(V41.remote){try{V41.remote.pause();V41.remote.srcObject=null;V41.remote.remove();}catch(e){}V41.remote=null;}
+ V41.peerDoc=null;V41.peerId='';V41.remoteId='';V41.participants={};V41.tries=0;
+ V41.muted=false;V41.needsTap=false;V41.state='off';V41.error='';
+ if(notify&&was&&ref&&uid){
+  ref.set({uid:uid,enabled:false,sid:'',sdp:'',ice:[],t:V41.ts()}).catch(function(){});
+ }
+};
+(function(){
+ // O mesmo app.js roda no worker do motor, onde não há window/document:
+ // sem esta guarda o worker quebra e o motor passa a calcular na tela.
+ if(typeof window==='undefined'||typeof document==='undefined')return;
+ if(typeof V31==='undefined'||typeof V35==='undefined')return;
+ // A interface antiga de chamadas telefônicas foi retirada de V35.
+ var decorate=V35.decorate;
+ V35.decorate=function(){
+  var result=decorate.apply(this,arguments);
+  var box=document.querySelector('.v35-tools');
+  if(box){
+   [].forEach.call(box.querySelectorAll('.v35-call,.v35-lib,.v35-wait'),function(el){el.remove();});
+   V41.render();
+  }
+  return result;
+ };
+ var close=V31.close;
+ V31.close=function(){V41.stop(true);V41.code=null;V41.me=null;V41.uid=null;return close.apply(this,arguments);};
+ window.addEventListener('pagehide',function(){if(V41.enabled)V41.stop(true);});
+})();
+
+/* ROTA DO MESTRE · LENDAS VIVAS v76
+ * Retratos caricaturais organizados por oito linguagens visuais e falas ficcionais
+ * coerentes com o estilo das 24 lendas. Nada aqui é citação histórica.
+ * O painel só aparece nos duelos com g.gKey="leg:<id>", mantendo
+ * o motor, os lances, o feedback e os demais modos intactos.
+ */
+var V42={
+ styles:{1:'Pixel art',2:'Cartoon clássico',3:'Charge de jornal',5:'Graphic novel',6:'Minimalista',7:'Aquarela',9:'Anime',10:'Pôster vintage'},
+ // A ordem corresponde exatamente aos 24 registros do catálogo LENDAS.
+ order:['carlsen','kasparov','fischer','karpov','capablanca','alekhine','lasker','botvinnik','tal','petrosian','spassky','smyslov','steinitz','morphy','kramnik','anand','caruana','nakamura','ding','gukesh','polgar','korchnoi','mequinho','firouzja'],
+ // id -> [estilo, epíteto, frase de abertura, pensando, lance, ataque/xeque,
+ //        captura, resistência, boa jogada do aluno, erro do aluno, vitória, derrota, empate, final]
+ people:{
+  carlsen:[2,'O conquistador dos finais','Não tenho pressa. O tabuleiro sempre conta a verdade.','Até a posição mais tranquila merece atenção.','Um pequeno detalhe. Talvez você ainda não tenha notado.','A pressão cresce casa por casa.','Uma troca útil pode mudar todo o final.','Ainda temos muitos lances pela frente.','Boa escolha. Gosto de adversários persistentes.','Você deixou uma casa para trás.','Foi um duelo de paciência.','Você soube aproveitar a sua oportunidade.','Duas vontades fortes. Um equilíbrio justo.','É nos finais que a paciência vale ouro.'],
+  kasparov:[5,'A força da iniciativa','Prepare-se: pretendo disputar cada casa.','Procuro o momento de tomar a iniciativa.','Atividade! Minhas peças precisam respirar.','Agora você terá de responder às minhas ameaças.','Abrir linhas é abrir oportunidades.','Uma posição difícil exige energia, não desânimo.','Esse lance me obriga a recalcular.','O tempo da iniciativa é precioso: você me concedeu o seu.','A iniciativa decidiu nosso confronto.','Hoje você sustentou a pressão melhor do que eu.','A luta foi intensa até o último lance.','Mesmo no final, as peças precisam agir.'],
+  fischer:[10,'Precisão absoluta','Cada lance precisa ter uma razão. Comecemos.','Procuro a continuação mais clara.','Prefiro precisão a truques.','Um erro de cálculo muda tudo.','O material só vale se as peças colaborarem.','Ainda existem lances objetivos.','Bom. Esse lance tem fundamento.','Uma imprecisão é tudo de que preciso.','A precisão prevaleceu.','Seu cálculo foi superior nesta partida.','Nenhum dos dois concedeu o essencial.','Nos finais, não há lugar para descuido.'],
+  karpov:[6,'O mestre da restrição','Não preciso apressar a posição.','Busco a peça que menos espaço tem.','Reduzi suas opções mais uma vez.','Você verá: um ataque pode começar sem sacrifícios.','Trocar também é uma forma de restringir.','Minha posição ainda tem recursos.','Boa profilaxia. Você percebeu a ideia.','Às vezes uma casa perdida vale mais que um peão.','A posição ficou sem espaço para você.','Você encontrou liberdade onde eu via controle.','Foi uma batalha de pequenos detalhes.','Um bom final nasce de muitas decisões discretas.'],
+  capablanca:[6,'O gênio da simplicidade','Vamos jogar com clareza: o simples costuma ser belo.','Procuro o caminho mais natural.','Uma peça melhor colocada faz toda a diferença.','O ataque funciona quando tudo está coordenado.','Simplificar não é desistir de vencer.','A posição ainda pede serenidade.','Elegante! Você encontrou o caminho simples.','Complicou o que poderia ser simples.','A técnica falou mais alto.','Você mereceu cada vantagem que construiu.','Um resultado equilibrado, sem desperdícios.','No final, a harmonia das peças decide.'],
+  alekhine:[3,'O arquiteto das combinações','À primeira vista tudo está calmo. Só à primeira vista.','Procuro combinações escondidas na posição.','A sequência começa com um detalhe.','Uma ameaça pode preparar outra, ainda maior.','Essa troca abre possibilidades inesperadas.','As combinações também exigem paciência.','Muito bom. Você percebeu a armadilha.','Um cálculo incompleto oferece uma história inteira.','A combinação encontrou seu desfecho.','Você calculou mais longe desta vez.','Nenhuma combinação foi decisiva.','Um final também guarda surpresas táticas.'],
+  lasker:[3,'O lutador incansável','A posição é uma coisa; o adversário é outra.','O lance mais incômodo nem sempre é o mais óbvio.','Quero colocar uma decisão difícil diante de você.','Seu rei precisa de respostas práticas.','Essa troca muda o caráter da luta.','Enquanto houver recursos, há jogo.','Você encontrou uma defesa muito boa.','Escolheu o caminho que mais me favorece.','Foi uma luta conquistada lance a lance.','Você manteve a cabeça fria.','Ambos resistimos. Era justo dividir.','O final exige coragem tanto quanto técnica.'],
+  botvinnik:[1,'O estrategista científico','Um plano claro começa com uma avaliação correta.','Verifico estrutura, casas e coordenação.','Este lance serve ao plano de longo prazo.','Um ataque precisa ter fundamentos.','A troca melhora minha estrutura.','Revisar o plano é parte do método.','Seu raciocínio é consistente.','A estrutura da posição cobra esse deslize.','A preparação produziu resultados.','Sua estratégia foi superior.','Planos sólidos de ambos os lados.','No final, cada detalhe técnico importa.'],
+  tal:[7,'O Mágico de Riga','Se o tabuleiro permitir, faremos magia.','Será que há uma combinação escondida aqui?','Interessante… a posição ficou mais viva!','O rei está convidado para uma aventura.','Uma peça a menos; talvez uma ideia a mais.','Gosto das posições em que tudo parece impossível.','Ora! Você também sabe criar complicações.','Abriu uma porta… e eu adoro portas abertas.','Que bela confusão. Desta vez funcionou!','Você sobreviveu ao meu labirinto. Admirável!','Nem todo incêndio precisa consumir o tabuleiro.','Mesmo com poucas peças, ainda há imaginação.'],
+  petrosian:[6,'O guardião da profilaxia','Antes de pensar em vencer, vamos evitar perder.','Procuro a ameaça antes de ela existir.','Sua melhor ideia encontrou uma barreira.','Um ataque impedido já é uma conquista.','Trocar agora reduz seus planos.','Defender bem também é jogar ativamente.','Você neutralizou minha intenção.','Esse avanço deixou uma fraqueza desnecessária.','A prevenção construiu a vitória.','Você viu o perigo com antecedência.','Duas fortalezas bem construídas.','Nos finais, a segurança também ataca.'],
+  spassky:[2,'O campeão universal','Vamos descobrir que tipo de partida teremos.','Cada posição pede uma linguagem diferente.','Posso jogar de várias maneiras.','Se houver iniciativa, eu a seguirei.','A troca é boa quando combina com o plano.','Consigo mudar de estratégia.','Bom lance. Você leu a posição corretamente.','Seu plano perdeu o equilíbrio.','Hoje a versatilidade fez diferença.','Você se adaptou melhor do que eu.','Foi um duelo de estilos equilibrados.','No final, precisamos mudar novamente de marcha.'],
+  smyslov:[7,'A harmonia das peças','Quando as peças se entendem, o xadrez canta.','Escuto a posição em busca de harmonia.','Agora minhas peças conversam melhor.','A coordenação criou uma ameaça natural.','Uma boa troca deixa tudo mais claro.','Minha posição ainda pode encontrar equilíbrio.','Belo ritmo. Suas peças estão em sintonia.','Uma peça ficou fora da melodia.','A harmonia encontrou seu caminho.','Hoje suas peças cantaram mais alto.','O tabuleiro terminou em equilíbrio.','Os finais são música de câmara.'],
+  steinitz:[3,'O pai do xadrez posicional','Nenhum ataque se justifica sem uma vantagem.','Examinarei cada fraqueza antes de avançar.','Uma vantagem pequena começa a tomar forma.','Agora há fundamento para atacar.','A troca conserva a vantagem acumulada.','É preciso defender com método.','Você encontrou uma melhora verdadeira.','Um princípio estratégico foi negligenciado.','A acumulação de vantagens decidiu.','Você demonstrou grande entendimento posicional.','Nenhum dos lados reuniu vantagem suficiente.','No final, princípios claros ainda governam.'],
+  morphy:[10,'O prodígio do ataque','Desenvolva suas peças. Eu não pretendo esperar.','Procuro abrir linhas antes do seu roque.','Outra peça entrou na batalha.','O desenvolvimento rápido abre caminho ao ataque!','Com linhas abertas, cada tempo importa.','Ainda posso mobilizar minhas peças.','Muito bem! Você está atento ao desenvolvimento.','Perdeu um tempo. E tempo é precioso.','A atividade das peças decidiu.','Você encontrou um ataque mais rápido.','O desenvolvimento ficou equilibrado.','Mesmo no final, atividade é liberdade.'],
+  kramnik:[6,'A muralha estratégica','Uma posição sólida pode ser muito ambiciosa.','Procuro uma estrutura difícil de romper.','Minha posição permanece firme.','Mesmo uma defesa sólida sabe contra-atacar.','Essa simplificação me favorece.','Não há motivo para perder a calma.','Você encontrou a fissura certa.','A estrutura exige mais paciência.','A solidez resistiu até o fim.','Você encontrou uma ruptura precisa.','Duas defesas mereceram respeito.','Sem pressa: os finais pedem exatidão.'],
+  anand:[2,'O relâmpago do cálculo','O tabuleiro não espera. Vamos pensar bem e agir.','Calculo várias rotas antes de escolher.','Uma escolha rápida, mas não improvisada.','A posição ficou tática de repente.','Essa troca abre um caminho de cálculo.','Sempre há uma nova variante.','Boa! Você enxergou a ideia depressa.','O ritmo da posição não perdoa.','A precisão apareceu na hora certa.','Você foi mais rápido e mais exato.','Os cálculos se equilibraram.','Mesmo no final, vejo novas possibilidades.'],
+  caruana:[2,'O arquiteto da preparação','A primeira vantagem pode nascer na abertura.','Procuro uma nuance da posição.','Esse detalhe faz parte do meu plano.','A preparação encontrou um momento tático.','A troca confirma um cálculo.','Vamos recalcular sem precipitação.','Excelente. Você não caiu na linha óbvia.','Este detalhe não passou despercebido.','O preparo encontrou sua recompensa.','Você trouxe uma ideia mais forte.','Nenhum dos dois surpreendeu o outro.','Ainda há muito cálculo para fazer.'],
+  nakamura:[9,'O mestre da velocidade','Vamos nessa. O relógio também joga!','Rápido não significa descuidado.','Tenho outra ideia. Acompanhe o ritmo.','Agora a posição acelerou!','A troca deixa tudo mais tático.','Sem pânico. Ainda há truques.','Boa! Você respondeu na velocidade certa.','Opa, esse lance deixou uma oportunidade.','Desta vez fui mais ágil.','Você encontrou o lance preciso. Respeito!','Ninguém piscou primeiro. Empate.','Um final rápido ainda exige concentração.'],
+  ding:[7,'O estrategista sereno','Vamos deixar a posição mostrar suas possibilidades.','Procuro profundidade sem pressa.','Uma decisão discreta pode ser decisiva.','O contra-ataque começa com paciência.','Essa troca revelou outra estrutura.','Ainda vejo caminhos para resistir.','Seu lance foi muito sensível à posição.','Um detalhe importante escapou.','A serenidade ajudou a vencer.','Você soube ser firme sob pressão.','A posição encontrou o equilíbrio.','No final, cada passo precisa de calma.'],
+  gukesh:[9,'O campeão da nova geração','Cada posição merece toda a minha concentração.','Vou calcular mais um pouco.','Encontrei uma continuação profunda.','Agora precisamos ter coragem no cálculo.','A troca depende do que vem depois.','Uma posição ruim não encerra a partida.','Ótima visão! Você foi longe na variante.','O cálculo exige verificar a última resposta.','Consegui manter a concentração até o fim.','Hoje você calculou melhor. Parabéns.','Uma luta intensa sem vencedor.','Nos finais, a calma vale tanto quanto a energia.'],
+  polgar:[5,'A ousadia do ataque','Não importa quem está à frente: vou jogar para vencer.','Procuro peças ativas e um rei vulnerável.','Minhas peças chegaram antes do convite.','É hora de jogar com coragem!','Uma troca pode ampliar o ataque.','Pressão faz parte da partida.','Muito forte! Você não recuou diante do desafio.','Hesitar diante do ataque custa caro.','A iniciativa valeu o esforço.','Você enfrentou o ataque com precisão.','Um duelo de coragem bem equilibrado.','Finais também exigem atitude.'],
+  korchnoi:[10,'O resistente implacável','Não espere facilidades. Gosto de lutar.','Procuro o contra-ataque que você menos espera.','Resistir não significa ficar parado.','Minha defesa encontrou uma resposta ativa!','Essa captura muda o combate.','Ainda não acabou. Nem perto disso.','Você jogou com muita firmeza.','Uma vantagem exige saber defendê-la.','Ganhei porque continuei lutando.','Você mereceu vencer um adversário teimoso.','Nenhum de nós cedeu.','Resistir até o último peão também é arte.'],
+  mequinho:[1,'O gênio brasileiro','Vamos jogar um xadrez de primeira.','A preparação revela boas oportunidades.','Gostei da atividade das minhas peças.','Agora a iniciativa pede precisão.','Uma troca bem calculada ajuda o plano.','Ainda há jogo. Vou buscar recursos.','Boa! Você enxergou longe.','Essa casa ficou disponível para mim.','Uma bela partida. Valeu a luta!','Você jogou muito bem. Meus parabéns!','Uma disputa equilibrada, lance a lance.','O final exige atenção redobrada.'],
+  firouzja:[9,'A energia da nova geração','Quero uma partida cheia de possibilidades.','Estou procurando uma maneira de complicar.','Vamos aumentar o ritmo!','Agora a posição está incendiando!','Essa troca abriu novas ideias.','O jogo muda rápido. Ainda há chances.','Você respondeu com muita criatividade.','Uma posição aguda não perdoa distrações.','A ousadia funcionou desta vez.','Você administrou melhor as complicações.','Foi divertido disputar cada iniciativa.','Até o último peão pode criar confusão.']
+ },
+ last:null
+};
+V42.byGame=function(g){
+ if(!g||!g.ghost||typeof g.gKey!=='string'||g.gKey.slice(0,4)!=='leg:')return null;
+ var id=g.gKey.slice(4);
+ if(!Object.prototype.hasOwnProperty.call(V42.people,id))return null;
+ var p=typeof V74!=='undefined'&&V74.get?V74.get(id):null;
+ if(!p)return null;
+ return {id:id,p:p,words:V42.people[id],index:V42.order.indexOf(id)};
+};
+V42.choose=function(a,g){
+ var l=g.ucis.length,pm=a.words,phase='opening',key='opening',kind='idle';
+ var recent=g.sans&&g.sans.length?String(g.sans[g.sans.length-1]):'';
+ var caps=Engine.toFEN(g.pos).split(' ')[0].replace(/[^prnbqkPRNBQK]/g,'').length;
+ if(caps<=10)phase='endgame';else if(l>=24)phase='middle';
+ if(g.over){
+  key='over:'+g.over.score+':'+l;
+  kind=g.over.score>=1?'sad':g.over.score<=0?'win':'calm';
+  return {key:key,kind:kind,txt:pm[g.over.score>=1?11:g.over.score<=0?10:12],label:g.over.score>=1?'Você venceu':g.over.score<=0?'Lenda venceu':'Empate'};
+ }
+ if(g.peek){return {key:'peek:'+l,kind:'think',txt:'Observe o tabuleiro com calma. A melhor ideia nem sempre é a mais imediata.',label:'Análise da posição'};}
+ if(l===0){return {key:'opening',kind:'idle',txt:pm[2],label:'Início do duelo'};}
+ if(g.busy&&/movimentando|movendo/i.test(g.busy)){return {key:'move:'+l,kind:'attack',txt:pm[4],label:'Jogando'};}
+ if(g.busy&&/pensando|calculando|analisando/i.test(g.busy)){return {key:'thinking:'+l,kind:'think',txt:pm[3],label:'Pensando'};}
+ if(g.pos.turn===g.human){
+  if(/[\+#]/.test(recent)){kind='attack';key='check:'+l;return {key:key,kind:kind,txt:pm[5],label:'Xeque no tabuleiro'};}
+  if(/x/.test(recent)){kind='attack';key='capture:'+l;return {key:key,kind:kind,txt:pm[6],label:'Captura realizada'};}
+  kind='confident';key='legend:'+l;
+  return {key:key,kind:kind,txt:phase==='endgame'?pm[13]:pm[4],label:phase==='endgame'?'Final de partida':'A lenda jogou'};
+ }
+ if(g.lastFb&&!g.fbPending&&g.lastRec&&g.lastRec.ply===l-1){
+  var grade=g.lastFb.grade;
+  if(grade==='blunder'||grade==='mistake'){return {key:'mistake:'+l,kind:'attack',txt:pm[9],label:'Oportunidade percebida'};}
+  if(grade==='great'||grade==='best'||grade==='good'){return {key:'good:'+l,kind:'surprise',txt:pm[8],label:'Boa jogada'};}
+ }
+ if(g.pos.turn!==g.human){return {key:'player:'+l,kind:'think',txt:phase==='endgame'?pm[13]:pm[3],label:'A lenda está avaliando'};}
+ return {key:'quiet:'+l,kind:'idle',txt:pm[2],label:'Em jogo'};
+};
+V42.style=function(){
+ if(document.getElementById('v42-style'))return;
+ var c=document.createElement('style');c.id='v42-style';
+ c.textContent=[
+ '.v42-card{position:relative;overflow:hidden;border:1px solid rgba(228,189,109,.42);border-radius:15px;background:radial-gradient(circle at 10% 30%,rgba(213,160,69,.12),transparent 46%),linear-gradient(135deg,#1b212a,#10141b 77%);margin:3px 0 9px;padding:10px;box-shadow:0 8px 26px rgba(0,0,0,.22);color:#efe9de;box-sizing:border-box}',
+ '.v42-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--v42-ac,#d6ac55)}',
+ '.v42-meta{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:7px}',
+ '.v42-meta b{font:700 10px/1.2 system-ui,sans-serif;color:#e5c788;letter-spacing:.065em;text-transform:uppercase}',
+ '.v42-meta em{font:normal 10px/1.2 system-ui,sans-serif;color:#aeb6b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+ '.v42-scene{display:flex;align-items:center;gap:10px;min-width:0}',
+ '.v42-portrait{width:90px;height:90px;flex:0 0 90px;border-radius:12px;background-image:url("data/lendas-portraits-hd.webp?v=v79-static-20261114");background-size:400% 600%;background-repeat:no-repeat;background-color:#30313c;border:1px solid rgba(255,221,148,.45);position:relative;isolation:isolate;box-shadow:0 5px 15px rgba(0,0,0,.38);animation:none;transform:none}',
+ '.v42-portrait:after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;box-shadow:inset 0 0 15px rgba(9,12,18,.23)}',
+ '.v42-s1 .v42-portrait{image-rendering:pixelated}.v42-s3 .v42-portrait{filter:sepia(.27) contrast(1.08)}',
+ '.v42-s5 .v42-portrait{filter:saturate(1.16) contrast(1.1)}.v42-s6 .v42-portrait{filter:saturate(.88)}',
+ '.v42-s7 .v42-portrait{filter:saturate(1.18)}.v42-s9 .v42-portrait{filter:saturate(1.13) contrast(1.07)}',
+ '.v42-s10 .v42-portrait{filter:sepia(.16) contrast(1.15)}',
+ '.v42-phrase{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}',
+ '.v42-name{font:700 13.5px/1.15 Georgia,serif;color:#f7d98d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+ '.v42-epithet{font:11px/1.15 system-ui,sans-serif;color:#bac2c1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+ '.v42-balloon{position:relative;background:#f3ecde;color:#26222b;padding:9px 11px;border-radius:11px 11px 11px 4px;min-height:44px;font:500 clamp(11px,2.9vw,13px)/1.35 system-ui,sans-serif;box-shadow:0 3px 10px rgba(0,0,0,.25);display:flex;align-items:center;animation:none}',
+ '.v42-balloon:before{content:"";position:absolute;left:-7px;top:50%;border-top:7px solid transparent;border-bottom:7px solid transparent;border-right:8px solid #f3ecde;transform:translateY(-50%)}',
+ '.v42-details{border:1px solid rgba(205,170,112,.16);border-radius:11px;background:rgba(255,255,255,.025);margin:1px 0 9px;padding:5px 9px}',
+ '.v42-details summary{cursor:pointer;font:11px/1.2 system-ui,sans-serif;color:#a9b0b5;list-style:auto;padding:4px 0}',
+ '.v42-details .v42-more{padding:8px 0 3px}.v42-details .p,.v42-details .h,.v42-details .ul{margin-top:5px}',
+ '@media(max-width:420px){.v42-card{padding:7px;margin:2px 0 5px}.v42-meta{margin-bottom:4px}.v42-scene{gap:8px}.v42-portrait{width:72px;height:72px;flex-basis:72px}.v42-name{font-size:12.5px}.v42-epithet{font-size:10px}.v42-balloon{font-size:11px;padding:7px 8px;min-height:39px}.v42-foot{margin-top:5px;gap:4px;font-size:9px}}',
+ '@media(max-height:660px){.v42-portrait{width:68px;height:68px;flex-basis:68px}.v42-foot{display:none}.v42-meta{margin-bottom:3px}.v42-balloon{padding:6px 8px}}',
+ ].join('\n');
+ document.head.appendChild(c);
+};
+V42.render=function(){
+ var g=App.G,a=V42.byGame(g),cur=UiJs.cur;
+ if(!a||!cur||!UiJs.panelEl||!UiJs.panelEl.contains(cur))return;
+ V42.style();
+ var state=V42.choose(a,g),idx=a.index,col=idx%4,row=(idx/4)|0,style=a.words[0];
+ var tone={attack:'attacking',think:'thinking',surprise:'surprised',win:'victory',sad:'pressured',confident:'confident',calm:'',idle:''}[state.kind]||'';
+ var card=UiJs.el('section','v42-card v42-s'+style+' '+(tone?'v42-'+tone:''),null);
+ card.setAttribute('aria-label','Lendas Vivas: '+a.p.n);card.style.setProperty('--v42-ac',style===9?'#87a6f2':style===7?'#b8a9e7':style===1?'#72c4b1':'#dab466');
+ var meta=UiJs.el('div','v42-meta',card);
+ UiJs.el('b','',meta,'✦ Lendas Vivas');UiJs.el('em','',meta,state.label);
+ var scene=UiJs.el('div','v42-scene',card);
+ var pic=UiJs.el('div','v42-portrait',scene);
+ pic.style.backgroundPosition=(col*100/3)+'% '+(row*100/5)+'%';pic.setAttribute('role','img');pic.setAttribute('aria-label','Retrato artístico em HD de '+a.p.n);
+ var tx=UiJs.el('div','v42-phrase',scene);
+ UiJs.el('div','v42-name',tx,a.p.c+' '+a.p.n);
+ UiJs.el('div','v42-epithet',tx,a.words[1]);
+ var bubble=UiJs.el('div','v42-balloon',tx,'“'+state.txt+'”');
+ bubble.setAttribute('role','status');bubble.setAttribute('aria-live','polite');
+ if(cur.firstChild)cur.insertBefore(card,cur.firstChild);else cur.appendChild(card);
+ // Mensagens antigas continuam disponíveis, mas deixam de competir visualmente.
+ // Não recolhemos instruções obrigatórias dos passos guiados nem revisão de posições.
+ if(g.process&&(g.phase==='threats'||g.phase==='cands')||g.peek)return;
+ var messages=[].slice.call(cur.children).filter(function(el){
+  return el!==card&&el.matches&&el.matches('div.p,div.h,ul.ul')&&!el.closest('.v42-card')&&!el.closest('.v42-details');
+ });
+ if(messages.length){
+  var details=document.createElement('details');details.className='v42-details';
+  var summary=document.createElement('summary');summary.textContent='Ver comentários e análise detalhada ('+messages.length+')';details.appendChild(summary);
+  var more=UiJs.el('div','v42-more',details);
+  messages.forEach(function(n){more.appendChild(n);});
+  if(card.nextSibling)cur.insertBefore(details,card.nextSibling);else cur.appendChild(details);
+ }
+};
+(function(){
+ if(typeof App==='undefined'||typeof V74==='undefined')return;
+ var draw=App.drawGame;
+ App.drawGame=function(){var x=draw.apply(this,arguments);try{V42.render();}catch(e){if(window.console)console.warn('Lendas Vivas',e);}return x;};
+ // Se o primeiro frame da partida for redesenhado por outra camada, o cartão acompanha.
+ var show=App.showGame;
+ App.showGame=function(){var x=show.apply(this,arguments);try{if(!document.querySelector('.v42-card'))V42.render();}catch(e){}return x;};
+})();
+
+/* Rota do Mestre v79 — Lendas Vivas HD (retratos estáticos).
+ * 24 personagens preservam artes individuais, nomes, epítetos e balões.
+ * Desliga inteiramente Canvas, sprites faciais, efeitos, keyframes e timers.
+ * Fonte oficial de imagem: data/lendas-portraits-hd.webp, atlas 4 x 6.
+ */
+var V43=(function(){
+ var api={};
+ api.src='data/lendas-portraits-hd.webp?v=v79-static-20261114';
+ api.style=function(){
+  if(typeof document==='undefined'||document.getElementById('v43-static-style'))return;
+  var style=document.createElement('style');
+  style.id='v43-static-style';
+  style.textContent=[
+   '.v43-card{--v43-size:clamp(118px,min(40vw,23dvh),194px);position:relative;padding:9px 11px!important;margin:3px 0 7px!important;border:1px solid rgba(230,196,119,.44)!important;border-radius:15px!important;background:radial-gradient(ellipse at 15% 45%,rgba(194,151,63,.12),transparent 65%),linear-gradient(125deg,#1c222d,#101419 85%)!important;box-shadow:0 6px 22px rgba(0,0,0,.28)!important}',
+   '.v43-card .v42-meta{margin:0 0 7px!important;min-height:15px!important}',
+   '.v43-card .v42-meta b{font-size:10px;letter-spacing:.09em;color:#f0cf89}',
+   '.v43-card .v42-meta em{font-size:10px;color:#b5b7b6}',
+   '.v43-card .v42-scene{display:flex!important;align-items:stretch!important;gap:clamp(8px,2vw,14px)!important;min-width:0!important}',
+   '.v43-card .v42-portrait{position:relative;display:block;width:var(--v43-size)!important;height:var(--v43-size)!important;flex:0 0 var(--v43-size)!important;min-width:0;border:1px solid rgba(242,206,144,.5)!important;border-radius:12px!important;background-image:url("data/lendas-portraits-hd.webp?v=v79-static-20261114")!important;background-size:400% 600%!important;background-repeat:no-repeat!important;background-color:#28303b!important;transform:none!important;animation:none!important;box-shadow:0 5px 16px rgba(0,0,0,.4)!important;overflow:hidden!important}',
+   '.v43-card .v42-portrait::before{content:none!important}',
+   '.v43-card .v42-portrait::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(255,235,189,.12);pointer-events:none}',
+   '.v43-card .v42-phrase{display:flex;flex:1;min-width:0;flex-direction:column;justify-content:center;gap:5px!important}',
+   '.v43-card .v42-name{font:700 clamp(13px,1.3vw,18px)/1.2 Georgia,serif!important;white-space:normal!important;overflow-wrap:break-word;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;color:#f7d98d!important}',
+   '.v43-card .v42-epithet{font:11.5px/1.25 system-ui,sans-serif!important;color:#b9c0bd!important;white-space:normal!important;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}',
+   '.v43-card .v42-balloon{position:relative;min-height:52px!important;background:#f3ecdf!important;color:#26222b!important;padding:10px 12px!important;border-radius:12px 12px 12px 4px!important;font:500 clamp(11px,1.15vw,13.5px)/1.38 system-ui,sans-serif!important;box-shadow:0 3px 10px rgba(0,0,0,.25)!important;animation:none!important;transform:none!important}',
+   '.v43-card .v42-balloon:before{border-right-color:#f3ecdf!important}',
+   '.v43-card .v42-foot,.v43-card .v42-fx,.v43-card .v43-figure,.v43-card .v43-face,.v43-card .v44-canvas,.v43-card .v43-motion{display:none!important}',
+   '.v43-card .v42-portrait,.v43-card .v42-balloon,.v43-card .v42-meta,.v43-card .v42-phrase{animation:none!important;transition:none!important;will-change:auto!important}',
+   '.v43-card.v42-thinking .v42-portrait,.v43-card.v42-attacking .v42-portrait,.v43-card.v42-surprised .v42-portrait,.v43-card.v42-victory .v42-portrait,.v43-card.v42-pressured .v42-portrait{animation:none!important;transform:none!important}',
+   '.v43-card.v42-s1 .v42-portrait{image-rendering:pixelated!important}',
+   '@media(min-width:850px){.v43-card{--v43-size:clamp(118px,min(15vw,24dvh),194px)}}',
+   '@media(max-width:420px){.v43-card{--v43-size:clamp(114px,min(41vw,23dvh),164px);padding:7px 8px!important;margin:2px 0 5px!important}.v43-card .v42-scene{gap:9px!important}.v43-card .v42-meta{margin-bottom:5px!important}.v43-card .v42-name{font-size:12.5px!important}.v43-card .v42-epithet{font-size:10px!important}.v43-card .v42-balloon{font-size:11.3px!important;line-height:1.32!important;min-height:46px!important;padding:8px 9px!important}}',
+   '@media(max-height:660px){.v43-card{--v43-size:clamp(96px,19dvh,132px)}.v43-card .v42-balloon{min-height:38px!important;padding:6px 8px!important}.v43-card .v42-meta{margin-bottom:3px!important}}'
+  ].join('\n');
+  document.head.appendChild(style);
+ };
+ api.decorate=function(){
+  var card=document.querySelector('.v42-card');
+  if(!card)return;
+  api.style();card.classList.add('v43-card');
+  var pic=card.querySelector('.v42-portrait');
+  if(pic){
+   // As posicoes da grade 4x6 sao calculadas pelo V42 para cada lenda.
+   // Preserva image-rendering pixelated somente para as lendas pixel art.
+   var name=card.querySelector('.v42-name');
+   pic.setAttribute('aria-label','Retrato estático em alta definição de '+(name?name.textContent:'lenda do xadrez'));
+   pic.style.animation='none';pic.style.transform='none';
+   [].forEach.call(pic.querySelectorAll('.v43-figure,.v43-face,.v44-canvas,.v42-fx'),function(el){el.remove();});
+  }
+  var foot=card.querySelector('.v42-foot');
+  if(foot)foot.remove();
+  [].forEach.call(card.querySelectorAll('.v43-motion,.v42-fx'),function(el){el.remove();});
+ };
+ if(typeof V42!=='undefined'&&typeof V42.render==='function'){
+  var original=V42.render;
+  V42.render=function(){
+   var result=original.apply(this,arguments);
+   try{api.decorate();}catch(e){if(typeof console!=='undefined')console.warn('Lendas Vivas HD',e);}
+   return result;
+  };
+ }
+ return api;
 })();
 
 Main.main();

@@ -3,6 +3,14 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v81 — Correções do modo online e do motor (17.11.2026)
+
+- **Motor de volta ao segundo plano:** uma linha do módulo de voz (`extras_v41.js`) quebrava o worker do motor, que passava a calcular na mesma linha da tela e a travá-la a cada lance do computador. O módulo agora só se instala onde existe `window`/`document`.
+- **Voz recompilada:** o `app.js` publicado na v80 ainda usava a consulta à coleção `/voz`, que as regras do Firestore recusam; o remendo do `index.html` não chegava a rodar. O site foi recompilado a partir do fonte, com os dois ouvintes `voz/w` e `voz/b`.
+- **PeerJS servido pelo próprio site** (`docs/data/peerjs.min.js`, versão 1.5.5, licença MIT em `peerjs-LICENSE.txt`), com jsDelivr e unpkg como reserva. Todas as cópias são conferidas pelo hash SRI do pacote npm oficial; um arquivo alterado é recusado pelo navegador.
+- **Texto do Jogar online:** "Áudio no WhatsApp" virou "Voz na partida". O WhatsApp continua só para o convite.
+- Mensagem de falha da chamada sugere tentar pelo Wi-Fi (redes de celular podem bloquear conexão direta sem servidor TURN).
+
 ## Correção de permissões da voz (14.11.2026)
 
 O listener anterior chamava `collection('voz').onSnapshot()`, mas as regras Firestore permitem somente os documentos `salas/{codigo}/voz/w` e `salas/{codigo}/voz/b`. Regras de segurança não filtram consultas; essa consulta inteira podia falhar com `permission-denied`. A correção usa `doc('w').onSnapshot()` e `doc('b').onSnapshot()` e encerra ambos os listeners ao desligar a voz. O site publicado recebeu um hotfix no carregador `docs/index.html` e a versão de cache em `docs/sw.js` foi atualizada.
