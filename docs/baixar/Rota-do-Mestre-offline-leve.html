@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v83</title>
+<title>Xadrez · Rota do Mestre — v84</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -78672,12 +78672,22 @@ V83.api=function(path,o){
  return fetch(V83.host()+path,{method:o.method||(o.body?'POST':'GET'),headers:h,body:o.body?V83.form(o.body):undefined,signal:o.signal})
   .then(function(r){
    if(r.status===401){V83.expired();throw new Error('autorização expirada');}
-   if(!r.ok)return r.text().then(function(t){var m='';try{m=JSON.parse(t).error||'';}catch(e){m=t;}throw new Error(V83.errTxt(m,r.status));});
+   if(!r.ok)return r.text().then(function(t){throw V83.mkErr(t,r.status);});
    return o.text?r.text():r.json().catch(function(){return {};});
   });
 };
+V83.mkErr=function(t,st){
+ var m='';try{var j=JSON.parse(t);m=j.error!=null?j.error:j;}catch(e){m=t;}
+ /* erros de formulário vêm como objeto: {"error":{"time":["Invalid time control"]}} */
+ if(m&&typeof m==='object')m=Object.keys(m).map(function(k){var v=m[k];return Array.isArray(v)?v.join(' '):String(v);}).join(' ');
+ var e=new Error(V83.errTxt(m,st));e.status=st;return e;
+};
 V83.errTxt=function(m,st){
  m=String(m||'');
+ if(/already playing/i.test(m))return 'Você já tem uma partida em andamento no Lichess. Termine-a antes de começar outra.';
+ if(/ban|playban/i.test(m)&&st===403)return 'O Lichess suspendeu temporariamente as suas partidas (por abandonos). Tente mais tarde.';
+ if(/too many games/i.test(m))return 'O Lichess limita quantas partidas você pode ter abertas ao mesmo tempo.';
+ if(/must also play some games as/i.test(m))return 'O Lichess pede que você jogue também com a outra cor.';
  if(/rate.?limit|too many/i.test(m)||st===429)return 'O Lichess pediu para esperar um pouco antes de tentar de novo.';
  if(/cannot be played with the Board API|time control|blitz/i.test(m))return 'O Lichess não permite esse ritmo por aqui. Pelo lobby, só rápidas (10+0 ou mais) e clássicas.';
  if(/not.*found/i.test(m)||st===404)return 'Não encontrado no Lichess.';
@@ -78691,7 +78701,7 @@ V83.stream=function(path,o,onObj,onEnd){
  fetch(V83.host()+path,{method:o.body?'POST':'GET',headers:h,body:o.body?V83.form(o.body):undefined,signal:ctl?ctl.signal:undefined})
  .then(function(r){
   if(r.status===401){V83.expired();throw new Error('autorização expirada');}
-  if(!r.ok)return r.text().then(function(t){var m='';try{m=JSON.parse(t).error||'';}catch(e){m=t;}throw new Error(V83.errTxt(m,r.status));});
+  if(!r.ok)return r.text().then(function(t){throw V83.mkErr(t,r.status);});
   if(o.onOpen)o.onOpen();
   if(!r.body||!r.body.getReader){return r.text().then(function(t){t.split('\n').forEach(function(l){l=l.trim();if(l){try{onObj(JSON.parse(l));}catch(e){}}});fin(null);});}
   var rd=r.body.getReader(),dec=new TextDecoder(),buf='';
@@ -78762,6 +78772,7 @@ V83.me=function(){var a=V83.auth();return a&&a.id?a.id:(V83.acc?V83.acc.id:'');}
 /* ---------- fluxo de eventos (partidas que começam, desafios) ---------- */
 V83.events=function(){
  if(V83.ev||!V83.auth())return;
+ clearTimeout(V83.evT);V83.evOther=false;
  V83.evOn=false;
  V83.ev=V83.stream('/api/stream/event',{onOpen:function(){V83.evOn=true;V83.evAt=Date.now();}},function(e){
   if(e.type==='gameStart'&&e.game){
@@ -78784,8 +78795,13 @@ V83.events=function(){
   }
  },function(err){
   V83.ev=null;V83.evOn=false;
-  /* cai quando o celular dorme ou a rede oscila: volta sozinho enquanto você estiver no Lichess */
-  if(V83.auth()&&(V83.onHome||V83.wait||(V83.g&&!V83.g.over)))setTimeout(V83.events,err?4000:1500);
+  /* cai quando o celular dorme ou a rede oscila: volta sozinho enquanto você estiver no Lichess.
+     O Lichess só mantém um fluxo de eventos por conta: se ele cair logo depois de abrir várias vezes seguidas,
+     o jogo está aberto em outra aba ou aparelho; aí para de insistir até você voltar a esta tela. */
+  var quick=V83.evAt&&Date.now()-V83.evAt<8000;V83.evKick=quick?(V83.evKick||0)+1:0;
+  if(V83.evKick>=3){V83.evKick=0;V83.evOther=true;if(V83.onHome)V83.home(true);return;}
+  var wait=err&&err.status===429?61000:Math.min(30000,(err?4000:1500)*Math.pow(2,V83.evKick));
+  if(V83.auth()&&!document.hidden&&(V83.onHome||V83.wait||(V83.g&&!V83.g.over)))V83.evT=setTimeout(V83.events,wait);
  });
 };
 V83.close=function(){
@@ -78814,7 +78830,8 @@ V83.home=function(keep){
   UiJs.p('Você digita a senha no site do Lichess, uma única vez; o jogo nunca vê a senha. A autorização fica só neste aparelho e você pode sair quando quiser.','muted small');
   return;
  }
- V83.events();
+ if(!V83.evOther)V83.events();
+ if(V83.evOther){UiJs.p('O Lichess está aberto em outra aba ou aparelho com esta conta. Desafios e buscas funcionam em um lugar de cada vez.','warn small');UiJs.btns([['Usar o Lichess aqui',function(){V83.events();V83.home(true);}]]);}
  var top=UiJs.el('div','v83-top',cur);
  top.innerHTML='<i>♞</i><span><b>'+V83.esc(a.user||'Lichess')+'</b><em class="v83-rts">carregando ratings…</em></span>';
  var lo=UiJs.el('button','v83-out',top,'Sair');lo.type='button';lo.onclick=V83.logout;
@@ -78950,7 +78967,7 @@ V83.connect=function(){
   else if(e.type==='opponentGone'){g.gone=e.gone;g.claimAt=e.gone&&e.claimWinInSeconds!=null?Date.now()+e.claimWinInSeconds*1000:null;if(g.view)V83.panel();}
  },function(err){
   if(V83.g!==g)return;g.h=null;g.net=false;V83.netLine();
-  if(!g.over){g.retry++;setTimeout(function(){if(V83.g===g&&!g.over)V83.connect();},Math.min(10000,800*g.retry)+(err&&/expirada/.test(err.message)?1e9:0));}
+  if(!g.over&&!(err&&err.status===401)){g.retry++;setTimeout(function(){if(V83.g===g&&!g.over&&!g.h)V83.connect();},err&&err.status===429?61000:Math.min(10000,800*g.retry));}
  });
 };
 V83.state=function(s,full){
@@ -79098,7 +79115,7 @@ V83.finishGame=function(){
 };
 V83.analyse=function(){
  var g=V83.g;if(!g)return;UiJs.toast('Baixando a partida do Lichess…');
- V83.api('/game/export/'+g.id+'?clocks=true&evals=false&literate=false',{text:true,json:false}).then(function(pgn){
+ fetch(V83.host()+'/game/export/'+g.id+'?clocks=true&evals=false&literate=false').then(function(r){if(!r.ok)throw new Error('erro '+r.status);return r.text();}).then(function(pgn){
   if(typeof V26==='undefined'||!V26.importText)throw new Error('análise indisponível');
   V26.importText(pgn,'lichess',function(){V83.endGame();try{V26.lab();}catch(e){App.menu();}UiJs.toast('Partida na fila de análise: os lances aparecem em "Analisar jogadas".');});
  }).catch(function(e){UiJs.toast('Não deu para baixar agora ('+e.message+'). Ela entra na próxima importação automática.');});

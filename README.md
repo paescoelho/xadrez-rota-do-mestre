@@ -3,6 +3,16 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v84 — Lichess conferido contra o código do próprio Lichess (19.11.2026)
+
+A integração foi conferida no código-fonte do servidor do Lichess ([lichess-org/lila](https://github.com/lichess-org/lila)), além da documentação:
+
+- **Confirmado:** roque no formato e1g1 em partidas normais (o jogo também aceita e1h1); lobby só com rápidas e clássicas, blitz só contra amigo e contra a IA; regras de acesso entre sites (CORS) liberadas para `/api/*`; formato dos fluxos de desafio (`{"done":"accepted"}`), da IA (`aiLevel`) e do adversário ausente.
+- **Corrigido:** "Analisar esta partida" mandava a autorização para `/game/export`, que fica fora de `/api` e recusa pedidos assim vindos de outro site. No Lichess real o botão falharia; agora o pedido vai sem autorização (a partida é pública).
+- **Corrigido:** erros do Lichess em forma de objeto apareciam como "[object Object]"; mensagens claras para "você já tem uma partida em andamento", suspensão por abandonos e limite de partidas.
+- **Corrigido:** o Lichess mantém um só fluxo de eventos por conta. Com o jogo aberto em duas abas ou aparelhos, as duas brigavam sem parar; agora param depois de 3 quedas seguidas, avisam e oferecem "Usar o Lichess aqui". Depois de um pedido para esperar (429), o jogo espera 1 minuto, como o Lichess exige.
+- **Testes:** o Lichess simulado (`fonte/testes/fakeli.py`) passou a imitar o servidor real (CORS só em `/api`, um fluxo de eventos por conta, erros reais). `t83.py` (33/33) cobre o fluxo completo; `t83b.py` (14/14) cobre ritmo recusado, partida em andamento, promoção, xeque-mate, correspondência, tempo esgotado, 4 quedas seguidas, 429, duas abas e autorização revogada. `crawl.py` percorreu 88 telas do jogo a 360 px sem erro de JavaScript nem tela vazando.
+
 ## v83 — Jogar no Lichess pelo tabuleiro do jogo (19.11.2026)
 
 Em **Jogar online → Jogar no Lichess.org**, você joga partidas reais do Lichess, valendo o seu rating de lá, sem sair do jogo. Usa a [Board API oficial](https://lichess.org/api#tag/Board), feita para programas operados por uma pessoa.

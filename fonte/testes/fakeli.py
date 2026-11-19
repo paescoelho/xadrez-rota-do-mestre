@@ -10,7 +10,8 @@ lock = threading.Lock()
 ev_subs = []          # filas dos fluxos de eventos
 games = {}            # id -> dict(board, subs, state...)
 LOG = []
-CFG = {'seek_accept': True, 'opp_draw_at': None, 'opp_gone': False}
+CFG = {'seek_accept': True, 'opp_draw_at': None, 'opp_gone': False, 'busy': False, 'r429': 0}
+EVN = [0]
 
 def push_event(e):
     with lock:
@@ -27,16 +28,16 @@ def push_game(g, obj):
     with lock:
         for q in list(g['subs']): q.put(obj)
 
-def new_game(gid, me_color, opp, rated=True, ai=None, clock=(600000, 0)):
-    b = chess.Board()
+def new_game(gid, me_color, opp, rated=True, ai=None, clock=(600000, 0), fen=None):
+    b = chess.Board(fen) if fen else chess.Board()
     opp_p = {'id': opp, 'name': opp.capitalize(), 'rating': 1210, 'title': None} if not ai else {'aiLevel': ai}
     me_p = {'id': ME['id'], 'name': ME['username'], 'rating': 1180}
     g = {'id': gid, 'board': b, 'uci': [], 'me': me_color, 'white': me_p if me_color == 'w' else opp_p, 'black': opp_p if me_color == 'w' else me_p,
-         'status': 'started', 'wt': clock[0], 'bt': clock[0], 'inc': clock[1], 'subs': [], 'rated': rated, 'clock': clock, 'last': time.time()}
+         'status': 'started', 'wt': clock[0] if clock else 0, 'bt': clock[0] if clock else 0, 'inc': clock[1] if clock else 0, 'subs': [], 'rated': rated, 'clock': clock, 'last': time.time(), 'fen': fen}
     games[gid] = g
     push_event({'type': 'gameStart', 'game': {'gameId': gid, 'fullId': gid + 'abcd', 'color': 'white' if me_color == 'w' else 'black', 'fen': b.fen(),
         'isMyTurn': me_color == 'w', 'opponent': {'id': opp, 'username': opp, 'rating': 1210}, 'rated': rated, 'source': 'ai' if ai else 'lobby'}})
-    if me_color == 'b': threading.Timer(0.8, opp_move, [g]).start()
+    if (b.turn == chess.WHITE) != (me_color == 'w'): threading.Timer(0.8, opp_move, [g]).start()
     return g
 
 def finish(g, status, winner=None):
@@ -75,6 +76,9 @@ class H(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Headers', 'Authorization, Content-Type, Accept')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS')
     def do_OPTIONS(self):
+        LOG.append('OPTIONS ' + self.path)
+        if not self.path.startswith('/api/'):
+            self.send_response(404); self.end_headers(); return
         self.send_response(204); self.cors(); self.end_headers()
     def body(self):
         n = int(self.headers.get('Content-Length') or 0)
@@ -114,8 +118,12 @@ class H(BaseHTTPRequestHandler):
             return self.j({**ME, 'perfs': {'rapid': {'rating': 1180, 'games': 40}, 'classical': {'rating': 1250, 'games': 12}, 'blitz': {'rating': 1100, 'games': 90, 'prov': False}}})
         if p == '/api/stream/event':
             if not self.authed(): return
-            q = queue.Queue()
-            with lock: ev_subs.append(q)
+            if CFG['r429'] > 0:
+                CFG['r429'] -= 1; return self.j({'error': 'Too many requests. Try again later.'}, 429)
+            q = queue.Queue(); EVN[0] += 1
+            with lock:
+                for old in ev_subs: old.put(None)
+                ev_subs.append(q)
             first = [{'type': 'gameStart', 'game': {'gameId': gid, 'opponent': {'username': 'velho'}, 'isMyTurn': True}} for gid, g in games.items() if g['status'] == 'started' and g.get('old')]
             try: self.stream(q, first, ka=2)
             finally:
@@ -129,8 +137,10 @@ class H(BaseHTTPRequestHandler):
             if not g: return self.j({'error': 'not found'}, 404)
             q = queue.Queue()
             with lock: g['subs'].append(q)
-            full = {'type': 'gameFull', 'id': g['id'], 'rated': g['rated'], 'speed': 'rapid', 'clock': {'initial': g['clock'][0], 'increment': g['clock'][1] * 1000},
-                    'white': g['white'], 'black': g['black'], 'initialFen': 'startpos', 'state': gstate(g)}
+            full = {'type': 'gameFull', 'id': g['id'], 'rated': g['rated'], 'speed': 'rapid' if g['clock'] else 'correspondence',
+                    'white': g['white'], 'black': g['black'], 'initialFen': g['fen'] or 'startpos', 'state': gstate(g)}
+            if g['clock']: full['clock'] = {'initial': g['clock'][0], 'increment': g['clock'][1] * 1000}
+            else: full['daysPerTurn'] = 3
             try: self.stream(q, [full], until=lambda: g.get('cut'))
             finally:
                 with lock:
@@ -145,7 +155,7 @@ class H(BaseHTTPRequestHandler):
             game = chess.pgn.Game.from_board(g['board'])
             game.headers['White'] = g['white'].get('name', 'Stockfish'); game.headers['Black'] = g['black'].get('name', 'Stockfish')
             game.headers['Site'] = 'https://lichess.org/' + g['id']; game.headers['Event'] = 'Rated rapid game'
-            d = str(game).encode(); self.send_response(200); self.cors(); self.send_header('Content-Type', 'application/x-chess-pgn'); self.end_headers(); self.wfile.write(d); return
+            d = str(game).encode(); self.send_response(200); self.send_header('Access-Control-Allow-Origin', '*'); self.send_header('Content-Type', 'application/x-chess-pgn'); self.end_headers(); self.wfile.write(d); return
         if p == '/log': return self.j(LOG)
         if p.startswith('/test/'):
             cmd = p[6:]
@@ -155,6 +165,19 @@ class H(BaseHTTPRequestHandler):
                 for g in games.values(): g['cut'] = True
             if cmd.startswith('cfg'):
                 CFG.update(json.loads(urllib.parse.unquote(qs.get('j', '{}'))))
+            if cmd == 'promo':
+                new_game('promo001', 'w', 'adversario', fen='7k/P7/8/8/8/8/8/K7 w - - 0 1')
+            if cmd == 'mate1':
+                new_game('mate0001', 'w', 'adversario', fen='6k1/5ppp/8/8/8/8/5PPP/3R2K1 w - - 0 1')
+            if cmd == 'corr':
+                new_game('corr0001', 'w', 'adversario', clock=None)
+            if cmd == 'flag':
+                for g in list(games.values()):
+                    if g['status'] == 'started' and not g.get('old'): finish(g, 'outoftime', 'b' if g['me'] == 'w' else 'w')
+            if cmd == 'revoke':
+                globals()['TOK'] = 'outro_token'
+            if cmd == 'evn':
+                return self.j({'n': EVN[0]})
             if cmd == 'oldgame':
                 g = new_game('old1', 'w', 'velho'); g['old'] = True
             return self.j({'ok': True})
@@ -172,7 +195,8 @@ class H(BaseHTTPRequestHandler):
         if not self.authed(): return
         if p == '/api/board/seek':
             t = float(b.get('time', 0)) * 60 + 40 * int(b.get('increment', 0))
-            if t < 480: return self.j({'error': 'This game cannot be played with the Board API.'}, 400)
+            if t < 480: return self.j({'error': {'global': ['Invalid time control']}}, 400)
+            if CFG['busy']: return self.j({'error': 'You are already playing Adversario'}, 403)
             self.send_response(200); self.cors(); self.send_header('Content-Type', 'application/x-ndjson'); self.end_headers()
             try:
                 for i in range(3): time.sleep(0.5); self.wfile.write(b'\n'); self.wfile.flush()
