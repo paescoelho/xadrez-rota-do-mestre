@@ -3,6 +3,14 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v85 — Voz na partida testada de verdade (19.11.2026)
+
+- **Causa de a voz não funcionar:** as regras publicadas no Firebase eram de 13/11 e não tinham o bloco `/voz` (a regra final `match /{document=**}` recusa tudo o que não está listado). O bloco do arquivo `firebase/firestore.rules` foi publicado no console em 19/11, depois de testado no Laboratório de regras com uma sala real: jogador da sala lê, pessoa de fora é recusada.
+- **Teste real de ponta a ponta no Chrome**, com o Firebase e o PeerJS de produção: sala criada pelo jogo, um segundo jogador com outra identidade anônima entrou, cada um gravou só a própria voz (gravar a do outro foi recusado pelas regras), as Brancas ligaram, as Pretas atenderam e o áudio chegou nos dois sentidos; silenciar, reativar e encerrar funcionaram.
+- **Mensagens exatas do microfone:** "Nenhum microfone encontrado neste aparelho" e "O microfone está sendo usado por outro aplicativo", em vez de "Verifique microfone e internet" (o teste real foi num computador sem microfone).
+- **Aviso de que o adversário ligou a voz:** antes de você ativar, o cartão de voz acende em verde e diz "Fulano já ativou a voz. Toque em Ativar voz para conversar".
+- **Limite que continua:** sem servidor TURN, parte das chamadas entre dois celulares no 4G pode não conectar. Resolver exige uma conta num serviço de TURN.
+
 ## v84 — Lichess conferido contra o código do próprio Lichess (19.11.2026)
 
 A integração foi conferida no código-fonte do servidor do Lichess ([lichess-org/lila](https://github.com/lichess-org/lila)), além da documentação:

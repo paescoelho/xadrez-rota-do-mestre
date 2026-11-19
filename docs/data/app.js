@@ -33820,6 +33820,9 @@ V41.css=function(){
  '.v41-btn.secondary{background:#1b2926;border-color:#466759}.v41-btn.hangup{background:#592d35;border-color:#ad636f;color:#fff1f2}',
  '.v41-btn:disabled{opacity:.55;cursor:wait}.v41-tip{font:10.5px/1.35 system-ui,sans-serif;color:#a8baaf;margin-top:7px}',
  '@media(max-width:390px){.v41-wrap{padding:8px 9px}.v41-btn{font-size:11px;padding:7px 5px}}'
+  ,'.v41-wrap.v41-ring{border-color:#7fd08a;box-shadow:0 0 0 2px rgba(127,208,138,.25);animation:v41ring 1.6s ease-in-out infinite}'
+  ,'@keyframes v41ring{50%{box-shadow:0 0 0 6px rgba(127,208,138,.08)}}'
+  ,'@media (prefers-reduced-motion:reduce){.v41-wrap.v41-ring{animation:none}}'
  ].join('\n');document.head.appendChild(st);
 };
 V41.statusText=function(){
@@ -33831,7 +33834,7 @@ V41.statusText=function(){
  case 'connected':return V41.needsTap?'Áudio conectado. Toque em “Ativar som” para ouvir.':'Voz conectada. Continue jogando enquanto conversam.';
  case 'reconnecting':return 'Conexão interrompida. Tentando restabelecer o áudio…';
  case 'error':return V41.error||'Não foi possível conectar a chamada.';
- default:return 'Converse por voz sem sair da partida e sem compartilhar seu telefone.';
+ default:return V41.otherOn?V41.otherName()+' já ativou a voz. Toque em “Ativar voz” para conversar.':'Converse por voz sem sair da partida e sem compartilhar seu telefone.';
  }
 };
 V41.prepare=function(){
@@ -33842,12 +33845,30 @@ V41.prepare=function(){
  }
  return true;
 };
+/* v85: antes de você ativar, o jogo já observa (só leitura) se o adversário ligou a voz, para avisar */
+V41.otherName=function(){var r=V31.room||{};return (r.hostColor===V41.otherColor()?r.hostName:r.guestName)||'Seu adversário';};
+V41.otherColor=function(){return V31.me==='w'?'b':'w';};
+V41.watch=function(){
+ var r=V31.room,c=V31.code,me=V31.me,ok=r&&c&&(me==='w'||me==='b')&&V31.view==='game'&&r.status==='play';
+ var key=ok?c+':'+me:'';
+ if(V41.wKey===key)return;
+ if(V41.wUnsub){try{V41.wUnsub();}catch(e){}V41.wUnsub=null;}
+ V41.wKey=key;V41.otherOn=false;clearInterval(V41.wTick);
+ if(!ok)return;
+ var oc=V41.otherColor(),last=null,eval_=function(){
+  var d=last,ts=d&&d.t&&d.t.toMillis?d.t.toMillis():0,on=!!(d&&d.enabled&&d.sid&&ts&&Date.now()-ts<95000);
+  if(on!==V41.otherOn){V41.otherOn=on;if(!V41.enabled)V41.render();}
+ };
+ try{V41.wUnsub=V41.db().collection('salas').doc(c).collection('voz').doc(oc).onSnapshot(function(doc){last=doc.exists?doc.data():null;eval_();},function(){V41.otherOn=false;});}catch(e){}
+ V41.wTick=setInterval(eval_,15000);
+};
 V41.render=function(){
+ try{V41.watch();}catch(e){}
  V41.css();
  var box=document.querySelector('.v35-tools');if(!box)return;
  var prior=box.querySelector('.v41-wrap');if(prior)prior.remove();
  if(!V41.prepare())return;
- var card=document.createElement('section');card.className='v41-wrap'+(V41.state==='error'?' warn':'');
+ var card=document.createElement('section');card.className='v41-wrap'+(V41.state==='error'?' warn':'')+(V41.otherOn&&!V41.enabled&&V41.state!=='error'?' v41-ring':'');
  card.setAttribute('aria-label','Chamada de voz da partida');
  var head=document.createElement('div');head.className='v41-head';card.appendChild(head);
  var symbol=document.createElement('span');symbol.className='v41-symbol';symbol.textContent='🎙️';head.appendChild(symbol);
@@ -34025,7 +34046,10 @@ V41.start=async function(){
   });
  }catch(e){
   if(ticket!==V41.token)return;
-  var denied=e&&['NotAllowedError','PermissionDeniedError','SecurityError'].indexOf(e.name)>=0;
+  var nm=e&&e.name||'',denied=['NotAllowedError','PermissionDeniedError','SecurityError'].indexOf(nm)>=0;
+  /* v85: motivo exato (testado num computador sem microfone: antes só dizia "verifique microfone e internet") */
+  if(['NotFoundError','DevicesNotFoundError','OverconstrainedError'].indexOf(nm)>=0){V41.fail('Nenhum microfone encontrado neste aparelho. Conecte um fone com microfone e tente de novo.',e);return;}
+  if(['NotReadableError','TrackStartError','AbortError'].indexOf(nm)>=0){V41.fail('O microfone está sendo usado por outro aplicativo. Feche-o e tente de novo.',e);return;}
   V41.fail(denied?'Microfone negado. Permita o acesso nas configurações do navegador.':
     e&&e.message&&/PeerJS|cdn|internet/i.test(e.message)?e.message:
     'Não foi possível iniciar a chamada. Verifique microfone e internet.',e);
