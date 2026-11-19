@@ -33136,10 +33136,10 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
    var b=UiJs.el('button','v35-xb '+x[0],ex);b.type='button';
    /* v83: o Lichess já joga aqui dentro (Board API oficial); o Chess.com não oferece API para jogar */
    if(x[0]==='li'&&typeof V83!=='undefined'){b.classList.add('v83-on');var a=V83.auth();
-    b.innerHTML='<div class="v87-hd"><i>'+x[1]+'</i><span><small>Jogar no</small><b>'+x[3]+'</b></span></div><em>'+(a&&a.user?'conectado: '+V83.esc(a.user):'valendo rating')+'</em>'+(typeof V87!=='undefined'?V87.cntHtml():'');
+    b.innerHTML='<div class="v90-rib"><span>✓ INTEGRAÇÃO OFICIAL</span><small>DO LICHESS</small></div><div class="v87-hd"><i>'+x[1]+'</i><span><small>Jogar no</small><b>'+x[3]+'</b></span></div><em>'+(a&&a.user?'conectado: '+V83.esc(a.user):'valendo rating')+'</em>'+(typeof V87!=='undefined'?V87.cntHtml():'');
     b.onclick=function(){V83.home();};return;}
    b.setAttribute('aria-disabled','true');
-   b.innerHTML='<div class="v87-hd"><i>'+x[1]+'</i><span><small>'+x[2]+'</small><b>'+x[3]+'</b></span></div><em>Em desenvolvimento…</em><div class="v87-cnt v87-cc"><div>partidas importadas</div><div>para a sua análise</div></div>';
+   b.innerHTML='<div class="v90-rib cc"><span>EM BREVE</span><small>NO ROTA DO MESTRE</small></div><div class="v87-hd"><i>'+x[1]+'</i><span><small>'+x[2]+'</small><b>'+x[3]+'</b></span></div><em>Em desenvolvimento…</em><div class="v87-cnt v87-cc"><div>partidas importadas</div><div>para a sua análise</div></div>';
    b.onclick=function(){V35.ev('evento-chesscom');V35.longToast('Em desenvolvimento: o Chess.com não oferece um jeito oficial de jogar por outro aplicativo. As suas partidas de lá já são importadas para análise.');};
   });
   /* os botões Lichess/Chess.com crescem até ocupar o espaço livre da tela (sem criar rolagem) */

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v89</title>
+<title>Xadrez · Rota do Mestre — v90</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1709,6 +1709,21 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v89-box>.v89-tt{margin:-14px -4px 0!important}
 .v89-tt span{font-size:12.5px;letter-spacing:.06em}
 @media (max-height:660px){.v89-box{padding:0 8px 8px;border-radius:14px}.v89-box>.v89-tt{margin-top:-12px!important}}
+/* v90: faixa "Integração oficial do Lichess" no topo do botão (e "Em breve" no Chess.com), com brilho passando */
+.v35-home .v35-xb{padding-top:40px!important}
+.v90-rib{position:absolute;top:0;left:0;right:0;height:31px;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05;overflow:hidden;
+ background:linear-gradient(180deg,#f8e6a8,#ecc96e);color:#1a1408;border-bottom:1px solid #b88a2e;text-align:center}
+.v90-rib span{font-size:12.5px;font-weight:800;letter-spacing:.03em;white-space:nowrap}
+.v90-rib small{font-size:9px!important;font-weight:700;letter-spacing:.14em;opacity:.8!important;white-space:nowrap;color:#3a2a08}
+.v90-rib.cc{background:linear-gradient(180deg,#bfe39a,#98c86a);color:#16240c;border-bottom-color:#5d8a33}.v90-rib.cc small{color:#22380f}
+.v90-rib:after{content:'';position:absolute;top:0;bottom:0;left:-60px;width:46px;background:rgba(255,255,255,.6);transform:skewX(-20deg);animation:v90sh 3.4s ease-in-out infinite}
+.v90-rib.cc:after{animation-delay:1.7s}
+@keyframes v90sh{0%{left:-60px}55%,100%{left:calc(100% + 20px)}}
+.v35-xb.li.v83-on{animation:v90gl 3.4s ease-in-out infinite!important}
+@keyframes v90gl{0%,100%{box-shadow:0 0 0 0 rgba(243,217,140,0)}50%{box-shadow:0 0 16px 1px rgba(243,217,140,.5)}}
+@media (max-width:370px){.v90-rib span{font-size:11px;letter-spacing:0}.v90-rib small{font-size:8.5px!important;letter-spacing:.1em}}
+@media (max-height:660px){.v35-home .v35-xb{padding-top:31px!important;padding-bottom:6px!important;gap:3px!important;min-height:0!important}.v90-rib{height:26px}.v90-rib span{font-size:11.5px}.v90-rib small{font-size:8.5px!important}.v35-home .v35-xb i{flex-basis:32px!important;height:32px!important;font-size:21px}.v87-cnt{padding-top:3px;font-size:10.5px}.v87-cnt b{font-size:12px!important}.v89-box{gap:6px!important}}
+@media (prefers-reduced-motion:reduce){.v90-rib:after,.v35-xb.li.v83-on{animation:none!important}}
 </style>
 </head>
 <body>
@@ -77361,10 +77376,10 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
    var b=UiJs.el('button','v35-xb '+x[0],ex);b.type='button';
    /* v83: o Lichess já joga aqui dentro (Board API oficial); o Chess.com não oferece API para jogar */
    if(x[0]==='li'&&typeof V83!=='undefined'){b.classList.add('v83-on');var a=V83.auth();
-    b.innerHTML='<div class="v87-hd"><i>'+x[1]+'</i><span><small>Jogar no</small><b>'+x[3]+'</b></span></div><em>'+(a&&a.user?'conectado: '+V83.esc(a.user):'valendo rating')+'</em>'+(typeof V87!=='undefined'?V87.cntHtml():'');
+    b.innerHTML='<div class="v90-rib"><span>✓ INTEGRAÇÃO OFICIAL</span><small>DO LICHESS</small></div><div class="v87-hd"><i>'+x[1]+'</i><span><small>Jogar no</small><b>'+x[3]+'</b></span></div><em>'+(a&&a.user?'conectado: '+V83.esc(a.user):'valendo rating')+'</em>'+(typeof V87!=='undefined'?V87.cntHtml():'');
     b.onclick=function(){V83.home();};return;}
    b.setAttribute('aria-disabled','true');
-   b.innerHTML='<div class="v87-hd"><i>'+x[1]+'</i><span><small>'+x[2]+'</small><b>'+x[3]+'</b></span></div><em>Em desenvolvimento…</em><div class="v87-cnt v87-cc"><div>partidas importadas</div><div>para a sua análise</div></div>';
+   b.innerHTML='<div class="v90-rib cc"><span>EM BREVE</span><small>NO ROTA DO MESTRE</small></div><div class="v87-hd"><i>'+x[1]+'</i><span><small>'+x[2]+'</small><b>'+x[3]+'</b></span></div><em>Em desenvolvimento…</em><div class="v87-cnt v87-cc"><div>partidas importadas</div><div>para a sua análise</div></div>';
    b.onclick=function(){V35.ev('evento-chesscom');V35.longToast('Em desenvolvimento: o Chess.com não oferece um jeito oficial de jogar por outro aplicativo. As suas partidas de lá já são importadas para análise.');};
   });
   /* os botões Lichess/Chess.com crescem até ocupar o espaço livre da tela (sem criar rolagem) */

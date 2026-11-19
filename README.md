@@ -3,6 +3,12 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v90 — Faixa "Integração oficial do Lichess" (19.11.2026)
+
+- O botão Lichess.org ganhou no topo uma faixa dourada "✓ INTEGRAÇÃO OFICIAL · DO LICHESS", com um brilho que passa por ela. O botão inteiro pulsa em dourado de leve.
+- O Chess.com ganhou a faixa verde "EM BREVE · NO ROTA DO MESTRE", no mesmo formato, para os dois botões ficarem alinhados.
+- A tela continua sem rolar, inclusive em 360×640. A animação desliga para quem pede menos movimento no aparelho.
+
 ## v89 — Quadro "Rota do Mestre Online" (19.11.2026)
 
 - Em Jogar online, todo o online próprio do jogo fica num quadro com o título "Rota do Mestre Online", no mesmo estilo do separador "Ou jogue também em": o destaque do WhatsApp, as funções, o nome, o ritmo, o botão de criar e o campo do código.
