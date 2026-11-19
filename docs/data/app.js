@@ -33855,6 +33855,7 @@ V41.watch=function(){
  if(V41.wUnsub){try{V41.wUnsub();}catch(e){}V41.wUnsub=null;}
  V41.wKey=key;V41.otherOn=false;clearInterval(V41.wTick);
  if(!ok)return;
+ V41.ice();
  var oc=V41.otherColor(),last=null,eval_=function(){
   var d=last,ts=d&&d.t&&d.t.toMillis?d.t.toMillis():0,on=!!(d&&d.enabled&&d.sid&&ts&&Date.now()-ts<95000);
   if(on!==V41.otherOn){V41.otherOn=on;if(!V41.enabled)V41.render();}
@@ -33906,9 +33907,50 @@ V41.activeOther=function(){
  if(d.sid===V41.peerId)return null;
  return d;
 };
+/* v86: TURN da Cloudflare. Quando a conexão direta é bloqueada (4G com CGNAT, redes de empresa, Wi-Fi público),
+   o áudio passa por um servidor de retransmissão da Cloudflare, inclusive por TLS na porta 443.
+   As senhas vêm de um Worker nosso (fonte/turn/worker.js), que guarda a chave como segredo, só atende o site
+   do jogo e confere o login anônimo do Firebase que todo jogador online já tem. As senhas expiram em 3 h. */
+V41.TURN='https://rota-turn.paescoelho.workers.dev/';
+V41.STUN=[{urls:['stun:stun.cloudflare.com:3478','stun:stun.l.google.com:19302']}];
+V41.iceC=null;V41.iceUntil=0;V41.iceP=null;
+V41.ice=function(){
+ if(V41.iceC&&Date.now()<V41.iceUntil)return Promise.resolve(V41.iceC);
+ if(!V41.TURN||!window.firebase||!window.fetch)return Promise.resolve(null);
+ if(V41.iceP)return V41.iceP;
+ V41.iceP=Promise.resolve().then(function(){
+  var u=window.firebase.auth().currentUser;if(!u)return null;
+  return u.getIdToken().then(function(tok){
+   var ctl=typeof AbortController!=='undefined'?new AbortController():null,tm=setTimeout(function(){if(ctl)ctl.abort();},6000);
+   return fetch(V41.TURN,{method:'POST',headers:{Authorization:'Bearer '+tok},signal:ctl?ctl.signal:undefined})
+    .then(function(r){clearTimeout(tm);if(!r.ok)throw new Error('turn '+r.status);return r.json();})
+    .then(function(j){
+     var ice=Array.isArray(j&&j.iceServers)?j.iceServers.filter(function(x){return x&&x.urls;}):[];
+     if(!ice.length)return null;
+     V41.iceC=ice;V41.iceUntil=Date.now()+Math.max(600,(j.ttl||10800)-900)*1000;return ice;
+    });
+  });
+ }).catch(function(e){if(window.console)console.warn('[Rota do Mestre / TURN]',e&&e.message||e);return null;})
+ .then(function(x){V41.iceP=null;return x;});
+ return V41.iceP;
+};
+/* depois de conectar, descobre se o áudio foi direto ou pelo TURN (para diagnóstico e testes) */
+V41.route=function(call){
+ V41.via='';
+ var pc=call&&call.peerConnection;if(!pc||!pc.getStats)return;
+ setTimeout(function(){pc.getStats().then(function(st){
+  var pair=null,loc={};
+  st.forEach(function(r){if(r.type==='transport'&&r.selectedCandidatePairId)pair=st.get(r.selectedCandidatePairId);});
+  if(!pair)st.forEach(function(r){if(r.type==='candidate-pair'&&r.nominated&&r.state==='succeeded')pair=r;});
+  if(pair)loc=st.get(pair.localCandidateId)||{};
+  V41.via=loc.candidateType==='relay'?'turn':(loc.candidateType?'direto':'');
+  if(window.console)console.info('[Rota do Mestre / voz] rota:',V41.via||'?',loc.relayProtocol||loc.protocol||'');
+ }).catch(function(){});},1500);
+};
 V41.options=function(){
  var ice=window.RDM_PEERJS_ICE_SERVERS||window.RDM_VOICE_ICE_SERVERS;
- var options={debug:1,config:{iceServers:Array.isArray(ice)&&ice.length?ice:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]}};
+ if(!(Array.isArray(ice)&&ice.length))ice=(V41.iceC&&Date.now()<V41.iceUntil?V41.iceC:[]).concat(V41.STUN);
+ var options={debug:1,config:{iceServers:ice,iceCandidatePoolSize:2}};
  var custom=window.RDM_PEERJS_OPTIONS;
  if(custom&&typeof custom==='object'){
   ['host','port','path','secure','key','pingInterval'].forEach(function(k){if(custom[k]!==undefined)options[k]=custom[k];});
@@ -34005,6 +34047,8 @@ V41.start=async function(){
   var PeerCtor=await V41.load();
   if(ticket!==V41.token)return;
   V41.peerDoc=V41.ownRef();V41.subscribe(ticket);V41.audioNode();
+  await V41.ice();
+  if(ticket!==V41.token)return;
   var peer=new PeerCtor(undefined,V41.options());V41.peer=peer;
   V41.openTimer=setTimeout(function(){
    if(ticket===V41.token&&!V41.peerReady)V41.fail('O PeerServer não respondeu. Tente novamente.',null);
@@ -34060,6 +34104,7 @@ V41.attachCall=function(call,remoteId){
  V41.dropCall();V41.call=call;V41.remoteId=remoteId;V41.show('connecting');
  var ticket=V41.token,opened=false;
  call.on('stream',function(stream){
+  V41.route(call);
   if(ticket!==V41.token||V41.call!==call)return;
   if(!stream||!stream.getAudioTracks||!stream.getAudioTracks().length){V41.dropCall();return;}
   V41.tries=0;opened=true;
