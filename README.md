@@ -3,6 +3,11 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v89 — Quadro "Rota do Mestre Online" (19.11.2026)
+
+- Em Jogar online, todo o online próprio do jogo fica num quadro com o título "Rota do Mestre Online", no mesmo estilo do separador "Ou jogue também em": o destaque do WhatsApp, as funções, o nome, o ritmo, o botão de criar e o campo do código.
+- Continua cabendo numa tela só, sem rolar, inclusive em celular pequeno (360×640).
+
 ## v88 — Painel do criador: todos os botões e Jogar online separado (19.11.2026)
 
 - A contagem anônima (GoatCounter, sem cookies, uma vez por sessão) passou a cobrir os outros botões do menu: Seu maior adversário, Entrar com Google, Painel de evolução, Jogar online e o atalho "Integrado com Lichess · Chess.com". Também conta: Lendas vivas (abrir e jogar), voz na partida e sugestão enviada.

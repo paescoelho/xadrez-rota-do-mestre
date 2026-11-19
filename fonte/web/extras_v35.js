@@ -196,6 +196,11 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
   var open=V31.mine().filter(function(x){return x.st==='play'||x.st==='wait';}).slice(0,6);
   if(open.length){var ob=UiJs.el('button','v35-ob',cur,'♟ '+(open.length===1?'1 partida sua aberta':open.length+' partidas suas abertas')+' · continuar ›');ob.type='button';
    ob.onclick=function(){UiJs.page('Suas partidas abertas',V31.home);UiJs.items(open.map(function(x){return {t:(x.st==='wait'?'Convite '+x.c:'Contra '+(x.opp||'seu amigo')),d:(x.me?'você de '+V31.colName(x.me)+' · ':'')+V31.tcTxt(x.tc),r:'abrir ›',f:function(){V31.resume(x.c);}};}));};}
+  /* v89: todo o online próprio num quadro com o título "Rota do Mestre Online", no mesmo estilo do separador de baixo */
+  var box=document.createElement('div');box.className='v89-box';
+  var tt=UiJs.el('div','v35-sep v89-tt',box);tt.innerHTML='<i class="l"></i><span><em>◆</em>Rota do Mestre Online<em>◆</em></span><i class="r"></i>';
+  [].slice.call(cur.children).forEach(function(c){box.appendChild(c);});
+  cur.appendChild(box);
   /* em desenvolvimento: jogar via Lichess e via Chess.com */
   var sep=UiJs.el('div','v35-sep',cur);sep.innerHTML='<i class="l"></i><span><em>◆</em>Ou jogue também em<em>◆</em></span><i class="r"></i>';
   var ex=UiJs.el('div','v35-ext',cur);

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v88</title>
+<title>Xadrez · Rota do Mestre — v89</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1702,6 +1702,13 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v27-spb i{background:#25a35a}.v27-spb em{background:#d9b866}
 .v27-spn{grid-column:2;font-size:12px;color:var(--mu)}.v27-spn b{color:#e8e6e3}
 .v27-up{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:var(--mu);margin:12px 0 4px}
+/* v89: quadro do online próprio com o título no estilo do separador */
+.v89-box{display:flex;flex-direction:column;gap:clamp(7px,1.3vh,11px);border:1px solid rgba(243,217,140,.45);border-radius:16px;padding:0 10px 11px;margin-top:12px!important;
+ background:linear-gradient(180deg,rgba(60,44,12,.18),rgba(24,18,6,.10));box-shadow:0 0 18px rgba(240,200,110,.08),inset 0 1px 0 rgba(255,246,216,.06)}
+.v89-box>*{margin:0!important}
+.v89-box>.v89-tt{margin:-14px -4px 0!important}
+.v89-tt span{font-size:12.5px;letter-spacing:.06em}
+@media (max-height:660px){.v89-box{padding:0 8px 8px;border-radius:14px}.v89-box>.v89-tt{margin-top:-12px!important}}
 </style>
 </head>
 <body>
@@ -77342,6 +77349,11 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
   var open=V31.mine().filter(function(x){return x.st==='play'||x.st==='wait';}).slice(0,6);
   if(open.length){var ob=UiJs.el('button','v35-ob',cur,'♟ '+(open.length===1?'1 partida sua aberta':open.length+' partidas suas abertas')+' · continuar ›');ob.type='button';
    ob.onclick=function(){UiJs.page('Suas partidas abertas',V31.home);UiJs.items(open.map(function(x){return {t:(x.st==='wait'?'Convite '+x.c:'Contra '+(x.opp||'seu amigo')),d:(x.me?'você de '+V31.colName(x.me)+' · ':'')+V31.tcTxt(x.tc),r:'abrir ›',f:function(){V31.resume(x.c);}};}));};}
+  /* v89: todo o online próprio num quadro com o título "Rota do Mestre Online", no mesmo estilo do separador de baixo */
+  var box=document.createElement('div');box.className='v89-box';
+  var tt=UiJs.el('div','v35-sep v89-tt',box);tt.innerHTML='<i class="l"></i><span><em>◆</em>Rota do Mestre Online<em>◆</em></span><i class="r"></i>';
+  [].slice.call(cur.children).forEach(function(c){box.appendChild(c);});
+  cur.appendChild(box);
   /* em desenvolvimento: jogar via Lichess e via Chess.com */
   var sep=UiJs.el('div','v35-sep',cur);sep.innerHTML='<i class="l"></i><span><em>◆</em>Ou jogue também em<em>◆</em></span><i class="r"></i>';
   var ex=UiJs.el('div','v35-ext',cur);
