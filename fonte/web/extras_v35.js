@@ -180,7 +180,8 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
   var seg=function(label,opts,on,pick){var w=UiJs.el('div','v35-sg',cur);UiJs.el('span','v35-sl',w,label);var g=UiJs.el('div','v35-so',w);g.style.gridTemplateColumns='repeat('+opts.length+',1fr)';
    opts.forEach(function(o,i){var b=UiJs.el('button',on(o,i)?'on':'',g,o[0]);b.type='button';b.onclick=function(){pick(o,i);[].forEach.call(g.children,function(x){x.className='';});b.className='on';};});};
   seg('Ritmo',V31.TCS.map(function(t){return [t[0]==='Sem relógio'?'Livre':t[0]];}),function(o,i){return V31.tc===i;},function(o,i){V31.tc=i;});
-  seg('Você joga de',[['♔ Brancas','w'],['♚ Pretas','b'],['🎲 Sorteio','r']],function(o){return V31.color===o[1];},function(o){V31.color=o[1];});
+  /* v87: a cor é sempre sorteada (como no Lichess quando ninguém escolhe) */
+  V31.color='r';
   /* criar */
   var go=document.createElement('button');go.type='button';go.className='btn pri wide v31-wa v35-go';go.innerHTML='<span class="v31-wai">'+V31.WA+'</span>Criar partida e convidar';
   go.onclick=function(){if(go.disabled)return;go.disabled=true;go.lastChild.textContent='Criando…';
@@ -202,14 +203,16 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
    var b=UiJs.el('button','v35-xb '+x[0],ex);b.type='button';
    /* v83: o Lichess já joga aqui dentro (Board API oficial); o Chess.com não oferece API para jogar */
    if(x[0]==='li'&&typeof V83!=='undefined'){b.classList.add('v83-on');var a=V83.auth();
-    b.innerHTML='<i>'+x[1]+'</i><span><small>Jogar no</small><b>'+x[3]+'</b><em>'+(a&&a.user?'conectado: '+V83.esc(a.user):'valendo rating')+'</em></span>';
+    b.innerHTML='<div class="v87-hd"><i>'+x[1]+'</i><span><small>Jogar no</small><b>'+x[3]+'</b></span></div><em>'+(a&&a.user?'conectado: '+V83.esc(a.user):'valendo rating')+'</em>'+(typeof V87!=='undefined'?V87.cntHtml():'');
     b.onclick=function(){V83.home();};return;}
    b.setAttribute('aria-disabled','true');
-   b.innerHTML='<i>'+x[1]+'</i><span><small>'+x[2]+'</small><b>'+x[3]+'</b><em>Em desenvolvimento…</em></span>';
+   b.innerHTML='<div class="v87-hd"><i>'+x[1]+'</i><span><small>'+x[2]+'</small><b>'+x[3]+'</b></span></div><em>Em desenvolvimento…</em><div class="v87-cnt v87-cc"><div>partidas importadas</div><div>para a sua análise</div></div>';
    b.onclick=function(){V35.longToast('Em desenvolvimento: o Chess.com não oferece um jeito oficial de jogar por outro aplicativo. As suas partidas de lá já são importadas para análise.');};
   });
   /* os botões Lichess/Chess.com crescem até ocupar o espaço livre da tela (sem criar rolagem) */
-  var fit=function(){try{var m=cur.closest('.main')||cur.parentNode;if(!m||!ex.isConnected)return;ex.style.height='';var free=m.clientHeight-cur.offsetHeight;var h=ex.offsetHeight+Math.max(0,free-6);ex.style.height=Math.min(104,Math.max(56,h))+'px';}catch(e){}};
+  /* v87: sem a escolha de cor sobra espaço; os botões crescem até 190 px */
+  var fit=function(){try{var m=cur.closest('.main')||cur.parentNode;if(!m||!ex.isConnected)return;ex.style.height='';var nat=ex.offsetHeight,free=m.clientHeight-cur.offsetHeight;ex.style.height=Math.max(nat,Math.min(190,nat+Math.max(0,free-6)))+'px';}catch(e){}};
+  if(typeof V87!=='undefined')V87.counters();
   requestAnimationFrame(function(){requestAnimationFrame(fit);});
   if(!V35.fitOn){V35.fitOn=1;window.addEventListener('resize',function(){var e=document.querySelector('.v35-home .v35-ext');if(e&&V35.fitNow)V35.fitNow();});}
   V35.fitNow=fit;

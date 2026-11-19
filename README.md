@@ -3,6 +3,12 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v87 — Jogar online mais limpo, Lichess ao vivo e Problema do Dia (19.11.2026)
+
+- Jogo online próprio: saiu a escolha de cor; a cor é sempre sorteada.
+- Botões do Lichess.org e do Chess.com maiores. O do Lichess mostra, ao vivo, quantos jogadores estão conectados e quantas partidas estão em andamento, como na página inicial do Lichess (atualiza a cada minuto; o Worker `rota-turn` lê os números de lá, porque o Lichess não os libera para outros sites).
+- Tela do Lichess: o Problema do Dia do Lichess num tabuleiro logo abaixo, para resolver sem mudar de tela. Tem dica, ver solução, recomeçar e link para o problema no Lichess; qualquer mate no último lance vale, como lá.
+
 ## v86 — Voz por qualquer conexão (TURN) (19.11.2026)
 
 - A chamada de voz agora pede credenciais de TURN a um Worker da Cloudflare (`rota-turn.paescoelho.workers.dev`) antes de conectar. Quando a conexão direta não é possível (4G com CGNAT, Wi-Fi corporativo), o áudio passa pelo relay da Metered (Open Relay, plano grátis).

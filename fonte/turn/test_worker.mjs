@@ -12,7 +12,7 @@ async function jwt(claims, key = kp.privateKey, kid = 'k1') {
 }
 const now = Math.floor(Date.now() / 1000);
 const good = { aud: 'xadrez-whatsapp', iss: 'https://securetoken.google.com/xadrez-whatsapp', sub: 'uidAnonimo123', iat: now - 10, auth_time: now - 100, exp: now + 3000 };
-let cfCalls = [];
+let cfCalls = [], liCalls = 0;
 globalThis.fetch = async (url, opt) => {
   if (url.includes('googleapis.com')) return new Response(JSON.stringify({ keys: [jwk] }), { headers: { 'cache-control': 'public, max-age=20000' } });
   if (url.includes('.metered.live/api/v1/turn/credentials')) {
@@ -21,6 +21,7 @@ globalThis.fetch = async (url, opt) => {
       { urls: 'turn:global.relay.metered.ca:80?transport=tcp', username: 'u', credential: 'c' }, { urls: 'turn:global.relay.metered.ca:443', username: 'u', credential: 'c' },
       { urls: 'turns:global.relay.metered.ca:443?transport=tcp', username: 'u', credential: 'c' }, { urls: 'turn:global.relay.metered.ca:53', username: 'u', credential: 'c' }]));
   }
+  if (url === 'https://lichess.org/') { liCalls++; return new Response('<html>...<script>{"nbMyTurn":0,"counters":{"members":122043,"rounds":51355}},"showRatings":true}</script></html>'); }
   throw new Error('rede ' + url);
 };
 const env = { METERED_APP: 'rotadomestre', METERED_API_KEY: 'chaveTeste' };
@@ -49,4 +50,8 @@ r = await call(null, 'https://paescoelho.github.io', 'OPTIONS'); t('pré-verific
 r = await call(await jwt(good), 'https://paescoelho.github.io', 'GET'); t('GET é recusado', r.st === 405);
 const r2 = await worker.fetch(new Request('https://x/', { method: 'POST', headers: { Origin: 'https://paescoelho.github.io', Authorization: 'Bearer ' + await jwt(good) } }), {});
 t('sem os segredos configurados avisa', r2.status === 500);
+const get = async (path, origin = 'https://paescoelho.github.io') => { const r = await worker.fetch(new Request('https://rota-turn.example.workers.dev' + path, { headers: { Origin: origin } }), env); let j = null; try { j = await r.json(); } catch (e) {} return { st: r.status, j }; };
+r = await get('/lichess'); t('contadores do Lichess', r.st === 200 && r.j.players === 122043 && r.j.games === 51355, r.j);
+await get('/lichess'); await get('/lichess'); t('contadores ficam 60 s em cache', liCalls === 1, liCalls);
+r = await get('/lichess', 'https://site-qualquer.com'); t('contadores só para o site do jogo', r.st === 403);
 console.log(`\n${ok.filter(Boolean).length}/${ok.length} ok`);
