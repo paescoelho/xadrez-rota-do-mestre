@@ -3,6 +3,13 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v86 — Voz por qualquer conexão (TURN) (19.11.2026)
+
+- A chamada de voz agora pede credenciais de TURN a um Worker da Cloudflare (`rota-turn.paescoelho.workers.dev`) antes de conectar. Quando a conexão direta não é possível (4G com CGNAT, Wi-Fi corporativo), o áudio passa pelo relay da Metered (Open Relay, plano grátis).
+- O jogador não faz login nenhum: o Worker confere o login anônimo do Firebase que o jogo já faz e só atende o site do jogo. A chave da Metered fica guardada como segredo no Worker, nunca no código.
+- Sem TURN disponível, o jogo continua usando STUN como antes.
+- Fontes do Worker e testes em `fonte/turn/`.
+
 ## v85 — Voz na partida testada de verdade (19.11.2026)
 
 - **Causa de a voz não funcionar:** as regras publicadas no Firebase eram de 13/11 e não tinham o bloco `/voz` (a regra final `match /{document=**}` recusa tudo o que não está listado). O bloco do arquivo `firebase/firestore.rules` foi publicado no console em 19/11, depois de testado no Laboratório de regras com uma sala real: jogador da sala lê, pessoa de fora é recusada.
