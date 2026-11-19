@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v82</title>
+<title>Xadrez · Rota do Mestre — v83</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -820,8 +820,8 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v31-heroi svg{width:46px;height:46px;animation:v31wig 4.8s ease-in-out infinite}
 .v31-hero b{display:block;color:var(--gold2);font-size:16px}
 .v31-hero div span{display:block;font-size:13px;line-height:1.4;margin-top:3px;opacity:.85}
-.shell.v31-game .pbar{display:flex!important;height:28px;line-height:28px;font-size:15px;padding:0 6px}
-.shell.v31-game .pbar.on{color:var(--gold2)}
+.shell.v31-game .pbar,.shell.v83-game .pbar{display:flex!important;height:28px;line-height:28px;font-size:15px;padding:0 6px}
+.shell.v31-game .pbar.on,.shell.v83-game .pbar.on{color:var(--gold2)}
 .btn.v31-wa{display:flex!important;align-items:center;justify-content:center;gap:10px;background:linear-gradient(180deg,#2fbf67,#1f9150)!important;border:1px solid rgba(140,240,180,.5)!important;color:#fff!important;font-weight:700;text-decoration:none;margin:10px 0}
 .btn.v31-wa .v31-wai{width:26px;height:26px;display:inline-flex;border-radius:50%;background:#fff;padding:2px;animation:v31ring 2.4s ease-out infinite}
 .btn.v31-wa .v31-wai svg{width:100%;height:100%}
@@ -1493,6 +1493,35 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v74-el{flex:none;text-align:right}.v74-el b{display:block;font-size:16px;color:#f3d98c}.v74-el i{font-style:normal;font-size:10.5px;color:#8d877b}
 .v74-em{padding:26px 10px;text-align:center;color:#a9a294}
 @media (prefers-reduced-motion:reduce){.v74-ov,.v74-sh{animation:none}}
+
+/* v83: Lichess dentro do jogo */
+.v35-xb.li.v83-on{border-color:#d9b866}
+.v35-xb.li.v83-on em{color:#d9b866}
+.v83-hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;padding:14px 10px 6px}
+.v83-hero i,.v83-top i{font-style:normal;width:46px;height:46px;border-radius:12px;background:#f5f5f5;color:#161512;display:grid;place-items:center;font-size:30px}
+.v83-hero b{font-size:17px;color:#f1e3bf}.v83-hero span{font-size:13px;color:#b8b2a6}
+.v83-ul li{font-size:13px}
+.v83-top{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid #4d4a44;border-radius:12px;background:linear-gradient(180deg,#2b2925,#161512);margin-bottom:8px}
+.v83-top i{width:36px;height:36px;font-size:24px;flex:0 0 36px}
+.v83-top span{display:flex;flex-direction:column;flex:1;min-width:0}.v83-top span b{font-size:15px;color:#f1e3bf}
+.v83-top em{font-style:normal;font-size:11.5px;color:#b8b2a6}.v83-top em b{color:#e8e6e3;font-size:11.5px}
+.v83-out{background:none;border:1px solid #5a554c;color:#cfc8ba;border-radius:8px;padding:5px 9px;font-size:12px}
+.v83-live,.v83-chal{display:flex;flex-direction:column;gap:2px;width:100%;text-align:left;padding:9px 11px;border-radius:12px;border:1px solid #d9b866;background:rgba(217,184,102,.08);color:#e8e6e3;margin-bottom:8px}
+.v83-live b,.v83-chal b{font-size:14px;color:#f1e3bf}.v83-live span,.v83-chal span{font-size:12px;color:#b8b2a6}
+.v83-live em{font-style:normal;color:#9ad08c;font-weight:700}.v83-live i{font-style:normal;align-self:flex-end;font-size:12px;color:#d9b866}
+.v83-cb{display:flex;gap:8px;margin-top:6px}.v83-cb .btn{flex:1}
+.v83-wait{display:flex;flex-direction:column;align-items:center;gap:8px;padding:30px 10px;text-align:center}
+.v83-wait b{font-size:15px;color:#f1e3bf}.v83-wait span{font-size:13px;color:#b8b2a6;font-variant-numeric:tabular-nums}
+.v83-spin{font-style:normal;font-size:44px;width:70px;height:70px;border-radius:18px;background:#f5f5f5;color:#161512;display:grid;place-items:center;animation:v83p 1.4s ease-in-out infinite}
+@keyframes v83p{0%,100%{transform:scale(1)}50%{transform:scale(1.08) rotate(-6deg)}}
+@media (prefers-reduced-motion:reduce){.v83-spin{animation:none}}
+.v83-chat{border:1px solid #3d3a35;border-radius:10px;padding:6px 8px;margin:6px 0;display:flex;flex-direction:column;gap:3px}
+.v83-cl{font-size:12.5px;color:#d8d2c6}.v83-cl b{color:#d9b866}
+.v83-qr{display:flex;flex-wrap:wrap;gap:6px}
+.v83-q{background:#26241f;border:1px solid #4d4a44;color:#e8e6e3;border-radius:16px;padding:4px 10px;font-size:12px}
+.v83-net{font-size:12px;color:#e0a458;min-height:0}
+.v83-link{display:block;margin-top:6px;font-size:13px;color:#d9b866}
+.pbar.on.v83-low{background:rgba(200,60,50,.35)!important}
 </style>
 </head>
 <body>

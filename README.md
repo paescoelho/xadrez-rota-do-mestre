@@ -3,6 +3,17 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v83 — Jogar no Lichess pelo tabuleiro do jogo (19.11.2026)
+
+Em **Jogar online → Jogar no Lichess.org**, você joga partidas reais do Lichess, valendo o seu rating de lá, sem sair do jogo. Usa a [Board API oficial](https://lichess.org/api#tag/Board), feita para programas operados por uma pessoa.
+
+- **Login:** "Entrar com Lichess" abre a página oficial do Lichess uma vez (OAuth com PKCE). O jogo nunca vê a senha e não há segredo no código. A autorização fica só neste aparelho (`localStorage`, fora do perfil que vai para a nuvem) e dura cerca de um ano; "Sair" a revoga no Lichess. Escopos: `board:play challenge:read challenge:write`.
+- **Jogar:** procurar adversário no lobby (10+0, 10+5, 15+10, 30+0, 30+20, valendo rating ou amistosa), desafiar um amigo pelo nome de usuário (blitz permitido), treinar contra o Stockfish do Lichess (níveis 1 a 8) e aceitar ou recusar desafios recebidos. Partidas em andamento aparecem para continuar.
+- **Na partida:** relógio, oferecer/aceitar empate, voltar lance, abandonar ou cancelar antes do 2º lance, chat rápido, aviso e reivindicação de vitória quando o adversário some, reconexão automática e tela acesa.
+- **Jogo justo (regra do Lichess):** durante a partida não há dica, treinador, avaliação, nome de abertura nem lendas. No fim, "Analisar esta partida" baixa a partida do Lichess para "Analisar jogadas"; ela também entra no histórico daqui, sem mexer no Elo do jogo.
+- **Limites do Lichess:** pelo lobby só rápidas e clássicas (blitz só em desafios diretos e contra o Stockfish deles); bullet não existe por esse caminho. O Chess.com não oferece API para jogar, então o botão dele continua "em desenvolvimento".
+- **Testes:** `fonte/testes/fakeli.py` é um servidor falso do Lichess que segue a especificação oficial; `fonte/testes/t83.py` testa login, busca, partida, empate, abandono, Stockfish, reconexão, desafios, adversário ausente e saída (33 de 33).
+
 ## v82 — Lendas com repertório real e falas novas (17.11.2026)
 
 - **Repertório real:** as aberturas das 24 lendas saem de **51.694 partidas reais** (coleções do PgnMentor reunidas em [rozim/ChessData](https://github.com/rozim/ChessData); Gukesh em [NateSolon/hans](https://github.com/NateSolon/hans) + Mundial de 2024 em [rahulan-c/wcc-updates](https://github.com/rahulan-c/wcc-updates)). Simultâneas, partidas com vantagem material e repetidas ficam de fora; partidas rápidas valem metade.

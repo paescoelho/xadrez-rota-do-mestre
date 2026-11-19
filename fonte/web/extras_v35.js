@@ -199,9 +199,14 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
   var sep=UiJs.el('div','v35-sep',cur);sep.innerHTML='<i class="l"></i><span><em>◆</em>Ou jogue também em<em>◆</em></span><i class="r"></i>';
   var ex=UiJs.el('div','v35-ext',cur);
   [['li','♞','Jogar via','Lichess.org','em breve aqui no seu tabuleiro'],['cc','♟','Jogar via','Chess.com','em breve, com importação na hora']].forEach(function(x){
-   var b=UiJs.el('button','v35-xb '+x[0],ex);b.type='button';b.setAttribute('aria-disabled','true');
+   var b=UiJs.el('button','v35-xb '+x[0],ex);b.type='button';
+   /* v83: o Lichess já joga aqui dentro (Board API oficial); o Chess.com não oferece API para jogar */
+   if(x[0]==='li'&&typeof V83!=='undefined'){b.classList.add('v83-on');var a=V83.auth();
+    b.innerHTML='<i>'+x[1]+'</i><span><small>Jogar no</small><b>'+x[3]+'</b><em>'+(a&&a.user?'conectado: '+V83.esc(a.user):'valendo rating')+'</em></span>';
+    b.onclick=function(){V83.home();};return;}
+   b.setAttribute('aria-disabled','true');
    b.innerHTML='<i>'+x[1]+'</i><span><small>'+x[2]+'</small><b>'+x[3]+'</b><em>Em desenvolvimento…</em></span>';
-   b.onclick=function(){V35.longToast(x[0]==='li'?'Em desenvolvimento: em breve você joga no Lichess com o tabuleiro do Rota do Mestre.':'Em desenvolvimento: em breve o Chess.com abre daqui e a partida volta sozinha para a sua análise.');};
+   b.onclick=function(){V35.longToast('Em desenvolvimento: o Chess.com não oferece um jeito oficial de jogar por outro aplicativo. As suas partidas de lá já são importadas para análise.');};
   });
   /* os botões Lichess/Chess.com crescem até ocupar o espaço livre da tela (sem criar rolagem) */
   var fit=function(){try{var m=cur.closest('.main')||cur.parentNode;if(!m||!ex.isConnected)return;ex.style.height='';var free=m.clientHeight-cur.offsetHeight;var h=ex.offsetHeight+Math.max(0,free-6);ex.style.height=Math.min(104,Math.max(56,h))+'px';}catch(e){}};
