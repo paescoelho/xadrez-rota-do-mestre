@@ -14,10 +14,18 @@ V27.base=function(){return 'https://'+V27.GC+'.goatcounter.com';};
 /* o que é medido dentro do jogo (eventos anônimos, no máximo um de cada por sessão) */
 V27.EV=[
  ['evento-sessao-celular','Sessões no celular','ap'],['evento-sessao-computador','Sessões no computador','ap'],['evento-sessao-app','Abriu como app instalado','ap'],
- ['evento-partida','Começou uma partida','uso'],['evento-centro-treino','Abriu o Centro de Treino','uso'],['evento-nivelamento','Abriu o Nivelamento','uso'],
- ['evento-laboratorio','Abriu o Laboratório do Pensamento','uso'],['evento-erros','Abriu Analisar jogadas (Lichess e Chess)','uso'],['evento-importou','Importou partidas','uso'],['evento-reconstrua','Reconstruiu uma posição','uso'],
- ['evento-historia','Abriu a História do xadrez','uso'],['evento-jogo-antigo','Jogou um jogo antigo','uso'],
- ['evento-pix','Abriu a tela do Pix','uso'],['evento-pix-copiado','Copiou o código Pix','uso']
+ /* v88: os botões do menu principal (os nomes antigos continuam iguais para não perder o histórico) */
+ ['evento-partida','Jogar · começou uma partida','menu'],['evento-online','Jogar online · abriu a tela','menu'],['evento-centro-treino','Centro de Treino','menu'],
+ ['evento-adversario','Seu maior adversário','menu'],['evento-login-google','Entrar com Google','menu'],['evento-pix','Apoio ou sugestão · tela do Pix','menu'],
+ ['evento-painel-evolucao','Painel de evolução','menu'],['evento-historia','História do xadrez','menu'],['evento-integrado','Integrado com Lichess · Chess.com (topo)','menu'],
+ /* v88: Jogar online, separado entre o online do próprio jogo e o do Lichess */
+ ['evento-online-jogo','Usou o online do jogo','onj'],['evento-online-criou','Criou partida e convidou','onj'],['convite-aberto','Abriu o convite de um amigo','onj'],
+ ['evento-online-jogou','Jogou uma partida online','onj'],['evento-voz','Ativou a voz na partida','onj'],['assistir-convite','Compartilhou o link para assistir','onj'],['assistir-aberto','Assistiu a uma partida ao vivo','onj'],
+ ['evento-lichess','Abriu o Lichess','onl'],['evento-lichess-conectou','Conectou a conta do Lichess','onl'],['evento-lichess-partida','Jogou uma partida no Lichess','onl'],
+ ['evento-lichess-problema','Resolveu o Problema do Dia','onl'],['evento-chesscom','Tocou em Chess.com (em desenvolvimento)','onl'],
+ ['evento-nivelamento','Abriu o Nivelamento','uso'],['evento-laboratorio','Abriu o Laboratório do Pensamento','uso'],['evento-erros','Abriu Analisar jogadas (Lichess e Chess)','uso'],
+ ['evento-importou','Importou partidas','uso'],['evento-reconstrua','Reconstruiu uma posição','uso'],['evento-lendas','Abriu Lendas vivas','uso'],['evento-lendas-jogou','Jogou contra uma lenda','uso'],
+ ['evento-jogo-antigo','Jogou um jogo antigo','uso'],['evento-pix-copiado','Copiou o código Pix','uso'],['evento-sugestao','Enviou uma sugestão','uso']
 ];
 V27.ev=function(path){
  if(!V27.active()||V27.sent[path])return;V27.sent[path]=1;
@@ -69,8 +77,13 @@ V27.panel=function(){
  dd.forEach(function(d){jobs.push(function(){return V27.get('TOTAL','start='+V27.ds(d));});});
  months.forEach(function(d){jobs.push(function(){return V27.get('TOTAL','start='+V27.ds(d));});});
  V27.EV.forEach(function(e){jobs.push(function(){return V27.get(e[0],'start=month');});jobs.push(function(){return V27.get(e[0],'');});});
- V27.pool(jobs,4).then(function(r){
+ /* v88: guarda os números por 10 minutos (o GoatCounter só atualiza a cada poucas horas) e busca 6 por vez */
+ var CK='rdm-pn-cache',cache=null;try{cache=JSON.parse(localStorage.getItem(CK)||'null');}catch(e){}
+ var fresh=cache&&cache.n===jobs.length&&cache.day===V27.ds(now)&&Date.now()-cache.t<600000&&!V27.force;V27.force=false;
+ (fresh?Promise.resolve(cache.r.map(function(x){return x&&x.e?new Error(x.e):x;})):V27.pool(jobs,6).then(function(r){
+  try{localStorage.setItem(CK,JSON.stringify({t:Date.now(),day:V27.ds(now),n:jobs.length,r:r.map(function(x){return x instanceof Error?{e:x.message}:x;})}));}catch(e){}return r;})).then(function(r){
   if(!document.body.contains(load))return;
+  var age=fresh?Math.round((Date.now()-cache.t)/60000):0;
   var err=r.filter(function(x){return x instanceof Error;}).length;
   if(err===r.length){load.className='v27-load warn';load.innerHTML='Não foi possível ler os números. Confira se "Allow adding visitor counts on your website" está ligado no GoatCounter e se há internet.';return;}
   load.remove();
@@ -88,10 +101,21 @@ V27.panel=function(){
   var monthly=[];for(var j=0;j<months.length-1;j++){var a2=cumM[j],b2=cumM[j+1];monthly.push(a2!=null&&b2!=null?Math.max(0,a2-b2):null);}monthly.push(cumM[months.length-1]);
   var MN=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
   V27.chart(cur,'Últimos 13 meses',months.map(function(d){return MN[d.getMonth()]+'/'+String(d.getFullYear()).slice(2);}),monthly);
+  var g=function(k){return evs.filter(function(x){return x.e[2]===k;});};
   UiJs.h('Aparelhos (sessões)');
-  V27.table(cur,evs.filter(function(x){return x.e[2]==='ap';}));
-  UiJs.h('O que as pessoas usam no jogo');
-  V27.table(cur,evs.filter(function(x){return x.e[2]==='uso';}));
+  V27.table(cur,g('ap'));
+  UiJs.h('Botões do menu principal');
+  V27.table(cur,g('menu'));
+  UiJs.h('Jogar online: do jogo ou do Lichess?');
+  V27.split(cur,g('onj')[0],g('onl')[0]);
+  UiJs.el('div','v27-sub',cur,'♟ Online do jogo (com amigo, pelo link)');
+  V27.table(cur,g('onj'));
+  UiJs.el('div','v27-sub',cur,'♞ Online do Lichess');
+  V27.table(cur,g('onl'));
+  UiJs.h('Treino e outros recursos');
+  V27.table(cur,g('uso'));
+  var up=UiJs.el('div','v27-up',cur);up.innerHTML='<span>'+(fresh?'Números de '+(age<1?'agora há pouco':'há '+age+' min')+' (guardados para abrir rápido).':'Números atualizados agora.')+'</span>';
+  var ub=UiJs.el('button','btn',up,'Atualizar');ub.type='button';ub.onclick=function(){V27.force=true;V27.panel();};
   UiJs.p('Cada item conta no máximo uma vez por sessão de cada pessoa. É uma contagem anônima: não há como saber quem fez o quê.','muted small');
   UiJs.h('Detalhes no GoatCounter');
   UiJs.p('País, cidade aproximada, navegador, sistema, tamanho de tela e de onde as pessoas vieram (Google, WhatsApp, links) ficam no painel completo do GoatCounter, que pede o seu login.','');
@@ -107,6 +131,15 @@ V27.chart=function(cur,title,labels,vals){
   if(n<=14||i%5===0||i===n-1)s+='<text x="'+(i*bw+bw/2).toFixed(1)+'" y="'+(H+16)+'" text-anchor="middle" font-size="11" fill="#98a1ab">'+labels[i]+'</text>';});
  s+='<text x="2" y="12" font-size="11" fill="#98a1ab">máx. '+mx+'</text></svg>';
  var d=UiJs.el('div','v27-ch',cur);d.innerHTML=s;
+};
+/* v88: barra que compara quantas sessões foram ao online do jogo e quantas ao Lichess (últimos 30 dias e total) */
+V27.split=function(cur,a,b){
+ var row=function(lbl,x,y){var t=(x||0)+(y||0),pa=t?Math.round((x||0)*100/t):0;
+  return '<div class="v27-sp"><span class="v27-spl">'+lbl+'</span><div class="v27-spb"><i style="width:'+(t?pa:50)+'%"></i><em style="width:'+(t?100-pa:50)+'%"></em></div>'+
+   '<span class="v27-spn"><b>'+(x==null?'—':x.toLocaleString('pt-BR'))+'</b> jogo · <b>'+(y==null?'—':y.toLocaleString('pt-BR'))+'</b> Lichess'+(t?' ('+pa+'% / '+(100-pa)+'%)':'')+'</span></div>';};
+ var d=UiJs.el('div','v27-split',cur);
+ d.innerHTML=row('30 dias',a&&a.m,b&&b.m)+row('Total',a&&a.t,b&&b.t);
+ UiJs.p('Sessões que usaram o online do próprio jogo (criar, abrir convite, assistir) e sessões que abriram o Lichess. A contagem por botão começou na v88; antes dela só existiam alguns itens.','muted small');
 };
 V27.table=function(cur,rows){
  var t='<table class="v27-tb"><tr><th></th><th>30 dias</th><th>Total</th></tr>';

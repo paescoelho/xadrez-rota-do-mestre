@@ -175,7 +175,7 @@ V36.endBar=function(){
     var b=document.createElement('button');b.className='v71-int';b.type='button';
     b.setAttribute('aria-label','Integrado com Lichess e Chess.com: analisar suas partidas');
     b.innerHTML='Integrado com <span class="v71-li">♞ Lichess</span><i>·</i><span class="v71-cc">♟ Chess.com</span>';
-    b.onclick=function(){try{UiJs.sfx&&UiJs.sfx('tap');}catch(e){}V34.erros();};
+    b.onclick=function(){try{UiJs.sfx&&UiJs.sfx('tap');}catch(e){}try{V27.ev('evento-integrado');}catch(e){}V34.erros();};
     var w=document.createElement('div');w.className='v71-wrap';w.appendChild(b);t.appendChild(w);}
   }catch(e){}
   return r;

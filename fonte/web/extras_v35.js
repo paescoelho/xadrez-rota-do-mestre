@@ -207,7 +207,7 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
     b.onclick=function(){V83.home();};return;}
    b.setAttribute('aria-disabled','true');
    b.innerHTML='<div class="v87-hd"><i>'+x[1]+'</i><span><small>'+x[2]+'</small><b>'+x[3]+'</b></span></div><em>Em desenvolvimento…</em><div class="v87-cnt v87-cc"><div>partidas importadas</div><div>para a sua análise</div></div>';
-   b.onclick=function(){V35.longToast('Em desenvolvimento: o Chess.com não oferece um jeito oficial de jogar por outro aplicativo. As suas partidas de lá já são importadas para análise.');};
+   b.onclick=function(){V35.ev('evento-chesscom');V35.longToast('Em desenvolvimento: o Chess.com não oferece um jeito oficial de jogar por outro aplicativo. As suas partidas de lá já são importadas para análise.');};
   });
   /* os botões Lichess/Chess.com crescem até ocupar o espaço livre da tela (sem criar rolagem) */
   /* v87: sem a escolha de cor sobra espaço; os botões crescem até 190 px */

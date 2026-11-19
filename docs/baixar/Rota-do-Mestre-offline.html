@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v87</title>
+<title>Xadrez · Rota do Mestre — v88</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1692,6 +1692,16 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v87-b{background:#26241f;border:1px solid #5a554c;color:#e8e6e3;border-radius:18px;padding:7px 13px;font-size:13px;cursor:pointer;text-decoration:none}
 .v87-b.v87-lk{color:#d9b866;border-color:#7a6a3e}
 .v87-inf{font-size:11.5px;color:#9f998d;text-align:center}
+/* v88: Painel do criador — online do jogo x Lichess, subtítulos e atualização */
+.v27-tb th{white-space:nowrap}
+.v27-sub{font-size:13px;font-weight:700;color:var(--gold2);margin:10px 0 2px}
+.v27-split{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 11px;margin:4px 0 6px;display:flex;flex-direction:column;gap:8px}
+.v27-sp{display:grid;grid-template-columns:62px 1fr;gap:3px 8px;align-items:center;font-size:12.5px}
+.v27-spl{color:var(--mu)}
+.v27-spb{display:flex;height:12px;border-radius:6px;overflow:hidden;background:#2a2a2a}
+.v27-spb i{background:#25a35a}.v27-spb em{background:#d9b866}
+.v27-spn{grid-column:2;font-size:12px;color:var(--mu)}.v27-spn b{color:#e8e6e3}
+.v27-up{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:var(--mu);margin:12px 0 4px}
 </style>
 </head>
 <body>
@@ -75128,10 +75138,18 @@ V27.base=function(){return 'https://'+V27.GC+'.goatcounter.com';};
 /* o que é medido dentro do jogo (eventos anônimos, no máximo um de cada por sessão) */
 V27.EV=[
  ['evento-sessao-celular','Sessões no celular','ap'],['evento-sessao-computador','Sessões no computador','ap'],['evento-sessao-app','Abriu como app instalado','ap'],
- ['evento-partida','Começou uma partida','uso'],['evento-centro-treino','Abriu o Centro de Treino','uso'],['evento-nivelamento','Abriu o Nivelamento','uso'],
- ['evento-laboratorio','Abriu o Laboratório do Pensamento','uso'],['evento-erros','Abriu Analisar jogadas (Lichess e Chess)','uso'],['evento-importou','Importou partidas','uso'],['evento-reconstrua','Reconstruiu uma posição','uso'],
- ['evento-historia','Abriu a História do xadrez','uso'],['evento-jogo-antigo','Jogou um jogo antigo','uso'],
- ['evento-pix','Abriu a tela do Pix','uso'],['evento-pix-copiado','Copiou o código Pix','uso']
+ /* v88: os botões do menu principal (os nomes antigos continuam iguais para não perder o histórico) */
+ ['evento-partida','Jogar · começou uma partida','menu'],['evento-online','Jogar online · abriu a tela','menu'],['evento-centro-treino','Centro de Treino','menu'],
+ ['evento-adversario','Seu maior adversário','menu'],['evento-login-google','Entrar com Google','menu'],['evento-pix','Apoio ou sugestão · tela do Pix','menu'],
+ ['evento-painel-evolucao','Painel de evolução','menu'],['evento-historia','História do xadrez','menu'],['evento-integrado','Integrado com Lichess · Chess.com (topo)','menu'],
+ /* v88: Jogar online, separado entre o online do próprio jogo e o do Lichess */
+ ['evento-online-jogo','Usou o online do jogo','onj'],['evento-online-criou','Criou partida e convidou','onj'],['convite-aberto','Abriu o convite de um amigo','onj'],
+ ['evento-online-jogou','Jogou uma partida online','onj'],['evento-voz','Ativou a voz na partida','onj'],['assistir-convite','Compartilhou o link para assistir','onj'],['assistir-aberto','Assistiu a uma partida ao vivo','onj'],
+ ['evento-lichess','Abriu o Lichess','onl'],['evento-lichess-conectou','Conectou a conta do Lichess','onl'],['evento-lichess-partida','Jogou uma partida no Lichess','onl'],
+ ['evento-lichess-problema','Resolveu o Problema do Dia','onl'],['evento-chesscom','Tocou em Chess.com (em desenvolvimento)','onl'],
+ ['evento-nivelamento','Abriu o Nivelamento','uso'],['evento-laboratorio','Abriu o Laboratório do Pensamento','uso'],['evento-erros','Abriu Analisar jogadas (Lichess e Chess)','uso'],
+ ['evento-importou','Importou partidas','uso'],['evento-reconstrua','Reconstruiu uma posição','uso'],['evento-lendas','Abriu Lendas vivas','uso'],['evento-lendas-jogou','Jogou contra uma lenda','uso'],
+ ['evento-jogo-antigo','Jogou um jogo antigo','uso'],['evento-pix-copiado','Copiou o código Pix','uso'],['evento-sugestao','Enviou uma sugestão','uso']
 ];
 V27.ev=function(path){
  if(!V27.active()||V27.sent[path])return;V27.sent[path]=1;
@@ -75183,8 +75201,13 @@ V27.panel=function(){
  dd.forEach(function(d){jobs.push(function(){return V27.get('TOTAL','start='+V27.ds(d));});});
  months.forEach(function(d){jobs.push(function(){return V27.get('TOTAL','start='+V27.ds(d));});});
  V27.EV.forEach(function(e){jobs.push(function(){return V27.get(e[0],'start=month');});jobs.push(function(){return V27.get(e[0],'');});});
- V27.pool(jobs,4).then(function(r){
+ /* v88: guarda os números por 10 minutos (o GoatCounter só atualiza a cada poucas horas) e busca 6 por vez */
+ var CK='rdm-pn-cache',cache=null;try{cache=JSON.parse(localStorage.getItem(CK)||'null');}catch(e){}
+ var fresh=cache&&cache.n===jobs.length&&cache.day===V27.ds(now)&&Date.now()-cache.t<600000&&!V27.force;V27.force=false;
+ (fresh?Promise.resolve(cache.r.map(function(x){return x&&x.e?new Error(x.e):x;})):V27.pool(jobs,6).then(function(r){
+  try{localStorage.setItem(CK,JSON.stringify({t:Date.now(),day:V27.ds(now),n:jobs.length,r:r.map(function(x){return x instanceof Error?{e:x.message}:x;})}));}catch(e){}return r;})).then(function(r){
   if(!document.body.contains(load))return;
+  var age=fresh?Math.round((Date.now()-cache.t)/60000):0;
   var err=r.filter(function(x){return x instanceof Error;}).length;
   if(err===r.length){load.className='v27-load warn';load.innerHTML='Não foi possível ler os números. Confira se "Allow adding visitor counts on your website" está ligado no GoatCounter e se há internet.';return;}
   load.remove();
@@ -75202,10 +75225,21 @@ V27.panel=function(){
   var monthly=[];for(var j=0;j<months.length-1;j++){var a2=cumM[j],b2=cumM[j+1];monthly.push(a2!=null&&b2!=null?Math.max(0,a2-b2):null);}monthly.push(cumM[months.length-1]);
   var MN=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
   V27.chart(cur,'Últimos 13 meses',months.map(function(d){return MN[d.getMonth()]+'/'+String(d.getFullYear()).slice(2);}),monthly);
+  var g=function(k){return evs.filter(function(x){return x.e[2]===k;});};
   UiJs.h('Aparelhos (sessões)');
-  V27.table(cur,evs.filter(function(x){return x.e[2]==='ap';}));
-  UiJs.h('O que as pessoas usam no jogo');
-  V27.table(cur,evs.filter(function(x){return x.e[2]==='uso';}));
+  V27.table(cur,g('ap'));
+  UiJs.h('Botões do menu principal');
+  V27.table(cur,g('menu'));
+  UiJs.h('Jogar online: do jogo ou do Lichess?');
+  V27.split(cur,g('onj')[0],g('onl')[0]);
+  UiJs.el('div','v27-sub',cur,'♟ Online do jogo (com amigo, pelo link)');
+  V27.table(cur,g('onj'));
+  UiJs.el('div','v27-sub',cur,'♞ Online do Lichess');
+  V27.table(cur,g('onl'));
+  UiJs.h('Treino e outros recursos');
+  V27.table(cur,g('uso'));
+  var up=UiJs.el('div','v27-up',cur);up.innerHTML='<span>'+(fresh?'Números de '+(age<1?'agora há pouco':'há '+age+' min')+' (guardados para abrir rápido).':'Números atualizados agora.')+'</span>';
+  var ub=UiJs.el('button','btn',up,'Atualizar');ub.type='button';ub.onclick=function(){V27.force=true;V27.panel();};
   UiJs.p('Cada item conta no máximo uma vez por sessão de cada pessoa. É uma contagem anônima: não há como saber quem fez o quê.','muted small');
   UiJs.h('Detalhes no GoatCounter');
   UiJs.p('País, cidade aproximada, navegador, sistema, tamanho de tela e de onde as pessoas vieram (Google, WhatsApp, links) ficam no painel completo do GoatCounter, que pede o seu login.','');
@@ -75221,6 +75255,15 @@ V27.chart=function(cur,title,labels,vals){
   if(n<=14||i%5===0||i===n-1)s+='<text x="'+(i*bw+bw/2).toFixed(1)+'" y="'+(H+16)+'" text-anchor="middle" font-size="11" fill="#98a1ab">'+labels[i]+'</text>';});
  s+='<text x="2" y="12" font-size="11" fill="#98a1ab">máx. '+mx+'</text></svg>';
  var d=UiJs.el('div','v27-ch',cur);d.innerHTML=s;
+};
+/* v88: barra que compara quantas sessões foram ao online do jogo e quantas ao Lichess (últimos 30 dias e total) */
+V27.split=function(cur,a,b){
+ var row=function(lbl,x,y){var t=(x||0)+(y||0),pa=t?Math.round((x||0)*100/t):0;
+  return '<div class="v27-sp"><span class="v27-spl">'+lbl+'</span><div class="v27-spb"><i style="width:'+(t?pa:50)+'%"></i><em style="width:'+(t?100-pa:50)+'%"></em></div>'+
+   '<span class="v27-spn"><b>'+(x==null?'—':x.toLocaleString('pt-BR'))+'</b> jogo · <b>'+(y==null?'—':y.toLocaleString('pt-BR'))+'</b> Lichess'+(t?' ('+pa+'% / '+(100-pa)+'%)':'')+'</span></div>';};
+ var d=UiJs.el('div','v27-split',cur);
+ d.innerHTML=row('30 dias',a&&a.m,b&&b.m)+row('Total',a&&a.t,b&&b.t);
+ UiJs.p('Sessões que usaram o online do próprio jogo (criar, abrir convite, assistir) e sessões que abriram o Lichess. A contagem por botão começou na v88; antes dela só existiam alguns itens.','muted small');
 };
 V27.table=function(cur,rows){
  var t='<table class="v27-tb"><tr><th></th><th>30 dias</th><th>Total</th></tr>';
@@ -77310,7 +77353,7 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
     b.onclick=function(){V83.home();};return;}
    b.setAttribute('aria-disabled','true');
    b.innerHTML='<div class="v87-hd"><i>'+x[1]+'</i><span><small>'+x[2]+'</small><b>'+x[3]+'</b></span></div><em>Em desenvolvimento…</em><div class="v87-cnt v87-cc"><div>partidas importadas</div><div>para a sua análise</div></div>';
-   b.onclick=function(){V35.longToast('Em desenvolvimento: o Chess.com não oferece um jeito oficial de jogar por outro aplicativo. As suas partidas de lá já são importadas para análise.');};
+   b.onclick=function(){V35.ev('evento-chesscom');V35.longToast('Em desenvolvimento: o Chess.com não oferece um jeito oficial de jogar por outro aplicativo. As suas partidas de lá já são importadas para análise.');};
   });
   /* os botões Lichess/Chess.com crescem até ocupar o espaço livre da tela (sem criar rolagem) */
   /* v87: sem a escolha de cor sobra espaço; os botões crescem até 190 px */
@@ -77516,7 +77559,7 @@ V36.endBar=function(){
     var b=document.createElement('button');b.className='v71-int';b.type='button';
     b.setAttribute('aria-label','Integrado com Lichess e Chess.com: analisar suas partidas');
     b.innerHTML='Integrado com <span class="v71-li">♞ Lichess</span><i>·</i><span class="v71-cc">♟ Chess.com</span>';
-    b.onclick=function(){try{UiJs.sfx&&UiJs.sfx('tap');}catch(e){}V34.erros();};
+    b.onclick=function(){try{UiJs.sfx&&UiJs.sfx('tap');}catch(e){}try{V27.ev('evento-integrado');}catch(e){}V34.erros();};
     var w=document.createElement('div');w.className='v71-wrap';w.appendChild(b);t.appendChild(w);}
   }catch(e){}
   return r;
@@ -79397,6 +79440,40 @@ var V87={API:'https://rota-turn.paescoelho.workers.dev/lichess',CK:'rdm-li-cnt',
    return r;
   };
  }
+})();
+
+/* ======================= v88 — contagem anônima dos outros botões (Painel do criador) =======================
+ * Mesmo esquema da v27 (GoatCounter, sem cookies, no máximo uma vez por sessão). Os nomes antigos não mudam,
+ * então o histórico que já existe no painel continua valendo; os itens novos começam do zero.
+ * Jogar online fica separado: online do próprio jogo (evento-online-jogo) ou online do Lichess (evento-lichess).
+ */
+(function(){
+ if(typeof window==='undefined'||typeof document==='undefined'||typeof V27==='undefined')return;
+ var ev=function(k){try{V27.ev(k);}catch(e){}};
+ var hook=function(obj,name,fn){if(obj&&typeof obj[name]==='function'){var o=obj[name];obj[name]=function(){try{fn.apply(this,arguments);}catch(e){}return o.apply(this,arguments);};}};
+ /* botões do menu principal */
+ if(typeof Dna!=='undefined')hook(Dna,'rival',function(){ev('evento-adversario');});
+ if(typeof Pages!=='undefined')hook(Pages,'profile',function(){ev('evento-painel-evolucao');});
+ if(typeof V34!=='undefined'){hook(V34,'gLogin',function(){ev('evento-login-google');});hook(V34,'markSent',function(){ev('evento-sugestao');});}
+ /* online do próprio jogo */
+ if(typeof V31!=='undefined'){
+  hook(V31,'home',function(){ev('evento-online');});
+  hook(V31,'invite',function(){ev('evento-online-jogo');});
+  hook(V31,'resume',function(){ev('evento-online-jogo');});
+  if(typeof V31.create==='function'){var oC=V31.create;V31.create=function(){var p=oC.apply(this,arguments);try{p.then(function(){ev('evento-online-jogo');ev('evento-online-criou');},function(){});}catch(e){}return p;};}
+  hook(V31,'render',function(){var r=V31.room;if(r&&r.status==='play'&&(r.moves||[]).length>=2){ev('evento-online-jogo');ev('evento-online-jogou');}});
+ }
+ if(typeof V35!=='undefined')hook(V35,'watch',function(){ev('evento-online-jogo');});
+ if(typeof V41!=='undefined')hook(V41,'start',function(){ev('evento-voz');});
+ /* online do Lichess */
+ if(typeof V83!=='undefined'){
+  hook(V83,'home',function(){ev('evento-lichess');});
+  hook(V83,'saveAuth',function(a){if(a&&a.tok)ev('evento-lichess-conectou');});
+  hook(V83,'play',function(){ev('evento-lichess-partida');});
+ }
+ if(typeof V87!=='undefined')hook(V87,'markSolved',function(){ev('evento-lichess-problema');});
+ /* lendas */
+ if(typeof V74!=='undefined'){hook(V74,'open',function(){ev('evento-lendas');});hook(V74,'play',function(){ev('evento-lendas-jogou');});}
 })();
 
 Main.main();

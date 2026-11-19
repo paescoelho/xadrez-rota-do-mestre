@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v87</title>
+<title>Xadrez · Rota do Mestre — v88</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1692,6 +1692,16 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v87-b{background:#26241f;border:1px solid #5a554c;color:#e8e6e3;border-radius:18px;padding:7px 13px;font-size:13px;cursor:pointer;text-decoration:none}
 .v87-b.v87-lk{color:#d9b866;border-color:#7a6a3e}
 .v87-inf{font-size:11.5px;color:#9f998d;text-align:center}
+/* v88: Painel do criador — online do jogo x Lichess, subtítulos e atualização */
+.v27-tb th{white-space:nowrap}
+.v27-sub{font-size:13px;font-weight:700;color:var(--gold2);margin:10px 0 2px}
+.v27-split{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 11px;margin:4px 0 6px;display:flex;flex-direction:column;gap:8px}
+.v27-sp{display:grid;grid-template-columns:62px 1fr;gap:3px 8px;align-items:center;font-size:12.5px}
+.v27-spl{color:var(--mu)}
+.v27-spb{display:flex;height:12px;border-radius:6px;overflow:hidden;background:#2a2a2a}
+.v27-spb i{background:#25a35a}.v27-spb em{background:#d9b866}
+.v27-spn{grid-column:2;font-size:12px;color:var(--mu)}.v27-spn b{color:#e8e6e3}
+.v27-up{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:var(--mu);margin:12px 0 4px}
 </style>
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0d10"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" href="icons/icon-192.png"><link rel="icon" type="image/png" href="icons/icon-192.png">
 <style>#boot{position:fixed;inset:0;z-index:99;background:#050606;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#f3d98c;font-family:Georgia,serif}#boot .bt{font-size:26px;letter-spacing:2px}#boot .bb{width:min(70vw,320px);height:6px;border-radius:4px;background:#262c35;overflow:hidden}#boot .bb i{display:block;width:0;height:100%;background:linear-gradient(90deg,#b8852f,#f3d98c);transition:width .25s}#boot .bs{font:13px system-ui,sans-serif;color:#98a1ab}</style>
@@ -1759,7 +1769,7 @@ window.XHD=(function(){
 <script>
 /* carregador do site: baixa (ou pega do cache offline) os arquivos do jogo, mostra o progresso e inicia o app */
 (function(){
- var F={"res":[["res_content","data/content.json?v=facebd0421"],["res_lpuzzles","data/lpuzzles.txt?v=6a7f7438c2"],["res_openings","data/openings.txt?v=0433d98604"],["res_explorer","data/explorer.txt?v=a49e3a075b"],["res_models","data/models.txt?v=d4b717e2fe"],["res_sfjs","data/sf.js?v=81cc4511ff"]],"intro":[["introfr","data/introfr.json?v=361b412139"],["introau","data/introau.txt?v=ce6089d3a7"],["introhdx","data/introhdx.json?v=efe43de4ba"]],"hd":"data/intro_hd.bin?v=2f137ab566","hd16":"data/intro_hd16.bin?v=873ca44d34","hdx16":"data/introhdx16.json?v=ffb050a168","histau":"data/historia.mp3?v=87e853c025","wasm":"data/sf.wasm?v=c56761eebb","app":"data/app.js?v=0e38ff1b43"};
+ var F={"res":[["res_content","data/content.json?v=facebd0421"],["res_lpuzzles","data/lpuzzles.txt?v=6a7f7438c2"],["res_openings","data/openings.txt?v=0433d98604"],["res_explorer","data/explorer.txt?v=a49e3a075b"],["res_models","data/models.txt?v=d4b717e2fe"],["res_sfjs","data/sf.js?v=81cc4511ff"]],"intro":[["introfr","data/introfr.json?v=361b412139"],["introau","data/introau.txt?v=ce6089d3a7"],["introhdx","data/introhdx.json?v=efe43de4ba"]],"hd":"data/intro_hd.bin?v=2f137ab566","hd16":"data/intro_hd16.bin?v=873ca44d34","hdx16":"data/introhdx16.json?v=ffb050a168","histau":"data/historia.mp3?v=87e853c025","wasm":"data/sf.wasm?v=c56761eebb","app":"data/app.js?v=2b98db6177"};
  var c=navigator.connection||{},slow=!!(c.saveData||/(^|-)2g|3g/.test(c.effectiveType||''));
  var box=document.createElement('div');box.id='boot';box.innerHTML='<div class="bt">Rota do Mestre</div><div class="bb"><i></i></div><div class="bs">Preparando o tabuleiro…</div>';document.body.appendChild(box);
  var bar=box.querySelector('i'),msg=box.querySelector('.bs'),done=0,total=F.res.length+(slow?0:F.intro.length+1)+1;

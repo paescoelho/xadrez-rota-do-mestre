@@ -3,6 +3,13 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v88 — Painel do criador: todos os botões e Jogar online separado (19.11.2026)
+
+- A contagem anônima (GoatCounter, sem cookies, uma vez por sessão) passou a cobrir os outros botões do menu: Seu maior adversário, Entrar com Google, Painel de evolução, Jogar online e o atalho "Integrado com Lichess · Chess.com". Também conta: Lendas vivas (abrir e jogar), voz na partida e sugestão enviada.
+- Jogar online no painel: uma barra compara as sessões que usaram o online do próprio jogo com as que abriram o Lichess (30 dias e total). Abaixo, os detalhes de cada lado. No jogo: criou, abriu convite, jogou, voz, compartilhou e assistiu. No Lichess: abriu, conectou a conta, jogou, resolveu o Problema do Dia e tocou em Chess.com.
+- Nenhum dado se perdeu: os nomes antigos dos eventos continuam os mesmos. "Abriu o convite de um amigo" e os dois de "assistir" já eram contados e agora aparecem no painel com o histórico deles.
+- O painel abre mais rápido: busca 6 números por vez e guarda o resultado por 10 minutos. O botão "Atualizar" força uma nova busca.
+
 ## v87 — Jogar online mais limpo, Lichess ao vivo e Problema do Dia (19.11.2026)
 
 - Jogo online próprio: saiu a escolha de cor; a cor é sempre sorteada.
