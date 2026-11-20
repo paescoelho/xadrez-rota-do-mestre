@@ -3,6 +3,10 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v109 — Temas do tabuleiro quadrados (20.11.2026)
+
+As miniaturas dos temas do tabuleiro agora são sempre quadradas e proporcionais: ocupam a largura da coluna e, em tela baixa, diminuem por igual (largura e altura juntas) para a tela continuar sem rolar.
+
 ## v108 — "Tabuleiro" na vertical e o efeito ao lado do nome (20.11.2026)
 
 Em Nova partida, "Tabuleiro" fica na vertical ao lado dos temas, como "Adversário". Em cima dos temas, uma linha só com o nome do tema escolhido e o efeito dele ao lado (ex.: **Turquesa** ✦ Casas ondulam como água). Os textos dos efeitos foram encurtados para caber inteiros até nos celulares mais estreitos.

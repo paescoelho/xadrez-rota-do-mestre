@@ -35599,7 +35599,7 @@ V103.build=function(){
   },true);
  }
  /* usa já a altura dos temas da última vez: a tela não pula enquanto o ajuste fino roda */
- if(V103.h){[].forEach.call(cur.querySelectorAll('.theme-tile .theme-preview'),function(x){x.style.height=V103.h+'px';});}
+ if(V103.h){[].forEach.call(cur.querySelectorAll('.theme-tile .theme-preview'),function(x){x.style.height=V103.h+'px';x.style.width=V103.h+'px';});}
  try{V103.fit();}catch(e){}
  requestAnimationFrame(function(){requestAnimationFrame(V103.fit);});
  if(!V103.rz){V103.rz=1;window.addEventListener('resize',function(){if(document.querySelector('.v103-setup'))V103.fit();});}
@@ -35610,11 +35610,13 @@ V103.fit=function(){
  var m=cur.closest('.main')||cur.parentNode;if(!m)return;
  var tiles=cur.querySelectorAll('.theme-tile .theme-preview');if(!tiles.length)return;
  var rows=Math.ceil(tiles.length/5);
- var setH=function(h){[].forEach.call(tiles,function(t){t.style.height=h+'px';});};
+ var setH=function(h){[].forEach.call(tiles,function(t){t.style.height=h+'px';t.style.width=h+'px';});};
  var over=function(){var mr=m.getBoundingClientRect(),cr=cur.getBoundingClientRect(),pb=parseFloat(getComputedStyle(m).paddingBottom)||0;return Math.ceil(cr.bottom+pb-mr.bottom+m.scrollTop)+2;};
  var hide=function(sel,on){[].forEach.call(cur.querySelectorAll(sel),function(e){e.style.display=on?'none':'';});};
  cur.classList.remove('v103-tight','v103-tight2','v103-tight3');hide('.v33-fxd',false);hide('.seg .segn',false);
- var MAX=window.innerWidth>=700?64:92,MIN=30;if(cur.querySelector('.v34-cont'))MIN=26;
+ /* v109: temas quadrados: no máximo a largura da coluna */
+ var tl=tiles[0].parentNode,tcs=getComputedStyle(tl),colW=Math.floor(tl.clientWidth-(parseFloat(tcs.paddingLeft)||0)-(parseFloat(tcs.paddingRight)||0));
+ var MAX=Math.max(30,colW),MIN=30;if(cur.querySelector('.v34-cont'))MIN=26;
  setH(MIN);
  var steps=[function(){hide('.v33-fxd',true);},function(){hide('.seg .segn',true);},function(){cur.classList.add('v103-tight');},function(){cur.classList.add('v103-tight2');},function(){cur.classList.add('v103-tight3');}];
  for(var i=0;i<steps.length&&over()>0;i++)steps[i]();

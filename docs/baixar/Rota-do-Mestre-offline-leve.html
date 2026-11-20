@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v108</title>
+<title>Xadrez · Rota do Mestre — v109</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1499,6 +1499,9 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v108-hd b{flex:0 0 auto;font-size:13.5px;color:var(--gold2,#f3d98c)}
 .v108-hd b:after{content:'✦';font-size:10px;color:#c9b27a;margin-left:8px;vertical-align:1px}
 .col.v34-setup .v108-hd .v33-fxd{flex:1;min-width:0;margin:0;font-size:11.5px;color:#a8aeb5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+/* v109: temas quadrados, centralizados na coluna */
+.v103-setup .theme-tile{display:flex;align-items:center;justify-content:center}
+.v103-setup .theme-tile .theme-preview{flex:none;margin:0 auto}
 /* treinador por voz: indisponível por enquanto */
 .v36-card,.v36-hb{display:none!important}
 /* com a nova linha, os temas do tabuleiro crescem quando há altura sobrando */
@@ -79975,7 +79978,7 @@ V103.build=function(){
   },true);
  }
  /* usa já a altura dos temas da última vez: a tela não pula enquanto o ajuste fino roda */
- if(V103.h){[].forEach.call(cur.querySelectorAll('.theme-tile .theme-preview'),function(x){x.style.height=V103.h+'px';});}
+ if(V103.h){[].forEach.call(cur.querySelectorAll('.theme-tile .theme-preview'),function(x){x.style.height=V103.h+'px';x.style.width=V103.h+'px';});}
  try{V103.fit();}catch(e){}
  requestAnimationFrame(function(){requestAnimationFrame(V103.fit);});
  if(!V103.rz){V103.rz=1;window.addEventListener('resize',function(){if(document.querySelector('.v103-setup'))V103.fit();});}
@@ -79986,11 +79989,13 @@ V103.fit=function(){
  var m=cur.closest('.main')||cur.parentNode;if(!m)return;
  var tiles=cur.querySelectorAll('.theme-tile .theme-preview');if(!tiles.length)return;
  var rows=Math.ceil(tiles.length/5);
- var setH=function(h){[].forEach.call(tiles,function(t){t.style.height=h+'px';});};
+ var setH=function(h){[].forEach.call(tiles,function(t){t.style.height=h+'px';t.style.width=h+'px';});};
  var over=function(){var mr=m.getBoundingClientRect(),cr=cur.getBoundingClientRect(),pb=parseFloat(getComputedStyle(m).paddingBottom)||0;return Math.ceil(cr.bottom+pb-mr.bottom+m.scrollTop)+2;};
  var hide=function(sel,on){[].forEach.call(cur.querySelectorAll(sel),function(e){e.style.display=on?'none':'';});};
  cur.classList.remove('v103-tight','v103-tight2','v103-tight3');hide('.v33-fxd',false);hide('.seg .segn',false);
- var MAX=window.innerWidth>=700?64:92,MIN=30;if(cur.querySelector('.v34-cont'))MIN=26;
+ /* v109: temas quadrados: no máximo a largura da coluna */
+ var tl=tiles[0].parentNode,tcs=getComputedStyle(tl),colW=Math.floor(tl.clientWidth-(parseFloat(tcs.paddingLeft)||0)-(parseFloat(tcs.paddingRight)||0));
+ var MAX=Math.max(30,colW),MIN=30;if(cur.querySelector('.v34-cont'))MIN=26;
  setH(MIN);
  var steps=[function(){hide('.v33-fxd',true);},function(){hide('.seg .segn',true);},function(){cur.classList.add('v103-tight');},function(){cur.classList.add('v103-tight2');},function(){cur.classList.add('v103-tight3');}];
  for(var i=0;i<steps.length&&over()>0;i++)steps[i]();
