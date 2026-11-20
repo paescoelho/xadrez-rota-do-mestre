@@ -3,6 +3,10 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v98 — Apresentação do botão Lichess em Jogar online (20.11.2026)
+
+Nas 3 primeiras vezes que a pessoa abre **Jogar online**, toca uma locução curta sobre a integração com o Lichess: o resto da tela escurece de leve e o botão do Lichess, sem sair do lugar, pulsa e brilha no ritmo da voz (três batidas na primeira frase e uma maior na segunda), com os números de jogadores e partidas seguindo ao vivo. Ao terminar, a tela clareia e um brilho dourado passa pelo botão. Um toque em qualquer lugar encerra na hora; sair da tela cala a locução. Da 4ª vez em diante, só um brilho dourado rápido, sem som. Com o som do jogo desligado, a animação acontece sem voz; com "reduzir movimento", o botão brilha sem pulsar.
+
 ## v97 — Apoio ou sugestão sem rolar e frase mais legível (20.11.2026)
 
 No celular, a frase *"Uma grande ideia vale mais que mil contribuições."* fica sempre numa linha só, com o tamanho acompanhando a largura da tela. Em telas baixas (celular com a barra do navegador), a tela não rola mais: o QR do Pix e a caixa de texto se ajustam e a nota de rodapé some. No computador, a frase fica bem maior (25/27 px).

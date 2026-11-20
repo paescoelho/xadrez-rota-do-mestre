@@ -68,11 +68,14 @@ const aud=fs.readFileSync(__dirname+'/../media/intro_audio.mp3').toString('base6
 const histau=fs.readFileSync(__dirname+'/../media/historia_audio.mp3');
 /* v95: locução da tela Apoio ou sugestão */
 const apoioau=fs.readFileSync(__dirname+'/../media/apoio_audio.mp3');
+/* v98: locução do botão Lichess na tela Jogar online */
+const lichau=fs.readFileSync(__dirname+'/../media/lichess_audio.mp3');
 const hdx=fs.readFileSync(__dirname+'/../media/intro_hd.json','utf8');
 let res='';
 for(const n of ['content','lpuzzles','openings','explorer','models']){const ext=n==='content'?'json':'txt';const txt=fs.readFileSync(__dirname+'/../res/'+n+'.'+ext,'utf8');if(/<\/script|<!--/i.test(txt))throw new Error('texto proibido em '+n);res+='<script type="text/plain" id="res_'+n+'">'+txt+'</script>\n';}
 res+='<script type="text/plain" id="res_histau">'+histau.toString('base64')+'</script>\n';
 res+='<script type="text/plain" id="res_apoioau">'+apoioau.toString('base64')+'</script>\n';
+res+='<script type="text/plain" id="res_lichau">'+lichau.toString('base64')+'</script>\n';
 const hd=fs.readFileSync(__dirname+'/../media/intro_hd.bin').toString('base64');
 const hdx16=fs.readFileSync(__dirname+'/../media/intro_hd16.json','utf8');
 const hd16=fs.readFileSync(__dirname+'/../media/intro_hd16.bin').toString('base64');
@@ -122,18 +125,19 @@ put('intro_hd16.bin',fs.readFileSync(__dirname+'/../media/intro_hd16.bin'));
 put('introhdx16.json',Buffer.from(hdx16,'utf8'));
 put('historia.mp3',histau);
 put('apoio.mp3',apoioau);
+put('lichess.mp3',lichau);
 const U=n=>'data/'+n+'?v='+files[n];
 const loader=`<script>
 /* carregador do site: baixa (ou pega do cache offline) os arquivos do jogo, mostra o progresso e inicia o app */
 (function(){
- var F=${JSON.stringify({res:[['res_content',U('content.json')],['res_lpuzzles',U('lpuzzles.txt')],['res_openings',U('openings.txt')],['res_explorer',U('explorer.txt')],['res_models',U('models.txt')],['res_sfjs',U('sf.js')]],intro:[['introfr',U('introfr.json')],['introau',U('introau.txt')],['introhdx',U('introhdx.json')]],hd:U('intro_hd.bin'),hd16:U('intro_hd16.bin'),hdx16:U('introhdx16.json'),histau:U('historia.mp3'),apoioau:U('apoio.mp3'),wasm:U('sf.wasm'),app:U('app.js')})};
+ var F=${JSON.stringify({res:[['res_content',U('content.json')],['res_lpuzzles',U('lpuzzles.txt')],['res_openings',U('openings.txt')],['res_explorer',U('explorer.txt')],['res_models',U('models.txt')],['res_sfjs',U('sf.js')]],intro:[['introfr',U('introfr.json')],['introau',U('introau.txt')],['introhdx',U('introhdx.json')]],hd:U('intro_hd.bin'),hd16:U('intro_hd16.bin'),hdx16:U('introhdx16.json'),histau:U('historia.mp3'),apoioau:U('apoio.mp3'),lichau:U('lichess.mp3'),wasm:U('sf.wasm'),app:U('app.js')})};
  var c=navigator.connection||{},slow=!!(c.saveData||/(^|-)2g|3g/.test(c.effectiveType||''));
  var box=document.createElement('div');box.id='boot';box.innerHTML='<div class="bt">Rota do Mestre</div><div class="bb"><i></i></div><div class="bs">Preparando o tabuleiro…</div>';document.body.appendChild(box);
  var bar=box.querySelector('i'),msg=box.querySelector('.bs'),done=0,total=F.res.length+(slow?0:F.intro.length+1)+1;
  function step(){done++;bar.style.width=Math.round(done*100/total)+'%';}
  function txt(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u);return r.text();}).then(function(t){step();return t;});}
  function tag(id,t,type){var e=document.getElementById(id);if(!e){e=document.createElement('script');e.type=type||'text/plain';e.id=id;document.body.appendChild(e);}e.textContent=t;}
- window.XSFURL=new URL(F.wasm,location.href).href;window.XHISTAU=new URL(F.histau,location.href).href;window.XAPOIOAU=new URL(F.apoioau,location.href).href;
+ window.XSFURL=new URL(F.wasm,location.href).href;window.XHISTAU=new URL(F.histau,location.href).href;window.XAPOIOAU=new URL(F.apoioau,location.href).href;window.XLICHAU=new URL(F.lichau,location.href).href;
  var jobs=F.res.map(function(x){return txt(x[1]).then(function(t){tag(x[0],t);});});
  if(slow){window.XLITE=true;tag('introfr','[]','application/json');tag('introhdx','null','application/json');}
  else{jobs=jobs.concat(F.intro.map(function(x){return txt(x[1]).then(function(t){tag(x[0],t,x[0]==='introau'?'text/plain':'application/json');});}));

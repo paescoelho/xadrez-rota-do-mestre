@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v97</title>
+<title>Xadrez · Rota do Mestre — v98</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1518,6 +1518,19 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 @keyframes v57shine{0%,55%{background-position:120% 0}85%,100%{background-position:-60% 0}}
 @keyframes v57bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-2px) rotate(-6deg)}}
 @keyframes v57glowli{0%,55%,100%{box-shadow:0 0 0 0 rgba(243,217,140,0)}75%{box-shadow:0 0 14px 0 rgba(243,217,140,.28)}}
+/* v98: apresentação do botão Lichess: a tela escurece de leve e ele pulsa e brilha no ritmo da voz */
+.v98-dk{filter:brightness(.5) saturate(.7);transition:filter .55s ease}
+.v98-up{transition:filter .7s ease}
+.v35-xb.li.v98-run{animation:none;z-index:2;transition:none;transform:scale(calc(1 + var(--v98g,0) * .028));border-color:rgba(243,217,140,calc(.35 + var(--v98g,0) * .5));
+ box-shadow:0 0 calc(6px + var(--v98g,0) * 24px) calc(var(--v98g,0) * 2px) rgba(243,217,140,calc(.18 + var(--v98g,0) * .42)),inset 0 0 calc(var(--v98g,0) * 18px) rgba(243,217,140,calc(var(--v98g,0) * .14))}
+.v35-xb.li.v98-run.v98-still{transform:none}
+.v35-xb.li.v98-out{animation:none;transition:transform .5s cubic-bezier(.2,.8,.2,1),box-shadow .9s ease,border-color .9s ease}
+.v35-xb.li.v98-out:after{animation:v98sh .85s ease .05s 1 both}
+@keyframes v98sh{from{background-position:120% 0}to{background-position:-60% 0}}
+.v35-xb.li.v98-quick{animation:v98q 1.3s ease-in-out 1}
+.v35-xb.li.v98-quick:after{animation:v98sh .9s ease .25s 1 both}
+@keyframes v98q{0%,100%{box-shadow:0 0 0 0 rgba(243,217,140,0)}45%{box-shadow:0 0 18px 1px rgba(243,217,140,.42)}}
+@media (prefers-reduced-motion:reduce){.v35-xb.li.v98-out:after,.v35-xb.li.v98-quick:after{animation:none}}
 @keyframes v57glowcc{0%,55%,100%{box-shadow:0 0 0 0 rgba(129,182,76,0)}75%{box-shadow:0 0 16px 0 rgba(129,182,76,.45)}}
 @media (max-height:660px){.v35-xb{min-height:56px;padding:7px 9px}.v35-xb i{flex-basis:34px;height:34px;font-size:22px}.v35-xb b{font-size:15px}}
 @media (prefers-reduced-motion:reduce){.v35-xb,.v35-xb i,.v35-xb:after,.v35-xb em:after{animation:none}}
@@ -1824,14 +1837,14 @@ window.XHD=(function(){
 <script>
 /* carregador do site: baixa (ou pega do cache offline) os arquivos do jogo, mostra o progresso e inicia o app */
 (function(){
- var F={"res":[["res_content","data/content.json?v=facebd0421"],["res_lpuzzles","data/lpuzzles.txt?v=6a7f7438c2"],["res_openings","data/openings.txt?v=0433d98604"],["res_explorer","data/explorer.txt?v=a49e3a075b"],["res_models","data/models.txt?v=d4b717e2fe"],["res_sfjs","data/sf.js?v=81cc4511ff"]],"intro":[["introfr","data/introfr.json?v=361b412139"],["introau","data/introau.txt?v=ce6089d3a7"],["introhdx","data/introhdx.json?v=efe43de4ba"]],"hd":"data/intro_hd.bin?v=2f137ab566","hd16":"data/intro_hd16.bin?v=873ca44d34","hdx16":"data/introhdx16.json?v=ffb050a168","histau":"data/historia.mp3?v=87e853c025","apoioau":"data/apoio.mp3?v=a67289dc4c","wasm":"data/sf.wasm?v=c56761eebb","app":"data/app.js?v=679fe3ed54"};
+ var F={"res":[["res_content","data/content.json?v=facebd0421"],["res_lpuzzles","data/lpuzzles.txt?v=6a7f7438c2"],["res_openings","data/openings.txt?v=0433d98604"],["res_explorer","data/explorer.txt?v=a49e3a075b"],["res_models","data/models.txt?v=d4b717e2fe"],["res_sfjs","data/sf.js?v=81cc4511ff"]],"intro":[["introfr","data/introfr.json?v=361b412139"],["introau","data/introau.txt?v=ce6089d3a7"],["introhdx","data/introhdx.json?v=efe43de4ba"]],"hd":"data/intro_hd.bin?v=2f137ab566","hd16":"data/intro_hd16.bin?v=873ca44d34","hdx16":"data/introhdx16.json?v=ffb050a168","histau":"data/historia.mp3?v=87e853c025","apoioau":"data/apoio.mp3?v=a67289dc4c","lichau":"data/lichess.mp3?v=420a0f7dec","wasm":"data/sf.wasm?v=c56761eebb","app":"data/app.js?v=66d05514ce"};
  var c=navigator.connection||{},slow=!!(c.saveData||/(^|-)2g|3g/.test(c.effectiveType||''));
  var box=document.createElement('div');box.id='boot';box.innerHTML='<div class="bt">Rota do Mestre</div><div class="bb"><i></i></div><div class="bs">Preparando o tabuleiro…</div>';document.body.appendChild(box);
  var bar=box.querySelector('i'),msg=box.querySelector('.bs'),done=0,total=F.res.length+(slow?0:F.intro.length+1)+1;
  function step(){done++;bar.style.width=Math.round(done*100/total)+'%';}
  function txt(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u);return r.text();}).then(function(t){step();return t;});}
  function tag(id,t,type){var e=document.getElementById(id);if(!e){e=document.createElement('script');e.type=type||'text/plain';e.id=id;document.body.appendChild(e);}e.textContent=t;}
- window.XSFURL=new URL(F.wasm,location.href).href;window.XHISTAU=new URL(F.histau,location.href).href;window.XAPOIOAU=new URL(F.apoioau,location.href).href;
+ window.XSFURL=new URL(F.wasm,location.href).href;window.XHISTAU=new URL(F.histau,location.href).href;window.XAPOIOAU=new URL(F.apoioau,location.href).href;window.XLICHAU=new URL(F.lichau,location.href).href;
  var jobs=F.res.map(function(x){return txt(x[1]).then(function(t){tag(x[0],t);});});
  if(slow){window.XLITE=true;tag('introfr','[]','application/json');tag('introhdx','null','application/json');}
  else{jobs=jobs.concat(F.intro.map(function(x){return txt(x[1]).then(function(t){tag(x[0],t,x[0]==='introau'?'text/plain':'application/json');});}));
