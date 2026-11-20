@@ -396,3 +396,46 @@ if(typeof V34!=='undefined'){
   return r;
  };
 })();
+
+/* ======================= v112: ícones animados nos botões do Centro de Treino que ainda não tinham ======================= */
+var V112={G:'#f3d98c',S:'rgba(243,217,140,.16)'};
+V112.svg=function(inner){return '<svg viewBox="0 0 32 32" width="100%" height="100%" aria-hidden="true" fill="none" stroke="#f3d98c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+inner+'</svg>';};
+V112.pawn=function(x,y,cls,d){return '<g class="'+cls+'"'+(d?' style="animation-delay:'+d+'"':'')+'><circle cx="'+x+'" cy="'+(y-4.6)+'" r="2.5" fill="rgba(243,217,140,.25)"/><path d="M'+(x-4)+','+(y+3.4)+' h8 l-1.7,-5.6 h-4.6 z" fill="rgba(243,217,140,.25)"/></g>';};
+V112.ICONS={
+ /* lâmpada que acende: ideia, processo de pensar */
+ 'Como pensar':V112.svg('<g class="v112-rays"><path d="M16,.9 v2 M5.3,4.9 l1.4,1.4 M26.7,4.9 l-1.4,1.4 M1.8,13.6 h2 M28.2,13.6 h2"/></g><path class="v112-bulb" d="M16,5.2 a8,8 0 0 0 -4.8,14.4 c.9,.7 1.4,1.7 1.4,2.8 v1.1 h6.8 v-1.1 c0,-1.1 .5,-2.1 1.4,-2.8 A8,8 0 0 0 16,5.2 z" fill="rgba(243,217,140,.16)"/><path class="v112-fil" d="M13.4,15.6 l1.3,1.6 1.3,-1.6 1.3,1.6 1.3,-1.6"/><path d="M13,26.6 h6 M14,29.2 h4"/>'),
+ /* folha do dia com o visto sendo desenhado */
+ 'Plano do dia':V112.svg('<rect x="5" y="7" width="22" height="20.5" rx="3" fill="rgba(243,217,140,.12)"/><path d="M5,12.6 h22 M11,4.4 v5 M21,4.4 v5"/><path class="v112-chk" pathLength="1" d="M11,19.6 l3.6,3.6 l7,-7.2" stroke-width="2.2"/>'),
+ /* caminho que sobe até a bandeira, com um ponto percorrendo */
+ 'Trilha':V112.svg('<path d="M4.5,27.5 C10,27.5 9,18.5 16,18.5 S22,9.5 25.5,8.6" stroke-dasharray="1.6 2.6" opacity=".7"/><path d="M25.5,8.6 V2.6 l4.4,1.8 -4.4,1.8" fill="#f3d98c"/><circle r="2.3" fill="#f3d98c" stroke="none"><animateMotion dur="3.2s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;.8;1" calcMode="linear" path="M4.5,27.5 C10,27.5 9,18.5 16,18.5 S22,9.5 25.5,8.6"/></circle>'),
+ /* casas do tabuleiro com o olhar varrendo */
+ 'Treino de visão':V112.svg('<g stroke-width="1.2" opacity=".75"><rect x="4.5" y="4.5" width="23" height="23" rx="2"/><path d="M12.2,4.5 v23 M19.8,4.5 v23 M4.5,12.2 h23 M4.5,19.8 h23"/></g><g fill="rgba(243,217,140,.18)" stroke="none"><rect x="12.2" y="4.5" width="7.6" height="7.7"/><rect x="4.5" y="12.2" width="7.7" height="7.6"/><rect x="19.8" y="12.2" width="7.7" height="7.6"/><rect x="12.2" y="19.8" width="7.6" height="7.7"/></g><rect class="v112-scan" x="4.5" y="4.5" width="7.7" height="7.7" rx="1" fill="rgba(243,217,140,.75)" stroke="none"/>'),
+ /* raio: o golpe tático */
+ 'Táticas':V112.svg('<path class="v112-bolt" d="M18.6,2.4 L7.6,18 h7 l-2,11.6 L24.6,13 h-7.2 z" fill="rgba(243,217,140,.18)"/><path class="v112-spark" d="M26.5,4.5 l1.8,-1.8 M27.5,8.5 h2.5 M4.6,24 l-2,1.6"/>'),
+ /* o rei tomba: xeque-mate */
+ 'Padrões de mate':V112.svg('<path d="M6.5,29 h19" opacity=".6"/><g class="v112-tip"><path d="M16,2.8 v5.4 M13.3,5.4 h5.4"/><path d="M10.6,15.6 c0,-3.4 2.4,-5.6 5.4,-5.6 s5.4,2.2 5.4,5.6 z" fill="rgba(243,217,140,.16)"/><path d="M9.6,15.6 h12.8"/><path d="M11.2,26.4 l1.4,-10.8 h6.8 l1.4,10.8 z" fill="rgba(243,217,140,.16)"/><path d="M10,26.6 h12"/></g>'),
+ /* livro aberto com a página virando */
+ 'Aberturas':V112.svg('<path d="M16,8.4 c-3,-2 -7,-2.6 -11.2,-2.1 v19 c4.2,-.5 8.2,.1 11.2,2.1" fill="rgba(243,217,140,.12)"/><path d="M16,8.4 c3,-2 7,-2.6 11.2,-2.1 v19 c-4.2,-.5 -8.2,.1 -11.2,2.1" fill="rgba(243,217,140,.12)"/><path d="M16,8.4 v19"/><path class="v112-page" d="M16,8.4 c3,-2 7,-2.6 11.2,-2.1 v19 c-4.2,-.5 -8.2,.1 -11.2,2.1 z" fill="rgba(243,217,140,.32)" stroke-width="1.2"/><path d="M8,12 h4.6 M8,15.4 h4.6 M8,18.8 h3.4" stroke-width="1.1" opacity=".6"/>'),
+ /* corrente de peões acendendo em sequência */
+ 'Estruturas':V112.svg('<path d="M9,22 L16,15 L23,8" stroke-dasharray="1.4 2.4" opacity=".55"/>'+V112.pawn(8.5,25,'v112-pw','0s')+V112.pawn(16,18,'v112-pw','.45s')+V112.pawn(23.5,11,'v112-pw','.9s')),
+ /* peão sobe até a última fileira e a coroa brilha: promoção */
+ 'Finais':V112.svg('<path d="M3.5,8.6 h25" opacity=".55" stroke-dasharray="2.2 2.2"/><path class="v112-crn" d="M11.5,6.4 l-1.2,-4.2 3.2,2.2 2.5,-3 2.5,3 3.2,-2.2 -1.2,4.2 z" fill="#f3d98c" stroke-width="1"/><g class="v112-up">'+V112.pawn(16,25,'','')+'</g><path d="M4,29.4 h24" opacity=".35"/>'),
+ /* coroa dos mestres com brilho nas pontas */
+ 'Partidas de mestres':V112.svg('<path d="M5,23.6 L3.4,11.4 l6.6,5 L16,7.2 l6,9.2 6.6,-5 L27,23.6 z" fill="rgba(243,217,140,.16)"/><path d="M5.4,27.6 h21.2"/><g fill="#f3d98c" stroke="none"><circle class="v112-tw" cx="3.4" cy="11.4" r="1.6"/><circle class="v112-tw" cx="16" cy="7.2" r="1.8" style="animation-delay:.6s"/><circle class="v112-tw" cx="28.6" cy="11.4" r="1.6" style="animation-delay:1.2s"/></g><circle cx="16" cy="18.6" r="2" fill="rgba(243,217,140,.5)"/>')
+};
+V112.decorate=function(){
+ var m=document.querySelector('.menu.hub.v34-ct');if(!m)return;
+ [].forEach.call(m.querySelectorAll('.v34-sec .mitem'),function(b){
+  if(b.querySelector('.mic'))return;
+  var t=b.querySelector('.mt');if(!t)return;var ic=V112.ICONS[t.textContent];if(!ic)return;
+  var s=document.createElement('span');s.className='mic mico v112-ic';s.innerHTML=ic;
+  var tx=document.createElement('span');tx.className='mtx';
+  var d=b.querySelector('.md');tx.appendChild(t);if(d)tx.appendChild(d);
+  b.insertBefore(tx,b.firstChild);b.insertBefore(s,tx);b.classList.add('irow');
+ });
+};
+(function(){
+ if(typeof App==='undefined'||!App.training)return;
+ var o=App.training;
+ App.training=function(){var r=o.apply(this,arguments);try{V112.decorate();}catch(e){}return r;};
+})();

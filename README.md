@@ -3,6 +3,22 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v112 — Ícones animados no Centro de Treino (20.11.2026)
+
+Os botões do Centro de Treino que não tinham ícone ganharam ícones dourados animados, cada um ligado ao conteúdo:
+- **Como pensar:** lâmpada que acende, com raios.
+- **Plano do dia:** folha de calendário com o visto sendo desenhado.
+- **Trilha:** caminho pontilhado que sobe até uma bandeira, com um ponto percorrendo.
+- **Treino de visão:** casas do tabuleiro com o destaque varrendo uma a uma.
+- **Táticas:** raio que pisca, com faíscas.
+- **Padrões de mate:** o rei tomba e volta.
+- **Aberturas:** livro aberto com a página virando.
+- **Estruturas:** corrente de peões acendendo em sequência.
+- **Finais:** o peão sobe até a última fileira e a coroa brilha (promoção).
+- **Partidas de mestres:** coroa com brilho nas pontas.
+
+Com "reduzir movimento" ligado no aparelho, os ícones ficam parados.
+
 ## v111 — Centro de Treino mais enxuto (20.11.2026)
 
 - O botão de análise do topo perdeu a seta ›: agora mostra **Analisar jogadas**, embaixo **LICHESS · CHESS.COM** em verde e a frase "Suas partidas viram aulas sobre os seus erros", com a altura um pouco menor.

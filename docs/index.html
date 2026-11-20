@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v111</title>
+<title>Xadrez · Rota do Mestre — v112</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1520,6 +1520,23 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v111-aeb .v34-aet u{text-decoration:none;font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#9fe3bb}
 .v111-aeb .v34-aet i{margin-top:2px;font-size:clamp(11.5px,3.1vw,12.5px);line-height:1.3;color:#cfe9da}
 .v111-aeb .v34-aet em{align-self:flex-start}
+/* v112: ícones animados do Centro de Treino */
+.v112-ic svg *{transform-box:fill-box}
+.v112-rays{opacity:0;animation:v112rays 3.2s ease-in-out infinite}@keyframes v112rays{0%,35%,100%{opacity:0}55%,70%{opacity:.95}}
+.v112-bulb{animation:v112bulb 3.2s ease-in-out infinite}@keyframes v112bulb{0%,35%,100%{fill:rgba(243,217,140,.12)}55%,70%{fill:rgba(243,217,140,.55)}}
+.v112-fil{animation:v112fil 3.2s ease-in-out infinite}@keyframes v112fil{0%,35%,100%{stroke:#b89a5a}55%,70%{stroke:#fff6d6}}
+.v112-chk{stroke-dasharray:1;stroke-dashoffset:1;animation:v112chk 3.6s ease-in-out infinite}@keyframes v112chk{0%,15%{stroke-dashoffset:1}45%,85%{stroke-dashoffset:0}100%{stroke-dashoffset:0;opacity:0}}
+.v112-scan{animation:v112scan 4.8s steps(1,end) infinite}
+@keyframes v112scan{0%{transform:translate(0,0)}11%{transform:translate(7.7px,0)}22%{transform:translate(15.3px,0)}33%{transform:translate(15.3px,7.7px)}44%{transform:translate(7.7px,7.7px)}55%{transform:translate(0,7.7px)}66%{transform:translate(0,15.3px)}77%{transform:translate(7.7px,15.3px)}88%,100%{transform:translate(15.3px,15.3px)}}
+.v112-bolt{animation:v112bolt 2.8s ease-in-out infinite}@keyframes v112bolt{0%,60%,100%{fill:rgba(243,217,140,.16)}68%{fill:rgba(255,246,214,.95)}74%{fill:rgba(243,217,140,.3)}80%{fill:rgba(255,246,214,.8)}}
+.v112-spark{opacity:0;animation:v112spark 2.8s ease-in-out infinite}@keyframes v112spark{0%,62%,100%{opacity:0}70%,82%{opacity:1}}
+.v112-tip{transform-origin:100% 100%;animation:v112tip 4s cubic-bezier(.5,0,.3,1) infinite}@keyframes v112tip{0%,30%{transform:rotate(0)}48%,78%{transform:rotate(-24deg)}92%,100%{transform:rotate(0)}}
+.v112-page{transform-origin:0 50%;animation:v112page 3.6s ease-in-out infinite}@keyframes v112page{0%,25%{transform:scaleX(1);opacity:.9}60%{transform:scaleX(-1);opacity:.9}70%,100%{transform:scaleX(-1);opacity:0}}
+.v112-pw{animation:v112pw 2.7s ease-in-out infinite}@keyframes v112pw{0%,40%,100%{opacity:.5}20%{opacity:1;filter:drop-shadow(0 0 2px #f3d98c)}}
+.v112-up{animation:v112up 3.4s ease-in-out infinite}@keyframes v112up{0%,10%{transform:translateY(0);opacity:1}55%,80%{transform:translateY(-11px);opacity:1}95%{transform:translateY(-11px);opacity:0}100%{transform:translateY(0);opacity:0}}
+.v112-crn{opacity:.25;transform-origin:50% 100%;animation:v112crn 3.4s ease-in-out infinite}@keyframes v112crn{0%,50%,100%{opacity:.25;transform:scale(.85)}62%,82%{opacity:1;transform:scale(1.12)}}
+.v112-tw{transform-origin:center;animation:v112tw 1.8s ease-in-out infinite}@keyframes v112tw{0%,100%{opacity:.45;transform:scale(.8)}50%{opacity:1;transform:scale(1.25)}}
+@media (prefers-reduced-motion:reduce){.v112-ic *{animation:none!important}.v112-chk{stroke-dashoffset:0}.v112-crn{opacity:1}}
 /* treinador por voz: indisponível por enquanto */
 .v36-card,.v36-hb{display:none!important}
 /* com a nova linha, os temas do tabuleiro crescem quando há altura sobrando */
@@ -1959,7 +1976,7 @@ window.XHD=(function(){
 <script>
 /* carregador do site: baixa (ou pega do cache offline) os arquivos do jogo, mostra o progresso e inicia o app */
 (function(){
- var F={"res":[["res_content","data/content.json?v=facebd0421"],["res_lpuzzles","data/lpuzzles.txt?v=6a7f7438c2"],["res_openings","data/openings.txt?v=0433d98604"],["res_explorer","data/explorer.txt?v=a49e3a075b"],["res_models","data/models.txt?v=d4b717e2fe"],["res_sfjs","data/sf.js?v=81cc4511ff"]],"intro":[["introfr","data/introfr.json?v=361b412139"],["introau","data/introau.txt?v=ce6089d3a7"],["introhdx","data/introhdx.json?v=efe43de4ba"]],"hd":"data/intro_hd.bin?v=2f137ab566","hd16":"data/intro_hd16.bin?v=873ca44d34","hdx16":"data/introhdx16.json?v=ffb050a168","histau":"data/historia.mp3?v=87e853c025","apoioau":"data/apoio.mp3?v=a67289dc4c","lichau":"data/lichess.mp3?v=420a0f7dec","wasm":"data/sf.wasm?v=c56761eebb","app":"data/app.js?v=5cd14ffe6a"};
+ var F={"res":[["res_content","data/content.json?v=facebd0421"],["res_lpuzzles","data/lpuzzles.txt?v=6a7f7438c2"],["res_openings","data/openings.txt?v=0433d98604"],["res_explorer","data/explorer.txt?v=a49e3a075b"],["res_models","data/models.txt?v=d4b717e2fe"],["res_sfjs","data/sf.js?v=81cc4511ff"]],"intro":[["introfr","data/introfr.json?v=361b412139"],["introau","data/introau.txt?v=ce6089d3a7"],["introhdx","data/introhdx.json?v=efe43de4ba"]],"hd":"data/intro_hd.bin?v=2f137ab566","hd16":"data/intro_hd16.bin?v=873ca44d34","hdx16":"data/introhdx16.json?v=ffb050a168","histau":"data/historia.mp3?v=87e853c025","apoioau":"data/apoio.mp3?v=a67289dc4c","lichau":"data/lichess.mp3?v=420a0f7dec","wasm":"data/sf.wasm?v=c56761eebb","app":"data/app.js?v=233f0abc75"};
  var c=navigator.connection||{},slow=!!(c.saveData||/(^|-)2g|3g/.test(c.effectiveType||''));
  var box=document.createElement('div');box.id='boot';box.innerHTML='<div class="bt">Rota do Mestre</div><div class="bb"><i></i></div><div class="bs">Preparando o tabuleiro…</div>';document.body.appendChild(box);
  var bar=box.querySelector('i'),msg=box.querySelector('.bs'),done=0,total=F.res.length+(slow?0:F.intro.length+1)+1;
