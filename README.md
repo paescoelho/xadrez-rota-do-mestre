@@ -3,6 +3,10 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v97 — Apoio ou sugestão sem rolar e frase mais legível (20.11.2026)
+
+No celular, a frase *"Uma grande ideia vale mais que mil contribuições."* fica sempre numa linha só, com o tamanho acompanhando a largura da tela. Em telas baixas (celular com a barra do navegador), a tela não rola mais: o QR do Pix e a caixa de texto se ajustam e a nota de rodapé some. No computador, a frase fica bem maior (25/27 px).
+
 ## v96 — Frase do Apoio ajustada (20.11.2026)
 
 A frase da tela **Apoio ou sugestão** agora diz *"Uma grande ideia vale mais que mil contribuições. Deixe sua sugestão!"*.
