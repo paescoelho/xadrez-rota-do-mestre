@@ -51,19 +51,19 @@ async function verifyFirebase(token) {
   if (!(body.exp > now) || !(body.iat <= now + 300) || !(body.auth_time <= now + 300)) throw new Error('validade');
   return body.sub;
 }
-/* contadores do Lichess (jogadores conectados e partidas em andamento), lidos da página inicial de lá a cada 60 s */
+/* contadores do Lichess (jogadores conectados e partidas em andamento), lidos da página inicial de lá a cada 20 s */
 let liCache = null, liUntil = 0;
 async function lichessCounters(cors) {
   if (!liCache || Date.now() > liUntil) {
     try {
       const r = await fetch('https://lichess.org/', { headers: { 'User-Agent': 'RotaDoMestre/1.0 (+https://paescoelho.github.io/xadrez-rota-do-mestre/)', 'Accept': 'text/html' } });
       const m = /"counters":\{"members":(\d+),"rounds":(\d+)/.exec(await r.text());
-      if (m) { liCache = { players: +m[1], games: +m[2], t: Date.now() }; liUntil = Date.now() + 60000; }
+      if (m) { liCache = { players: +m[1], games: +m[2], t: Date.now() }; liUntil = Date.now() + 20000; }
       else liUntil = Date.now() + 15000;
     } catch (e) { liUntil = Date.now() + 15000; }
   }
   if (!liCache) return reply({ error: 'lichess' }, 502, cors);
-  return new Response(JSON.stringify(liCache), { status: 200, headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=60' } });
+  return new Response(JSON.stringify(liCache), { status: 200, headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=20' } });
 }
 function reply(obj, status, cors) {
   return new Response(JSON.stringify(obj), { status, headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });

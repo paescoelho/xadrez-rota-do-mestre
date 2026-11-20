@@ -3,6 +3,11 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v92 — Contador do Lichess ao vivo e sinal amarelo nas partidas (20.11.2026)
+
+- O número de jogadores e de partidas em andamento no botão Lichess.org agora atualiza sozinho a cada ~20 segundos (antes, um erro travava o ciclo de atualização na primeira vez que a tela era reaberta rápido demais). O cache do servidor também caiu de 60s para 20s, então o número acompanha o site de verdade bem mais perto do tempo real.
+- "Partidas em andamento" ganhou uma bolinha amarela pulsando, igual à verde de "jogadores", e o texto ficou melhor alinhado ao lado do número (antes, em telas estreitas, o número chegava a quebrar no meio).
+
 ## v91 — Jogar online: um balão só e escolha de tempo na mesma linha (19.11.2026)
 
 - O destaque do WhatsApp e os quatro cartões de funções viraram um balão único: título, uma linha explicando o convite e as quatro funções em lista — voz, assistir, reações e aulas. Ficou cerca de 45% mais baixo do que o conjunto anterior.

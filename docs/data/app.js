@@ -35105,7 +35105,7 @@ var V87={API:'https://rota-turn.paescoelho.workers.dev/lichess',CK:'rdm-li-cnt',
  V87.load=function(){try{var c=JSON.parse(localStorage.getItem(V87.CK)||'null');if(c&&c.players)V87.cnt=c;}catch(e){}};
  V87.cntHtml=function(){
   if(!V87.cnt)V87.load();var c=V87.cnt;
-  return '<div class="v87-cnt'+(c?'':' v87-wait')+'"><div><s></s><b>'+(c?V87.fmt(c.players):'…')+'</b> jogadores</div><div><b>'+(c?V87.fmt(c.games):'…')+'</b> partidas em andamento</div></div>';
+  return '<div class="v87-cnt'+(c?'':' v87-wait')+'"><div><s class="g"></s><span><b>'+(c?V87.fmt(c.players):'…')+'</b> jogadores</span></div><div><s class="y"></s><span><b>'+(c?V87.fmt(c.games):'…')+'</b> partidas em andamento</span></div></div>';
  };
  V87.paint=function(){
   var c=V87.cnt;if(!c)return;
@@ -35113,12 +35113,13 @@ var V87={API:'https://rota-turn.paescoelho.workers.dev/lichess',CK:'rdm-li-cnt',
  };
  V87.counters=function(){
   V87.paint();
-  if(Date.now()-V87.cntAt<55000||V87.cntP)return;
+  /* enquanto a tela "Jogar online" estiver aberta, reagenda sempre - mesmo quando
+     esta chamada não busca dados novos (evita o ciclo travar e o número ficar parado) */
+  clearTimeout(V87.cntT);V87.cntT=setTimeout(function(){if(document.querySelector('.v35-home .v35-xb.li'))V87.counters();},18000);
+  if(Date.now()-V87.cntAt<18000||V87.cntP)return;
   V87.cntP=fetch(V87.API,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){
    if(j&&j.players>0){V87.cnt={players:j.players,games:j.games};V87.cntAt=Date.now();try{localStorage.setItem(V87.CK,JSON.stringify(V87.cnt));}catch(e){}V87.paint();}
   }).catch(function(){if(!V87.cnt)[].forEach.call(document.querySelectorAll('.v35-xb.li .v87-cnt.v87-wait'),function(e){e.remove();});}).then(function(){V87.cntP=null;});
-  /* enquanto a tela "Jogar online" estiver aberta, atualiza a cada minuto */
-  clearTimeout(V87.cntT);V87.cntT=setTimeout(function(){if(document.querySelector('.v35-home .v35-xb.li'))V87.counters();},61000);
  };
 
  /* ---------- Problema do Dia ---------- */
