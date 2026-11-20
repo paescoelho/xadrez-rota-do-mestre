@@ -374,3 +374,25 @@ if(typeof V33!=='undefined'&&V33.FX){
  V33.FX.praca='Pombo pousa no xeque-mate';
  V33.FX.daltonico='Marcas por forma, sem cor';
 }
+
+/* ======================= v111: Centro de Treino ======================= */
+/* botão "Analisar jogadas": sem a seta, texto mais enxuto e organizado */
+if(typeof V34!=='undefined'){
+ V34.aeBanner=function(ms){
+  var b=document.createElement('button');b.type='button';b.className='v34-aeb v111-aeb'+(ms&&ms.due?' due':'');
+  var due=ms&&ms.due?'<em>'+ms.due+(ms.due===1?' erro seu volta hoje':' erros seus voltam hoje')+'</em>':'';
+  b.innerHTML='<span class="v34-aea">'+V34.AE_SVG+'</span><span class="v34-aet"><b>Analisar jogadas</b><u>Lichess · Chess.com</u><i>Suas partidas viram aulas sobre os seus erros</i>'+due+'</span>';
+  b.onclick=function(){V34.erros();};
+  return b;
+ };
+}
+/* sem a faixa "Plano do dia é o seu próximo passo": as seções sobem */
+(function(){
+ if(typeof App==='undefined'||!App.training)return;
+ var o=App.training;
+ App.training=function(){
+  var r=o.apply(this,arguments);
+  try{[].forEach.call(document.querySelectorAll('.menu.hub .minfo'),function(x){if(/^Plano do dia é o seu próximo passo/.test(x.textContent.trim()))x.remove();});}catch(e){}
+  return r;
+ };
+})();

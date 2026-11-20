@@ -3,6 +3,11 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v111 — Centro de Treino mais enxuto (20.11.2026)
+
+- O botão de análise do topo perdeu a seta ›: agora mostra **Analisar jogadas**, embaixo **LICHESS · CHESS.COM** em verde e a frase "Suas partidas viram aulas sobre os seus erros", com a altura um pouco menor.
+- A faixa "Plano do dia é o seu próximo passo" saiu; as seções sobem para ocupar o espaço (o Plano do dia continua destacado como próximo passo dentro de "Sua rotina").
+
 ## v110 — Grupo "Partida" e botões do mesmo tamanho (20.11.2026)
 
 Em Nova partida, os rótulos Ritmo, Cor e Mentor saíram: as três linhas ficam agrupadas sob **PARTIDA** na vertical, como "Adversário" e "Tabuleiro". Os botões do Mentor viraram **Comentando cada lance** e **Comentários no final** (Processo de pensamento continua igual). Os nove botões têm a mesma altura e ocupam a largura toda, com o texto centralizado. Em celular pequeno, a tela aperta primeiro as outras partes e só depois diminui os temas do tabuleiro.

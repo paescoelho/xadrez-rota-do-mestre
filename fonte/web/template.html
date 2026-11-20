@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v110</title>
+<title>Xadrez · Rota do Mestre — v111</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1372,6 +1372,13 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v103-setup.v103-tight .v110-in .sb{height:48px}
 .v103-setup.v103-tight2 .v110-in .sb{height:44px}.v103-setup.v103-tight2 .v110-in{gap:5px}
 .v103-setup.v103-tight3 .v110-in .sb{height:40px}
+/* v111: botão Analisar jogadas sem seta, texto organizado */
+.v34-aeb.v111-aeb{grid-template-columns:auto 1fr;gap:12px;padding:10px 14px 10px 10px}
+.v111-aeb .v34-aet{display:flex;flex-direction:column;justify-content:center;gap:2px;min-width:0}
+.v111-aeb .v34-aet b{font-size:clamp(16px,4.4vw,18px);line-height:1.15;letter-spacing:.1px}
+.v111-aeb .v34-aet u{text-decoration:none;font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#9fe3bb}
+.v111-aeb .v34-aet i{margin-top:2px;font-size:clamp(11.5px,3.1vw,12.5px);line-height:1.3;color:#cfe9da}
+.v111-aeb .v34-aet em{align-self:flex-start}
 /* treinador por voz: indisponível por enquanto */
 .v36-card,.v36-hb{display:none!important}
 /* com a nova linha, os temas do tabuleiro crescem quando há altura sobrando */
