@@ -3,6 +3,10 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v100 — Tela ainda mais escura durante a locução do Lichess (20.11.2026)
+
+O resto da tela de Jogar online agora fica com 16% do brilho (antes 28%) enquanto a locução toca, para o botão do Lichess dominar a cena.
+
 ## v99 — Destaque mais forte do botão Lichess (20.11.2026)
 
 Durante a locução de Jogar online, o resto da tela escurece bem mais (brilho de 50% para 28%, cores mais apagadas), deixando o botão do Lichess em evidência.
