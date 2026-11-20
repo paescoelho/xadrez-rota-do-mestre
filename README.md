@@ -3,6 +3,13 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v106 — Nova partida mais firme e elegante (20.11.2026)
+
+- O efeito de cada tema de tabuleiro agora cabe numa linha só (textos encurtados), então os temas não mudam de tamanho ao trocar de tabuleiro.
+- Mentor, a barra do computador e as Lendas têm exatamente a mesma altura.
+- **Ritmo**, **Cor** e **Mentor** ficam numa caixinha de rótulo (fundo dourado bem leve e filete à esquerda, em maiúsculas), diferente dos botões.
+- A palavra "Adversário" saiu do topo e fica na vertical, centralizada ao lado das três opções, entre dois filetes dourados.
+
 ## v105 — Começar e Continuar lado a lado; aviso de pontuação vira balão (20.11.2026)
 
 - A nota "Dica ou desfazer deixa a partida sem pontuação." saiu da tela Nova partida. Na partida, quando uma dica, ajuda ou lance desfeito tira a pontuação, aparece um balão dourado por 4 segundos com o motivo (ex.: "Dica usada: esta partida não vale pontos.").

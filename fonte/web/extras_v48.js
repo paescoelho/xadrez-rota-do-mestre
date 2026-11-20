@@ -225,6 +225,9 @@ V103.build=function(){
  [].forEach.call(seg.querySelectorAll('.segn,.v74-card'),function(x){x.remove();});
  [].forEach.call(cur.querySelectorAll('.v36-card'),function(x){x.remove();});
  cur.classList.remove('v36-has','v74-has');
+ /* v106: "Adversário" na vertical, centralizado ao lado das três opções */
+ seg.classList.add('v106-adv');var sl=seg.querySelector('.segl');if(sl)sl.style.display='none';
+ var vl=UiJs.el('div','v106-vl',seg);vl.setAttribute('aria-hidden','true');vl.innerHTML='<i></i><span>Adversário</span><i></i>';
  var box=UiJs.el('div','v103-opp',seg);
  /* 1. Mentor */
  var ad=0;try{ad=Profile.d.adapt;}catch(e){}
@@ -253,7 +256,7 @@ V103.build=function(){
  [].forEach.call(cur.querySelectorAll('.seg'),function(sg){
   var l=sg.querySelector('.segl');if(!l)return;var t=l.textContent;
   var nm=/^Ritmo/.test(t)?'Ritmo':(/^Cor$/.test(t)?'Cor':(/^Treinador/.test(t)?'Mentor':null));if(!nm)return;
-  sg.classList.add('v104-inl');l.textContent=nm+':';
+  sg.classList.add('v104-inl');l.textContent=nm;
   if(nm==='Ritmo')[].forEach.call(sg.querySelectorAll('.sb .sbt'),function(b){b.textContent=b.textContent.replace(/^Rápida 10\+5$/,'10 min').replace(/^Clássica 30\+20$/,'30 min');});
  });
  /* v105: sem a nota "Dica ou desfazer…" (vira um balão na partida, na hora em que acontece) */
@@ -312,3 +315,17 @@ V105.bal=function(msg){
   return r;
  };
 })();
+
+/* v106: efeito de cada tabuleiro numa linha só (a tela não pula ao trocar de tema) */
+if(typeof V33!=='undefined'&&V33.FX){
+ V33.FX.turquesa='Água: a casa ondula e a captura espirra gotinhas';
+ V33.FX.pixel='8-bit: sons retrô e explosão de pixels na captura';
+ V33.FX.pelourinho='Fitinhas do Bonfim voam a cada captura';
+ V33.FX.praia='Uma onda de espuma atravessa a cada xeque';
+ V33.FX.sertao='A peça capturada afunda e levanta poeira';
+ V33.FX.origami='A capturada vira um passarinho de papel';
+ V33.FX.bic='Lances à caneta e um X rabiscado na captura';
+ V33.FX.nanquim='Mancha de tinta na captura, xeque carimbado';
+ V33.FX.praca='No xeque-mate, um pombo pousa no tabuleiro';
+ V33.FX.daltonico='Alto contraste e marcas por forma, sem cor';
+}

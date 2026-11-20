@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v105</title>
+<title>Xadrez · Rota do Mestre — v106</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1477,6 +1477,21 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v105-bal.in{opacity:1;transform:translate(-50%,0)}
 .v105-bal span{flex:0 0 auto;font-size:18px;color:#f3d98c}
 .v105-bal b{font-size:14px;font-weight:600;line-height:1.3}
+/* v106: três opções do adversário com a mesma altura */
+.v103-setup .v103-row{height:64px;min-height:0}
+.v103-setup.v103-tight .v103-row{height:54px}
+.v103-setup.v103-tight2 .v103-row{height:46px}
+/* v106: "Adversário" vertical */
+.v103-setup .seg.v106-adv{display:flex;align-items:stretch;gap:8px}
+.v106-vl{flex:0 0 16px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:4px 0}
+.v106-vl i{flex:1;width:1px;background:linear-gradient(180deg,rgba(243,217,140,0),rgba(243,217,140,.55),rgba(243,217,140,0))}
+.v106-vl span{writing-mode:vertical-rl;transform:rotate(180deg);font-size:10.5px;font-weight:800;letter-spacing:2.6px;text-transform:uppercase;color:#c9b27a;white-space:nowrap}
+.v103-setup .seg.v106-adv>.v103-opp{flex:1;min-width:0}
+/* v106: Ritmo, Cor e Mentor numa caixinha de rótulo (não parece botão) */
+.v103-setup .seg.v104-inl{align-items:stretch}
+.v103-setup .seg.v104-inl>.segl{flex:0 0 62px;display:flex;align-items:center;justify-content:center;margin:0;padding:0 4px;border-radius:9px;background:linear-gradient(90deg,rgba(243,217,140,.1),rgba(243,217,140,.02));border:0;border-left:2px solid rgba(243,217,140,.6);font-size:10.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:#d9c48e;cursor:default;user-select:none}
+/* v106: efeito do tabuleiro sempre numa linha */
+.col.v34-setup .v33-fxd{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;-webkit-line-clamp:unset}
 /* treinador por voz: indisponível por enquanto */
 .v36-card,.v36-hb{display:none!important}
 /* com a nova linha, os temas do tabuleiro crescem quando há altura sobrando */
@@ -79893,6 +79908,9 @@ V103.build=function(){
  [].forEach.call(seg.querySelectorAll('.segn,.v74-card'),function(x){x.remove();});
  [].forEach.call(cur.querySelectorAll('.v36-card'),function(x){x.remove();});
  cur.classList.remove('v36-has','v74-has');
+ /* v106: "Adversário" na vertical, centralizado ao lado das três opções */
+ seg.classList.add('v106-adv');var sl=seg.querySelector('.segl');if(sl)sl.style.display='none';
+ var vl=UiJs.el('div','v106-vl',seg);vl.setAttribute('aria-hidden','true');vl.innerHTML='<i></i><span>Adversário</span><i></i>';
  var box=UiJs.el('div','v103-opp',seg);
  /* 1. Mentor */
  var ad=0;try{ad=Profile.d.adapt;}catch(e){}
@@ -79921,7 +79939,7 @@ V103.build=function(){
  [].forEach.call(cur.querySelectorAll('.seg'),function(sg){
   var l=sg.querySelector('.segl');if(!l)return;var t=l.textContent;
   var nm=/^Ritmo/.test(t)?'Ritmo':(/^Cor$/.test(t)?'Cor':(/^Treinador/.test(t)?'Mentor':null));if(!nm)return;
-  sg.classList.add('v104-inl');l.textContent=nm+':';
+  sg.classList.add('v104-inl');l.textContent=nm;
   if(nm==='Ritmo')[].forEach.call(sg.querySelectorAll('.sb .sbt'),function(b){b.textContent=b.textContent.replace(/^Rápida 10\+5$/,'10 min').replace(/^Clássica 30\+20$/,'30 min');});
  });
  /* v105: sem a nota "Dica ou desfazer…" (vira um balão na partida, na hora em que acontece) */
@@ -79980,6 +79998,20 @@ V105.bal=function(msg){
   return r;
  };
 })();
+
+/* v106: efeito de cada tabuleiro numa linha só (a tela não pula ao trocar de tema) */
+if(typeof V33!=='undefined'&&V33.FX){
+ V33.FX.turquesa='Água: a casa ondula e a captura espirra gotinhas';
+ V33.FX.pixel='8-bit: sons retrô e explosão de pixels na captura';
+ V33.FX.pelourinho='Fitinhas do Bonfim voam a cada captura';
+ V33.FX.praia='Uma onda de espuma atravessa a cada xeque';
+ V33.FX.sertao='A peça capturada afunda e levanta poeira';
+ V33.FX.origami='A capturada vira um passarinho de papel';
+ V33.FX.bic='Lances à caneta e um X rabiscado na captura';
+ V33.FX.nanquim='Mancha de tinta na captura, xeque carimbado';
+ V33.FX.praca='No xeque-mate, um pombo pousa no tabuleiro';
+ V33.FX.daltonico='Alto contraste e marcas por forma, sem cor';
+}
 
 Main.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
