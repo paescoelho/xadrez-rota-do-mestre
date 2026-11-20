@@ -439,3 +439,37 @@ V112.decorate=function(){
  var o=App.training;
  App.training=function(){var r=o.apply(this,arguments);try{V112.decorate();}catch(e){}return r;};
 })();
+
+/* ======================= v113: "Estudo sério hoje" dentro do Plano do dia ======================= */
+var V113={};
+V113.info=function(){
+ var v=V23.d(),s=v.study,today=StudyClock.todaySec(),goal=StudyClock.goalSec();
+ return {today:today,goal:goal,pct:Math.min(100,Math.round(today*100/Math.max(60,goal))),week:StudyClock.weekSec(),total:s.total};
+};
+(function(){
+ if(typeof App==='undefined'||!App.training)return;
+ var o=App.training;
+ App.training=function(){
+  var r=o.apply(this,arguments);
+  try{
+   var m=document.querySelector('.menu.hub.v34-ct');if(!m)return r;
+   [].forEach.call(m.querySelectorAll('.v34-clock'),function(x){x.remove();});
+   var b=null;[].forEach.call(m.querySelectorAll('.v34-sec .mitem'),function(x){var t=x.querySelector('.mt');if(t&&t.textContent==='Plano do dia')b=x;});
+   if(b){
+    var I=V113.info(),tx=b.querySelector('.mtx')||b;
+    b.classList.add('v113-pd');
+    var st=document.createElement('span');st.className='v113-st';
+    st.innerHTML='<span class="v113-l"><b>Hoje '+V23.fmtH(I.today)+'</b> de '+V23.fmtH(I.goal)+'</span><span class="v113-bar"><i style="width:'+I.pct+'%"></i></span>';
+    tx.appendChild(st);
+    b.setAttribute('title','Estudo sério · semana '+V23.fmtH(I.week)+' · total '+V23.fmtH(I.total)+' rumo às 5.000 h dos mestres');
+   }
+  }catch(e){}
+  return r;
+ };
+})();
+/* Painel de evolução: sem o cartão "Estudo sério hoje" (o botão Relógio de estudo continua) */
+(function(){
+ if(typeof Pages==='undefined'||!Pages.profile)return;
+ var o=Pages.profile;
+ Pages.profile=function(){var r=o.apply(this,arguments);try{[].forEach.call(document.querySelectorAll('.v23-pbox .v23-clock'),function(x){x.remove();});}catch(e){}return r;};
+})();

@@ -3,6 +3,10 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v113 — Estudo sério dentro do Plano do dia (20.11.2026)
+
+No Centro de Treino, o cartão "Estudo sério hoje" saiu e virou parte do botão **Plano do dia**: embaixo do texto aparece "Hoje X min de Y min" com uma barrinha dourada de progresso (semana e total aparecem ao parar o mouse no botão). No Painel de evolução, o cartão também saiu; o botão **Relógio de estudo** continua lá para ver os detalhes.
+
 ## v112 — Ícones animados no Centro de Treino (20.11.2026)
 
 Os botões do Centro de Treino que não tinham ícone ganharam ícones dourados animados, cada um ligado ao conteúdo:
