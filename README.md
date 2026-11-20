@@ -3,6 +3,11 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v105 — Começar e Continuar lado a lado; aviso de pontuação vira balão (20.11.2026)
+
+- A nota "Dica ou desfazer deixa a partida sem pontuação." saiu da tela Nova partida. Na partida, quando uma dica, ajuda ou lance desfeito tira a pontuação, aparece um balão dourado por 4 segundos com o motivo (ex.: "Dica usada: esta partida não vale pontos.").
+- Com uma partida salva, **Começar nova partida** e **▶ Continuar partida** ficam lado a lado, com a mesma altura e o texto centralizado (o Continuar mostra contra quem e o ritmo). Sem partida salva, Começar continua ocupando a linha toda.
+
 ## v104 — Nova partida: Ritmo, Cor e Mentor numa linha só (20.11.2026)
 
 Em Nova partida, **Ritmo:**, **Cor:** e **Mentor:** (antes "Treinador") ficam na mesma linha das opções. Os botões de Ritmo mostram só **Sem relógio**, **10 min** e **30 min** (os acréscimos de +5 e +20 continuam valendo no jogo). Com o espaço ganho, os temas do tabuleiro ficam maiores, ainda sem rolar a tela.

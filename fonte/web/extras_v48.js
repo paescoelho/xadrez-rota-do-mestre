@@ -256,6 +256,16 @@ V103.build=function(){
   sg.classList.add('v104-inl');l.textContent=nm+':';
   if(nm==='Ritmo')[].forEach.call(sg.querySelectorAll('.sb .sbt'),function(b){b.textContent=b.textContent.replace(/^Rápida 10\+5$/,'10 min').replace(/^Clássica 30\+20$/,'30 min');});
  });
+ /* v105: sem a nota "Dica ou desfazer…" (vira um balão na partida, na hora em que acontece) */
+ [].forEach.call(cur.querySelectorAll('.segn'),function(n){if(/^Dica ou desfazer/.test(n.textContent))n.remove();});
+ /* v105: Começar e Continuar lado a lado, mesma altura; sem partida salva, Começar ocupa a linha toda */
+ var ct=cur.querySelector('.v34-cont'),st=null;
+ [].forEach.call(cur.querySelectorAll('.btns .btn.pri'),function(x){if(/^(Começar|Enfrentar)/.test(x.textContent))st=x;});
+ if(ct&&st){
+  var bx=st.parentNode;bx.classList.add('v105-two');bx.appendChild(ct);
+  var tt=st.textContent;st.classList.add('v105-st');st.innerHTML='<b>'+V103.esc(tt)+'</b>';
+  var sub=ct.querySelector('.v34-ctx i');if(sub)sub.textContent=sub.textContent.replace(/^Partida salva contra /,'contra ');
+ }
  requestAnimationFrame(function(){requestAnimationFrame(V103.fit);});
  if(!V103.rz){V103.rz=1;window.addEventListener('resize',function(){if(document.querySelector('.v103-setup'))V103.fit();});}
 };
@@ -279,3 +289,26 @@ V103.fit=function(){
  /* sobrou espaço com os temas no máximo: devolve a nota do efeito do tabuleiro */
  if(h>=MAX){var fx=cur.querySelector('.v33-fxd');if(fx&&fx.style.display==='none'){fx.style.display='';if(over()>0)fx.style.display='none';}}
 };
+
+/* v105: balão de 4 s quando uma ação (dica, ajuda, desfazer) tira a pontuação da partida */
+var V105={g:null,r:null};
+V105.bal=function(msg){
+ try{[].forEach.call(document.querySelectorAll('.v105-bal'),function(x){x.remove();});
+  var b=document.createElement('div');b.className='v105-bal';b.setAttribute('role','status');
+  b.innerHTML='<span aria-hidden="true">ⓘ</span><b></b>';b.querySelector('b').textContent=msg;
+  document.body.appendChild(b);requestAnimationFrame(function(){b.classList.add('in');});
+  setTimeout(function(){b.classList.remove('in');setTimeout(function(){b.remove();},400);},4000);}catch(e){}
+};
+(function(){
+ if(typeof App==='undefined'||!App.drawGame)return;
+ var o=App.drawGame;
+ App.drawGame=function(){
+  var r=o.apply(this,arguments);
+  try{var g=App.G;
+   if(g){if(V105.g!==g){V105.g=g;V105.r=g.rated;}
+    else if(V105.r===true&&g.rated===false&&g.over==null){V105.r=false;V105.bal(g.unrated||'Esta partida não vale mais pontos.');}
+    else V105.r=g.rated;}
+  }catch(e){}
+  return r;
+ };
+})();
