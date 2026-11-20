@@ -474,3 +474,72 @@ V113.info=function(){
  var o=Pages.profile;
  Pages.profile=function(){var r=o.apply(this,arguments);try{[].forEach.call(document.querySelectorAll('.v23-pbox .v23-clock'),function(x){x.remove();});}catch(e){}return r;};
 })();
+
+/* ======================= v115: uma escala só para os números de nível =======================
+ * O jogo guarda a pontuação de problemas (Profile.d.pzElo) na escala dos problemas, parecida com a do Lichess,
+ * que fica bem acima da escala das partidas. Ela continua sendo usada por dentro (escolher a dificuldade),
+ * mas tudo o que aparece para a pessoa passa a usar a escala do Elo central do jogo, com o mesmo limite
+ * do Painel (no máximo 100 acima do seu Elo). Vale para táticas, faixas, Rush, resumo dos treinos e
+ * "Adivinhe o lance" das partidas de mestres. */
+var V115={};
+V115.ref=function(){var v=0;try{v=Profile.combined()[0];}catch(e){}if(!(v>0)){try{v=V67.start();}catch(e){v=400;}}return v;};
+V115.g=function(p){try{return V28.toGame(+p);}catch(e){return +p;}};
+V115.cap=function(p){return Math.max(100,Math.min(V115.g(p),V115.ref()+100));};
+V115.tac=function(){return V115.cap(Profile.d.pzElo||1200);};
+/* textos que mostravam números na escala antiga */
+V115.fix=function(t){
+ if(typeof t!=='string')return t;
+ var m;
+ if((m=/^Pontuação de quebra-cabeças: (\d+)$/.exec(t)))return 'Nível em táticas: '+V115.tac()+' (na mesma escala do seu Elo)';
+ if((m=/^(Fim da partida \([^)]*\)\. Desempenho estimado: )(\d+)( .*)$/.exec(t)))return m[1]+V115.cap(+m[2])+m[3];
+ if((m=/^Desempenho médio recente: (\d+)( .*)$/.exec(t)))return 'Desempenho médio recente: '+V115.cap(+m[1])+m[2];
+ if((m=/^(Vidas: .* · {2}nível )(\d+)$/.exec(t)))return m[1]+V115.g(+m[2]);
+ if((m=/^Chegou até o nível (\d+)\. (.*)$/.exec(t)))return 'Chegou até o nível '+V115.g(+m[1])+'. '+m[2];
+ return t;
+};
+(function(){
+ if(typeof UiJs==='undefined')return;
+ var op=UiJs.p;UiJs.p=function(t,c){return op.call(this,V115.fix(t),c);};
+ /* título do exercício: "Exercício 3 de 10 · 1350" passa a mostrar a dificuldade na escala do Elo */
+ var ob=UiJs.bars;UiJs.bars=function(top,bot,a,b){
+  try{var m=/^((?:Exercício \d+ de \d+)|(?:Puzzle Rush · problema \d+)) · (\d+)$/.exec(top);if(m)top=m[1]+' · nível '+V115.g(+m[2]);}catch(e){}
+  return ob.call(this,top,bot,a,b);
+ };
+})();
+/* Táticas: o número do topo é o nível em táticas, já na escala do Elo */
+(function(){
+ if(typeof Pages==='undefined'||!Pages.tactics)return;
+ var o=Pages.tactics;
+ Pages.tactics=function(){
+  var r=o.apply(this,arguments);
+  try{var st=UiJs.cur.querySelector('.stats .stat, .stats > div');
+   var box=UiJs.cur.querySelector('.stats');if(box){var first=box.firstElementChild;if(first){var b=first.querySelector('b,.sv,.stv')||first.firstElementChild;var l=first.querySelector('span,.sl,.stl')||first.lastElementChild;
+    if(b)b.textContent=String(V115.tac());if(l&&l!==b)l.textContent='nível em táticas';}}
+   var w=document.createTreeWalker(UiJs.cur,NodeFilter.SHOW_TEXT,null),n;while((n=w.nextNode()))if(/perto da sua pontuação/.test(n.nodeValue))n.nodeValue=n.nodeValue.replace('perto da sua pontuação','perto do seu nível');
+  }catch(e){}
+  return r;
+ };
+})();
+/* Desafio por faixa: as faixas aparecem na escala do Elo e a indicada para você fica marcada */
+if(typeof Pages!=='undefined'&&Pages.bands){
+ Pages.bands=function(){
+  UiJs.page('Desafio por faixa',Pages.tactics);
+  var tac=V115.tac();
+  UiJs.p('Escolha a dificuldade. Os números estão na mesma escala do seu Elo; a faixa marcada é a mais indicada agora (seu nível em táticas: '+V115.tac()+').','muted');
+  var rows=[],lo=400;
+  var name=function(g){try{return Profile.category(g);}catch(e){return '';}};
+  while(lo<2600){(function(a){var ga=V115.g(a),gb=V115.g(a+200),on=(tac>=ga||a===400)&&tac<gb;
+    rows.push({t:(ga<=100?'até ':ga+' a ')+gb,d:name(Math.round((ga+gb)/2))+(on?' · indicada para você':''),r:'10',hl:on,f:function(){Drills.run('Faixa '+(ga<=100?'até ':ga+'-')+gb,Study.pzTasks(Puzzles.pick(null,a,a+200,10,Profile.seenMap()),false,'tatica'),{back:Pages.bands});}});})(lo);lo+=200;}
+  UiJs.items(rows);
+ };
+}
+/* Nivelamento: o resultado mostra junto o seu Elo no jogo, para não parecer outra nota */
+(function(){
+ if(typeof Pages==='undefined'||!Pages.placementResult)return;
+ var o=Pages.placementResult;
+ Pages.placementResult=function(){
+  var r=o.apply(this,arguments);
+  try{UiJs.p('Seu Elo no jogo agora: '+V115.ref()+'. O Nivelamento entra no cálculo, mas o número só sobe de verdade com partidas valendo pontos.','gold small');}catch(e){}
+  return r;
+ };
+})();

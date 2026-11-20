@@ -3,6 +3,16 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v115 — Uma escala só para os números de nível (20.11.2026)
+
+A pontuação de problemas (ex.: 1108 em Táticas) estava na escala própria dos problemas, parecida com a do Lichess, bem acima da escala do Elo central do jogo, e por isso não batia com o Painel. Ela continua por dentro (escolhe a dificuldade dos problemas), mas tudo o que aparece agora usa a escala do Elo central, com o mesmo limite do Painel (no máximo 100 acima do seu Elo):
+- **Táticas:** o número do topo virou **nível em táticas** (ex.: 1108 → 500 para quem tem Elo 400).
+- **Desafio por faixa:** as faixas aparecem na escala do Elo, com os mesmos nomes de nível do Painel, e a faixa do seu nível fica marcada.
+- **Exercícios e Puzzle Rush:** a dificuldade no título e o "nível" do Rush usam a mesma escala.
+- **Resumo dos treinos:** "Nível em táticas" no lugar de "Pontuação de quebra-cabeças".
+- **Partidas de mestres:** o "Desempenho médio recente" e o "Desempenho estimado" usam a escala e o limite do Elo.
+- **Nivelamento:** o resultado mostra junto o seu Elo no jogo.
+
 ## v114 — Plano do dia mais limpo (20.11.2026)
 
 O botão **Plano do dia** no Centro de Treino mostra só "15, 30 ou 60 min" (sem "Próximo passo"), numa linha, com o progresso de hoje logo abaixo; o botão ficou mais baixo e alinhado com o da Trilha.
