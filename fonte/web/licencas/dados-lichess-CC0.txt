@@ -1,0 +1,5 @@
+Problemas táticos: base pública do Lichess (https://database.lichess.org/),
+dedicada ao domínio público (Creative Commons CC0 1.0).
+Nomes de aberturas: lichess-org/chess-openings (https://github.com/lichess-org/chess-openings),
+domínio público (CC0 1.0).
+A seleção por tema dos problemas veio do projeto Lichesspecker.

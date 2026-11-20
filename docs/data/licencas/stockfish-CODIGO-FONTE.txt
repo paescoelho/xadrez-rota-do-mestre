@@ -1,0 +1,19 @@
+STOCKFISH 19 — CÓDIGO-FONTE E LICENÇA
+
+O jogo "Xadrez · Rota do Mestre" inclui, sem modificações, os arquivos
+data/sf.js e data/sf.wasm, que são o build "stockfish-19-lite-single" do pacote
+npm "stockfish" versão 19.0.1 (autores: Nathan Rugg e Chess.com), feito a partir
+do motor Stockfish 19 (The Stockfish developers).
+
+O Stockfish é software livre, distribuído sob a GNU General Public License
+versão 3. O texto completo da licença está em stockfish-GPL-3.0.txt, nesta pasta.
+
+Código-fonte completo correspondente aos arquivos distribuídos:
+  - Pacote e build JavaScript/WebAssembly: https://github.com/nmrugg/stockfish.js
+    (versão 19.0.1; também em https://www.npmjs.com/package/stockfish/v/19.0.1)
+  - Motor Stockfish: https://github.com/official-stockfish/Stockfish (release 19)
+
+O Stockfish roda como programa separado (Web Worker) e conversa com o jogo
+apenas pelo protocolo UCI. Você pode usar, estudar, modificar e redistribuir o
+Stockfish nos termos da GPLv3. A licença do restante do jogo está no arquivo
+LICENSE do projeto.
