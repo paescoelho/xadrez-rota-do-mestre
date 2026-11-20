@@ -166,20 +166,22 @@ V35.urlCode=function(){var m=(location.search+location.hash).match(/[?&#]ver=([A
   var cur=UiJs.cur;cur.classList.add('v35-home');
   V31.init().catch(function(){});
   /* topo */
+  /* v91: um balão só, com as funções em lista e o microfone pulsando */
   var hd=UiJs.el('div','v35-hh',cur);
-  hd.innerHTML='<span class="v35-hi">'+V31.WA+'</span><div><b>Xadrez ao vivo com um amigo</b><span>Mande o link pelo WhatsApp: ele toca e já está no tabuleiro. Sem instalar, sem cadastro.</span></div>';
-  /* funções em destaque */
-  var ft=UiJs.el('div','v35-fg',cur);
-  [['🎙️','Voz na partida','conversem sem sair do tabuleiro','call'],['👁','Assistir ao vivo','qualquer um, pelo link','eye'],['👏','Reações','👍 😮 😂 🔥 no tabuleiro','fx'],['🎓','Ideal para aulas','explique os lances por áudio','prof']].forEach(function(x){
-   var c=UiJs.el('div','v35-fc '+x[3],ft);c.innerHTML='<i>'+x[0]+'</i><span><b>'+x[1]+'</b>'+x[2]+'</span>';
-  });
+  hd.innerHTML='<div class="v35-ht"><span class="v35-hi">'+V31.WA+'</span><div><b>Xadrez ao vivo com um amigo</b><span>Mande o link pelo WhatsApp: ele toca e já está no tabuleiro.</span></div></div>'+
+   '<ul class="v35-fl">'+
+   '<li class="vz"><i>🎙️</i>Falem por voz durante a partida</li>'+
+   '<li><i>👁</i>Amigos assistem ao vivo pelo link</li>'+
+   '<li><i>👏</i>Reaja aos lances no tabuleiro</li>'+
+   '<li class="prof"><i>🎓</i>Ideal para aula por voz no tabuleiro</li>'+
+   '</ul>';
   /* nome */
   var nm=document.createElement('input');nm.className='v35-nm';nm.maxLength=30;nm.placeholder='Seu nome (como o amigo vai ver você)';nm.value=V35.nome();nm.autocomplete='nickname';
   nm.oninput=function(){V35.setNome(nm.value);};nm.onblur=function(){nm.value=V35.nome();};cur.appendChild(nm);
   /* ritmo e cor */
   var seg=function(label,opts,on,pick){var w=UiJs.el('div','v35-sg',cur);UiJs.el('span','v35-sl',w,label);var g=UiJs.el('div','v35-so',w);g.style.gridTemplateColumns='repeat('+opts.length+',1fr)';
    opts.forEach(function(o,i){var b=UiJs.el('button',on(o,i)?'on':'',g,o[0]);b.type='button';b.onclick=function(){pick(o,i);[].forEach.call(g.children,function(x){x.className='';});b.className='on';};});};
-  seg('Ritmo',V31.TCS.map(function(t){return [t[0]==='Sem relógio'?'Livre':t[0]];}),function(o,i){return V31.tc===i;},function(o,i){V31.tc=i;});
+  seg('Tempo:',V31.TCS.map(function(t){return [t[0]==='Sem relógio'?'Livre':t[0]];}),function(o,i){return V31.tc===i;},function(o,i){V31.tc=i;});
   /* v87: a cor é sempre sorteada (como no Lichess quando ninguém escolhe) */
   V31.color='r';
   /* criar */

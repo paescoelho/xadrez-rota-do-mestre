@@ -3,6 +3,13 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v91 — Jogar online: um balão só e escolha de tempo na mesma linha (19.11.2026)
+
+- O destaque do WhatsApp e os quatro cartões de funções viraram um balão único: título, uma linha explicando o convite e as quatro funções em lista — voz, assistir, reações e aulas. Ficou cerca de 45% mais baixo do que o conjunto anterior.
+- O ícone do WhatsApp pulsa de leve e o microfone da primeira função emite anéis, como som saindo.
+- "Ideal para aula por voz no tabuleiro" fica em dourado, destacando o uso por professores.
+- O seletor de ritmo virou "Tempo:" na mesma linha das opções, agora só com Livre, 10 min, 15 min e 30 min (antes: 3+2, 5+3, 10 min e 15+10). O padrão continua 10 min.
+
 ## v90 — Faixa "Integração oficial do Lichess" (19.11.2026)
 
 - O botão Lichess.org ganhou no topo uma faixa dourada "✓ INTEGRAÇÃO OFICIAL · DO LICHESS", com um brilho que passa por ela. O botão inteiro pulsa em dourado de leve.

@@ -10,8 +10,8 @@ var V31={START:'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
                                             /* firebaseConfig público do projeto xadrez-whatsapp (não é segredo; as regras protegem os dados) */
  SDK:'https://www.gstatic.com/firebasejs/10.14.1/',
  EMU:null,                                  /* só para testes: {host, fs, auth} */
- TCS:[['Sem relógio',null],['3+2',[3,2]],['5+3',[5,3]],['10 min',[10,0]],['15+10',[15,10]]],
- tc:3,color:'r',
+ TCS:[['Sem relógio',null],['10 min',[10,0]],['15 min',[15,0]],['30 min',[30,0]]],
+ tc:1,color:'r',
  app:null,db:null,uid:null,ref:null,unsub:null,room:null,code:null,me:null,
  turnStart:0,turnLen:-1,heard:0,seenOpp:null,tick:null,beat:null,view:null,busy:false,flip:null
 };
@@ -318,7 +318,7 @@ V31.home=function(){
  }
  V31.init().catch(function(){});
  UiJs.field('Seu nome','string'===typeof Profile.d.name?Profile.d.name:'','Como seu amigo vai ver você','text',function(v){Profile.d.name=String(v).trim();Profile.save();});
- UiJs.seg('Ritmo',V31.TCS.map(function(t,i){return [t[0],function(){V31.tc=i;V31.home();},V31.tc===i];}),3);
+ UiJs.seg('Tempo',V31.TCS.map(function(t,i){return [t[0],function(){V31.tc=i;V31.home();},V31.tc===i];}),4);
  UiJs.seg('Você joga de',[['Brancas',function(){V31.color='w';V31.home();},V31.color==='w'],['Pretas',function(){V31.color='b';V31.home();},V31.color==='b'],['Sorteio',function(){V31.color='r';V31.home();},V31.color==='r']],3);
  var go=document.createElement('button');go.type='button';go.className='btn pri wide v31-wa';go.innerHTML='<span class="v31-wai">'+V31.WA+'</span>Criar partida e convidar';
  go.onclick=function(){if(go.disabled)return;go.disabled=true;go.lastChild.textContent='Criando…';
