@@ -3,6 +3,10 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v93 — Botões Lichess.org / Chess.com maiores (20.11.2026)
+
+- Em telas altas (acima de 720px de altura), os dois botões "Jogar no Lichess.org" e "Jogar via Chess.com" cresceram para aproveitar o espaço que sobrou com o balão único: ficaram uns 60px mais altos, com mais respiro interno e a faixa do selo um pouco maior. Em celulares baixos (abaixo de 720px), continuam do tamanho compacto de antes.
+
 ## v92 — Contador do Lichess ao vivo e sinal amarelo nas partidas (20.11.2026)
 
 - O número de jogadores e de partidas em andamento no botão Lichess.org agora atualiza sozinho a cada ~20 segundos (antes, um erro travava o ciclo de atualização na primeira vez que a tela era reaberta rápido demais). O cache do servidor também caiu de 60s para 20s, então o número acompanha o site de verdade bem mais perto do tempo real.

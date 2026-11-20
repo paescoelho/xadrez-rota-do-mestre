@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v92</title>
+<title>Xadrez · Rota do Mestre — v93</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1531,6 +1531,14 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v35-home .v35-xb i{flex-basis:44px!important;height:44px!important;font-size:29px}
 .v35-home .v35-xb b{font-size:18px}.v35-home .v35-xb small{font-size:11.5px}
 .v35-home .v35-xb em{margin-top:0;font-size:11px!important}
+/* v92: os dois botões crescem para aproveitar o espaço livre que sobrou com o balão único */
+@media (min-height:720px){
+ .v35-home .v35-xb{min-height:150px;padding:16px 10px;gap:8px}
+ .v35-home .v35-xb b{letter-spacing:-.2px}
+ .v35-home .v35-xb small{font-size:12.5px}
+ .v35-home .v35-xb em{font-size:12px!important}
+ .v87-cnt{font-size:12px;gap:4px}.v87-cnt b{font-size:14px!important}.v87-cnt s{width:8px;height:8px}
+}
 .v87-cnt{display:flex;flex-direction:column;gap:3px;font-size:11.5px;line-height:1.25;color:#cfc8ba;border-top:1px solid rgba(255,255,255,.12);padding-top:5px}
 .v87-cnt div{display:flex;align-items:flex-start;gap:5px}
 .v87-cnt div>span{white-space:normal;overflow-wrap:break-word;min-width:0}
@@ -1579,6 +1587,7 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
  background:linear-gradient(180deg,#f8e6a8,#ecc96e);color:#1a1408;border-bottom:1px solid #b88a2e;text-align:center}
 .v90-rib span{font-size:12.5px;font-weight:800;letter-spacing:.03em;white-space:nowrap}
 .v90-rib small{font-size:9px!important;font-weight:700;letter-spacing:.14em;opacity:.8!important;white-space:nowrap;color:#3a2a08}
+@media (min-height:720px){.v35-home .v35-xb{padding-top:46px!important}.v90-rib{height:35px}.v90-rib span{font-size:13.5px}.v90-rib small{font-size:9.5px!important}}
 .v90-rib.cc{background:linear-gradient(180deg,#bfe39a,#98c86a);color:#16240c;border-bottom-color:#5d8a33}.v90-rib.cc small{color:#22380f}
 .v90-rib:after{content:'';position:absolute;top:0;bottom:0;left:-60px;width:46px;background:rgba(255,255,255,.6);transform:skewX(-20deg);animation:v90sh 3.4s ease-in-out infinite}
 .v90-rib.cc:after{animation-delay:1.7s}
