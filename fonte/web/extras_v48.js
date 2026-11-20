@@ -249,6 +249,13 @@ V103.build=function(){
  if(leg)lg.innerHTML='<span class="v103-ic fl" aria-hidden="true">'+leg.c+'</span><span class="v103-tx"><b>'+V103.esc(leg.n)+'</b><i>'+V103.esc(leg.st)+'</i></span><span class="v103-el"><b>'+leg.e+'</b><i>trocar ▾</i></span>';
  else lg.innerHTML='<span class="v103-ic" aria-hidden="true">👑</span><span class="v103-tx"><b>'+n+' Lendas do xadrez</b><i>Carlsen, Kasparov, Fischer… abrem como nas partidas reais e jogam no estilo de cada um.</i></span><span class="v103-el"><b>▾</b><i>escolher</i></span>';
  lg.onclick=function(){V74.open();};
+ /* v104: Ritmo, Cor e Mentor com o nome na mesma linha das opções */
+ [].forEach.call(cur.querySelectorAll('.seg'),function(sg){
+  var l=sg.querySelector('.segl');if(!l)return;var t=l.textContent;
+  var nm=/^Ritmo/.test(t)?'Ritmo':(/^Cor$/.test(t)?'Cor':(/^Treinador/.test(t)?'Mentor':null));if(!nm)return;
+  sg.classList.add('v104-inl');l.textContent=nm+':';
+  if(nm==='Ritmo')[].forEach.call(sg.querySelectorAll('.sb .sbt'),function(b){b.textContent=b.textContent.replace(/^Rápida 10\+5$/,'10 min').replace(/^Clássica 30\+20$/,'30 min');});
+ });
  requestAnimationFrame(function(){requestAnimationFrame(V103.fit);});
  if(!V103.rz){V103.rz=1;window.addEventListener('resize',function(){if(document.querySelector('.v103-setup'))V103.fit();});}
 };
@@ -262,7 +269,7 @@ V103.fit=function(){
  var over=function(){var mr=m.getBoundingClientRect(),cr=cur.getBoundingClientRect(),pb=parseFloat(getComputedStyle(m).paddingBottom)||0;return Math.ceil(cr.bottom+pb-mr.bottom+m.scrollTop)+2;};
  var hide=function(sel,on){[].forEach.call(cur.querySelectorAll(sel),function(e){e.style.display=on?'none':'';});};
  cur.classList.remove('v103-tight','v103-tight2','v103-tight3');hide('.v33-fxd',false);hide('.seg .segn',false);
- var MAX=window.innerWidth>=700?64:74,MIN=30;if(cur.querySelector('.v34-cont'))MIN=26;
+ var MAX=window.innerWidth>=700?64:92,MIN=30;if(cur.querySelector('.v34-cont'))MIN=26;
  setH(MIN);
  var steps=[function(){hide('.v33-fxd',true);},function(){hide('.seg .segn',true);},function(){cur.classList.add('v103-tight');},function(){cur.classList.add('v103-tight2');},function(){cur.classList.add('v103-tight3');}];
  for(var i=0;i<steps.length&&over()>0;i++)steps[i]();

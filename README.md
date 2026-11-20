@@ -3,6 +3,10 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v104 — Nova partida: Ritmo, Cor e Mentor numa linha só (20.11.2026)
+
+Em Nova partida, **Ritmo:**, **Cor:** e **Mentor:** (antes "Treinador") ficam na mesma linha das opções. Os botões de Ritmo mostram só **Sem relógio**, **10 min** e **30 min** (os acréscimos de +5 e +20 continuam valendo no jogo). Com o espaço ganho, os temas do tabuleiro ficam maiores, ainda sem rolar a tela.
+
 ## v103 — Nova partida em três linhas, sem rolar (20.11.2026)
 
 O **Adversário** da tela Nova partida virou três linhas:

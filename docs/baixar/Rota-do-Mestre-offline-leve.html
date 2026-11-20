@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v103</title>
+<title>Xadrez · Rota do Mestre — v104</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1454,6 +1454,12 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v103-setup.v103-tight .v103-tx i{-webkit-line-clamp:1}.v103-setup.v103-tight .v103-row{padding:5px 9px}.v103-setup.v103-tight .v103-ic{flex-basis:30px;height:30px;font-size:17px}.v103-setup.v103-tight .v103-opp{gap:5px}
 .v103-setup.v103-tight2 .v103-tx i{display:none}.v103-setup.v103-tight2 .seg{margin-bottom:4px}.v103-setup.v103-tight2 .segl{margin-bottom:2px}.v103-setup.v103-tight2 .sb{min-height:32px}
 .v103-setup.v103-tight3 .sbs{display:none}.v103-setup.v103-tight3 .sb{min-height:30px}.v103-setup.v103-tight3 .v34-ctx i{display:none}.v103-setup.v103-tight3 .v34-cont{padding:6px 12px;margin-top:6px}.v103-setup.v103-tight3 .btns .btn{min-height:42px}.v103-setup.v103-tight3 .v103-ln i{display:none}.v103-setup.v103-tight3 .v103-el i{display:none}
+/* v104: rótulo na mesma linha das opções */
+.v103-setup .seg.v104-inl{display:flex;flex-wrap:wrap;align-items:center;column-gap:8px}
+.v103-setup .seg.v104-inl>.segl{flex:0 0 58px;margin:0;font-size:13px}
+.v103-setup .seg.v104-inl .sbt{font-size:clamp(12px,3.3vw,13.5px)}
+.v103-setup .seg.v104-inl>.segg{flex:1;min-width:0}
+.v103-setup .seg.v104-inl>.segn{flex:0 0 100%}
 /* treinador por voz: indisponível por enquanto */
 .v36-card,.v36-hb{display:none!important}
 /* com a nova linha, os temas do tabuleiro crescem quando há altura sobrando */
@@ -79881,6 +79887,13 @@ V103.build=function(){
  if(leg)lg.innerHTML='<span class="v103-ic fl" aria-hidden="true">'+leg.c+'</span><span class="v103-tx"><b>'+V103.esc(leg.n)+'</b><i>'+V103.esc(leg.st)+'</i></span><span class="v103-el"><b>'+leg.e+'</b><i>trocar ▾</i></span>';
  else lg.innerHTML='<span class="v103-ic" aria-hidden="true">👑</span><span class="v103-tx"><b>'+n+' Lendas do xadrez</b><i>Carlsen, Kasparov, Fischer… abrem como nas partidas reais e jogam no estilo de cada um.</i></span><span class="v103-el"><b>▾</b><i>escolher</i></span>';
  lg.onclick=function(){V74.open();};
+ /* v104: Ritmo, Cor e Mentor com o nome na mesma linha das opções */
+ [].forEach.call(cur.querySelectorAll('.seg'),function(sg){
+  var l=sg.querySelector('.segl');if(!l)return;var t=l.textContent;
+  var nm=/^Ritmo/.test(t)?'Ritmo':(/^Cor$/.test(t)?'Cor':(/^Treinador/.test(t)?'Mentor':null));if(!nm)return;
+  sg.classList.add('v104-inl');l.textContent=nm+':';
+  if(nm==='Ritmo')[].forEach.call(sg.querySelectorAll('.sb .sbt'),function(b){b.textContent=b.textContent.replace(/^Rápida 10\+5$/,'10 min').replace(/^Clássica 30\+20$/,'30 min');});
+ });
  requestAnimationFrame(function(){requestAnimationFrame(V103.fit);});
  if(!V103.rz){V103.rz=1;window.addEventListener('resize',function(){if(document.querySelector('.v103-setup'))V103.fit();});}
 };
@@ -79894,7 +79907,7 @@ V103.fit=function(){
  var over=function(){var mr=m.getBoundingClientRect(),cr=cur.getBoundingClientRect(),pb=parseFloat(getComputedStyle(m).paddingBottom)||0;return Math.ceil(cr.bottom+pb-mr.bottom+m.scrollTop)+2;};
  var hide=function(sel,on){[].forEach.call(cur.querySelectorAll(sel),function(e){e.style.display=on?'none':'';});};
  cur.classList.remove('v103-tight','v103-tight2','v103-tight3');hide('.v33-fxd',false);hide('.seg .segn',false);
- var MAX=window.innerWidth>=700?64:74,MIN=30;if(cur.querySelector('.v34-cont'))MIN=26;
+ var MAX=window.innerWidth>=700?64:92,MIN=30;if(cur.querySelector('.v34-cont'))MIN=26;
  setH(MIN);
  var steps=[function(){hide('.v33-fxd',true);},function(){hide('.seg .segn',true);},function(){cur.classList.add('v103-tight');},function(){cur.classList.add('v103-tight2');},function(){cur.classList.add('v103-tight3');}];
  for(var i=0;i<steps.length&&over()>0;i++)steps[i]();
