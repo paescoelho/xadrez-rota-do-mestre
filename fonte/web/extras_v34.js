@@ -419,7 +419,7 @@ if(typeof V25!=='undefined')V25.page=function(back){V34.apoio(back);};
  * A frase aparece palavra por palavra no ritmo do áudio (tempos medidos na própria gravação)
  * e depois fica fixa. Som desligado ou áudio bloqueado: a frase surge no mesmo ritmo, sem som. */
 var V95={a:null,url:null,t0:0,raf:0,done:false,
- L:[{t0:0.20,t1:3.05,w:'Uma boa ideia vale mais que mil contribuições.'},{t0:3.70,t1:4.80,w:'Deixe sua sugestão!'}]};
+ L:[{t0:0.20,t1:3.05,w:'Uma grande ideia vale mais que mil contribuições.'},{t0:3.70,t1:4.80,w:'Deixe sua sugestão!'}]};
 V95.times=function(){/* início de cada palavra, proporcional às letras dentro de cada trecho falado */
  var out=[];V95.L.forEach(function(l,li){var ws=l.w.split(' '),tot=ws.join('').length,acc=0;ws.forEach(function(w){out.push({w:w,line:li,t:l.t0+(l.t1-l.t0)*acc/tot});acc+=w.length;});});return out;};
 V95.src=function(){

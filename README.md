@@ -3,6 +3,10 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v96 — Frase do Apoio ajustada (20.11.2026)
+
+A frase da tela **Apoio ou sugestão** agora diz *"Uma grande ideia vale mais que mil contribuições. Deixe sua sugestão!"*.
+
 ## v95 — Locução e frase na tela Apoio ou sugestão (20.11.2026)
 
 Ao abrir **Apoio ou sugestão**, toca uma locução curta e, entre o cartão do Pix e o da sugestão, a frase *"Uma boa ideia vale mais que mil contribuições. Deixe sua sugestão!"* vai surgindo palavra por palavra no ritmo da voz (tempos medidos na própria gravação). Ao terminar, a frase fica fixa e a segunda linha ganha um brilho dourado. Trocar o valor do Pix não repete a locução; sair da tela no meio cala o áudio. Com o som do jogo desligado, a frase surge no mesmo ritmo, sem voz. Funciona também na versão offline.
