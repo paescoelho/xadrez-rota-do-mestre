@@ -3,6 +3,15 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v103 — Nova partida em três linhas, sem rolar (20.11.2026)
+
+O **Adversário** da tela Nova partida virou três linhas:
+1. **Mentor · para iniciantes** (linha inteira): explica como funciona e, ao escolher, liga o Treinador em **Comenta cada lance**.
+2. **Computador**: uma barra deslizante de 800 a 3200 que mostra o nome do nível (Fácil, Médio, Difícil, Mestre, Grande Mestre, Stockfish) e o Elo. Ao escolher, o Treinador começa desligado (dá para ligar à mão).
+3. **24 Lendas do xadrez** (linha inteira): abre a lista; com uma lenda escolhida, a linha mostra a bandeira, o nome, o estilo e o rating. O Treinador também começa desligado.
+
+O **Treinador por voz** saiu da tela (e o botão 🔊 da partida) e fica indisponível por enquanto; o código continua no jogo. Os temas do tabuleiro crescem para ocupar a altura que sobra, e a tela se ajusta para nunca rolar no celular (com ou sem "Continuar partida").
+
 ## v102 — Conta Google mais enxuta (20.11.2026)
 
 As caixas **Backup em arquivo** e **Instalar como aplicativo** foram para dentro de **Mais opções**, que fica recolhido. A tela abre só com Google, Lichess.org e Chess.com. Se a pessoa abrir "Mais opções", ele continua aberto quando a tela se atualiza.

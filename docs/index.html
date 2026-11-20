@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v102</title>
+<title>Xadrez · Rota do Mestre — v103</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1418,6 +1418,47 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v34-aps .btn{min-height:clamp(40px,6.4vh,52px);font-size:clamp(14px,2.1vh,15.5px)}
 .v34-apn{font-size:clamp(11.5px,1.8vh,13px)}
 
+/* ================= v103: Nova partida em três linhas (Mentor · barra do computador · Lendas) ================= */
+.v103-opp{display:flex;flex-direction:column;gap:6px}
+.v103-row{display:flex;align-items:center;gap:10px;width:100%;padding:7px 10px;background:var(--card2);border:1px solid var(--line);border-radius:11px;text-align:left;color:inherit;font:inherit;cursor:pointer;transition:border-color .2s,background .2s,box-shadow .2s}
+.v103-row.on{border-color:var(--gold);background:linear-gradient(180deg,#2d2615,#211c10);box-shadow:0 0 12px rgba(243,217,140,.12)}
+.v103-ic{flex:0 0 34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:19px;background:rgba(243,217,140,.1);border:1px solid rgba(243,217,140,.22)}
+.v103-ic.fl{font-size:22px;background:none;border:0}
+.v103-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.v103-tx b{font-size:15px;color:#f2ead6;line-height:1.2}
+.v103-row.on .v103-tx b{color:var(--gold2)}
+.v103-tx b u{text-decoration:none;font-size:10.5px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:#1b1406;background:linear-gradient(#f3d98c,#c49434);border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:2px}
+.v103-tx i{font-style:normal;font-size:11.5px;color:#a8aeb5;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.v103-el{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;gap:1px}
+.v103-el b{font-size:15px;color:#e9e3d2}.v103-row.on .v103-el b{color:var(--gold2)}
+.v103-el i{font-style:normal;font-size:10.5px;color:#8d949c}
+/* barra do computador */
+.v103-lv{cursor:default;padding:7px 12px 6px}
+.v103-ln{flex:0 0 104px;display:flex;flex-direction:column;cursor:pointer;min-width:0}
+.v103-ln b{font-size:14.5px;color:#f2ead6;line-height:1.2;white-space:nowrap}
+.v103-lv.on .v103-ln b{color:var(--gold2)}
+.v103-ln i{font-style:normal;font-size:10.5px;color:#8d949c;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.v103-rg{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.v103-rg input{-webkit-appearance:none;appearance:none;width:100%;height:26px;margin:0;background:transparent;cursor:pointer;--p:20%}
+.v103-rg input::-webkit-slider-runnable-track{height:6px;border-radius:4px;background:linear-gradient(90deg,#c49434 0,#f3d98c var(--p),#3a3f47 var(--p))}
+.v103-rg input::-moz-range-track{height:6px;border-radius:4px;background:linear-gradient(90deg,#c49434 0,#f3d98c var(--p),#3a3f47 var(--p))}
+.v103-rg input::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;margin-top:-8px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff6d6,#f3d98c 45%,#c49434);border:2px solid #1b1406;box-shadow:0 0 0 2px rgba(243,217,140,.35),0 2px 6px rgba(0,0,0,.5)}
+.v103-rg input::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff6d6,#f3d98c 45%,#c49434);border:2px solid #1b1406}
+.v103-lv:not(.on) .v103-rg input::-webkit-slider-runnable-track{background:linear-gradient(90deg,#6c6450 0,#8a7f63 var(--p),#33373e var(--p))}
+.v103-lv:not(.on) .v103-rg input::-webkit-slider-thumb{background:radial-gradient(circle at 35% 30%,#d8d2c2,#9d9580);box-shadow:none}
+.v103-tk{display:flex;justify-content:space-between;padding:0 4px;font-size:9.5px;color:#6f767e;line-height:1}
+.v103-tk i{font-style:normal;position:relative;min-width:4px;text-align:center}
+.v103-tk i:empty:before{content:'';display:block;width:4px;height:4px;border-radius:50%;background:#4a4f57;margin:2px auto 0}
+.v103-lv.on .v103-tk i.on{color:#c9b27a}.v103-lv.on .v103-tk i.on:empty:before{background:#c9b27a}
+.col.v34-setup.v103-setup .theme-tile .theme-preview{aspect-ratio:auto}
+.v103-setup.v103-tight .v103-tx i{-webkit-line-clamp:1}.v103-setup.v103-tight .v103-row{padding:5px 9px}.v103-setup.v103-tight .v103-ic{flex-basis:30px;height:30px;font-size:17px}.v103-setup.v103-tight .v103-opp{gap:5px}
+.v103-setup.v103-tight2 .v103-tx i{display:none}.v103-setup.v103-tight2 .seg{margin-bottom:4px}.v103-setup.v103-tight2 .segl{margin-bottom:2px}.v103-setup.v103-tight2 .sb{min-height:32px}
+.v103-setup.v103-tight3 .sbs{display:none}.v103-setup.v103-tight3 .sb{min-height:30px}.v103-setup.v103-tight3 .v34-ctx i{display:none}.v103-setup.v103-tight3 .v34-cont{padding:6px 12px;margin-top:6px}.v103-setup.v103-tight3 .btns .btn{min-height:42px}.v103-setup.v103-tight3 .v103-ln i{display:none}.v103-setup.v103-tight3 .v103-el i{display:none}
+/* treinador por voz: indisponível por enquanto */
+.v36-card,.v36-hb{display:none!important}
+/* com a nova linha, os temas do tabuleiro crescem quando há altura sobrando */
+@media (max-height:700px){.v103-tx i{-webkit-line-clamp:1}.v103-row{padding:5px 9px}.v103-ic{flex-basis:30px;height:30px;font-size:17px}.v103-opp{gap:5px}.v103-ln i{-webkit-line-clamp:1}}
+
 /* v51: no computador (tela larga e baixa) as explicações dos botões aparecem sempre */
 @media (min-width:700px){.mitem .md,.mitem.lt .md,.mitem:not(.hero):not(.evo) .md{display:block!important}}
 
@@ -1852,7 +1893,7 @@ window.XHD=(function(){
 <script>
 /* carregador do site: baixa (ou pega do cache offline) os arquivos do jogo, mostra o progresso e inicia o app */
 (function(){
- var F={"res":[["res_content","data/content.json?v=facebd0421"],["res_lpuzzles","data/lpuzzles.txt?v=6a7f7438c2"],["res_openings","data/openings.txt?v=0433d98604"],["res_explorer","data/explorer.txt?v=a49e3a075b"],["res_models","data/models.txt?v=d4b717e2fe"],["res_sfjs","data/sf.js?v=81cc4511ff"]],"intro":[["introfr","data/introfr.json?v=361b412139"],["introau","data/introau.txt?v=ce6089d3a7"],["introhdx","data/introhdx.json?v=efe43de4ba"]],"hd":"data/intro_hd.bin?v=2f137ab566","hd16":"data/intro_hd16.bin?v=873ca44d34","hdx16":"data/introhdx16.json?v=ffb050a168","histau":"data/historia.mp3?v=87e853c025","apoioau":"data/apoio.mp3?v=a67289dc4c","lichau":"data/lichess.mp3?v=420a0f7dec","wasm":"data/sf.wasm?v=c56761eebb","app":"data/app.js?v=15b6907e1d"};
+ var F={"res":[["res_content","data/content.json?v=facebd0421"],["res_lpuzzles","data/lpuzzles.txt?v=6a7f7438c2"],["res_openings","data/openings.txt?v=0433d98604"],["res_explorer","data/explorer.txt?v=a49e3a075b"],["res_models","data/models.txt?v=d4b717e2fe"],["res_sfjs","data/sf.js?v=81cc4511ff"]],"intro":[["introfr","data/introfr.json?v=361b412139"],["introau","data/introau.txt?v=ce6089d3a7"],["introhdx","data/introhdx.json?v=efe43de4ba"]],"hd":"data/intro_hd.bin?v=2f137ab566","hd16":"data/intro_hd16.bin?v=873ca44d34","hdx16":"data/introhdx16.json?v=ffb050a168","histau":"data/historia.mp3?v=87e853c025","apoioau":"data/apoio.mp3?v=a67289dc4c","lichau":"data/lichess.mp3?v=420a0f7dec","wasm":"data/sf.wasm?v=c56761eebb","app":"data/app.js?v=8114b92b37"};
  var c=navigator.connection||{},slow=!!(c.saveData||/(^|-)2g|3g/.test(c.effectiveType||''));
  var box=document.createElement('div');box.id='boot';box.innerHTML='<div class="bt">Rota do Mestre</div><div class="bb"><i></i></div><div class="bs">Preparando o tabuleiro…</div>';document.body.appendChild(box);
  var bar=box.querySelector('i'),msg=box.querySelector('.bs'),done=0,total=F.res.length+(slow?0:F.intro.length+1)+1;

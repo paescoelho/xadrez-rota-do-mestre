@@ -188,3 +188,87 @@ V102.ccOut=function(){
   return oH.apply(this,arguments);
  };
 })();
+
+/* ======================= v103: tela Nova partida em três linhas =======================
+ * 1. Mentor (linha inteira, para iniciantes): liga "Comenta cada lance".
+ * 2. Computador: barra deslizante de 800 a 3200 com o nome do nível (Fácil … Stockfish).
+ * 3. 24 Lendas (linha inteira). Computador e Lendas desligam o Treinador (pode ser ligado à mão).
+ * O "Treinador por voz" fica escondido e indisponível por enquanto (o código continua no jogo). */
+var V103={VOICE_OFF:true,last:2,legSeen:null};
+/* treinador por voz: fora de uso por enquanto */
+if(typeof V36!=='undefined'&&V103.VOICE_OFF){V36.enabled=function(){return false;};V36.btn=function(){try{var b=document.querySelector('.v36-hb');if(b)b.remove();}catch(e){}};}
+V103.esc=function(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+V103.lvName=function(i){return Engine.LEVEL_NAMES[i];};
+V103.lvElo=function(i){return Engine.LEVEL_ELO[i];};
+V103.LVTIP=['','Aprende as regras jogando','Erra de vez em quando','Joga sério, pune os erros','Forte e paciente','Stockfish com força limitada','Força máxima do Stockfish'];
+(function(){
+ if(typeof App==='undefined'||!App.setupGame)return;
+ var o=App.setupGame;
+ App.setupGame=function(){
+  var O=App.opts||{};
+  /* acabou de escolher uma lenda: o treinador começa desligado */
+  try{var sel=(typeof V74!=='undefined')?V74.sel:null;if(sel&&sel!==V103.legSeen){O.coach=false;O.process=false;}V103.legSeen=sel;}catch(e){}
+  var r=o.apply(this,arguments);
+  try{V103.build();}catch(e){if(window.console)console.error(e);}
+  return r;
+ };
+})();
+V103.build=function(){
+ var cur=UiJs.cur,O=App.opts;if(!cur||!O)return;
+ var seg=cur.querySelector('.seg'),grid=seg&&seg.querySelector('.segg');if(!grid)return;
+ cur.classList.add('v103-setup');
+ var leg=(typeof V74!=='undefined'&&V74.get)?V74.get(V74.sel):null;
+ var mode=leg?'leg':(O.opp===0?'mentor':'lv');
+ if(mode==='lv')V103.last=O.opp;
+ /* some com a grade antiga, a nota e o cartão grande da lenda */
+ grid.style.display='none';
+ [].forEach.call(seg.querySelectorAll('.segn,.v74-card'),function(x){x.remove();});
+ [].forEach.call(cur.querySelectorAll('.v36-card'),function(x){x.remove();});
+ cur.classList.remove('v36-has','v74-has');
+ var box=UiJs.el('div','v103-opp',seg);
+ /* 1. Mentor */
+ var ad=0;try{ad=Profile.d.adapt;}catch(e){}
+ var m=UiJs.el('button','v103-row v103-m'+(mode==='mentor'?' on':''),box);m.type='button';
+ m.innerHTML='<span class="v103-ic" aria-hidden="true">🎓</span><span class="v103-tx"><b>Mentor <u>para iniciantes</u></b><i>Comenta cada lance seu, mostra o motivo das jogadas dele e se adapta ao seu nível.</i></span><span class="v103-el"><b>'+ad+'</b><i>se adapta</i></span>';
+ m.onclick=function(){O.opp=0;try{V74.sel=null;}catch(e){}O.coach=true;O.process=false;App.setupGame();};
+ /* 2. Computador: barra de 800 a 3200 */
+ var lv=mode==='lv'?O.opp:V103.last;
+ var row=UiJs.el('div','v103-row v103-lv'+(mode==='lv'?' on':''),box);
+ row.innerHTML='<span class="v103-ln"><b></b><i></i></span><span class="v103-rg"><input type="range" min="1" max="6" step="1" aria-label="Força do computador"><span class="v103-tk" aria-hidden="true"><i>800</i><i></i><i></i><i>2000</i><i></i><i>3200</i></span></span>';
+ var rg=row.querySelector('input'),nb=row.querySelector('.v103-ln b'),ni=row.querySelector('.v103-ln i');
+ var show=function(i){nb.textContent=V103.lvName(i);ni.textContent=V103.lvElo(i)+' Elo';row.title=V103.LVTIP[i];rg.style.setProperty('--p',((i-1)/5*100)+'%');
+  [].forEach.call(row.querySelectorAll('.v103-tk i'),function(t,k){t.classList.toggle('on',k<=i-1);});};
+ rg.value=lv;show(lv);
+ var pick=function(i){O.opp=i;V103.last=i;try{V74.sel=null;}catch(e){}O.coach=false;O.process=false;App.setupGame();};
+ rg.oninput=function(){show(+rg.value);if(!row.classList.contains('on')){row.classList.add('on');m.classList.remove('on');lg.classList.remove('on');}};
+ rg.onchange=function(){pick(+rg.value);};
+ row.querySelector('.v103-ln').onclick=function(){if(mode!=='lv')pick(+rg.value);};
+ /* 3. Lendas */
+ var lg=UiJs.el('button','v103-row v103-lg'+(leg?' on':''),box);lg.type='button';lg.setAttribute('aria-haspopup','dialog');
+ var n=(typeof LENDAS!=='undefined')?LENDAS.length:24;
+ if(leg)lg.innerHTML='<span class="v103-ic fl" aria-hidden="true">'+leg.c+'</span><span class="v103-tx"><b>'+V103.esc(leg.n)+'</b><i>'+V103.esc(leg.st)+'</i></span><span class="v103-el"><b>'+leg.e+'</b><i>trocar ▾</i></span>';
+ else lg.innerHTML='<span class="v103-ic" aria-hidden="true">👑</span><span class="v103-tx"><b>'+n+' Lendas do xadrez</b><i>Carlsen, Kasparov, Fischer… abrem como nas partidas reais e jogam no estilo de cada um.</i></span><span class="v103-el"><b>▾</b><i>escolher</i></span>';
+ lg.onclick=function(){V74.open();};
+ requestAnimationFrame(function(){requestAnimationFrame(V103.fit);});
+ if(!V103.rz){V103.rz=1;window.addEventListener('resize',function(){if(document.querySelector('.v103-setup'))V103.fit();});}
+};
+/* cabe sem rolar: os temas do tabuleiro ocupam a altura que sobra; se faltar, saem primeiro as notas e as descrições */
+V103.fit=function(){
+ var cur=document.querySelector('.v103-setup');if(!cur)return;
+ var m=cur.closest('.main')||cur.parentNode;if(!m)return;
+ var tiles=cur.querySelectorAll('.theme-tile .theme-preview');if(!tiles.length)return;
+ var rows=Math.ceil(tiles.length/5);
+ var setH=function(h){[].forEach.call(tiles,function(t){t.style.height=h+'px';});};
+ var over=function(){var mr=m.getBoundingClientRect(),cr=cur.getBoundingClientRect(),pb=parseFloat(getComputedStyle(m).paddingBottom)||0;return Math.ceil(cr.bottom+pb-mr.bottom+m.scrollTop)+2;};
+ var hide=function(sel,on){[].forEach.call(cur.querySelectorAll(sel),function(e){e.style.display=on?'none':'';});};
+ cur.classList.remove('v103-tight','v103-tight2','v103-tight3');hide('.v33-fxd',false);hide('.seg .segn',false);
+ var MAX=window.innerWidth>=700?64:74,MIN=30;if(cur.querySelector('.v34-cont'))MIN=26;
+ setH(MIN);
+ var steps=[function(){hide('.v33-fxd',true);},function(){hide('.seg .segn',true);},function(){cur.classList.add('v103-tight');},function(){cur.classList.add('v103-tight2');},function(){cur.classList.add('v103-tight3');}];
+ for(var i=0;i<steps.length&&over()>0;i++)steps[i]();
+ var free=-over();
+ var h=Math.max(MIN,Math.min(MAX,MIN+Math.floor(free/rows)-1));
+ setH(h);
+ /* sobrou espaço com os temas no máximo: devolve a nota do efeito do tabuleiro */
+ if(h>=MAX){var fx=cur.querySelector('.v33-fxd');if(fx&&fx.style.display==='none'){fx.style.display='';if(over()>0)fx.style.display='none';}}
+};
