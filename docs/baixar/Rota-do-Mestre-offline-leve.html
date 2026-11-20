@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v101</title>
+<title>Xadrez · Rota do Mestre — v102</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1217,6 +1217,9 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v34-mb{padding:0 0 10px}
 .v34-mb .btns{margin:6px 0}
 .v34-mb .btn{width:100%;text-align:left}
+/* v104: Backup e Instalar dentro de Mais opções */
+.v34-acct .v34-mb .v104-in{margin:2px 0 10px;padding:10px 12px;background:rgba(255,255,255,.025)}
+.v34-mb .v104-in .btns{margin:6px 0 2px}.v34-mb .v104-in .btn{width:auto;text-align:center}
 .v34-acct .v32-acc>.p{display:none}
 .v34-acct .v32-acc .btns{margin:6px 0 4px}
 
@@ -77070,8 +77073,14 @@ V23.account=function(){
  /* 2. Lichess e Chess.com: v102, duas caixas no mesmo visual da do Google */
  if(typeof V102!=='undefined'){try{V102.liCard(cur);}catch(e){}try{V102.ccCard(cur);}catch(e){}}
  else{var x=V34.card(cur,'Lichess e Chess.com','v34-ax');V34.inside(x,function(){try{V32.chessForm(x);}catch(e){}});}
+ /* 5. Mais opções (recolhido) */
+ var det=document.createElement('details');det.className='v34-more';cur.appendChild(det);
+ var sm=document.createElement('summary');sm.textContent='Mais opções';det.appendChild(sm);
+ det.open=!!V34.moreOpen;det.ontoggle=function(){V34.moreOpen=det.open;};
+ var mb=UiJs.el('div','v34-mb',det);
+ /* v104: Backup e Instalar ficam aqui dentro, recolhidos */
  /* 3. Backup */
- var bk=V34.card(cur,'Backup em arquivo');
+ var bk=V34.card(mb,'Backup em arquivo','v104-in');
  V34.inside(bk,function(){
   UiJs.p('Último backup: '+(v.lastBackup?new Date(v.lastBackup).toLocaleDateString():'nunca')+'. Guarde o arquivo no Drive ou no e-mail.','muted small');
   UiJs.btns([['Baixar backup',V23.backupFile,'pri'],['Restaurar…',V34.restoreAsk]]);
@@ -77080,7 +77089,7 @@ V23.account=function(){
  try{
   var web=/^https?:$/.test(location.protocol),standalone=(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
   if(web&&!standalone){
-   var ins=V34.card(cur,'Instalar como aplicativo');
+   var ins=V34.card(mb,'Instalar como aplicativo','v104-in');
    V34.inside(ins,function(){
     if(V24.installEvt)UiJs.btns([['Instalar o app',function(){var e=V24.installEvt;V24.installEvt=null;e.prompt();e.userChoice.then(function(){V23.account();});},'pri']]);
     else if(/iphone|ipad|ipod/i.test(navigator.userAgent))UiJs.p('No iPhone: Compartilhar › "Adicionar à Tela de Início".','muted small');
@@ -77088,10 +77097,6 @@ V23.account=function(){
    });
   }
  }catch(e){}
- /* 5. Mais opções (recolhido) */
- var det=document.createElement('details');det.className='v34-more';cur.appendChild(det);
- var sm=document.createElement('summary');sm.textContent='Mais opções';det.appendChild(sm);
- var mb=UiJs.el('div','v34-mb',det);
  V34.inside(mb,function(){
   var bt=[];
   if(C&&C.user){bt.push(['Baixar todas as partidas da nuvem (PGN)',V23.cloudPgn]);}

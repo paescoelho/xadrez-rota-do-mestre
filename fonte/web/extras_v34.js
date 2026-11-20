@@ -319,8 +319,14 @@ V23.account=function(){
  /* 2. Lichess e Chess.com: v102, duas caixas no mesmo visual da do Google */
  if(typeof V102!=='undefined'){try{V102.liCard(cur);}catch(e){}try{V102.ccCard(cur);}catch(e){}}
  else{var x=V34.card(cur,'Lichess e Chess.com','v34-ax');V34.inside(x,function(){try{V32.chessForm(x);}catch(e){}});}
+ /* 5. Mais opções (recolhido) */
+ var det=document.createElement('details');det.className='v34-more';cur.appendChild(det);
+ var sm=document.createElement('summary');sm.textContent='Mais opções';det.appendChild(sm);
+ det.open=!!V34.moreOpen;det.ontoggle=function(){V34.moreOpen=det.open;};
+ var mb=UiJs.el('div','v34-mb',det);
+ /* v104: Backup e Instalar ficam aqui dentro, recolhidos */
  /* 3. Backup */
- var bk=V34.card(cur,'Backup em arquivo');
+ var bk=V34.card(mb,'Backup em arquivo','v104-in');
  V34.inside(bk,function(){
   UiJs.p('Último backup: '+(v.lastBackup?new Date(v.lastBackup).toLocaleDateString():'nunca')+'. Guarde o arquivo no Drive ou no e-mail.','muted small');
   UiJs.btns([['Baixar backup',V23.backupFile,'pri'],['Restaurar…',V34.restoreAsk]]);
@@ -329,7 +335,7 @@ V23.account=function(){
  try{
   var web=/^https?:$/.test(location.protocol),standalone=(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
   if(web&&!standalone){
-   var ins=V34.card(cur,'Instalar como aplicativo');
+   var ins=V34.card(mb,'Instalar como aplicativo','v104-in');
    V34.inside(ins,function(){
     if(V24.installEvt)UiJs.btns([['Instalar o app',function(){var e=V24.installEvt;V24.installEvt=null;e.prompt();e.userChoice.then(function(){V23.account();});},'pri']]);
     else if(/iphone|ipad|ipod/i.test(navigator.userAgent))UiJs.p('No iPhone: Compartilhar › "Adicionar à Tela de Início".','muted small');
@@ -337,10 +343,6 @@ V23.account=function(){
    });
   }
  }catch(e){}
- /* 5. Mais opções (recolhido) */
- var det=document.createElement('details');det.className='v34-more';cur.appendChild(det);
- var sm=document.createElement('summary');sm.textContent='Mais opções';det.appendChild(sm);
- var mb=UiJs.el('div','v34-mb',det);
  V34.inside(mb,function(){
   var bt=[];
   if(C&&C.user){bt.push(['Baixar todas as partidas da nuvem (PGN)',V23.cloudPgn]);}

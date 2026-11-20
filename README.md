@@ -3,6 +3,10 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v102 — Conta Google mais enxuta (20.11.2026)
+
+As caixas **Backup em arquivo** e **Instalar como aplicativo** foram para dentro de **Mais opções**, que fica recolhido. A tela abre só com Google, Lichess.org e Chess.com. Se a pessoa abrir "Mais opções", ele continua aberto quando a tela se atualiza.
+
 ## v101 — Conta Google: caixas separadas do Lichess e do Chess.com (20.11.2026)
 
 Na tela **Conta Google**, a caixa única "Lichess e Chess.com" virou duas caixas no mesmo visual da caixa do Google: ícone redondo (cavalo no branco para o Lichess, peão no verde para o Chess.com), título e subtítulo. Conectada, cada uma mostra **Conectado · sincronizado** em verde piscando, com borda verde, o endereço do perfil, os ratings e os botões **Sincronizar agora** e **Sair**.
