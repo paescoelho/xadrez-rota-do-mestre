@@ -35104,21 +35104,42 @@ var V87={API:'https://rota-turn.paescoelho.workers.dev/lichess',CK:'rdm-li-cnt',
  V87.fmt=function(n){try{return Number(n).toLocaleString('pt-BR');}catch(e){return String(n);}};
  V87.load=function(){try{var c=JSON.parse(localStorage.getItem(V87.CK)||'null');if(c&&c.players)V87.cnt=c;}catch(e){}};
  V87.cntHtml=function(){
-  if(!V87.cnt)V87.load();var c=V87.cnt;
-  return '<div class="v87-cnt'+(c?'':' v87-wait')+'"><div><s class="g"></s><span><b>'+(c?V87.fmt(c.players):'…')+'</b> jogadores</span></div><div><s class="y"></s><span><b>'+(c?V87.fmt(c.games):'…')+'</b> partidas em andamento</span></div></div>';
+  if(!V87.cnt)V87.load();var c=V87.cnt;var d=V87.disp||c;
+  return '<div class="v87-cnt'+(c?'':' v87-wait')+'"><div><s class="g"></s><span><b class="pl">'+(d?V87.fmt(d.players):'…')+'</b> jogadores</span></div><div><s class="y"></s><span><b class="gm">'+(d?V87.fmt(d.games):'…')+'</b> partidas em andamento</span></div></div>';
  };
  V87.paint=function(){
   var c=V87.cnt;if(!c)return;
   [].forEach.call(document.querySelectorAll('.v35-xb.li .v87-cnt'),function(e){e.outerHTML=V87.cntHtml();});
  };
+ /* v94: o número real do Lichess só muda a cada ~18s (o servidor consulta o Lichess a cada 20s,
+    pra não sobrecarregar), mas aqui o número sobe e desce de leve a cada 1 segundo - como o próprio
+    Lichess faz na home dele - pra parecer vivo. O valor real (de verdade, salvo) nunca muda por isso;
+    é só o texto na tela que balança perto dele e volta a se ajustar a cada atualização de verdade. */
+ V87.step=function(base,cur,band,maxStep){
+  var n=cur+Math.round((Math.random()-0.35)*maxStep);
+  if(n>base+band)n=base+band;
+  if(n<Math.max(0,base-band))n=Math.max(0,base-band);
+  return n;
+ };
+ V87.tick=function(){
+  if(!V87.cnt){clearInterval(V87.tickI);V87.tickI=null;return;}
+  if(!document.querySelector('.v35-home .v35-xb.li')){clearInterval(V87.tickI);V87.tickI=null;return;}
+  if(!V87.disp)V87.disp={players:V87.cnt.players,games:V87.cnt.games};
+  V87.disp.players=V87.step(V87.cnt.players,V87.disp.players,40,6);
+  V87.disp.games=V87.step(V87.cnt.games,V87.disp.games,20,4);
+  var pl=document.querySelector('.v35-xb.li .v87-cnt b.pl'),gm=document.querySelector('.v35-xb.li .v87-cnt b.gm');
+  if(pl)pl.textContent=V87.fmt(V87.disp.players);
+  if(gm)gm.textContent=V87.fmt(V87.disp.games);
+ };
  V87.counters=function(){
   V87.paint();
+  if(!V87.tickI)V87.tickI=setInterval(V87.tick,1000);
   /* enquanto a tela "Jogar online" estiver aberta, reagenda sempre - mesmo quando
      esta chamada não busca dados novos (evita o ciclo travar e o número ficar parado) */
   clearTimeout(V87.cntT);V87.cntT=setTimeout(function(){if(document.querySelector('.v35-home .v35-xb.li'))V87.counters();},18000);
   if(Date.now()-V87.cntAt<18000||V87.cntP)return;
   V87.cntP=fetch(V87.API,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){
-   if(j&&j.players>0){V87.cnt={players:j.players,games:j.games};V87.cntAt=Date.now();try{localStorage.setItem(V87.CK,JSON.stringify(V87.cnt));}catch(e){}V87.paint();}
+   if(j&&j.players>0){V87.cnt={players:j.players,games:j.games};V87.cntAt=Date.now();V87.disp={players:j.players,games:j.games};try{localStorage.setItem(V87.CK,JSON.stringify(V87.cnt));}catch(e){}V87.paint();}
   }).catch(function(){if(!V87.cnt)[].forEach.call(document.querySelectorAll('.v35-xb.li .v87-cnt.v87-wait'),function(e){e.remove();});}).then(function(){V87.cntP=null;});
  };
 

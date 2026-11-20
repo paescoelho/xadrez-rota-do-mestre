@@ -3,6 +3,10 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v94 — Números do Lichess balançando de leve a cada segundo (20.11.2026)
+
+- O valor real de jogadores e partidas continua vindo do Worker a cada ~20s (consultar o Lichess a cada 1s poderia fazer eles bloquearem o acesso, então isso não muda). Mas agora, a cada 1 segundo, o número mostrado no botão sobe e desce de leve perto do valor real — como o próprio Lichess faz na home dele — pra passar a sensação de que está ao vivo. O valor salvo de verdade nunca é alterado por essa oscilação; ela só mexe no texto da tela, e para sozinha quando a tela é fechada.
+
 ## v93 — Botões Lichess.org / Chess.com maiores (20.11.2026)
 
 - Em telas altas (acima de 720px de altura), os dois botões "Jogar no Lichess.org" e "Jogar via Chess.com" cresceram para aproveitar o espaço que sobrou com o balão único: ficaram uns 60px mais altos, com mais respiro interno e a faixa do selo um pouco maior. Em celulares baixos (abaixo de 720px), continuam do tamanho compacto de antes.
