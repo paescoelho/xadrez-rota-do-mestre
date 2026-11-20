@@ -3,6 +3,10 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v95 — Locução e frase na tela Apoio ou sugestão (20.11.2026)
+
+Ao abrir **Apoio ou sugestão**, toca uma locução curta e, entre o cartão do Pix e o da sugestão, a frase *"Uma boa ideia vale mais que mil contribuições. Deixe sua sugestão!"* vai surgindo palavra por palavra no ritmo da voz (tempos medidos na própria gravação). Ao terminar, a frase fica fixa e a segunda linha ganha um brilho dourado. Trocar o valor do Pix não repete a locução; sair da tela no meio cala o áudio. Com o som do jogo desligado, a frase surge no mesmo ritmo, sem voz. Funciona também na versão offline.
+
 ## v94 — Números do Lichess balançando de leve a cada segundo (20.11.2026)
 
 - O valor real de jogadores e partidas continua vindo do Worker a cada ~20s (consultar o Lichess a cada 1s poderia fazer eles bloquearem o acesso, então isso não muda). Mas agora, a cada 1 segundo, o número mostrado no botão sobe e desce de leve perto do valor real — como o próprio Lichess faz na home dele — pra passar a sensação de que está ao vivo. O valor salvo de verdade nunca é alterado por essa oscilação; ela só mexe no texto da tela, e para sozinha quando a tela é fechada.

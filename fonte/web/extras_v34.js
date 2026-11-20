@@ -372,6 +372,8 @@ V34.markSent=function(){try{var k=new Date().toDateString(),n=V34.sentToday()+1;
 /* uma tela só, sem abas e sem rolar: Pix em cima (primeiro), caixa de sugestão embaixo */
 V34.apoio=function(back){
  back=back||App.menu;V25.back=back;
+ /* redesenho da mesma tela (trocar o valor do Pix, mandar outra): não repete a locução */
+ var again95=!!(UiJs.cur&&UiJs.cur.classList&&UiJs.cur.classList.contains('v34-ap')&&UiJs.cur.isConnected);
  UiJs.page('Apoio ou sugestão',back);
  var cur=UiJs.cur,S=V34.sug;cur.classList.add('v34-ap');
  try{V25.d().seen=Date.now();Profile.save();}catch(e){}
@@ -387,6 +389,8 @@ V34.apoio=function(back){
  var c1=UiJs.el('button','btn pri',side,'Pix copia e cola');c1.onclick=function(){V25.copy(code,'Código Pix copiado. Cole no app do banco em "Pix copia e cola".');try{V25.d().copied=(V25.d().copied||0)+1;Profile.save();}catch(e){}};
  var c2=UiJs.el('button','btn',side,'Copiar chave Pix');c2.onclick=function(){V25.copy(V25.PIX.key,'Chave Pix copiada.');};
  UiJs.el('div','v34-apn',side,(sel>0?'R$ '+sel+',00 · ':'')+'Recebedor: Rodrigo Paes Coelho Santana');
+ /* v95: a frase entre o Pix e a sugestão, surgindo junto com a locução */
+ try{V95.frase(cur,again95);}catch(e){}
  /* 2. Sugestão */
  var sc=UiJs.el('div','v34-sgc',cur);
  sc.innerHTML='<div class="v34-aph"><span>💬</span><b>Mande uma sugestão</b><i>só o criador lê</i></div>';
@@ -411,6 +415,46 @@ V34.apoio=function(back){
  UiJs.el('div','v34-apf',cur,'Se for um erro, o jogo junta a versão e o tipo de aparelho. Nada é cobrado nem guardado no Pix: o código é gerado aqui mesmo.');
 };
 if(typeof V25!=='undefined')V25.page=function(back){V34.apoio(back);};
+/* ======================= v95: locução + frase na tela Apoio ou sugestão =======================
+ * A frase aparece palavra por palavra no ritmo do áudio (tempos medidos na própria gravação)
+ * e depois fica fixa. Som desligado ou áudio bloqueado: a frase surge no mesmo ritmo, sem som. */
+var V95={a:null,url:null,t0:0,raf:0,done:false,
+ L:[{t0:0.20,t1:3.05,w:'Uma boa ideia vale mais que mil contribuições.'},{t0:3.70,t1:4.80,w:'Deixe sua sugestão!'}]};
+V95.times=function(){/* início de cada palavra, proporcional às letras dentro de cada trecho falado */
+ var out=[];V95.L.forEach(function(l,li){var ws=l.w.split(' '),tot=ws.join('').length,acc=0;ws.forEach(function(w){out.push({w:w,line:li,t:l.t0+(l.t1-l.t0)*acc/tot});acc+=w.length;});});return out;};
+V95.src=function(){
+ if(V95.url)return V95.url;
+ if(typeof window!=='undefined'&&window.XAPOIOAU)return V95.url=window.XAPOIOAU;
+ var e=document.getElementById('res_apoioau');if(!e||!e.textContent)return null;
+ try{var bin=atob(e.textContent.trim()),u=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);V95.url=URL.createObjectURL(new Blob([u],{type:'audio/mpeg'}));}catch(err){return null;}
+ return V95.url;
+};
+V95.stop=function(){cancelAnimationFrame(V95.raf);V95.raf=0;if(V95.a){try{V95.a.pause();}catch(e){}}};
+V95.now=function(){/* posição na locução: o relógio do áudio quando ele está tocando, senão o relógio da tela */
+ var a=V95.a;if(a&&!a.paused&&a.currentTime>0)return a.currentTime;return (performance.now()-V95.t0)/1000;};
+V95.frase=function(cur,again){
+ var box=UiJs.el('div','v95-fr',cur),T=V95.times(),lines=[UiJs.el('div','v95-l1',box),UiJs.el('div','v95-l2',box)];
+ var spans=T.map(function(x){var s=document.createElement('span');s.textContent=x.w;lines[x.line].appendChild(s);lines[x.line].appendChild(document.createTextNode(' '));return s;});
+ box.setAttribute('aria-label',V95.L.map(function(l){return l.w;}).join(' '));
+ if(again&&(V95.done||!V95.raf)){box.classList.add('fix');spans.forEach(function(s){s.className='on';});return;}
+ if(again)return;/* a locução continua: o laço abaixo já procura a frase nova */
+ V95.stop();V95.done=false;V95.t0=performance.now();
+ var u=V95.src();
+ if(u&&UiJs.soundOn!==false){
+  try{if(!V95.a){V95.a=new Audio();V95.a.preload='auto';}V95.a.src=u;V95.a.currentTime=0;
+   var p=V95.a.play();if(p&&p.catch)p.catch(function(){});}catch(e){}
+ }
+ var end=V95.L[V95.L.length-1].t1+0.15;
+ var loop=function(){
+  var b=document.querySelector('.v95-fr');
+  if(!b){V95.stop();return;}/* saiu da tela: cala a locução */
+  var t=V95.now(),ss=b.querySelectorAll('span');
+  T.forEach(function(x,i){if(t>=x.t-0.04&&ss[i]&&!ss[i].classList.contains('on'))ss[i].classList.add('on');});
+  if(t>=end){V95.done=true;V95.raf=0;b.classList.add('fim');return;}
+  V95.raf=requestAnimationFrame(loop);
+ };
+ V95.raf=requestAnimationFrame(loop);
+};
 /* menu: "Apoio ou sugestão" */
 (function(){var o=App.menu;App.menu=function(){var r=o.apply(this,arguments);try{var b=V34.findItem(UiJs.root.querySelector('.menu'),'Apoiar o projeto');if(b){b.querySelector('.mt').textContent='Apoio ou sugestão';}}catch(e){}return r;};})();
 

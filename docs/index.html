@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v94</title>
+<title>Xadrez · Rota do Mestre — v95</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1372,6 +1372,18 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v34-sgc .v34-in{margin-top:6px;height:38px}
 .v34-sgc .v34-send{margin-top:8px;min-height:44px}
 .v34-apf{font-size:11px;color:#7d848c;line-height:1.35}
+/* v95: frase entre o Pix e a sugestão, no ritmo da locução */
+.v95-fr{text-align:center;margin:0 4px 10px;padding:2px 0;line-height:1.25;position:relative}
+.v95-fr span{display:inline-block;opacity:0;transform:translateY(7px);filter:blur(5px);transition:opacity .42s ease,transform .5s cubic-bezier(.2,.8,.2,1),filter .5s ease}
+.v95-fr span.on{opacity:1;transform:none;filter:none}
+.v95-fr.fix span{transition:none}
+.v95-l1{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:clamp(15px,2.3vh,17.5px);color:#e9dcc0}
+.v95-l2{margin-top:3px;font-weight:800;font-size:clamp(15.5px,2.4vh,18.5px);letter-spacing:.2px;color:#f3d98c}
+.v95-l2 span.on{background:linear-gradient(100deg,#f3d98c 0%,#f3d98c 40%,#fff6d6 50%,#f3d98c 60%,#f3d98c 100%);background-size:250% 100%;background-position:100% 0;-webkit-background-clip:text;background-clip:text;color:transparent}
+.v95-fr.fim .v95-l2 span{animation:v95shine 1.6s ease .1s 1 both}
+@keyframes v95shine{from{background-position:100% 0}to{background-position:0 0}}
+@media (prefers-reduced-motion:reduce){.v95-fr span{transition:opacity .3s;transform:none;filter:none}.v95-fr.fim .v95-l2 span{animation:none}}
+@media (max-height:700px){.v95-fr{margin-bottom:7px}.v95-l1{font-size:14px}.v95-l2{font-size:15px;margin-top:1px}}
 @media (max-height:640px){.v34-apf{display:none}.v34-ap .v34-aph i{display:none}}
 
 /* v49: Pix maior, ocupando o espaço livre da tela (sem rolar) */
@@ -1805,14 +1817,14 @@ window.XHD=(function(){
 <script>
 /* carregador do site: baixa (ou pega do cache offline) os arquivos do jogo, mostra o progresso e inicia o app */
 (function(){
- var F={"res":[["res_content","data/content.json?v=facebd0421"],["res_lpuzzles","data/lpuzzles.txt?v=6a7f7438c2"],["res_openings","data/openings.txt?v=0433d98604"],["res_explorer","data/explorer.txt?v=a49e3a075b"],["res_models","data/models.txt?v=d4b717e2fe"],["res_sfjs","data/sf.js?v=81cc4511ff"]],"intro":[["introfr","data/introfr.json?v=361b412139"],["introau","data/introau.txt?v=ce6089d3a7"],["introhdx","data/introhdx.json?v=efe43de4ba"]],"hd":"data/intro_hd.bin?v=2f137ab566","hd16":"data/intro_hd16.bin?v=873ca44d34","hdx16":"data/introhdx16.json?v=ffb050a168","histau":"data/historia.mp3?v=87e853c025","wasm":"data/sf.wasm?v=c56761eebb","app":"data/app.js?v=cdaae47bfe"};
+ var F={"res":[["res_content","data/content.json?v=facebd0421"],["res_lpuzzles","data/lpuzzles.txt?v=6a7f7438c2"],["res_openings","data/openings.txt?v=0433d98604"],["res_explorer","data/explorer.txt?v=a49e3a075b"],["res_models","data/models.txt?v=d4b717e2fe"],["res_sfjs","data/sf.js?v=81cc4511ff"]],"intro":[["introfr","data/introfr.json?v=361b412139"],["introau","data/introau.txt?v=ce6089d3a7"],["introhdx","data/introhdx.json?v=efe43de4ba"]],"hd":"data/intro_hd.bin?v=2f137ab566","hd16":"data/intro_hd16.bin?v=873ca44d34","hdx16":"data/introhdx16.json?v=ffb050a168","histau":"data/historia.mp3?v=87e853c025","apoioau":"data/apoio.mp3?v=a67289dc4c","wasm":"data/sf.wasm?v=c56761eebb","app":"data/app.js?v=ec1fcc8294"};
  var c=navigator.connection||{},slow=!!(c.saveData||/(^|-)2g|3g/.test(c.effectiveType||''));
  var box=document.createElement('div');box.id='boot';box.innerHTML='<div class="bt">Rota do Mestre</div><div class="bb"><i></i></div><div class="bs">Preparando o tabuleiro…</div>';document.body.appendChild(box);
  var bar=box.querySelector('i'),msg=box.querySelector('.bs'),done=0,total=F.res.length+(slow?0:F.intro.length+1)+1;
  function step(){done++;bar.style.width=Math.round(done*100/total)+'%';}
  function txt(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(u);return r.text();}).then(function(t){step();return t;});}
  function tag(id,t,type){var e=document.getElementById(id);if(!e){e=document.createElement('script');e.type=type||'text/plain';e.id=id;document.body.appendChild(e);}e.textContent=t;}
- window.XSFURL=new URL(F.wasm,location.href).href;window.XHISTAU=new URL(F.histau,location.href).href;
+ window.XSFURL=new URL(F.wasm,location.href).href;window.XHISTAU=new URL(F.histau,location.href).href;window.XAPOIOAU=new URL(F.apoioau,location.href).href;
  var jobs=F.res.map(function(x){return txt(x[1]).then(function(t){tag(x[0],t);});});
  if(slow){window.XLITE=true;tag('introfr','[]','application/json');tag('introhdx','null','application/json');}
  else{jobs=jobs.concat(F.intro.map(function(x){return txt(x[1]).then(function(t){tag(x[0],t,x[0]==='introau'?'text/plain':'application/json');});}));
