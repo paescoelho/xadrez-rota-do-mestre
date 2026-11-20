@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v100</title>
+<title>Xadrez · Rota do Mestre — v101</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1229,6 +1229,18 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v34-acct .v34-ag:has(.v34-on){border-color:rgba(76,210,138,.55);box-shadow:0 0 14px rgba(76,210,138,.15)}
 .v34-agh:has(.v34-on) .v34-agi{box-shadow:0 0 0 2px rgba(76,210,138,.6),0 0 10px rgba(76,210,138,.35)}
 @media (prefers-reduced-motion:reduce){.v34-agh b.v34-on,.v34-dot:after{animation:none}}
+/* v102: caixas do Lichess e do Chess.com no visual da caixa do Google */
+.v102-agi{overflow:hidden}
+.v102-ic{display:grid;place-items:center;width:100%;height:100%;font-size:25px;line-height:1}
+.v102-ic.li{background:#fff;color:#161512}
+.v102-ic.cc{background:linear-gradient(180deg,#8fc45a,#6a9d3c);color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.25)}
+.v102-rt{font-size:12.5px;color:#cfd6dc;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:9px;padding:6px 9px;margin:6px 0 2px;line-height:1.35}
+.v102-rt .v32-rt{color:inherit}
+.v102-fl{display:flex;gap:8px;margin:8px 0 4px;align-items:stretch}
+.v102-fl .fi{flex:1;min-width:0;height:42px;margin:0}
+.v102-fl .btn{flex:0 0 auto;margin:0;min-height:42px;padding:0 16px}
+.v102-lk{display:block;margin:6px 0 2px;padding:4px 0;background:none;border:0;color:#c9b27a;font-size:12.5px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+
 
 /* v39: ao tocar em História do xadrez, os bastões abrem junto com o pergaminho (antes o papel esticava e passava por cima dos bastões) */
 .mitem.hstb .hs-sc{transform-origin:center;transition:transform .36s cubic-bezier(.3,.7,.3,1)}
@@ -1837,7 +1849,7 @@ window.XHD=(function(){
 <script>
 /* carregador do site: baixa (ou pega do cache offline) os arquivos do jogo, mostra o progresso e inicia o app */
 (function(){
- var F={"res":[["res_content","data/content.json?v=facebd0421"],["res_lpuzzles","data/lpuzzles.txt?v=6a7f7438c2"],["res_openings","data/openings.txt?v=0433d98604"],["res_explorer","data/explorer.txt?v=a49e3a075b"],["res_models","data/models.txt?v=d4b717e2fe"],["res_sfjs","data/sf.js?v=81cc4511ff"]],"intro":[["introfr","data/introfr.json?v=361b412139"],["introau","data/introau.txt?v=ce6089d3a7"],["introhdx","data/introhdx.json?v=efe43de4ba"]],"hd":"data/intro_hd.bin?v=2f137ab566","hd16":"data/intro_hd16.bin?v=873ca44d34","hdx16":"data/introhdx16.json?v=ffb050a168","histau":"data/historia.mp3?v=87e853c025","apoioau":"data/apoio.mp3?v=a67289dc4c","lichau":"data/lichess.mp3?v=420a0f7dec","wasm":"data/sf.wasm?v=c56761eebb","app":"data/app.js?v=66d05514ce"};
+ var F={"res":[["res_content","data/content.json?v=facebd0421"],["res_lpuzzles","data/lpuzzles.txt?v=6a7f7438c2"],["res_openings","data/openings.txt?v=0433d98604"],["res_explorer","data/explorer.txt?v=a49e3a075b"],["res_models","data/models.txt?v=d4b717e2fe"],["res_sfjs","data/sf.js?v=81cc4511ff"]],"intro":[["introfr","data/introfr.json?v=361b412139"],["introau","data/introau.txt?v=ce6089d3a7"],["introhdx","data/introhdx.json?v=efe43de4ba"]],"hd":"data/intro_hd.bin?v=2f137ab566","hd16":"data/intro_hd16.bin?v=873ca44d34","hdx16":"data/introhdx16.json?v=ffb050a168","histau":"data/historia.mp3?v=87e853c025","apoioau":"data/apoio.mp3?v=a67289dc4c","lichau":"data/lichess.mp3?v=420a0f7dec","wasm":"data/sf.wasm?v=c56761eebb","app":"data/app.js?v=e8f2215941"};
  var c=navigator.connection||{},slow=!!(c.saveData||/(^|-)2g|3g/.test(c.effectiveType||''));
  var box=document.createElement('div');box.id='boot';box.innerHTML='<div class="bt">Rota do Mestre</div><div class="bb"><i></i></div><div class="bs">Preparando o tabuleiro…</div>';document.body.appendChild(box);
  var bar=box.querySelector('i'),msg=box.querySelector('.bs'),done=0,total=F.res.length+(slow?0:F.intro.length+1)+1;

@@ -105,3 +105,86 @@ V98.run=function(){
   return r;
  };
 })();
+
+/* ======================= v102: Conta Google — caixas separadas do Lichess e do Chess.com =======================
+ * Mesmo visual da caixa do Google: ícone redondo, título e, quando ligada, "Conectado · sincronizado" em verde
+ * piscando, com borda verde. Lichess: entra pelo próprio Lichess (sem senha). Chess.com: só o nome de usuário. */
+var V102={LI_ICO:'<span class="v102-ic li" aria-hidden="true">♞</span>',CC_ICO:'<span class="v102-ic cc" aria-hidden="true">♟</span>',edit:{li:false,cc:false}};
+V102.esc=function(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+V102.redraw=function(){try{if(UiJs.root&&UiJs.root.querySelector('.v23-acct'))V23.account();}catch(e){}};
+V102.head=function(card,ico,on,title,sub){
+ var hd=UiJs.el('div','v34-agh',card);
+ hd.innerHTML='<span class="v34-agi v102-agi">'+ico+'</span><span><b'+(on?' class="v34-on"><span class="v34-dot" aria-hidden="true"></span>Conectado · sincronizado':'>'+title)+'</b><i>'+sub+'</i></span>';
+};
+V102.rt=function(card,site){try{var h=V32.rtLine(site);if(h){var r=UiJs.el('div','v102-rt',card);r.innerHTML=h.replace('Ratings: ','');}}catch(e){}};
+V102.sync=function(){try{V32.auto(true,true);}catch(e){}setTimeout(V102.redraw,4000);};
+/* campo de usuário dentro da caixa, com botão ao lado */
+V102.field=function(card,site,val,label){
+ var w=UiJs.el('div','v102-fl',card);
+ var i=document.createElement('input');i.type='text';i.className='fi';i.placeholder='Seu usuário no '+(site==='li'?'Lichess':'Chess.com');i.value=val||'';i.autocomplete='off';i.autocapitalize='off';i.spellcheck=false;w.appendChild(i);
+ var b=UiJs.el('button','btn'+(site==='cc'?' pri':''),w,label);b.type='button';
+ var go=function(){var n=i.value.trim().replace(/^@/,'');if(n.length<2){UiJs.toast('Digite o nome de usuário.');i.focus();return;}V32.setUser(site,n);V102.edit[site]=false;UiJs.toast(site==='li'?'Usuário do Lichess salvo.':'Chess.com conectado. Buscando suas partidas…');if(site==='cc')V102.sync();V102.redraw();};
+ b.onclick=go;i.onkeydown=function(e){if(e.key==='Enter')go();};
+ return i;
+};
+V102.liCard=function(cur){
+ var a=V32.acc(),v=V32.d(),au=(typeof V83!=='undefined')?V83.auth():null;
+ var user=(au&&au.user)||a.lichess||'';
+ var ver=!!(v.li&&v.li.ver&&V26.nk(v.li.user)===V26.nk(a.lichess));
+ var on=!!(au&&au.user)||ver;
+ var c=V34.card(cur,null,'v34-ag v102-card v102-li');
+ V102.head(c,V102.LI_ICO,on,'Lichess.org',on?'lichess.org/@/'+V102.esc(user):(user?'@'+V102.esc(user)+' · ainda não confirmado':'Jogue valendo rating e importe suas partidas'));
+ V34.inside(c,function(){
+  if(on){
+   UiJs.p('Suas partidas de lá são importadas e analisadas sozinhas. Você também joga no Lichess aqui dentro, valendo rating.','muted small');
+   V102.rt(c,'li');
+   UiJs.btns([['Sincronizar agora',V102.sync,'pri'],['Sair',V102.liOut]]);
+  }else{
+   UiJs.p('O próprio Lichess confirma quem é você: o jogo nunca vê a senha.','muted small');
+   if(user)V102.rt(c,'li');
+   UiJs.btns([['Entrar com Lichess',V102.liIn,'pri']]);
+   if(V102.edit.li||!user){var t=UiJs.el('button','v102-lk',c,user?'Cancelar':'Ou só informe o usuário (partidas públicas)');t.type='button';
+    if(!user&&!V102.edit.li){t.onclick=function(){V102.edit.li=true;V102.redraw();};}
+    else{t.onclick=function(){V102.edit.li=false;V102.redraw();};}
+    if(V102.edit.li)V102.field(c,'li',user,'Salvar');}
+   else{var t2=UiJs.el('button','v102-lk',c,'Trocar usuário');t2.type='button';t2.onclick=function(){V102.edit.li=true;V102.redraw();};}
+  }
+ });
+};
+V102.liIn=function(){try{sessionStorage.setItem('rdm-v102',String(Date.now()));}catch(e){}if(typeof V83!=='undefined')V83.login();else V32.liStart();};
+V102.liOut=function(){
+ var au=(typeof V83!=='undefined')?V83.auth():null;
+ UiJs.modal('Sair do Lichess neste aparelho?','A autorização é revogada no Lichess. Suas partidas e o seu rating lá não mudam, e as partidas já importadas continuam aqui.',[['Sair',function(){
+  try{if(au){if(V83.close)V83.close();fetch(V83.host()+'/api/token',{method:'DELETE',headers:{Authorization:'Bearer '+au.tok}}).catch(function(){});V83.saveAuth(null);V83.acc=null;}}catch(e){}
+  try{V32.setUser('li','');}catch(e){}
+  V102.redraw();UiJs.toast('Lichess desconectado.');},'warn'],['Continuar conectado',null,'pri']]);
+};
+V102.ccCard=function(cur){
+ var a=V32.acc(),user=a.chesscom||'',on=!!user&&!V102.edit.cc;
+ var c=V34.card(cur,null,'v34-ag v102-card v102-cc');
+ V102.head(c,V102.CC_ICO,on,'Chess.com',on?'chess.com/member/'+V102.esc(user):'Importe suas partidas para análise');
+ V34.inside(c,function(){
+  if(on){
+   UiJs.p('As partidas públicas de lá chegam sozinhas e viram análise e Aula da semana. Nenhuma senha é pedida.','muted small');
+   V102.rt(c,'cc');
+   UiJs.btns([['Sincronizar agora',V102.sync,'pri'],['Sair',V102.ccOut]]);
+  }else{
+   UiJs.p('Basta o nome de usuário: as partidas do Chess.com são públicas. O jogo nunca pede a senha.','muted small');
+   V102.field(c,'cc',user,'Conectar');
+   if(user){var t=UiJs.el('button','v102-lk',c,'Cancelar');t.type='button';t.onclick=function(){V102.edit.cc=false;V102.redraw();};}
+  }
+ });
+};
+V102.ccOut=function(){
+ UiJs.modal('Desconectar o Chess.com?','As partidas já importadas continuam aqui. Novas partidas deixam de ser buscadas.',[['Desconectar',function(){try{V32.setUser('cc','');}catch(e){}V102.redraw();UiJs.toast('Chess.com desconectado.');},'warn'],['Continuar conectado',null,'pri']]);
+};
+/* login do Lichess começado na Conta: ao voltar, abre a Conta (e não a tela de jogar) */
+(function(){
+ if(typeof V83==='undefined'||!V83.home)return;
+ var oH=V83.home;
+ V83.home=function(){
+  var f=0;try{f=+sessionStorage.getItem('rdm-v102')||0;}catch(e){}
+  if(f){try{sessionStorage.removeItem('rdm-v102');}catch(e){}if(Date.now()-f<15*60000&&V83.auth()){V34.accBack=App.menu;return V23.account();}}
+  return oH.apply(this,arguments);
+ };
+})();

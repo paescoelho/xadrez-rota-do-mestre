@@ -316,9 +316,9 @@ V23.account=function(){
    UiJs.btns([['Entrar com Google',function(){v.cloudOn=true;Profile.save();C.login();},'pri']]);
   }
  });
- /* 2. Lichess e Chess.com, aqui mesmo */
- var x=V34.card(cur,'Lichess e Chess.com','v34-ax');
- V34.inside(x,function(){try{V32.chessForm(x);}catch(e){}});
+ /* 2. Lichess e Chess.com: v102, duas caixas no mesmo visual da do Google */
+ if(typeof V102!=='undefined'){try{V102.liCard(cur);}catch(e){}try{V102.ccCard(cur);}catch(e){}}
+ else{var x=V34.card(cur,'Lichess e Chess.com','v34-ax');V34.inside(x,function(){try{V32.chessForm(x);}catch(e){}});}
  /* 3. Backup */
  var bk=V34.card(cur,'Backup em arquivo');
  V34.inside(bk,function(){
