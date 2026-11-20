@@ -3,6 +3,10 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v110 — Grupo "Partida" e botões do mesmo tamanho (20.11.2026)
+
+Em Nova partida, os rótulos Ritmo, Cor e Mentor saíram: as três linhas ficam agrupadas sob **PARTIDA** na vertical, como "Adversário" e "Tabuleiro". Os botões do Mentor viraram **Comentando cada lance** e **Comentários no final** (Processo de pensamento continua igual). Os nove botões têm a mesma altura e ocupam a largura toda, com o texto centralizado. Em celular pequeno, a tela aperta primeiro as outras partes e só depois diminui os temas do tabuleiro.
+
 ## v109 — Temas do tabuleiro quadrados (20.11.2026)
 
 As miniaturas dos temas do tabuleiro agora são sempre quadradas e proporcionais: ocupam a largura da coluna e, em tela baixa, diminuem por igual (largura e altura juntas) para a tela continuar sem rolar.

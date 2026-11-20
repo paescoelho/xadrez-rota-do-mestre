@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v109</title>
+<title>Xadrez · Rota do Mestre — v110</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1361,6 +1361,17 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 /* v109: temas quadrados, centralizados na coluna */
 .v103-setup .theme-tile{display:flex;align-items:center;justify-content:center}
 .v103-setup .theme-tile .theme-preview{flex:none;margin:0 auto}
+/* v110: grupo "Partida" (Ritmo, Cor, Mentor) com "Partida" na vertical e botões todos da mesma altura */
+.v103-setup .v110-grp{display:flex;align-items:stretch;gap:8px;margin:0 0 clamp(6px,1.1vh,10px)}
+.v110-in{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.v103-setup .v110-in .seg.v104-inl{margin:0}
+.v103-setup .v110-in .segg{gap:6px}
+.v103-setup .v110-in .sb{height:52px;min-height:0;padding:3px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:1px}
+.v103-setup .v110-in .sbt{font-size:clamp(12.5px,3.4vw,14px);line-height:1.15;text-wrap:balance}
+.v103-setup .v110-in .sbs{font-size:10.5px;line-height:1.1}
+.v103-setup.v103-tight .v110-in .sb{height:48px}
+.v103-setup.v103-tight2 .v110-in .sb{height:44px}.v103-setup.v103-tight2 .v110-in{gap:5px}
+.v103-setup.v103-tight3 .v110-in .sb{height:40px}
 /* treinador por voz: indisponível por enquanto */
 .v36-card,.v36-hb{display:none!important}
 /* com a nova linha, os temas do tabuleiro crescem quando há altura sobrando */

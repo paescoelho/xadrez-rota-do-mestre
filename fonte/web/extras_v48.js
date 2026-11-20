@@ -259,6 +259,17 @@ V103.build=function(){
   sg.classList.add('v104-inl');l.textContent=nm;
   if(nm==='Ritmo')[].forEach.call(sg.querySelectorAll('.sb .sbt'),function(b){b.textContent=b.textContent.replace(/^Rápida 10\+5$/,'10 min').replace(/^Clássica 30\+20$/,'30 min');});
  });
+ /* v110: Ritmo, Cor e Mentor sem rótulo, agrupados sob "Partida" na vertical; textos do Mentor */
+ var ins=[].slice.call(cur.querySelectorAll('.seg.v104-inl'));
+ if(ins.length){
+  var grp=document.createElement('div');grp.className='v110-grp';
+  var pv=document.createElement('div');pv.className='v106-vl';pv.setAttribute('aria-hidden','true');pv.innerHTML='<i></i><span>Partida</span><i></i>';
+  var gi=document.createElement('div');gi.className='v110-in';
+  ins[0].parentNode.insertBefore(grp,ins[0]);grp.appendChild(pv);grp.appendChild(gi);
+  ins.forEach(function(sg){gi.appendChild(sg);var l=sg.querySelector('.segl');if(l)l.style.display='none';
+   if(l&&l.textContent==='Mentor')[].forEach.call(sg.querySelectorAll('.sb .sbt'),function(b){b.textContent=b.textContent.replace(/^Comenta cada lance$/,'Comentando cada lance').replace(/^Só no fim$/,'Comentários no final');});
+  });
+ }
  /* v105: sem a nota "Dica ou desfazer…" (vira um balão na partida, na hora em que acontece) */
  [].forEach.call(cur.querySelectorAll('.segn'),function(n){if(/^Dica ou desfazer/.test(n.textContent))n.remove();});
  /* v105: Começar e Continuar lado a lado, mesma altura; sem partida salva, Começar ocupa a linha toda */
@@ -316,11 +327,12 @@ V103.fit=function(){
  /* v109: temas quadrados: no máximo a largura da coluna */
  var tl=tiles[0].parentNode,tcs=getComputedStyle(tl),colW=Math.floor(tl.clientWidth-(parseFloat(tcs.paddingLeft)||0)-(parseFloat(tcs.paddingRight)||0));
  var MAX=Math.max(30,colW),MIN=30;if(cur.querySelector('.v34-cont'))MIN=26;
- setH(MIN);
+ /* v110: primeiro aperta o resto; os temas só ficam menores que 46 px se não houver outro jeito */
+ var TGT=Math.min(MAX,46);setH(TGT);
  var steps=[function(){hide('.v33-fxd',true);},function(){hide('.seg .segn',true);},function(){cur.classList.add('v103-tight');},function(){cur.classList.add('v103-tight2');},function(){cur.classList.add('v103-tight3');}];
  for(var i=0;i<steps.length&&over()>0;i++)steps[i]();
  var free=-over();
- var h=Math.max(MIN,Math.min(MAX,MIN+Math.floor(free/rows)-1));
+ var h=Math.max(MIN,Math.min(MAX,TGT+Math.floor(free/rows)-1));
  setH(h);V103.h=h;
  /* sobrou espaço com os temas no máximo: devolve a nota do efeito do tabuleiro */
  if(h>=MAX){var fx=cur.querySelector('.v33-fxd');if(fx&&fx.style.display==='none'){fx.style.display='';if(over()>0)fx.style.display='none';}}
