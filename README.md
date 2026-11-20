@@ -3,6 +3,16 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v117 — "Seu maior adversário" enxuto e sem rolar (20.11.2026)
+
+A tela foi refeita para caber no celular sem rolar, com cerca de um terço do texto:
+- **Título curto:** "Vença você de 3 meses atrás", com a linha "Mesmo estilo, mesmos erros. Não muda o seu Elo."
+- **Abas de origem:** Deste jogo · Lichess · Chess.com, cada uma com o seu status (✓ pronto, 🔒 faltam X partidas, importar ou ligar conta).
+- **Sem histórico:** um cartão claro, "🔒 Ainda não existe um você do passado", com os dois caminhos: a barra "X de 20 partidas" com **Jogar agora**, ou importar do Lichess/Chess.com pelo nome de usuário (não precisa ter jogado aqui).
+- **Fantasma pronto:** escolha do mês, "você em agosto × você hoje" com o placar, as duas maiores mudanças e três etiquetas de como ele joga. O radar, as listas completas e a explicação da medição foram para **Ver detalhes ›**.
+- **Duelo:** cor e ritmo (Sem relógio · 10 min · 30 min) numa linha cada e o botão **Desafiar você de agosto**.
+- **Meu DNA** (enviar o seu clone a um amigo) ficou no rodapé.
+
 ## v116 — Painel de evolução reorganizado (20.11.2026)
 
 O Painel foi refeito para responder, nesta ordem, às perguntas do jogador. A mesma estrutura serve ao iniciante (blocos travados que vão acendendo) e ao veterano:

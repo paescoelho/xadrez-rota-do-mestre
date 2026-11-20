@@ -36000,5 +36000,169 @@ V116.partidas=function(){
 };
 if(typeof Pages!=='undefined')Pages.profile=V116.page;
 
+/* ======================= v117: "Seu maior adversário" enxuto, sem rolar =======================
+ * Título curto · abas de origem (Deste jogo / Lichess / Chess.com) com o status de cada uma · cartão do fantasma
+ * (mês, comparação, placar, etiquetas) ou estado vazio claro com os caminhos para liberar · duelo compacto ·
+ * detalhes (radar, listas, medição) numa tela à parte · Meu DNA no rodapé. */
+var V117={src:null,month:null};
+V117.esc=function(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+V117.nf=function(x){return String(Math.round((+x||0)*10)/10).replace('.',',');};
+V117.ML=function(k){var M=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];return k&&k.length>=7?M[+k.slice(5,7)-1]:'';};
+V117.MLong=function(k){var M=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];return k&&k.length>=7?M[+k.slice(5,7)-1]:'';};
+V117.MIN=function(){try{return Mind.MIN_GAMES||20;}catch(e){return 20;}};
+V117.games=function(){try{return Mind.games().length;}catch(e){return 0;}};
+V117.today=function(){var me=null;try{me=Dna.now();}catch(e){}if(me&&me.e)return me.e;try{var v=Profile.combined()[0];return v>0?v:0;}catch(e){return 0;}};
+/* estado de cada origem */
+V117.state=function(){
+ var me=null,ps=[];try{me=Dna.now();}catch(e){}try{ps=Dna.past()||[];}catch(e){}
+ var out={jogo:{me:me,ps:ps,ready:!!me}};
+ ['li','cc'].forEach(function(s){var u='';try{u=V72.user(s)||'';}catch(e){}var x=null;try{x=V72.d()[s];}catch(e){}
+  var ok=!!(x&&u&&V26.nk(x.user)===V26.nk(u));out[s]={user:u,x:ok?x:null,ready:ok};});
+ return out;
+};
+/* etiquetas curtas de como o fantasma joga, a partir dos números do DNA */
+V117.tags=function(d){
+ var t=[];if(!d)return t;
+ try{var w=Dna.firstMove?Dna.firstMove(d.ow,0):null;if(w)t.push('abre com '+w);}catch(e){}
+ try{var ph=d.ph||[],n=['abertura','meio-jogo','final'],wi=0;for(var i=1;i<3;i++)if(ph[i]>ph[wi])wi=i;if(ph.length)t.push('erra mais no '+n[wi]);}catch(e){}
+ if(d.fa!=null&&d.fa>=30)t.push('pressa: '+d.fa+'% em 5 s');
+ if(+d.tl>1.5)t.push('tilt depois de errar');
+ if(d.ag!=null)t.push(d.ag>=36?'agressivo':(d.ag<20?'posicional':'equilibrado'));
+ return t.slice(0,3);
+};
+/* as duas maiores mudanças entre o fantasma e você hoje */
+V117.changes=function(ghost,me){
+ var out=[];if(!ghost||!me)return out;
+ try{var an=Evo.axes(),at=ghost.ax||[],dif=[];
+  for(var i=0;i<an.length;i++){var a=an[i].val,b=at[i];if(a>=0&&b!=null&&b>=0)dif.push([an[i].label,Math.round(a-b)]);}
+  dif.sort(function(x,y){return Math.abs(y[1])-Math.abs(x[1]);});
+  dif.slice(0,1).forEach(function(x){if(x[1])out.push({t:x[0]+' '+(x[1]>0?'+':'')+x[1],up:x[1]>0});});}catch(e){}
+ if(ghost.bl!=null&&me.bl!=null&&ghost.bl!==me.bl)out.push({t:'gafes '+V117.nf(ghost.bl)+' → '+V117.nf(me.bl),up:me.bl<ghost.bl});
+ return out.slice(0,2);
+};
+V117.page=function(){
+ UiJs.page('Seu maior adversário',App.menu);
+ var cur=UiJs.cur;cur.classList.add('v117');
+ var S=V117.state(),MIN=V117.MIN(),n=V117.games();
+ var hd=UiJs.el('div','v117-hd',cur);hd.innerHTML='<b>Vença você de 3 meses atrás</b><span>Mesmo estilo, mesmos erros. Não muda o seu Elo.</span>';
+ /* origem padrão: a primeira que estiver pronta */
+ if(!V117.src||!S[V117.src])V117.src=S.jogo.ready?'jogo':(S.li.ready?'li':(S.cc.ready?'cc':'jogo'));
+ var tabs=UiJs.el('div','v117-tabs',cur);
+ [['jogo','Deste jogo',S.jogo.ready?'<em class="ok">✓ pronto</em>':'<em>🔒 faltam '+Math.max(1,MIN-n)+'</em>'],
+  ['li','♞ Lichess',S.li.ready?'<em class="ok">✓ pronto</em>':(S.li.user?'<em>importar</em>':'<em>ligar conta</em>')],
+  ['cc','♟ Chess.com',S.cc.ready?'<em class="ok">✓ pronto</em>':(S.cc.user?'<em>importar</em>':'<em>ligar conta</em>')]].forEach(function(x){
+  var b=UiJs.el('button','v117-tab'+(V117.src===x[0]?' on':''),tabs);b.type='button';b.innerHTML='<b>'+x[1]+'</b>'+x[2];
+  b.onclick=function(){V117.src=x[0];V117.month=null;V117.page();};
+ });
+ var card=UiJs.el('div','v117-card',cur),ready=false,play=null,label='',ghost=null;
+ if(V117.src==='jogo'){
+  var J=S.jogo;
+  if(!J.ready){V117.empty(card,n,MIN);}
+  else{
+   ready=true;var ps=J.ps||[],me=J.me,target=Profile.monthKey(Date.now()-90*86400000),defK=null;
+   ps.forEach(function(x){if(x.m<=target)defK=x.m;});if(!defK&&ps.length)defK=ps[0].m;
+   if(!V117.month||(V117.month!=='hoje'&&!ps.some(function(x){return x.m===V117.month;})))V117.month=defK||'hoje';
+   var ch=UiJs.el('div','v117-ms',card);
+   ps.slice(-3).forEach(function(x){var b=UiJs.el('button',V117.month===x.m?'on':'',ch,V117.ML(x.m));b.type='button';b.onclick=function(){V117.month=x.m;V117.page();};});
+   var bh=UiJs.el('button',V117.month==='hoje'?'on':'',ch,'hoje');bh.type='button';bh.onclick=function(){V117.month='hoje';V117.page();};
+   ghost=me;ps.forEach(function(x){if(x.m===V117.month)ghost=x;});
+   var key='past:'+(V117.month==='hoje'?Profile.monthKey(Date.now()):V117.month);
+   var gl=V117.month==='hoje'?'seu espelho':'você em '+V117.ML(V117.month);
+   V117.vs(card,gl,ghost.e,me.e,Dna.scoreTxt(key));
+   if(!ps.length)UiJs.el('div','v117-note',card,'O primeiro retrato mensal é deste mês: por enquanto, enfrente o seu espelho.');
+   V117.chips(card,V117.month==='hoje'?[]:V117.changes(ghost,me),V117.tags(ghost));
+   label=V117.month==='hoje'?'Desafiar o seu espelho':'Desafiar você de '+V117.MLong(V117.month);
+   var nm='Você · '+(V117.month==='hoje'?'hoje':Dna.monthLabel(V117.month));
+   play=function(){App.newGhostGame(ghost,nm,key,Dna.duelColor||0);};
+  }
+ }else{
+  var s=V117.src,X=S[s],SN=V72.SITES[s].n;
+  if(!X.ready)V117.site(card,s,X.user);
+  else{
+   ready=true;var d=X.x.dna;ghost=d;
+   UiJs.el('div','v117-src',card,'Suas partidas do '+SN+' de '+V117.MLong(d.m)+' · '+d.g+' partidas · rating '+d.site);
+   V117.vs(card,'você em '+V117.ML(d.m),d.e,V117.today(),Dna.scoreTxt('ext:'+s+':'+d.m));
+   var tg=V117.tags(d);
+   if(d.real==null&&d.meas!=null)tg=tg.slice(0,2).concat(['medindo erros '+d.meas+'%']);
+   V117.chips(card,[],tg);
+   label='Desafiar você de '+V117.MLong(d.m);play=function(){V72.play(s);};
+   var up=UiJs.el('a','v117-up',card.querySelector('.v117-foot')||card,V72.busy===s?'Buscando…':'Atualizar');up.onclick=function(){if(!V72.busy)V72.importSite(s,null);};
+  }
+ }
+ if(ready){
+  /* duelo: cor e ritmo numa linha cada, como em Nova partida */
+  var O=App.opts||{},seg=function(opts){var r=UiJs.el('div','v117-seg',cur);opts.forEach(function(o){var b=UiJs.el('button',o[2]?'on':'',r,o[0]);b.type='button';b.onclick=o[1];});};
+  seg([['Brancas',function(){Dna.duelColor=1;V117.page();},Dna.duelColor===1],['Pretas',function(){Dna.duelColor=-1;V117.page();},Dna.duelColor===-1],['Sorteio',function(){Dna.duelColor=0;V117.page();},!Dna.duelColor]]);
+  seg([['Sem relógio',function(){O.cat='std';V117.page();},O.cat==='std'||!O.cat],['10 min',function(){O.cat='rapid';V117.page();},O.cat==='rapid'],['30 min',function(){O.cat='classic';V117.page();},O.cat==='classic']]);
+  var go=UiJs.el('button','btn pri wide v117-go',cur,label);go.type='button';go.onclick=play;
+  V117.ghost=ghost;
+ }
+ var ft=UiJs.el('div','v117-ft',cur);
+ var dn=UiJs.el('a','',ft,'Meu DNA · envie o seu clone a um amigo ›');dn.onclick=function(){Dna.home();};
+ try{var tot=Dna.scoreTxt('past:',true)||'';if(!/^0V 0E 0D/.test(tot))UiJs.el('span','',ft,'Placar geral '+tot);}catch(e){}
+};
+V117.vs=function(card,gl,ge,me,score){
+ var r=UiJs.el('div','v117-vs',card);
+ r.innerHTML='<span class="g"><i>'+V117.esc(gl)+'</i><b>'+(ge?Number(ge).toLocaleString('pt-BR'):'—')+'</b></span><em>×</em><span class="m"><i>você hoje</i><b>'+(me?Number(me).toLocaleString('pt-BR'):'—')+'</b></span><span class="sc"><i>placar</i><b>'+V117.esc(score||'0V 0E 0D')+'</b></span>';
+};
+V117.chips=function(card,changes,tags){
+ var w=UiJs.el('div','v117-chips',card);
+ changes.forEach(function(c){UiJs.el('span','c '+(c.up?'up':'dn'),w,c.t);});
+ tags.forEach(function(t){UiJs.el('span','t',w,t);});
+ var f=UiJs.el('div','v117-foot',card);var a=UiJs.el('a','v117-det',f,'Ver detalhes ›');a.onclick=V117.details;
+};
+/* estado vazio: os dois caminhos para liberar */
+V117.empty=function(card,n,MIN){
+ card.classList.add('empty');
+ UiJs.el('div','v117-et',card,'🔒 Ainda não existe um você do passado');
+ var p=UiJs.el('div','v117-path',card);
+ p.innerHTML='<div class="v117-pl"><span>Neste jogo</span><b>'+n+' de '+MIN+' partidas</b></div><div class="v117-bar"><i style="width:'+Math.max(3,Math.round(n*100/MIN))+'%"></i></div>';
+ var b=UiJs.el('button','btn pri wide v117-pg',p,'Jogar agora');b.type='button';b.onclick=App.setupGame;
+ UiJs.el('div','v117-or',card,'Ou importe do Lichess ou do Chess.com · não precisa ter jogado aqui');
+ V117.field(card,null);
+};
+V117.site=function(card,s,user){
+ card.classList.add('empty');var SN=V72.SITES[s].n;
+ if(user){
+  UiJs.el('div','v117-et',card,'Você de 3 meses atrás no '+SN);
+  UiJs.el('div','v117-or',card,'@'+user+' · o jogo busca as suas partidas públicas dessa época, sem senha.');
+  var b=UiJs.el('button','btn pri wide v117-pg',card,V72.busy===s?'Buscando no '+SN+'…':'Importar minhas partidas');b.type='button';b.disabled=V72.busy===s;
+  b.onclick=function(){V72.importSite(s,b);};
+  var t=UiJs.el('a','v117-sw',card,'Trocar usuário');t.onclick=function(){try{V32.setUser(s,'');}catch(e){}V117.page();};
+ }else{
+  UiJs.el('div','v117-et',card,'Ligue a sua conta do '+SN);
+  UiJs.el('div','v117-or',card,'Só o nome de usuário, sem senha. Não precisa ter jogado aqui.');
+  V117.field(card,s);
+ }
+};
+/* campo de usuário + importar (com escolha do site quando vem do estado vazio) */
+V117.field=function(card,fixed){
+ var site=fixed||V117.fsite||'li';
+ if(!fixed){var sw=UiJs.el('div','v117-sites',card);[['li','♞ Lichess'],['cc','♟ Chess.com']].forEach(function(x){var b=UiJs.el('button',site===x[0]?'on':'',sw,x[1]);b.type='button';b.onclick=function(){V117.fsite=x[0];V117.page();};});}
+ var r=UiJs.el('div','v117-fl',card);
+ var i=document.createElement('input');i.type='text';i.className='fi';i.placeholder='Seu usuário no '+V72.SITES[site].n;i.autocomplete='off';i.autocapitalize='off';i.spellcheck=false;r.appendChild(i);
+ var b=UiJs.el('button','btn',r,'Importar');b.type='button';
+ var go=function(){var u=i.value.trim().replace(/^@/,'');if(u.length<2){UiJs.toast('Digite o seu usuário.');i.focus();return;}try{V32.setUser(site,u);}catch(e){}V117.src=site;V72.importSite(site,b);};
+ b.onclick=go;i.onkeydown=function(e){if(e.key==='Enter')go();};
+};
+/* tela de detalhes: radar, listas completas e como o fantasma é feito */
+V117.details=function(){
+ var g=V117.ghost;UiJs.page('Detalhes do fantasma',V117.page);
+ if(!g){UiJs.p('Escolha um fantasma primeiro.','muted');return;}
+ var me=null;try{me=Dna.now();}catch(e){}
+ try{UiJs.radar(Evo.axes(),V117.src==='jogo'&&V117.month!=='hoje'?g.ax:null,'hoje',Dna.monthLabel(g.m||''));}catch(e){}
+ if(V117.src==='jogo'&&V117.month!=='hoje'&&me){
+  var ch=[];try{var an=Evo.axes(),at=g.ax||[],dif=[];for(var k=0;k<an.length;k++){var a=an[k].val,b=at[k];if(a>=0&&b!=null&&b>=0)dif.push([an[k].label,Math.round(a-b)]);}
+   dif.sort(function(x,y){return Math.abs(y[1])-Math.abs(x[1]);});dif.slice(0,4).forEach(function(x){if(x[1])ch.push(x[0]+': '+(x[1]>0?'+':'')+x[1]+' pontos.');});}catch(e){}
+  try{ch.push('Erros a cada 100 lances no meio-jogo: '+V117.nf(g.ph[1])+' → '+V117.nf(me.ph[1])+'.');ch.push('Gafes a cada 100 lances: '+V117.nf(g.bl)+' → '+V117.nf(me.bl)+'.');}catch(e){}
+  UiJs.h('O que mudou');UiJs.ul(ch,'small');
+ }
+ UiJs.h('Como o fantasma joga');
+ try{UiJs.ul(Dna.describe(g,'você'),'small');}catch(e){}
+ UiJs.p(V117.src==='jogo'?'Os lances novos saem do motor do jogo guiado pelo seu DNA: ele erra na sua taxa, de preferência onde você não olhava.':'As aberturas, a pressa, o estilo e o roque vêm das suas partidas de verdade. Os erros são medidos pelo Stockfish numa amostra de lances seus; até terminar, vale uma estimativa pelo rating da época.','muted small');
+ UiJs.btns([['Voltar',V117.page,'pri']]);
+};
+if(typeof Dna!=='undefined'){Dna.rival=V117.page;}
+
 Main.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);

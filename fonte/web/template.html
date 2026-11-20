@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v116</title>
+<title>Xadrez · Rota do Mestre — v117</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1468,6 +1468,50 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v116-acc summary{align-items:center;gap:8px}.v116-acc summary>span{flex:none}.v116-acc summary small{flex:1;min-width:0;text-align:right;margin-right:4px;font-size:11px;font-weight:500;color:#8d949c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .v116-acc summary small b.ok{color:#7fe0a8;font-weight:600}
 @media (prefers-reduced-motion:reduce){.v116-ni{animation:none}}
+/* ================= v117: Seu maior adversário ================= */
+.v117{display:flex;flex-direction:column;gap:9px}
+.v117-hd b{display:block;font-size:19px;line-height:1.2;color:#fff1c4;font-family:Georgia,'Times New Roman',serif}
+.v117-hd span{display:block;font-size:12.5px;color:#a8aeb5;margin-top:2px}
+.v117-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.v117-tab{display:flex;flex-direction:column;align-items:center;gap:1px;padding:7px 4px;border-radius:11px;border:1px solid #343941;background:#171b21;color:#e9e3d2;font:inherit;cursor:pointer}
+.v117-tab b{font-size:13px;font-weight:600;white-space:nowrap}
+.v117-tab em{font-style:normal;font-size:11px;color:#8d949c}.v117-tab em.ok{color:#7fe0a8}
+.v117-tab.on{border-color:#c49434;background:linear-gradient(180deg,#2d2615,#211c10)}.v117-tab.on b{color:#f3d98c}
+.v117-card{border:1px solid rgba(220,181,92,.38);border-radius:14px;background:linear-gradient(180deg,rgba(28,34,43,.95),rgba(16,19,24,.95));padding:11px 12px;display:flex;flex-direction:column;gap:8px}
+.v117-card.empty{border-color:#343941}
+.v117-ms{display:flex;gap:6px}
+.v117-ms button{flex:1;padding:6px 0;border-radius:9px;border:1px solid #343941;background:#171b21;color:#ddd3b9;font:inherit;font-size:12.5px;cursor:pointer}
+.v117-ms button.on{border-color:#c49434;background:#2a2415;color:#f3d98c;font-weight:600}
+.v117-src{font-size:11.5px;color:#a8aeb5}
+.v117-vs{display:flex;align-items:flex-end;gap:8px}
+.v117-vs span{display:flex;flex-direction:column}.v117-vs i{font-style:normal;font-size:10.5px;color:#8d949c;white-space:nowrap}
+.v117-vs .g b{font-size:21px;color:#cfc6ae}.v117-vs .m b{font-size:21px;color:#f3d98c}
+.v117-vs em{font-style:normal;color:#6f767e;padding-bottom:4px}
+.v117-vs .sc{margin-left:auto;align-items:flex-end}.v117-vs .sc b{font-size:13px;color:#e2c57e;white-space:nowrap}
+.v117-note{font-size:11.5px;color:#8d949c}
+.v117-chips{display:flex;flex-wrap:wrap;gap:5px}
+.v117-chips span{font-size:11.5px;border-radius:8px;padding:3px 8px;white-space:nowrap}
+.v117-chips .c.up{background:rgba(47,154,114,.2);color:#9fe3bb}.v117-chips .c.dn{background:rgba(200,80,70,.2);color:#f5b4ac}
+.v117-chips .t{background:#242930;color:#d8d0bb}
+.v117-foot{display:flex;justify-content:flex-end;gap:14px}
+.v117-foot a,.v117-sw,.v117-ft a{font-size:12px;color:#e2c57e;cursor:pointer}
+.v117-up{color:#a8aeb5!important}
+.v117-et{font-size:14.5px;font-weight:600;color:#fff1c4}
+.v117-pl{display:flex;justify-content:space-between;font-size:12px;color:#cfc6ae;margin-bottom:4px}.v117-pl b{color:#f3d98c}
+.v117-bar{height:6px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden}
+.v117-bar i{display:block;height:100%;background:linear-gradient(90deg,#c49434,#f3d98c);border-radius:4px}
+.v117 .v117-pg{margin:8px 0 0;min-height:42px}
+.v117-or{font-size:12px;color:#a8aeb5;border-top:1px solid rgba(255,255,255,.06);padding-top:8px}
+.v117-sites{display:flex;gap:6px}
+.v117-sites button{flex:1;padding:6px 0;border-radius:9px;border:1px solid #343941;background:#171b21;color:#ddd3b9;font:inherit;font-size:12.5px;cursor:pointer}
+.v117-sites button.on{border-color:#c49434;background:#2a2415;color:#f3d98c}
+.v117-fl{display:flex;gap:6px}.v117-fl .fi{flex:1;min-width:0;height:40px;margin:0}.v117-fl .btn{margin:0;min-height:40px;padding:0 14px;border-color:#c49434;color:#f3d98c}
+.v117-seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.v117-seg button{padding:8px 0;border-radius:10px;border:1px solid #343941;background:#171b21;color:#ddd3b9;font:inherit;font-size:13px;cursor:pointer}
+.v117-seg button.on{border-color:#c49434;background:#2a2415;color:#f3d98c;font-weight:600}
+.v117 .v117-go{margin:2px 0 0;min-height:48px;font-size:16px}
+.v117-ft{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;color:#8d949c;margin-top:2px}
+@media (max-height:680px){.v117{gap:7px}.v117-hd b{font-size:17px}.v117-card{padding:9px 11px;gap:7px}.v117 .v117-go{min-height:44px}.v117-seg button{padding:7px 0}}
 /* treinador por voz: indisponível por enquanto */
 .v36-card,.v36-hb{display:none!important}
 /* com a nova linha, os temas do tabuleiro crescem quando há altura sobrando */
