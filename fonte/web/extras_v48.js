@@ -457,6 +457,7 @@ V113.info=function(){
    var b=null;[].forEach.call(m.querySelectorAll('.v34-sec .mitem'),function(x){var t=x.querySelector('.mt');if(t&&t.textContent==='Plano do dia')b=x;});
    if(b){
     var I=V113.info(),tx=b.querySelector('.mtx')||b;
+    var md=b.querySelector('.md');if(md)md.textContent=md.textContent.replace(/^Próximo passo\s*·\s*/,'');
     b.classList.add('v113-pd');
     var st=document.createElement('span');st.className='v113-st';
     st.innerHTML='<span class="v113-l"><b>Hoje '+V23.fmtH(I.today)+'</b> de '+V23.fmtH(I.goal)+'</span><span class="v113-bar"><i style="width:'+I.pct+'%"></i></span>';
