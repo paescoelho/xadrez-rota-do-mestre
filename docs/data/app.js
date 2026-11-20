@@ -36204,12 +36204,19 @@ var V118=(function(){
  var V={SIG:SIG,URL:URL,who:who,ok3:ok3};
  V.credit=function(cls){var s=document.createElement('span');s.className='v118-cr'+(cls?' '+cls:'');s.setAttribute('data-sig',SIG);s.textContent=line()+ZW;return s;};
  V.isCredit=function(el){if(!el)return false;var t=(el.textContent||'').replace(/[​-‍﻿]/g,'');return t===line()&&el.textContent.indexOf(ZW)>=0;};
- /* rodapé do menu: crédito ao lado da versão, toca e abre os termos */
+ /* rodapé do menu: o crédito original ("criado por Rodrigo Paes Coelho Santana") recebe a assinatura e a marca
+  d'água invisível; se for apagado ou trocado, volta como era. Tocar nele abre os termos. */
+ var SIGHTML='<span class="sigby">criado por</span><span class="signm">Rodrigo Paes Coelho Santana</span>';
  V.menu=function(){
   var f=document.querySelector('.menu .mfoot');if(!f)return true;
-  var c=f.querySelector('.v118-cr');
-  if(!V.isCredit(c)){if(c)c.remove();c=V.credit('v118-mn');c.setAttribute('role','button');c.tabIndex=0;f.insertBefore(c,f.firstChild);c.onclick=function(){V.page(App.menu);};return false;}
-  return true;
+  var g=f.querySelector('.sig'),fine=true;
+  var nm=g&&g.querySelector('.signm'),txt=nm?(nm.textContent||'').replace(/[\u200b-\u200d\ufeff]/g,''):'';
+  if(!g){g=document.createElement('span');g.className='sig';var k=f.querySelector('.sigk2');f.insertBefore(g,k||null);fine=false;}
+  if(txt!=='Rodrigo Paes Coelho Santana'||!g.querySelector('.sigby')){g.innerHTML=SIGHTML;nm=g.querySelector('.signm');fine=false;}
+  if(nm.textContent.indexOf(ZW)<0)nm.textContent=nm.textContent+ZW;
+  if(g.getAttribute('data-sig')!==SIG){g.setAttribute('data-sig',SIG);g.setAttribute('role','button');g.tabIndex=0;g.title='Termos de uso e créditos';}
+  if(!g.__v118){g.__v118=1;g.addEventListener('click',function(){V.page(App.menu);});}
+  return fine;
  };
  V.unofficial=function(){
   if(banner&&document.body.contains(banner))return;
@@ -36256,15 +36263,10 @@ var V118=(function(){
  if(typeof UiJs==='undefined'||!UiJs.menu)return;
  var o=UiJs.menu;UiJs.menu=function(){var r=o.apply(this,arguments);try{V118.menu();V118.start();}catch(e){}return r;};
 })();
-/* crédito na abertura */
-(function(){
- if(typeof UiJs==='undefined'||!UiJs.intro)return;
- var o=UiJs.intro;UiJs.intro=function(){var r=o.apply(this,arguments);try{var ov=document.querySelector('.intro');if(ov&&!ov.querySelector('.v118-cr'))ov.appendChild(V118.credit('v118-in'));}catch(e){}return r;};
-})();
-/* crédito e link dos termos em Apoio ou sugestão */
+/* link dos termos de uso e créditos em Apoio ou sugestão */
 (function(){
  if(typeof V34==='undefined'||!V34.apoio)return;
- var o=V34.apoio;V34.apoio=function(){var r=o.apply(this,arguments);try{var cur=UiJs.cur;var w=UiJs.el('div','v118-ap',cur);w.appendChild(V118.credit('v118-a2'));var a=UiJs.el('a','',w,'Termos de uso e créditos ›');a.onclick=function(){V118.page(function(){V34.apoio();});};}catch(e){}return r;};
+ var o=V34.apoio;V34.apoio=function(){var r=o.apply(this,arguments);try{var cur=UiJs.cur;var w=UiJs.el('div','v118-ap',cur);var a=UiJs.el('a','',w,'Termos de uso e créditos ›');a.onclick=function(){V118.page(function(){V34.apoio();});};}catch(e){}return r;};
 })();
 /* crédito nas partidas exportadas em PGN */
 (function(){

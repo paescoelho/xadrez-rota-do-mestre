@@ -5,11 +5,15 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v119 — Só o crédito original (20.11.2026)
+
+Saíram os créditos novos da abertura, do rodapé do menu e de Apoio. Fica só o crédito que já existia no rodapé do menu ("criado por Rodrigo Paes Coelho Santana"), que agora carrega a assinatura da obra e a marca d'água invisível, volta sozinho se for apagado ou trocado e, ao ser tocado, abre os Termos de uso e créditos. Em Apoio ficou só o link "Termos de uso e créditos ›". O crédito nas partidas exportadas em PGN continua.
+
 ## v118 — Licença própria, créditos e proteção da autoria (20.11.2026)
 
 - **Licença própria** (arquivo `LICENSE`): direitos reservados, crédito obrigatório, sem cópia, modificação ou uso comercial sem autorização. As licenças dos componentes de terceiros vão publicadas em `data/licencas/`.
 - **Termos de uso e créditos** dentro do jogo: toque no crédito do rodapé do menu ou no link em Apoio.
-- **Crédito visível** na abertura, no rodapé do menu, em Apoio e nas partidas exportadas em PGN.
+- **Crédito visível** no rodapé do menu e nas partidas exportadas em PGN (na v119, ficou só o crédito original do menu).
 - **Autoria protegida:** assinatura da obra em vários pontos (código, página, marca d'água invisível no crédito), guardada em três formas independentes. Se o crédito for apagado ou trocado, o jogo devolve o crédito; se a autoria for adulterada, aparece o aviso "Versão não oficial" com o link do original. O jogo nunca é bloqueado e nenhum dado é apagado.
 - **Avisos de direitos autorais** para pessoas e para ferramentas de IA no topo do código, da página, da licença e deste README.
 
