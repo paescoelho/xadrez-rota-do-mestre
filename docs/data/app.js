@@ -35570,8 +35570,22 @@ V103.build=function(){
   var tt=st.textContent;st.classList.add('v105-st');st.innerHTML='<b>'+V103.esc(tt)+'</b>';
   var sub=ct.querySelector('.v34-ctx i');if(sub)sub.textContent=sub.textContent.replace(/^Partida salva contra /,'contra ');
  }
- /* v107: trocar o tema não redesenha a tela (sem piscar): troca só a seleção, o nome e o efeito */
+ /* v108: "Tabuleiro" na vertical como "Adversário"; em cima, nome do tema e o efeito dele numa linha só */
  var tp=cur.querySelector('.theme-picker');
+ if(tp&&!tp.classList.contains('v108-tb')){
+  var g=tp.querySelector('.sw'),fx0=tp.querySelector('.v33-fxd'),lb0=tp.querySelector('.segl');
+  if(g){
+   tp.classList.add('v108-tb');if(lb0)lb0.style.display='none';
+   var vt=document.createElement('div');vt.className='v106-vl';vt.setAttribute('aria-hidden','true');vt.innerHTML='<i></i><span>Tabuleiro</span><i></i>';
+   var inn=document.createElement('div');inn.className='v108-in';
+   var hd=document.createElement('div');hd.className='v108-hd';
+   var on=tp.querySelector('.theme-tile.on .theme-name');
+   hd.innerHTML='<b></b>';hd.firstChild.textContent=on?on.textContent:'';
+   if(fx0){fx0.textContent=fx0.textContent.replace(/^✦\s*/,'');hd.appendChild(fx0);}
+   tp.insertBefore(vt,tp.firstChild);tp.appendChild(inn);inn.appendChild(hd);inn.appendChild(g);
+  }
+ }
+ /* v107: trocar o tema não redesenha a tela (sem piscar): troca só a seleção, o nome e o efeito */
  if(tp&&!tp.__v107){tp.__v107=1;
   tp.addEventListener('click',function(ev){
    var t=ev.target.closest&&ev.target.closest('.theme-tile');if(!t||!tp.contains(t))return;
@@ -35580,7 +35594,8 @@ V103.build=function(){
    if(Profile.d.bt!==th[0]){Evo.setTheme(th[0]);try{Evo.applyTheme();}catch(e){}}
    tiles.forEach(function(x){x.classList.toggle('on',x===t);});
    var nm=t.querySelector('.theme-name'),lb=tp.querySelector('.segl');if(lb&&nm)lb.textContent='Tabuleiro · '+nm.textContent;
-   var fx=tp.querySelector('.v33-fxd');if(fx&&V33.FX[th[0]])fx.textContent='✦ '+V33.FX[th[0]];
+   var hb=tp.querySelector('.v108-hd b');if(hb&&nm)hb.textContent=nm.textContent;
+   var fx=tp.querySelector('.v33-fxd');if(fx&&V33.FX[th[0]])fx.textContent=(hb?'':'✦ ')+V33.FX[th[0]];
   },true);
  }
  /* usa já a altura dos temas da última vez: a tela não pula enquanto o ajuste fino roda */
@@ -35635,16 +35650,16 @@ V105.bal=function(msg){
 
 /* v106: efeito de cada tabuleiro numa linha só (a tela não pula ao trocar de tema) */
 if(typeof V33!=='undefined'&&V33.FX){
- V33.FX.turquesa='Água: a casa ondula e a captura espirra gotinhas';
- V33.FX.pixel='8-bit: sons retrô e explosão de pixels na captura';
- V33.FX.pelourinho='Fitinhas do Bonfim voam a cada captura';
- V33.FX.praia='Uma onda de espuma atravessa a cada xeque';
- V33.FX.sertao='A peça capturada afunda e levanta poeira';
- V33.FX.origami='A capturada vira um passarinho de papel';
- V33.FX.bic='Lances à caneta e um X rabiscado na captura';
- V33.FX.nanquim='Mancha de tinta na captura, xeque carimbado';
- V33.FX.praca='No xeque-mate, um pombo pousa no tabuleiro';
- V33.FX.daltonico='Alto contraste e marcas por forma, sem cor';
+ V33.FX.turquesa='Casas ondulam como água';
+ V33.FX.pixel='Sons retrô e pixels na captura';
+ V33.FX.pelourinho='Fitinhas do Bonfim na captura';
+ V33.FX.praia='Onda de espuma a cada xeque';
+ V33.FX.sertao='A captura levanta poeira';
+ V33.FX.origami='A captura vira passarinho';
+ V33.FX.bic='Lances desenhados à caneta';
+ V33.FX.nanquim='Mancha de tinta na captura';
+ V33.FX.praca='Pombo pousa no xeque-mate';
+ V33.FX.daltonico='Marcas por forma, sem cor';
 }
 
 Main.main();

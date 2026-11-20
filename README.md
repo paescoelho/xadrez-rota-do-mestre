@@ -3,6 +3,10 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v108 — "Tabuleiro" na vertical e o efeito ao lado do nome (20.11.2026)
+
+Em Nova partida, "Tabuleiro" fica na vertical ao lado dos temas, como "Adversário". Em cima dos temas, uma linha só com o nome do tema escolhido e o efeito dele ao lado (ex.: **Turquesa** ✦ Casas ondulam como água). Os textos dos efeitos foram encurtados para caber inteiros até nos celulares mais estreitos.
+
 ## v107 — Trocar o tema do tabuleiro sem a tela piscar (20.11.2026)
 
 Em Nova partida, tocar num tema do tabuleiro não redesenha mais a tela inteira: só muda a seleção, o nome do tema e a linha do efeito. Nas outras escolhas (ritmo, cor, adversário), os temas já nascem no tamanho certo, sem pular.
