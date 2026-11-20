@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v106</title>
+<title>Xadrez · Rota do Mestre — v107</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -79939,6 +79939,22 @@ V103.build=function(){
   var tt=st.textContent;st.classList.add('v105-st');st.innerHTML='<b>'+V103.esc(tt)+'</b>';
   var sub=ct.querySelector('.v34-ctx i');if(sub)sub.textContent=sub.textContent.replace(/^Partida salva contra /,'contra ');
  }
+ /* v107: trocar o tema não redesenha a tela (sem piscar): troca só a seleção, o nome e o efeito */
+ var tp=cur.querySelector('.theme-picker');
+ if(tp&&!tp.__v107){tp.__v107=1;
+  tp.addEventListener('click',function(ev){
+   var t=ev.target.closest&&ev.target.closest('.theme-tile');if(!t||!tp.contains(t))return;
+   ev.stopPropagation();ev.preventDefault();
+   var tiles=[].slice.call(tp.querySelectorAll('.theme-tile')),i=tiles.indexOf(t),th=Evo.BOARD_THEMES[i];if(!th)return;
+   if(Profile.d.bt!==th[0]){Evo.setTheme(th[0]);try{Evo.applyTheme();}catch(e){}}
+   tiles.forEach(function(x){x.classList.toggle('on',x===t);});
+   var nm=t.querySelector('.theme-name'),lb=tp.querySelector('.segl');if(lb&&nm)lb.textContent='Tabuleiro · '+nm.textContent;
+   var fx=tp.querySelector('.v33-fxd');if(fx&&V33.FX[th[0]])fx.textContent='✦ '+V33.FX[th[0]];
+  },true);
+ }
+ /* usa já a altura dos temas da última vez: a tela não pula enquanto o ajuste fino roda */
+ if(V103.h){[].forEach.call(cur.querySelectorAll('.theme-tile .theme-preview'),function(x){x.style.height=V103.h+'px';});}
+ try{V103.fit();}catch(e){}
  requestAnimationFrame(function(){requestAnimationFrame(V103.fit);});
  if(!V103.rz){V103.rz=1;window.addEventListener('resize',function(){if(document.querySelector('.v103-setup'))V103.fit();});}
 };
@@ -79958,7 +79974,7 @@ V103.fit=function(){
  for(var i=0;i<steps.length&&over()>0;i++)steps[i]();
  var free=-over();
  var h=Math.max(MIN,Math.min(MAX,MIN+Math.floor(free/rows)-1));
- setH(h);
+ setH(h);V103.h=h;
  /* sobrou espaço com os temas no máximo: devolve a nota do efeito do tabuleiro */
  if(h>=MAX){var fx=cur.querySelector('.v33-fxd');if(fx&&fx.style.display==='none'){fx.style.display='';if(over()>0)fx.style.display='none';}}
 };

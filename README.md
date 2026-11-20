@@ -3,6 +3,10 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v107 — Trocar o tema do tabuleiro sem a tela piscar (20.11.2026)
+
+Em Nova partida, tocar num tema do tabuleiro não redesenha mais a tela inteira: só muda a seleção, o nome do tema e a linha do efeito. Nas outras escolhas (ritmo, cor, adversário), os temas já nascem no tamanho certo, sem pular.
+
 ## v106 — Nova partida mais firme e elegante (20.11.2026)
 
 - O efeito de cada tema de tabuleiro agora cabe numa linha só (textos encurtados), então os temas não mudam de tamanho ao trocar de tabuleiro.
