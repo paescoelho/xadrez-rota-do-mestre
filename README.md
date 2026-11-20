@@ -3,6 +3,19 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v116 — Painel de evolução reorganizado (20.11.2026)
+
+O Painel foi refeito para responder, nesta ordem, às perguntas do jogador. A mesma estrutura serve ao iniciante (blocos travados que vão acendendo) e ao veterano:
+1. **Aviso de conta** (só sem login): "Seu progresso está só neste aparelho · Salvar com Google".
+2. **Seu nível:** Elo, categoria, variação no mês e barra da meta, com "Sobe com vitórias em partidas valendo pontos". Sem nível, convida ao Nivelamento. O cálculo detalhado (o que entra na conta, faixa provável, precisão) foi para "Como é calculado ›".
+3. **Próximo passo:** um único cartão que muda sozinho: Nivelamento → primeira partida → revisões do dia → Plano do dia → partidas que faltam para o perfil → ponto fraco do Raio-X.
+4. **Seu jogo:** uma régua só (1 partida · 10 · 20 = perfil completo) e quatro blocos (Raio-X, Revisões, Precisão e Perfil), cada um dizendo para que serve. Travados mostram quanto falta; ao liberar, ganham o selo **novo** e uma dica de uma linha na primeira vez. O Perfil abre o radar, a leitura do jogo e como evoluir cada característica.
+5. **Sua rotina:** dias seguidos, estudo da semana, relógio e uma barrinha do Elo mês a mês (com "Evolução mês a mês ›" para os gráficos completos).
+6. **Suas partidas:** as 4 últimas (toque para o PGN) e "Ver todas".
+7. **Conta e dados** (recolhido): status do Google e do Lichess, um botão só para conta/backup, Aula da semana, exportar PGN e, por último, Apagar todo o progresso.
+
+Os quatro botões de conta repetidos viraram um, o "Apagar" saiu do meio da tela e os textos técnicos foram reescritos.
+
 ## v115 — Uma escala só para os números de nível (20.11.2026)
 
 A pontuação de problemas (ex.: 1108 em Táticas) estava na escala própria dos problemas, parecida com a do Lichess, bem acima da escala do Elo central do jogo, e por isso não batia com o Painel. Ela continua por dentro (escolhe a dificuldade dos problemas), mas tudo o que aparece agora usa a escala do Elo central, com o mesmo limite do Painel (no máximo 100 acima do seu Elo):

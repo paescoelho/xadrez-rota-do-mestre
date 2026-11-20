@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v115</title>
+<title>Xadrez · Rota do Mestre — v116</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1547,6 +1547,68 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .mitem.v113-pd .mtx{gap:1px;justify-content:center}
 .mitem.v113-pd .md{-webkit-line-clamp:1;white-space:nowrap}
 .mitem.v113-pd .v113-st{margin-top:6px;gap:4px}
+/* ================= v116: Painel de evolução ================= */
+.v116{padding-bottom:18px}
+.v116-warn{display:flex;align-items:center;gap:8px;margin:2px 0 10px;padding:8px 11px;border:1px solid rgba(220,160,80,.45);border-radius:11px;background:rgba(80,55,20,.25);cursor:pointer;font-size:12.5px}
+.v116-warn b{flex:1;font-weight:600;color:#ecc98a}.v116-warn u{text-decoration:none;font-weight:700;color:#f3d98c;white-space:nowrap}
+.v116-card{border:1px solid rgba(220,181,92,.3);border-radius:14px;background:linear-gradient(180deg,rgba(28,34,43,.9),rgba(16,19,24,.9));padding:11px 13px;margin-bottom:10px}
+.v116-k{font-size:10.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:#c9b27a}
+.v116-big{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;margin:2px 0 7px}
+.v116-big b{font-size:30px;line-height:1.1;color:#f3d98c;font-weight:800}
+.v116-big span{font-size:14px;color:#ddd3b9}
+.v116-big em{margin-left:auto;font-style:normal;font-size:12px;font-weight:700}.v116-big em.up{color:#7fe0a8}.v116-big em.dn{color:#f09595}
+.v116-bar{height:6px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden}
+.v116-bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#c49434,#f3d98c);box-shadow:0 0 8px rgba(243,217,140,.45)}
+.v116-sub{display:flex;justify-content:space-between;gap:8px;margin-top:5px;font-size:11.5px;color:#9aa1a8}
+.v116-sub a,.v116-links a,.v116-rt a,.v116-all,.v116-empty a{color:#e2c57e;cursor:pointer;white-space:nowrap}
+.v116-hint{font-size:11.5px;color:#8d949c;margin-top:4px}
+.v116-next{display:flex;align-items:center;gap:12px;margin:0 0 16px;padding:12px 14px;border-radius:14px;border:1px solid #c49434;background:linear-gradient(180deg,#2d2615,#1f1a0e);box-shadow:0 0 16px rgba(243,217,140,.12);cursor:pointer}
+.v116-ni{flex:0 0 38px;height:38px;border-radius:50%;display:grid;place-items:center;font-size:19px;color:#1b1406;background:radial-gradient(circle at 35% 30%,#fff6d6,#f3d98c 50%,#c49434);animation:v116pulse 2.6s ease-in-out infinite}
+@keyframes v116pulse{0%,100%{box-shadow:0 0 0 0 rgba(243,217,140,.45)}60%{box-shadow:0 0 0 8px rgba(243,217,140,0)}}
+.v116-nt{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.v116-nt i{font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:#c9b27a}
+.v116-nt b{font-size:15.5px;color:#fff1c4;line-height:1.25}.v116-nt small{font-size:12px;color:#cfc6ae}
+.v116-next em{font-style:normal;font-size:24px;color:#f3d98c}
+.v116-h{font-size:10.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#c9b27a;margin:4px 2px 7px;display:flex;align-items:center;gap:8px}
+.v116-h:after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(243,217,140,.35),rgba(243,217,140,0))}
+.v116-rule{display:flex;align-items:center;gap:6px;font-size:11px;color:#7d848c;padding:0 2px}
+.v116-rm{display:flex;align-items:center;gap:5px;white-space:nowrap}.v116-rm s{width:9px;height:9px;border-radius:50%;border:1.5px solid #5d636b;flex:none}
+.v116-rm.on{color:#e2c57e}.v116-rm.on s{border-color:#f3d98c;background:#f3d98c;box-shadow:0 0 6px rgba(243,217,140,.6)}
+.v116-rl{flex:1;height:2px;border-radius:2px;background:#30353d}.v116-rl.on{background:linear-gradient(90deg,#c49434,#f3d98c)}
+.v116-rn{font-size:11px;color:#8d949c;margin:4px 2px 8px}
+.v116-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.v116-tile{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:10px 11px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(22,26,32,.92);color:inherit;font:inherit;cursor:pointer;min-height:86px}
+.v116-tile.hl{border-color:#c49434;background:linear-gradient(180deg,#2a2415,#1d190f)}
+.v116-tile.lock{opacity:.62}
+.v116-tile.new{border-color:#7fe0a8;box-shadow:0 0 12px rgba(127,224,168,.18)}
+.v116-th{display:flex;align-items:center;gap:7px;width:100%}
+.v116-tic{width:24px;height:24px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:13px;color:#f3d98c;background:rgba(243,217,140,.12);border:1px solid rgba(243,217,140,.25)}
+.v116-tile.lock .v116-tic{font-size:11px;background:none;border-color:rgba(255,255,255,.12)}
+.v116-th b{font-size:14.5px;color:#f2ead6}
+.v116-th u{margin-left:auto;text-decoration:none;font-size:9.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:#0c241b;background:#7fe0a8;border-radius:6px;padding:1px 6px}
+.v116-why{font-size:11.5px;color:#cbbf9d;line-height:1.25}
+.v116-td{font-size:11px;color:#8d949c;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.v116-tile.hl .v116-td{color:#e8c27a}
+.v116-tip{margin:8px 2px 0;padding:7px 10px;border-radius:10px;font-size:12px;color:#c9f0d8;background:rgba(47,154,114,.14);border:1px solid rgba(127,224,168,.35)}
+.v116-links{display:flex;justify-content:space-between;gap:10px;margin:8px 2px 14px;font-size:12px;color:#8d949c}
+.v116-rr{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:12.5px;color:#cfc6ae}
+.v116-rr b{font-size:17px;color:#f3d98c}
+.v116-mb{display:flex;align-items:flex-end;gap:6px;height:52px;margin-top:10px}
+.v116-mbc{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:3px}
+.v116-mbc i{display:block;width:100%;border-radius:3px 3px 0 0;background:rgba(243,217,140,.28)}
+.v116-mbc.on i{background:linear-gradient(180deg,#f3d98c,#c49434)}
+.v116-mbc em{font-style:normal;font-size:10px;color:#7d848c}
+.v116-ev{display:block;text-align:right;font-size:12px;margin-top:6px}
+.v116-gl{padding:4px 0}
+.v116-gr{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;padding:9px 13px;background:none;border:0;border-bottom:1px solid rgba(255,255,255,.06);color:#ddd3b9;font:inherit;font-size:12.5px;text-align:left;cursor:pointer}
+.v116-gr:disabled{cursor:default;color:#ddd3b9;opacity:1}
+.v116-gr b.w{color:#7fe0a8}.v116-gr b.l{color:#f09595}.v116-gr b.d{color:#cfd3d8}
+.v116-gr em{font-style:normal;font-size:11px;color:#8d949c;white-space:nowrap}
+.v116-all{display:block;text-align:right;padding:8px 13px 6px;font-size:12px}
+.v116-empty{padding:10px 13px;font-size:12.5px;color:#8d949c}
+.v116-acc summary{align-items:center;gap:8px}.v116-acc summary>span{flex:none}.v116-acc summary small{flex:1;min-width:0;text-align:right;margin-right:4px;font-size:11px;font-weight:500;color:#8d949c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v116-acc summary small b.ok{color:#7fe0a8;font-weight:600}
+@media (prefers-reduced-motion:reduce){.v116-ni{animation:none}}
 /* treinador por voz: indisponível por enquanto */
 .v36-card,.v36-hb{display:none!important}
 /* com a nova linha, os temas do tabuleiro crescem quando há altura sobrando */
@@ -1986,7 +2048,7 @@ window.XHD=(function(){
 <script>
 /* carregador do site: baixa (ou pega do cache offline) os arquivos do jogo, mostra o progresso e inicia o app */
 (function(){
- var F={"res":[["res_content","data/content.json?v=facebd0421"],["res_lpuzzles","data/lpuzzles.txt?v=6a7f7438c2"],["res_openings","data/openings.txt?v=0433d98604"],["res_explorer","data/explorer.txt?v=a49e3a075b"],["res_models","data/models.txt?v=d4b717e2fe"],["res_sfjs","data/sf.js?v=81cc4511ff"]],"intro":[["introfr","data/introfr.json?v=361b412139"],["introau","data/introau.txt?v=ce6089d3a7"],["introhdx","data/introhdx.json?v=efe43de4ba"]],"hd":"data/intro_hd.bin?v=2f137ab566","hd16":"data/intro_hd16.bin?v=873ca44d34","hdx16":"data/introhdx16.json?v=ffb050a168","histau":"data/historia.mp3?v=87e853c025","apoioau":"data/apoio.mp3?v=a67289dc4c","lichau":"data/lichess.mp3?v=420a0f7dec","wasm":"data/sf.wasm?v=c56761eebb","app":"data/app.js?v=32f44090a6"};
+ var F={"res":[["res_content","data/content.json?v=facebd0421"],["res_lpuzzles","data/lpuzzles.txt?v=6a7f7438c2"],["res_openings","data/openings.txt?v=0433d98604"],["res_explorer","data/explorer.txt?v=a49e3a075b"],["res_models","data/models.txt?v=d4b717e2fe"],["res_sfjs","data/sf.js?v=81cc4511ff"]],"intro":[["introfr","data/introfr.json?v=361b412139"],["introau","data/introau.txt?v=ce6089d3a7"],["introhdx","data/introhdx.json?v=efe43de4ba"]],"hd":"data/intro_hd.bin?v=2f137ab566","hd16":"data/intro_hd16.bin?v=873ca44d34","hdx16":"data/introhdx16.json?v=ffb050a168","histau":"data/historia.mp3?v=87e853c025","apoioau":"data/apoio.mp3?v=a67289dc4c","lichau":"data/lichess.mp3?v=420a0f7dec","wasm":"data/sf.wasm?v=c56761eebb","app":"data/app.js?v=249d242117"};
  var c=navigator.connection||{},slow=!!(c.saveData||/(^|-)2g|3g/.test(c.effectiveType||''));
  var box=document.createElement('div');box.id='boot';box.innerHTML='<div class="bt">Rota do Mestre</div><div class="bb"><i></i></div><div class="bs">Preparando o tabuleiro…</div>';document.body.appendChild(box);
  var bar=box.querySelector('i'),msg=box.querySelector('.bs'),done=0,total=F.res.length+(slow?0:F.intro.length+1)+1;
