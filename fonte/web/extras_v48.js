@@ -1493,3 +1493,170 @@ var V122=(function(){
  }
  return V;
 })();
+/* ======================= v123 · Lendas jogam para ganhar (desprezo ao empate) =======================
+   Um campeão não aceita empate de quem é bem mais fraco. A lenda passa a dar à repetição um valor negativo
+   ("desprezo"), medido pela diferença entre o Elo dela e o Elo estimado do jogador:
+   até 100 pontos de diferença, nenhum; 400 pontos, 1 peão; no máximo 1,2 peão.
+   · Repertório: se o lance do livro volta a uma posição que já aconteceu na partida, ela tenta outro lance do
+     livro; se todos repetem, sai do livro e pensa com o Stockfish.
+   · Stockfish: uma linha que termina em repetição (nota perto de 0,00 e posição repetida) vale 0,00 menos o
+     desprezo; voltar a uma posição já vista custa um quarto do desprezo. Se as 3 melhores linhas forem todas de
+     repetição, ela faz uma segunda busca só entre os outros lances.
+   · O empate legítimo continua: se toda alternativa perde mais que o desprezo (por exemplo, um xeque perpétuo que
+     o jogador conquistou, ou a lenda perdendo e se salvando), ela repete.
+   · Conversão de campeão: com vantagem clara (1,5 peão) os deslizes ficam 4 vezes mais raros, a janela de estilo
+     cai pela metade e ela pensa 30% mais; com vantagem decisiva (3 peões) joga sempre o melhor lance. */
+var V123=(function(){
+ var V={cur:null,adv:0,last:null};
+ var START='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+ V.key=function(fen){return V82.key(fen);};
+ /* quantas vezes cada posição já apareceu na partida (inclui a atual) */
+ V.hist=function(q){
+  var h={},p=Engine.posFromFEN(q.start||START),u=q.ucis||[],ok=true;
+  h[V.key(Engine.toFEN(p))]=1;
+  for(var i=0;i<u.length;i++){var m=Engine.uciToMove(p,u[i]);if(m<0){ok=false;break;}Engine.makeMove(p,m);p.stack=[];var k=V.key(Engine.toFEN(p));h[k]=(h[k]||0)+1;}
+  if(!ok){h={};h[V.key(q.fen)]=1;}
+  return h;
+ };
+ /* Elo estimado do jogador; sem estimativa, conta como iniciante */
+ V.human=function(){try{var v=Profile.combined()[0]|0;return v>0?v:1000;}catch(e){return 1000;}};
+ V.C=function(L){var gap=(L&&L.e||2700)-V.human();return Math.max(0,Math.min(120,Math.round((gap-100)/3)));};
+ /* o lance leva a uma posição que já aconteceu? */
+ V.repeats=function(fen,u,h){
+  try{var p=Engine.posFromFEN(fen),m=Engine.uciToMove(p,u);if(m<0)return false;Engine.makeMove(p,m);return (h[V.key(Engine.toFEN(p))]||0)>=1;}catch(e){return false;}
+ };
+ /* a linha do Stockfish termina em repetição? (nota perto de 0,00 e alguma posição se repete) */
+ V.drawish=function(fen,pv,s,h){
+  if(Math.abs(s)>15||!pv)return false;
+  try{
+   var p=Engine.posFromFEN(fen),loc={};
+   for(var i=0;i<pv.length&&i<24;i++){
+    var m=Engine.uciToMove(p,pv[i]);if(m<0)return false;
+    Engine.makeMove(p,m);p.stack=[];
+    var k=V.key(Engine.toFEN(p));
+    if((h[k]||0)+(loc[k]||0)>=1)return true;
+    loc[k]=1;
+   }
+  }catch(e){}
+  return false;
+ };
+ /* nota ajustada (ponto de vista da lenda) de cada linha */
+ V.rate=function(fen,lines,cx){
+  var seen={},c=[];
+  lines.forEach(function(l){
+   if(!l||!l.pv||!l.pv[0]||seen[l.pv[0]])return;seen[l.pv[0]]=1;
+   var s=SF.score(l),d=cx.C>0&&V.drawish(fen,l.pv,s,cx.h),r=!d&&cx.C>0&&V.repeats(fen,l.pv[0],cx.h);
+   c.push({u:l.pv[0],s:s,a:s-(d?cx.C:0)-(r?Math.round(cx.C/4):0),d:d});
+  });
+  c.sort(function(a,b){return b.a-a.a;});
+  return c;
+ };
+ /* escolhe entre as linhas já avaliadas: mesmo critério de estilo da v121, agora sobre a nota ajustada */
+ V.pick=function(fen,c,L,cx){
+  if(!c.length)return null;
+  var p=Engine.posFromFEN(fen),e=L.e||2700,ag=L.ag==null?25:L.ag,qx=L.qx==null?40:L.qx;
+  var best=c[0],adv=best.a;
+  if(best.s>=29000||c.length===1)return {u:best.u,s:best.s,a:best.a,d:best.d,k:'best'};
+  if(adv>=300)return {u:best.u,s:best.s,a:best.a,d:best.d,k:'conv'};
+  var ph=L.ph?L.ph[V121.phase(p)]:1,errP=ph==null?1:ph,tol=V121.tol(e);
+  if(adv>=150){errP/=4;tol=Math.max(4,tol/2);}
+  var err=Math.random()*100<errP,win=err?50+(2900-e)/4:tol;
+  var pool=c.filter(function(x){return best.a-x.a<=win&&x.s>-29000&&(x===best||!x.d);});
+  if(err){var worse=pool.filter(function(x){return x!==best&&best.a-x.a>tol;});if(worse.length)pool=worse;}
+  var tot=0,ws=pool.map(function(x){
+   var m=Engine.uciToMove(p,x.u),w=Math.exp(-(best.a-x.a)/Math.max(3,tol/2));
+   if(m>=0){
+    var from=Engine.nameSq(x.u.slice(0,2)),to=Engine.nameSq(x.u.slice(2,4)),pc=Math.abs(p.board[from]),cap=p.board[to]!==0;
+    var q=Engine.posFromFEN(fen);Engine.makeMove(q,m);var chk=Engine.inCheck(q);
+    w*=Math.exp(((cap||chk)?0.8:-0.35)*(ag-25)/25);
+    if(pc===5&&Math.abs(p.board[to])===5)w*=Math.exp((qx-40)/20);
+    if(pc===6&&Math.abs((to&7)-(from&7))===2)w*=1.4;
+   }
+   tot+=w;return w;});
+  var r=Math.random()*tot,ch=pool[0];
+  for(var i=0;i<pool.length;i++){r-=ws[i];if(r<=0){ch=pool[i];break;}}
+  return {u:ch.u,s:ch.s,a:ch.a,d:ch.d,k:err?'err':'style'};
+ };
+ /* lances legais que ainda não foram olhados e não repetem posição */
+ V.others=function(fen,c,h){
+  var p=Engine.posFromFEN(fen),skip={},out=[];
+  c.forEach(function(x){skip[x.u]=1;});
+  Engine.legalMoves(p).forEach(function(m){var u=Engine.moveToUCI(m);if(!skip[u]&&!V.repeats(fen,u,h))out.push(u);});
+  return out;
+ };
+ function legend(q){try{return V74.get(q.dna.lid);}catch(e){return null;}}
+ V.move=function(q,cb,prev){
+  var L=legend(q);
+  if(!L||typeof SF==='undefined'||SF.failed)return V121.move(q,cb,prev);
+  /* sem o livro real (sem internet), as linhas de reserva abrem a partida (o filtro de repetição vale aqui também) */
+  try{if(!V82.books[L.id]&&q.ucis&&q.ucis.length<24){var rp=Engine.posFromFEN(q.fen),ru=Dna.bookMove(q.dna,q.ucis,rp);if(ru&&Engine.uciToMove(rp,ru)>=0)return prev({cmd:'cpunote',fen:q.fen,uci:ru,human:q.human},function(r){if(r&&r.uci){r.book=true;r.err=false;r.score=null;cb(r);}else prev(q,cb);});}}catch(e){}
+  if(!q.ucis||q.ucis.length<2)V.adv=0;
+  var h;try{h=(V.cur&&V.cur.fen===q.fen)?V.cur.h:V.hist(q);}catch(e){h={};}
+  var cx={h:h,C:V.C(L)},ms=Math.round(V121.ms(L.e)*(V.adv>=150?1.3:1)),pos=V73.posCmd(q);
+  var fail=function(){if(!V121.warned){V121.warned=true;try{UiJs.toast('O Stockfish não respondeu: a lenda joga com o motor do jogo, que é mais fraco.');}catch(e){}}prev(q,cb);};
+  var play=function(ch,n,re){
+   V.adv=ch.a==null?0:ch.a;
+   V.last={u:ch.u,k:ch.k,n:n,C:cx.C,adv:V.adv,d:!!ch.d,re:!!re};
+   prev({cmd:'cpunote',fen:q.fen,uci:ch.u,human:q.human,score:ch.s},function(r){
+    if(!r||!r.uci){prev(q,cb);return;}
+    r.book=false;r.err=ch.k==='err';r.sf=true;cb(r);
+   });
+  };
+  Think.busy++;
+  SF.go({fen:q.fen,pos:pos,movetime:ms,multipv:3},function(res){
+   Think.busy--;
+   var c=[];try{if(res&&res.lines)c=V.rate(q.fen,res.lines,cx);}catch(e){c=[];}
+   if(!c.length){if(res&&res.best){play({u:res.best,s:null,a:0,k:'best'},0,false);return;}fail();return;}
+   /* a melhor opção é repetir: antes de aceitar, procura entre os outros lances */
+   var others=c[0].d?V.others(q.fen,c,h):[];
+   if(!others.length){var ch;try{ch=V.pick(q.fen,c,L,cx);}catch(e){ch=null;}if(!ch)ch={u:c[0].u,s:c[0].s,a:c[0].a,k:'best'};play(ch,c.length,false);return;}
+   Think.busy++;
+   SF.go({fen:q.fen,pos:pos,movetime:Math.round(ms*0.7),multipv:3,searchmoves:others.join(' ')},function(r2){
+    Think.busy--;
+    var all=c;
+    try{if(r2&&r2.lines&&r2.lines.length){all=c.concat(V.rate(q.fen,r2.lines,cx));all.sort(function(a,b){return b.a-a.a;});}}catch(e){all=c;}
+    var ch;try{ch=V.pick(q.fen,all,L,cx);}catch(e){ch=null;}
+    if(!ch)ch={u:all[0].u,s:all[0].s,a:all[0].a,k:'best'};
+    play(ch,all.length,true);
+   });
+  });
+ };
+ /* guarda a partida da lenda que está pensando (o livro e as linhas de reserva consultam o histórico) */
+ if(typeof Think!=='undefined'){
+  var run0=Think.run;
+  Think.run=function(q,cb){
+   if(q&&q.cmd==='ghost'&&q.dna&&q.dna.src==='lenda'){try{V.cur={fen:q.fen,h:V.hist(q)};}catch(e){V.cur=null;}}
+   return run0.apply(this,arguments);
+  };
+ }
+ function curFor(fen){return V.cur&&V.cur.fen&&String(V.cur.fen).split(' ').slice(0,4).join(' ')===String(fen).split(' ').slice(0,4).join(' ')?V.cur:null;}
+ /* repertório real: lance que repete posição é trocado por outro do livro; se todos repetem, sai do livro */
+ if(typeof V82!=='undefined'){
+  var probe0=V82.probe;
+  V82.probe=function(id,fen){
+   var hit=probe0.apply(this,arguments),cu=curFor(fen);
+   if(!hit||!cu||!V.C(V74.get(id))||!V.repeats(fen,hit.uci,cu.h))return hit;
+   /* sorteia de novo só entre os lances do livro que não repetem, na mesma proporção das partidas reais */
+   var b=V82.books[id],e=b&&b[V82.key(fen)],ok=[],tot=0,i;
+   if(!e)return null;
+   for(i=1;i<e.length;i++)if(!V.repeats(fen,e[i][0],cu.h)){ok.push(e[i]);tot+=e[i][1];}
+   if(!ok.length)return null;
+   var r=Math.random()*tot,x=ok[ok.length-1];
+   for(i=0;i<ok.length;i++){r-=ok[i][1];if(r<=0){x=ok[i];break;}}
+   return {uci:x[0],n:e[0],share:Math.round(100*x[1]/tot),l:hit.l};
+  };
+  V82.engine=V.move;
+ }
+ /* linhas de reserva (sem o livro real): a mesma regra */
+ if(typeof Dna!=='undefined'&&Dna.bookMove){
+  var bm0=Dna.bookMove;
+  Dna.bookMove=function(dna,ucis,pos){
+   var u=bm0.apply(this,arguments);
+   try{
+    if(u&&dna&&dna.src==='lenda'){var f=Engine.toFEN(pos),cu=curFor(f);if(cu&&V.C(V74.get(dna.lid))&&V.repeats(f,u,cu.h))return null;}
+   }catch(e){}
+   return u;
+  };
+ }
+ return V;
+})();

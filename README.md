@@ -5,6 +5,15 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v123 — Lendas jogam para ganhar
+
+- **Desprezo ao empate:** um campeão não aceita empate de quem é bem mais fraco. Para a lenda, repetir lances deixa de valer 0,00 e passa a valer um valor negativo, que depende da diferença entre o Elo dela e o seu Elo estimado: até 100 pontos de diferença, nada muda; 400 pontos, 1 peão; no máximo 1,2 peão. Voltar a uma posição que já aconteceu custa um quarto disso.
+- **Repertório:** se o lance das partidas reais volta a uma posição que já aconteceu, a lenda sorteia outro lance do livro (na mesma proporção das partidas reais); se todos repetem, ela sai do livro e pensa com o Stockfish.
+- **Segunda busca:** se as 3 melhores linhas do Stockfish forem todas de repetição, a lenda procura de novo só entre os outros lances antes de aceitar o empate.
+- **Empate legítimo continua:** se toda alternativa perde mais que o desprezo (um xeque perpétuo que você conquistou, ou a lenda perdendo e se salvando), ela repete.
+- **Conversão de campeão:** com 1,5 peão de vantagem, os deslizes ficam 4 vezes mais raros, a janela de estilo cai pela metade e ela pensa 30% mais; com 3 peões, joga sempre o melhor lance.
+- **Teste:** numa Francesa em que a lenda está um pouco pior e você repete lances, a v121 aceitava o empate 4 vezes em 4; a v123 recusou nas 4 e seguiu jogando. Sem a dama, ela ainda aceita a repetição, como deve.
+
 ## v122 — Computador de 800 a 3200, de 100 em 100, com força medida
 
 - **Barra de 100 em 100:** cada ponto (800, 900 … 3200) é uma força própria. Antes eram 6 níveis fixos.
