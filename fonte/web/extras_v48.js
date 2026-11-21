@@ -1361,3 +1361,72 @@ var V120=(function(){
  if(typeof document!=='undefined'&&typeof Think!=='undefined'&&typeof App!=='undefined')V.hook();
  return V;
 })();
+
+/* ======================= v121 · Lendas com força de campeão =======================
+   Fora do repertório real, a lenda joga com o Stockfish em força total (sem limite de Elo), olhando os 3 melhores
+   lances. Ela só escolhe entre lances praticamente iguais ao melhor, numa janela que depende do Elo máximo dela
+   (Carlsen 2882: cerca de 7 centésimos de peão; Smyslov 2620: cerca de 33), e entre eles prefere o que combina com
+   o estilo medido nas partidas reais: capturas e xeques (agressividade), trocas de dama e roque. A imprecisão humana
+   segue a taxa real de erros de cada um por fase (menos de 1% por lance nos campeões atuais) e nunca vira gafe.
+   Sem Stockfish no aparelho, joga o motor do jogo e a tela avisa. */
+var V121=(function(){
+ var V={warned:false};
+ function legend(q){try{return V74.get(q.dna.lid);}catch(e){return null;}}
+ V.tol=function(e){return Math.max(6,Math.min(35,(2950-e)/10));};
+ V.ms=function(e){return e>=2800?1600:(e>=2700?1300:1100);};
+ V.phase=function(p){var n=0;for(var s=0;s<64;s++){var t=Math.abs(p.board[s]);if(t>=2&&t<=5)n++;}return n<=6?2:(p.full<=12?0:1);};
+ /* escolhe o lance entre as linhas do Stockfish (pontuação do ponto de vista de quem joga) */
+ V.pick=function(fen,lines,L){
+  var p=Engine.posFromFEN(fen),e=L.e||2700,ag=L.ag==null?25:L.ag,qx=L.qx==null?40:L.qx;
+  var c=lines.filter(function(l){return l&&l.pv&&l.pv[0];}).map(function(l){return {u:l.pv[0],s:SF.score(l)};});
+  if(!c.length)return null;
+  c.sort(function(a,b){return b.s-a.s;});
+  var best=c[0];
+  if(best.s>=29000||c.length===1)return {u:best.u,s:best.s,k:'best'};
+  var ph=L.ph?L.ph[V.phase(p)]:1,err=Math.random()*100<(ph==null?1:ph);
+  var tol=V.tol(e),win=err?50+(2900-e)/4:tol;
+  var pool=c.filter(function(x){return best.s-x.s<=win&&x.s>-29000;});
+  if(err){var worse=pool.filter(function(x){return x!==best&&best.s-x.s>tol;});if(worse.length)pool=worse;}
+  var tot=0,ws=pool.map(function(x){
+   var m=Engine.uciToMove(p,x.u),w=Math.exp(-(best.s-x.s)/Math.max(3,tol/2));
+   if(m>=0){
+    var from=Engine.nameSq(x.u.slice(0,2)),to=Engine.nameSq(x.u.slice(2,4)),pc=Math.abs(p.board[from]),cap=p.board[to]!==0;
+    var q=Engine.posFromFEN(fen);Engine.makeMove(q,m);var chk=Engine.inCheck(q);
+    var tact=cap||chk;
+    w*=Math.exp((tact?0.8:-0.35)*(ag-25)/25);
+    if(pc===5&&Math.abs(p.board[to])===5)w*=Math.exp((qx-40)/20);
+    if(pc===6&&Math.abs((to&7)-(from&7))===2)w*=1.4;
+   }
+   tot+=w;return w;});
+  var r=Math.random()*tot;
+  for(var i=0;i<pool.length;i++){r-=ws[i];if(r<=0)return {u:pool[i].u,s:pool[i].s,k:err?'err':'style'};}
+  return {u:pool[0].u,s:pool[0].s,k:'style'};
+ };
+ V.move=function(q,cb,prev){
+  var L=legend(q);
+  if(!L||typeof SF==='undefined'||SF.failed){
+   if(L&&!V.warned){V.warned=true;try{UiJs.toast('O Stockfish não carregou neste aparelho: a lenda joga com o motor do jogo, que é mais fraco.');}catch(e){}}
+   return prev(q,cb);
+  }
+  /* sem o livro real (sem internet), as linhas de reserva da lenda abrem a partida */
+  try{if(!V82.books[L.id]&&q.ucis&&q.ucis.length<24){var rp=Engine.posFromFEN(q.fen),ru=Dna.bookMove(q.dna,q.ucis,rp);if(ru&&Engine.uciToMove(rp,ru)>=0)return prev({cmd:'cpunote',fen:q.fen,uci:ru,human:q.human},function(r){if(r&&r.uci){r.book=true;r.err=false;r.score=null;cb(r);}else prev(q,cb);});}}catch(e){}
+  Think.busy++;
+  SF.go({fen:q.fen,pos:V73.posCmd(q),movetime:V.ms(L.e),multipv:3},function(res){
+   Think.busy--;
+   var ch=null;
+   try{if(res&&res.lines&&res.lines.length)ch=V.pick(q.fen,res.lines,L);}catch(e){ch=null;}
+   if(!ch&&res&&res.best)ch={u:res.best,s:null,k:'best'};
+   if(!ch){
+    if(!V.warned){V.warned=true;try{UiJs.toast('O Stockfish não respondeu: a lenda joga com o motor do jogo, que é mais fraco.');}catch(e){}}
+    prev(q,cb);return;
+   }
+   V.last={u:ch.u,k:ch.k,n:res.lines.length,best:res.lines[0]&&res.lines[0].pv&&res.lines[0].pv[0]};
+   prev({cmd:'cpunote',fen:q.fen,uci:ch.u,human:q.human,score:ch.s},function(r){
+    if(!r||!r.uci){prev(q,cb);return;}
+    r.book=false;r.err=ch.k==='err';r.sf=true;cb(r);
+   });
+  });
+ };
+ if(typeof V82!=='undefined')V82.engine=V.move;
+ return V;
+})();

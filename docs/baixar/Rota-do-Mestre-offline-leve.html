@@ -15,7 +15,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v120</title>
+<title>Xadrez · Rota do Mestre — v121</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1752,6 +1752,16 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .pc.v120-ret{animation:v120ret .42s cubic-bezier(.3,.7,.25,1) both!important;z-index:5}
 @keyframes v120ret{from{transform:translate(var(--rx),var(--ry))}to{transform:none}}
 @media (prefers-reduced-motion:reduce){.v120-card.v120-in,.sq.v120-hold .pc,.sq.v120-hold:after,.pc.v120-ret,.v120-hint,.v120-msg{animation:none!important}}
+/* v121: Lendas no computador (coluna estreita): retrato em cima, fala embaixo, sem cortes */
+.v43-card{container-type:inline-size}
+@container (max-width:330px){
+.v43-card .v42-scene{flex-direction:column!important;align-items:stretch!important;gap:10px!important}
+.v43-card .v42-portrait{width:min(100%,200px)!important;height:auto!important;aspect-ratio:1/1;flex:0 0 auto!important;align-self:center}
+.v43-card .v42-phrase{flex:0 0 auto!important;width:100%!important;min-width:0!important;justify-content:flex-start!important}
+.v43-card .v42-name,.v43-card .v42-epithet{-webkit-line-clamp:3!important;text-align:center}
+.v43-card .v42-balloon{min-height:0!important;border-radius:12px!important}
+.v43-card .v42-balloon:before{left:50%!important;top:-8px!important;transform:translateX(-50%)!important;border-top:0!important;border-left:8px solid transparent!important;border-right:8px solid transparent!important;border-bottom:8px solid #f3ecdf!important}
+}
 /* treinador por voz: indisponível por enquanto */
 .v36-card,.v36-hb{display:none!important}
 /* com a nova linha, os temas do tabuleiro crescem quando há altura sobrando */
@@ -78419,8 +78429,8 @@ var LENDAS=[{"id":"carlsen","n":"Magnus Carlsen","s":"Carlsen","c":"🇳🇴","p
 /* ======================= v74 — Lendas: enfrente os maiores jogadores =======================
  * Botão "Lendas" depois do Stockfish, em Nova partida. Abre uma lista com busca e filtros; cada jogador traz
  * o repertório de aberturas dele (linhas validadas lance a lance), o estilo (agressividade, trocas de dama, roque)
- * e uma taxa de erros baixa. Quem joga é o motor do jogo, no modo "fantasma": imita repertório e estilo,
- * não a força real do jogador. O duelo não muda o Elo e tem placar próprio.
+ * e uma taxa de erros baixa. Desde a v121, fora do repertório quem joga é o Stockfish no nível máximo de cada lenda
+ * (V121, em extras_v48.js), escolhendo entre os melhores lances o que combina com o estilo dela. O duelo não muda o Elo e tem placar próprio.
  */
 var V74={sel:null,filter:'all'};
 V74.get=function(id){for(var i=0;i<LENDAS.length;i++)if(LENDAS[i].id===id)return LENDAS[i];return null;};
@@ -78442,7 +78452,7 @@ V74.open=function(){
  if(document.querySelector('.v74-ov'))return;
  var ov=document.createElement('div');ov.className='v74-ov';
  ov.innerHTML='<div class="v74-sh" role="dialog" aria-modal="true" aria-label="Escolha uma lenda para enfrentar">'+
-  '<div class="v74-hd"><div><b>Enfrente uma lenda</b><span>'+LENDAS.length+' jogadores. O jogo imita o repertório e o estilo; a força é a do motor do jogo.</span></div><button class="v74-x" aria-label="Fechar">✕</button></div>'+
+  '<div class="v74-hd"><div><b>Enfrente uma lenda</b><span>'+LENDAS.length+' jogadores. Repertório real, estilo de cada um e força de campeão: o Stockfish joga no nível máximo de cada lenda.</span></div><button class="v74-x" aria-label="Fechar">✕</button></div>'+
   '<input class="v74-q" type="search" placeholder="Buscar por nome ou país" aria-label="Buscar jogador" autocomplete="off">'+
   '<div class="v74-fs" role="tablist"></div><div class="v74-ls" role="listbox"></div></div>';
  document.body.appendChild(ov);
@@ -78490,7 +78500,7 @@ V74.open=function(){
     var c=document.createElement('button');c.className='v74-card';c.setAttribute('aria-label','Trocar de lenda');
     c.innerHTML='<span class="v74-fl" aria-hidden="true">'+p.c+'</span><span class="v74-tx"><b>'+V74.esc(p.n)+' <u>'+p.e+'</u></b><i>'+V74.esc(p.t)+'</i>'+
      '<em>'+V74.esc(p.st)+'</em><em class="v74-op">'+(p.ng?'<b class="v74-real">Repertório real · '+p.ng.toLocaleString('pt-BR')+' partidas ('+V74.esc(p.yr)+')</b>':'')+'<span class="v74-ob">'+(p.ng?'<br>':'')+'Brancas: '+V74.esc(p.ow)+'.<br>Pretas: '+V74.esc(p.ob)+'.</span></em>'+
-     '<em class="v74-no">Abre como nas partidas reais; depois, o motor do jogo segue no estilo dele. Não muda o seu Elo'+(sc?' · seu placar: '+sc:'')+'.</em></span><span class="v74-ch">trocar ▾</span>';
+     '<em class="v74-no">Abre como nas partidas reais; depois joga com força de campeão, no estilo dele. Não muda o seu Elo'+(sc?' · seu placar: '+sc:'')+'.</em></span><span class="v74-ch">trocar ▾</span>';
     c.onclick=function(){V74.open();};seg.appendChild(c);
     /* o cartão ocupa espaço: a nota do efeito do tabuleiro sai para a tela continuar sem rolar */
     setTimeout(function(){try{var fx=page.querySelector('.v33-fxd');if(fx)fx.style.display='none';}catch(e){}},0);
@@ -79228,7 +79238,7 @@ V82.probe=function(id,fen){
    if(hit)hit.l=ply;
    else if(was&&was.l&&was.l<ply&&!was.out)hit={out:true,l:ply};
    V82.last[lid]=hit;
-   if(!hit||hit.out)return prev(q,cb);
+   if(!hit||hit.out)return V82.engine?V82.engine(q,cb,prev):prev(q,cb);
    prev({cmd:'cpunote',fen:q.fen,uci:hit.uci,human:q.human},function(r){
     if(!r||!r.uci){V82.last[lid]=null;prev(q,cb);return;}
     r.book=true;r.err=false;r.score=null;r.real=hit;cb(r);
@@ -81289,6 +81299,75 @@ var V120=(function(){
   ['newGame','restoreGame','newGhostGame'].forEach(function(k){var o=App[k];if(typeof o!=='function')return;App[k]=function(){V.stopTick();lastKey=null;return o.apply(this,arguments);};});
  };
  if(typeof document!=='undefined'&&typeof Think!=='undefined'&&typeof App!=='undefined')V.hook();
+ return V;
+})();
+
+/* ======================= v121 · Lendas com força de campeão =======================
+   Fora do repertório real, a lenda joga com o Stockfish em força total (sem limite de Elo), olhando os 3 melhores
+   lances. Ela só escolhe entre lances praticamente iguais ao melhor, numa janela que depende do Elo máximo dela
+   (Carlsen 2882: cerca de 7 centésimos de peão; Smyslov 2620: cerca de 33), e entre eles prefere o que combina com
+   o estilo medido nas partidas reais: capturas e xeques (agressividade), trocas de dama e roque. A imprecisão humana
+   segue a taxa real de erros de cada um por fase (menos de 1% por lance nos campeões atuais) e nunca vira gafe.
+   Sem Stockfish no aparelho, joga o motor do jogo e a tela avisa. */
+var V121=(function(){
+ var V={warned:false};
+ function legend(q){try{return V74.get(q.dna.lid);}catch(e){return null;}}
+ V.tol=function(e){return Math.max(6,Math.min(35,(2950-e)/10));};
+ V.ms=function(e){return e>=2800?1600:(e>=2700?1300:1100);};
+ V.phase=function(p){var n=0;for(var s=0;s<64;s++){var t=Math.abs(p.board[s]);if(t>=2&&t<=5)n++;}return n<=6?2:(p.full<=12?0:1);};
+ /* escolhe o lance entre as linhas do Stockfish (pontuação do ponto de vista de quem joga) */
+ V.pick=function(fen,lines,L){
+  var p=Engine.posFromFEN(fen),e=L.e||2700,ag=L.ag==null?25:L.ag,qx=L.qx==null?40:L.qx;
+  var c=lines.filter(function(l){return l&&l.pv&&l.pv[0];}).map(function(l){return {u:l.pv[0],s:SF.score(l)};});
+  if(!c.length)return null;
+  c.sort(function(a,b){return b.s-a.s;});
+  var best=c[0];
+  if(best.s>=29000||c.length===1)return {u:best.u,s:best.s,k:'best'};
+  var ph=L.ph?L.ph[V.phase(p)]:1,err=Math.random()*100<(ph==null?1:ph);
+  var tol=V.tol(e),win=err?50+(2900-e)/4:tol;
+  var pool=c.filter(function(x){return best.s-x.s<=win&&x.s>-29000;});
+  if(err){var worse=pool.filter(function(x){return x!==best&&best.s-x.s>tol;});if(worse.length)pool=worse;}
+  var tot=0,ws=pool.map(function(x){
+   var m=Engine.uciToMove(p,x.u),w=Math.exp(-(best.s-x.s)/Math.max(3,tol/2));
+   if(m>=0){
+    var from=Engine.nameSq(x.u.slice(0,2)),to=Engine.nameSq(x.u.slice(2,4)),pc=Math.abs(p.board[from]),cap=p.board[to]!==0;
+    var q=Engine.posFromFEN(fen);Engine.makeMove(q,m);var chk=Engine.inCheck(q);
+    var tact=cap||chk;
+    w*=Math.exp((tact?0.8:-0.35)*(ag-25)/25);
+    if(pc===5&&Math.abs(p.board[to])===5)w*=Math.exp((qx-40)/20);
+    if(pc===6&&Math.abs((to&7)-(from&7))===2)w*=1.4;
+   }
+   tot+=w;return w;});
+  var r=Math.random()*tot;
+  for(var i=0;i<pool.length;i++){r-=ws[i];if(r<=0)return {u:pool[i].u,s:pool[i].s,k:err?'err':'style'};}
+  return {u:pool[0].u,s:pool[0].s,k:'style'};
+ };
+ V.move=function(q,cb,prev){
+  var L=legend(q);
+  if(!L||typeof SF==='undefined'||SF.failed){
+   if(L&&!V.warned){V.warned=true;try{UiJs.toast('O Stockfish não carregou neste aparelho: a lenda joga com o motor do jogo, que é mais fraco.');}catch(e){}}
+   return prev(q,cb);
+  }
+  /* sem o livro real (sem internet), as linhas de reserva da lenda abrem a partida */
+  try{if(!V82.books[L.id]&&q.ucis&&q.ucis.length<24){var rp=Engine.posFromFEN(q.fen),ru=Dna.bookMove(q.dna,q.ucis,rp);if(ru&&Engine.uciToMove(rp,ru)>=0)return prev({cmd:'cpunote',fen:q.fen,uci:ru,human:q.human},function(r){if(r&&r.uci){r.book=true;r.err=false;r.score=null;cb(r);}else prev(q,cb);});}}catch(e){}
+  Think.busy++;
+  SF.go({fen:q.fen,pos:V73.posCmd(q),movetime:V.ms(L.e),multipv:3},function(res){
+   Think.busy--;
+   var ch=null;
+   try{if(res&&res.lines&&res.lines.length)ch=V.pick(q.fen,res.lines,L);}catch(e){ch=null;}
+   if(!ch&&res&&res.best)ch={u:res.best,s:null,k:'best'};
+   if(!ch){
+    if(!V.warned){V.warned=true;try{UiJs.toast('O Stockfish não respondeu: a lenda joga com o motor do jogo, que é mais fraco.');}catch(e){}}
+    prev(q,cb);return;
+   }
+   V.last={u:ch.u,k:ch.k,n:res.lines.length,best:res.lines[0]&&res.lines[0].pv&&res.lines[0].pv[0]};
+   prev({cmd:'cpunote',fen:q.fen,uci:ch.u,human:q.human,score:ch.s},function(r){
+    if(!r||!r.uci){prev(q,cb);return;}
+    r.book=false;r.err=ch.k==='err';r.sf=true;cb(r);
+   });
+  });
+ };
+ if(typeof V82!=='undefined')V82.engine=V.move;
  return V;
 })();
 

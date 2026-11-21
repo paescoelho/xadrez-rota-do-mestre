@@ -43,7 +43,7 @@ V82.probe=function(id,fen){
    if(hit)hit.l=ply;
    else if(was&&was.l&&was.l<ply&&!was.out)hit={out:true,l:ply};
    V82.last[lid]=hit;
-   if(!hit||hit.out)return prev(q,cb);
+   if(!hit||hit.out)return V82.engine?V82.engine(q,cb,prev):prev(q,cb);
    prev({cmd:'cpunote',fen:q.fen,uci:hit.uci,human:q.human},function(r){
     if(!r||!r.uci){V82.last[lid]=null;prev(q,cb);return;}
     r.book=true;r.err=false;r.score=null;r.real=hit;cb(r);

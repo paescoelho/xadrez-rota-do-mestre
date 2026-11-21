@@ -5,6 +5,14 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v121 — Lendas com força de campeão
+
+- **Força real:** fora do repertório das partidas reais, cada lenda joga com o Stockfish em força total (1,1 a 1,6 s por lance, 3 melhores lances analisados). Antes, quem jogava era o motor do jogo imitando o estilo, e isso deixava as lendas fáceis.
+- **Estilo mantido:** a lenda só escolhe entre lances praticamente iguais ao melhor, numa janela que depende do Elo máximo dela (Carlsen 2882: cerca de 7 centésimos de peão; Smyslov 2620: cerca de 33). Entre eles prefere o que combina com o estilo medido nas partidas reais: capturas e xeques, trocas de dama e roque.
+- **Erros humanos na medida real:** a taxa de imprecisão por fase vem das partidas de cada um (menos de 1% por lance nos campeões atuais) e nunca vira gafe.
+- Sem Stockfish no aparelho, a lenda joga com o motor do jogo e a tela avisa.
+- **Computador:** na coluna estreita, o retrato fica em cima e a fala embaixo, sem cortar a imagem, o nome nem o balão.
+
 ## v120 — Mentor professor
 
 Com o Mentor ligado ("Comentando cada lance"), o treinador deixa de só comentar e passa a acompanhar a partida.

@@ -1,8 +1,8 @@
 /* ======================= v74 — Lendas: enfrente os maiores jogadores =======================
  * Botão "Lendas" depois do Stockfish, em Nova partida. Abre uma lista com busca e filtros; cada jogador traz
  * o repertório de aberturas dele (linhas validadas lance a lance), o estilo (agressividade, trocas de dama, roque)
- * e uma taxa de erros baixa. Quem joga é o motor do jogo, no modo "fantasma": imita repertório e estilo,
- * não a força real do jogador. O duelo não muda o Elo e tem placar próprio.
+ * e uma taxa de erros baixa. Desde a v121, fora do repertório quem joga é o Stockfish no nível máximo de cada lenda
+ * (V121, em extras_v48.js), escolhendo entre os melhores lances o que combina com o estilo dela. O duelo não muda o Elo e tem placar próprio.
  */
 var V74={sel:null,filter:'all'};
 V74.get=function(id){for(var i=0;i<LENDAS.length;i++)if(LENDAS[i].id===id)return LENDAS[i];return null;};
@@ -24,7 +24,7 @@ V74.open=function(){
  if(document.querySelector('.v74-ov'))return;
  var ov=document.createElement('div');ov.className='v74-ov';
  ov.innerHTML='<div class="v74-sh" role="dialog" aria-modal="true" aria-label="Escolha uma lenda para enfrentar">'+
-  '<div class="v74-hd"><div><b>Enfrente uma lenda</b><span>'+LENDAS.length+' jogadores. O jogo imita o repertório e o estilo; a força é a do motor do jogo.</span></div><button class="v74-x" aria-label="Fechar">✕</button></div>'+
+  '<div class="v74-hd"><div><b>Enfrente uma lenda</b><span>'+LENDAS.length+' jogadores. Repertório real, estilo de cada um e força de campeão: o Stockfish joga no nível máximo de cada lenda.</span></div><button class="v74-x" aria-label="Fechar">✕</button></div>'+
   '<input class="v74-q" type="search" placeholder="Buscar por nome ou país" aria-label="Buscar jogador" autocomplete="off">'+
   '<div class="v74-fs" role="tablist"></div><div class="v74-ls" role="listbox"></div></div>';
  document.body.appendChild(ov);
@@ -72,7 +72,7 @@ V74.open=function(){
     var c=document.createElement('button');c.className='v74-card';c.setAttribute('aria-label','Trocar de lenda');
     c.innerHTML='<span class="v74-fl" aria-hidden="true">'+p.c+'</span><span class="v74-tx"><b>'+V74.esc(p.n)+' <u>'+p.e+'</u></b><i>'+V74.esc(p.t)+'</i>'+
      '<em>'+V74.esc(p.st)+'</em><em class="v74-op">'+(p.ng?'<b class="v74-real">Repertório real · '+p.ng.toLocaleString('pt-BR')+' partidas ('+V74.esc(p.yr)+')</b>':'')+'<span class="v74-ob">'+(p.ng?'<br>':'')+'Brancas: '+V74.esc(p.ow)+'.<br>Pretas: '+V74.esc(p.ob)+'.</span></em>'+
-     '<em class="v74-no">Abre como nas partidas reais; depois, o motor do jogo segue no estilo dele. Não muda o seu Elo'+(sc?' · seu placar: '+sc:'')+'.</em></span><span class="v74-ch">trocar ▾</span>';
+     '<em class="v74-no">Abre como nas partidas reais; depois joga com força de campeão, no estilo dele. Não muda o seu Elo'+(sc?' · seu placar: '+sc:'')+'.</em></span><span class="v74-ch">trocar ▾</span>';
     c.onclick=function(){V74.open();};seg.appendChild(c);
     /* o cartão ocupa espaço: a nota do efeito do tabuleiro sai para a tela continuar sem rolar */
     setTimeout(function(){try{var fx=page.querySelector('.v33-fxd');if(fx)fx.style.display='none';}catch(e){}},0);

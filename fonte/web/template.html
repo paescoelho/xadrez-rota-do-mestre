@@ -15,7 +15,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v120</title>
+<title>Xadrez · Rota do Mestre — v121</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1611,6 +1611,16 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .pc.v120-ret{animation:v120ret .42s cubic-bezier(.3,.7,.25,1) both!important;z-index:5}
 @keyframes v120ret{from{transform:translate(var(--rx),var(--ry))}to{transform:none}}
 @media (prefers-reduced-motion:reduce){.v120-card.v120-in,.sq.v120-hold .pc,.sq.v120-hold:after,.pc.v120-ret,.v120-hint,.v120-msg{animation:none!important}}
+/* v121: Lendas no computador (coluna estreita): retrato em cima, fala embaixo, sem cortes */
+.v43-card{container-type:inline-size}
+@container (max-width:330px){
+.v43-card .v42-scene{flex-direction:column!important;align-items:stretch!important;gap:10px!important}
+.v43-card .v42-portrait{width:min(100%,200px)!important;height:auto!important;aspect-ratio:1/1;flex:0 0 auto!important;align-self:center}
+.v43-card .v42-phrase{flex:0 0 auto!important;width:100%!important;min-width:0!important;justify-content:flex-start!important}
+.v43-card .v42-name,.v43-card .v42-epithet{-webkit-line-clamp:3!important;text-align:center}
+.v43-card .v42-balloon{min-height:0!important;border-radius:12px!important}
+.v43-card .v42-balloon:before{left:50%!important;top:-8px!important;transform:translateX(-50%)!important;border-top:0!important;border-left:8px solid transparent!important;border-right:8px solid transparent!important;border-bottom:8px solid #f3ecdf!important}
+}
 /* treinador por voz: indisponível por enquanto */
 .v36-card,.v36-hb{display:none!important}
 /* com a nova linha, os temas do tabuleiro crescem quando há altura sobrando */
