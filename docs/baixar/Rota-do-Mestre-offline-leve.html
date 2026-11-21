@@ -15,7 +15,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v119</title>
+<title>Xadrez · Rota do Mestre — v120</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1679,6 +1679,79 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v118-sec.v118-ok .v118-st{color:#7fe0a8}.v118-sec.v118-c .v118-st{color:#f3d98c}.v118-sec.v118-no .v118-st{color:#f09595}.v118-sec.v118-tp .v118-st{color:#9fb7d9}
 .v118-sec ul{margin:0;padding-left:17px}.v118-sec li{font-size:12.5px;color:#d8d0bb;line-height:1.4;margin:2px 0}
 .v118-sig{font-size:10.5px;color:#6f767e;text-align:center;margin-top:8px}
+/* v120: Mentor professor */
+.v120-card{position:relative;margin:2px 0 12px;padding:10px 12px 11px;border-radius:14px;border:1px solid rgba(220,181,92,.5);background:linear-gradient(180deg,rgba(43,35,18,.97),rgba(22,19,12,.97));box-shadow:0 8px 24px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,236,180,.06);color:#f3ead6;text-align:left}
+.v120-card.v120-in{animation:v120in .34s cubic-bezier(.2,.8,.2,1) both}
+@keyframes v120in{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}
+.v120-card header{display:flex;align-items:center;gap:9px}
+.v120-av{flex:0 0 30px;width:30px;height:30px;display:block}.v120-av svg,.v120-sav svg{width:100%;height:100%;display:block}
+.v120-tt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.15}
+.v120-tt b{font-family:Cinzel,Georgia,serif;font-size:16px;letter-spacing:.03em;color:#f0cf7a;font-weight:700}
+.v120-tt small{font-size:12px;color:#a99c80;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v120-h:not(.v120-done) .v120-tt b{animation:v120pulse 1.8s ease-in-out 2}
+@keyframes v120pulse{50%{color:#ffe6a3;text-shadow:0 0 12px rgba(240,207,122,.55)}}
+.v120-cw{flex:0 0 auto}
+.v120-chip{display:inline-flex;align-items:center;gap:4px;padding:5px 9px;border-radius:999px;border:1px solid rgba(220,181,92,.38);background:rgba(220,181,92,.08);color:#e8d6a6;font-size:12px;line-height:1;cursor:pointer;font-family:inherit;white-space:nowrap}
+.v120-chip span{color:#9d9076}.v120-chip i{font-style:normal;font-size:10px;opacity:.8}
+.v120-chip:hover{background:rgba(220,181,92,.16)}
+.v120-pop{position:absolute;right:8px;top:46px;z-index:40;width:min(300px,calc(100% - 16px));padding:6px;border-radius:13px;border:1px solid rgba(220,181,92,.55);background:#1b1711;box-shadow:0 14px 34px rgba(0,0,0,.55);display:flex;flex-direction:column;gap:3px;animation:v120in .18s ease both}
+.v120-pi{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:8px 10px;border-radius:9px;border:1px solid transparent;background:none;color:#efe3c6;cursor:pointer;font-family:inherit}
+.v120-pi b{font-size:14px}.v120-pi b em{font-style:normal;font-size:11px;color:#a99c80;font-weight:400;margin-left:4px}
+.v120-pi span{font-size:12px;color:#a99c80;line-height:1.3}
+.v120-pi:hover{background:rgba(220,181,92,.08)}.v120-pi.on{border-color:rgba(220,181,92,.55);background:rgba(220,181,92,.12)}
+.v120-q{margin:9px 0 2px;font-size:16px;line-height:1.3;font-weight:600;color:#f7eedb}
+.v120-how{margin:2px 0 0;font-size:13.5px;line-height:1.35;color:#bdb095}
+.v120-bw{margin:9px 0 0}
+.v120-bar{position:relative;height:5px;border-radius:5px;background:rgba(255,255,255,.09);overflow:hidden}
+.v120-bar i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:inherit;background:linear-gradient(90deg,rgba(138,106,42,.9),#dcb55c);transition:width .22s linear}
+.v120-bar b{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:rgba(10,8,4,.55)}
+.v120-barl{display:flex;justify-content:space-between;gap:8px;margin-top:4px;font-size:11.5px;color:#8f846c}
+.v120-hint{margin:8px 0 0;padding:7px 10px;border-radius:9px;background:rgba(220,181,92,.11);border-left:3px solid #dcb55c;color:#f1dda4;font-size:14px;line-height:1.35;animation:v120in .3s ease both}
+.v120-hint b{color:#dcb55c;font-weight:700;margin-right:2px}
+.v120-msg{margin:7px 0 0;font-size:13.5px;color:#eba493;animation:v120shake .32s ease}
+@keyframes v120shake{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+.v120-acts{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:6px;min-height:30px}
+.v120-link{background:none;border:0;padding:6px 0;color:#cbb784;font-size:13.5px;text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-family:inherit}
+.v120-cost{font-size:11.5px;color:#8f846c}
+.v120-why{margin:8px 0 0;font-size:14.5px;line-height:1.38;color:#f7eedb}
+.v120-res{font-size:13px;color:#e8a08f}
+.v120-pos{margin:7px 0 0;font-size:12.5px;line-height:1.3;color:#a99c80}
+@media (max-width:420px){.v120-chip span{display:none}}
+@media (max-height:700px){.v120-card{padding:8px 11px 9px}.v120-why{font-size:14px;margin-top:6px}.v120-ch{margin-top:8px}.v120-b{min-height:56px;padding:8px 10px}.v120-q{font-size:15px;margin-top:6px}.v120-bw{margin-top:7px}}
+.v120-ch{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:8px;margin-top:10px}
+.v120-b{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-height:68px;padding:10px 11px;border-radius:12px;text-align:left;color:#f3ead6;cursor:pointer;font-family:inherit;transition:transform .12s ease,box-shadow .2s ease}
+.v120-b:active{transform:scale(.98)}
+.v120-b b{font-size:14.5px;line-height:1.2}.v120-b b i{font-style:normal;margin-right:3px}
+.v120-b span{font-size:12px;line-height:1.3;color:#bdb095}
+.v120-b em{position:absolute;top:-8px;right:9px;padding:2px 7px;border-radius:999px;background:#dcb55c;color:#1d170b;font-size:10.5px;font-style:normal;font-weight:700;letter-spacing:.02em}
+.v120-back{border:1px solid #dcb55c;background:linear-gradient(180deg,#3d3115,#251e0e);box-shadow:0 0 14px rgba(220,181,92,.16)}
+.v120-keep{border:1px solid rgba(217,83,79,.55);background:linear-gradient(180deg,#30201d,#1f1513)}
+.v120-opp{border-color:rgba(84,190,120,.55);background:linear-gradient(180deg,rgba(20,40,28,.97),rgba(12,22,16,.97))}
+.v120-opp .v120-tt b{color:#8fdcaa}.v120-opp .v120-bar i{background:linear-gradient(90deg,#2f7a4a,#6fd197)}.v120-opp .v120-hint{border-left-color:#6fd197;background:rgba(84,190,120,.1);color:#cdeed8}.v120-opp .v120-hint b{color:#6fd197}
+.v120-ask .v120-tt b{color:#f0cf7a}
+.v120-done .v120-tt b{color:#f3d58a}
+.v120-strip{display:flex;align-items:flex-start;gap:8px;margin:2px 0 10px;padding:8px 11px;border-radius:11px;border:1px solid rgba(220,181,92,.3);background:rgba(220,181,92,.07);font-size:13.5px;line-height:1.35;color:#e9dcbc;animation:v120in .3s ease both}
+.v120-sav{flex:0 0 20px;width:20px;height:20px;margin-top:1px}
+.v120-sok{border-color:rgba(84,190,120,.45);background:rgba(84,190,120,.09);color:#cdeed8}
+.v120-skeep{border-color:rgba(217,83,79,.4);background:rgba(217,83,79,.07)}
+.v120-les{margin:10px 0 12px}
+.v120-lr{list-style:none;margin:9px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.v120-lr li{display:flex;align-items:flex-start;gap:8px;font-size:14px;line-height:1.35;color:#efe3c6}
+.v120-lr li i{flex:0 0 20px;height:20px;border-radius:6px;display:grid;place-items:center;font-style:normal;font-size:12px;background:rgba(220,181,92,.13);color:#dcb55c}
+.v120-foc{margin:10px 0 0;padding:8px 10px;border-radius:10px;background:rgba(220,181,92,.09);display:flex;flex-direction:column;gap:2px}
+.v120-foc b{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:#dcb55c}.v120-foc span{font-size:14px;line-height:1.35;color:#f1e4c4}
+.v120-fade{margin:8px 0 0;font-size:13px;color:#8fdcaa}
+.v120-go{width:100%;margin-top:4px;padding:10px 12px;border-radius:11px;border:1px solid #dcb55c;background:linear-gradient(180deg,#3d3115,#251e0e);color:#f3e2b4;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+/* tabuleiro */
+.sq.v120-hold .pc{animation:v120float 1.7s ease-in-out infinite!important;filter:drop-shadow(0 7px 5px rgba(0,0,0,.38))}
+@keyframes v120float{50%{transform:translateY(-7%)}}
+.sq.v120-hold:after{content:"";position:absolute;inset:4%;z-index:1;border-radius:12%;box-shadow:inset 0 0 0 2.5px rgba(240,207,122,.95),0 0 12px rgba(240,207,122,.5);animation:v120ring 1.7s ease-in-out infinite;pointer-events:none}
+@keyframes v120ring{50%{box-shadow:inset 0 0 0 2.5px rgba(240,207,122,.45),0 0 4px rgba(240,207,122,.2)}}
+.sq.v120-no{animation:v120shake .3s ease}
+.sq.v120-att:after{content:"";position:absolute;inset:3%;z-index:1;border-radius:12%;box-shadow:inset 0 0 0 3px #d9534f,0 0 14px rgba(217,83,79,.6);pointer-events:none}
+.pc.v120-ret{animation:v120ret .42s cubic-bezier(.3,.7,.25,1) both!important;z-index:5}
+@keyframes v120ret{from{transform:translate(var(--rx),var(--ry))}to{transform:none}}
+@media (prefers-reduced-motion:reduce){.v120-card.v120-in,.sq.v120-hold .pc,.sq.v120-hold:after,.pc.v120-ret,.v120-hint,.v120-msg{animation:none!important}}
 /* treinador por voz: indisponível por enquanto */
 .v36-card,.v36-hb{display:none!important}
 /* com a nova linha, os temas do tabuleiro crescem quando há altura sobrando */
@@ -80820,6 +80893,403 @@ var V118=(function(){
 (function(){
  if(typeof Study==='undefined'||!Study.pgn)return;
  var o=Study.pgn;Study.pgn=function(){var s=o.apply(this,arguments);try{if(typeof s==='string'&&s.indexOf('[Annotator ')<0){s=s.replace('[Site "Offline"]','[Site "'+V118.URL+'"]');var k=s.indexOf('\n\n');var tag='[Annotator "Xadrez · Rota do Mestre — '+V118.who().replace('Criado','criado')+'"]';s=k>0?s.slice(0,k)+'\n'+tag+s.slice(k):tag+'\n'+s;}}catch(e){}return s;};
+})();
+
+/* ======================= v120 · Mentor professor =======================
+   Com o Mentor ligado ("Comentando cada lance"), o treinador acompanha a partida:
+   1) Espera!: quando o seu lance é uma gafe, a partida para antes da resposta dele. Você procura a peça
+      que pune o lance (dicas em degraus numa barra sem pressa) e escolhe: voltar (a partida deixa de valer
+      pontos) ou manter (continua valendo; só a gafe conta).
+   2) Pergunta da ameaça: depois de um lance dele que cria ameaça nova, toque na sua peça em perigo.
+   3) Oportunidade: quando o lance dele deixa algo para você, o Mentor avisa e deixa você procurar.
+   4) Aula no final: o que aconteceu, o foco da próxima partida e os momentos para refazer.
+   5) Níveis de ajuda (Mão na mão, Acompanhando, Só observa) e ajuda que diminui quando você erra menos. */
+var V120=(function(){
+ var V={};
+ var START='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+ var LV={
+  mao:{n:'Mão na mão',d:'Para nas gafes e nos erros, dá dicas mais cedo e pergunta mais vezes.',gr:{blunder:1,mistake:1},T:15000,mG:8,mQ:5,gQ:2,mO:4},
+  acomp:{n:'Acompanhando',d:'Para nas gafes. Dicas no seu tempo, perguntas de vez em quando.',gr:{blunder:1},T:24000,mG:4,mQ:2,gQ:4,mO:2},
+  obs:{n:'Só observa',d:'Não interrompe. Comenta os lances e fecha a aula no final.',gr:{},T:0,mG:0,mQ:0,gQ:99,mO:0}
+ };
+ var ORD=['mao','acomp','obs'];
+ var NM=['','peão','cavalo','bispo','torre','dama','rei'],FEM={4:1,5:1};
+ var CONC={hanging:1,threat:1,trade:1,kingSafety:1};
+ V.LV=LV;
+ V.d=function(){var d=Profile.d;if(!d.v120)d.v120={lvl:'acomp',games:[],focus:null};var x=d.v120;if(!LV[x.lvl])x.lvl='acomp';if(!x.games)x.games=[];return x;};
+ V.fade=function(){var x=V.d();if(x.lvl!=='acomp')return false;var gs=x.games.slice(-5);if(gs.length<3)return false;var s=0;gs.forEach(function(r){s+=r.g||0;});return s/gs.length<=1;};
+ V.cfg=function(){var x=V.d(),c=LV[x.lvl];if(V.fade()){var o={};for(var k in c)o[k]=c[k];o.T=32000;o.mQ=1;o.mO=1;o.fade=true;return o;}return c;};
+ V.on=function(g){return !!(g&&App.G===g&&g.coach&&g.over==null&&g.peek==null);};
+ V.st=function(g){if(!g._v120s)g._v120s={g:0,found:0,help:0,back:0,keep:0,q:0,qok:0,qply:-99,o:0,ook:0,cc:{}};return g._v120s;};
+ function col(v){return v>0?1:(v<0?-1:0);}
+ function T(v){return v<0?-v:v;}
+ function sqn(s){return Engine.sqName(s);}
+ function yours(t){return (FEM[t]?'a sua ':'o seu ')+NM[t];}
+ function theirs(t){return (FEM[t]?'a ':'o ')+NM[t]+' dele';}
+ function the(t){return (FEM[t]?'a ':'o ')+NM[t];}
+ function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+ function E(tag,cls,par,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;if(par)par.appendChild(e);return e;}
+ function kingSq(p,c){for(var s=0;s<64;s++)if(p.board[s]===6*c)return s;return -1;}
+ function tip(k){try{var t=V116.mget(Coach.TIPS,k);if(t)return t;}catch(e){}return null;}
+
+ /* ---------- relógio das dicas (barra sem pressa) ---------- */
+ var tk=null;
+ V.startTick=function(){if(!tk)tk=setInterval(V.tick,200);};
+ V.stopTick=function(){if(tk){clearInterval(tk);tk=null;}};
+ V.active=function(g){if(!g)return null;var H=g._v120h,Q=g._v120q,O=g._v120o;
+  if(H&&!H.stage)return H;if(Q&&!Q.done)return Q;if(O&&!O.show)return O;return null;};
+ V.tick=function(){
+  var g=App.G;if(!g||g.over!=null){V.stopTick();return;}
+  var A=V.active(g);
+  if(!A){V.stopTick();return;}
+  if(document.hidden){A.t0+=200;return;}
+  var el=(Date.now()-A.t0)/A.T,f=Math.min(1,el),hv;
+  if(A.kind==='q')hv=el>=1?2:(el>=.5?1:0);
+  else if(A.kind==='o')hv=el>=2/3?2:(el>=1/3?1:0);
+  else hv=el>=1?3:(el>=2/3?2:(el>=1/3?1:0));
+  var bar=document.querySelector('.v120-card .v120-bar i');if(bar)bar.style.width=(f*100).toFixed(1)+'%';
+  if(hv>A.hint){A.hint=hv;App.drawGame();}
+ };
+
+ /* ---------- 1) Espera!: intercepta a gafe antes da resposta ---------- */
+ V.intercept=function(g,rec,fb,cb){
+  if(!V.on(g)||!fb||fb.err||!fb.reply||!fb.best||g.pos.turn===g.human)return false;
+  var c=V.cfg();if(!c.gr[fb.grade]||!CONC[fb.concept])return false;
+  var s=V.st(g);if(s.g>=c.mG)return false;
+  var p=g.pos,rf=Engine.nameSq(fb.reply.slice(0,2)),rt=Engine.nameSq(fb.reply.slice(2,4));
+  if(col(p.board[rf])!==-g.human)return false;
+  var vic=null;
+  if(col(p.board[rt])===g.human)vic=rt;
+  else{try{var q=Engine.posFromFEN(Engine.toFEN(p)),m=Engine.uciToMove(q,fb.reply);if(m>=0){Engine.makeMove(q,m);if(Engine.inCheck(q))vic=kingSq(q,g.human);}}catch(e){}}
+  s.g++;s.cc[fb.concept]=(s.cc[fb.concept]||0)+1;
+  g._v120h={kind:'h',fb:fb,cb:cb,rec:rec,t0:Date.now(),T:c.T,stage:0,hint:0,wrong:0,att:rf,vic:vic,rt:rt,clock:rec._v120clock||null,key:'h'+rec.ply+'_'+s.g};
+  try{if(navigator.vibrate)navigator.vibrate(35);}catch(e){}
+  V.startTick();App.drawGame();return true;
+ };
+ V.tapH=function(s){
+  var g=App.G,H=g&&g._v120h;if(!H||H.stage)return;
+  if(s===H.att){H.found=true;H.stage=1;var st=V.st(g);st.found++;if(H.hint)st.help++;App.drawGame();return;}
+  var v=g.pos.board[s];
+  if(H.vic!=null&&s===H.vic&&!H.vs){H.vs=1;if(H.hint<2)H.hint=2;
+   H.msg=T(v)===6?'Isso, o perigo está no seu rei. Qual peça dele chega lá?':'Quase: essa é a peça em perigo. Qual peça dele pega '+(FEM[T(v)]?'ela':'ele')+'?';App.drawGame();return;}
+  H.wrong++;H.flash=s;
+  H.msg=col(v)===g.human?'Essa é sua. Procure uma peça dele.':(v?'Essa peça dele não ganha nada agora. Tente outra.':'Toque numa peça dele.');
+  if(H.wrong>=3&&H.hint<3){H.hint++;H.wrong=0;}
+  App.drawGame();
+  setTimeout(function(){if(App.G===g&&H.flash===s){H.flash=null;App.drawGame();}},700);
+ };
+ V.reveal=function(){var g=App.G,H=g&&g._v120h;if(!H||H.stage)return;H.stage=1;H.found=false;App.drawGame();};
+ V.keep=function(){
+  var g=App.G,H=g&&g._v120h;if(!H||!H.stage)return;
+  g._v120h=null;V.st(g).keep++;H.rec.v120='k';g._v120kept={rec:H.rec};
+  H.cb(H.fb);
+ };
+ V.back=function(){
+  var g=App.G,H=g&&g._v120h;if(!H||!H.stage)return;
+  g._v120h=null;var st=V.st(g);st.back++;
+  var rec=H.rec,fb=H.fb;
+  try{Profile.srsAdd('mine','m'+Math.floor(Date.now()/1000)+'_'+rec.ply,{fen:rec.fen,best:fb.best,played:rec.uci,why:(fb.problems&&fb.problems[0])||''});}catch(e){}
+  if(g.recs[g.recs.length-1]===rec)g.recs.pop();
+  var ucis=g.ucis.slice(0,rec.ply);
+  g.pos=Engine.posFromFEN(START);g.ucis=[];g.sans=[];g.keys=[Engine.posKey(g.pos)];
+  for(var i=0;i<ucis.length;i++){var m=Engine.uciToMove(g.pos,ucis[i]);App.applyMove(m,ucis[i],Engine.moveToSAN(g.pos,m));}
+  if(H.clock&&g.clock){g.clock=H.clock.slice();var k=g.human===1?0:1;g.clock[k]-=rec.ms||0;}
+  g.fbPending=false;g.lastFb=null;g.lastRec=g.recs.length?g.recs[g.recs.length-1]:null;g.hint=null;g.hintStage=0;g.threat=null;g.imb=null;
+  if(g.rated){g.rated=false;g.unrated='Lance voltado com o Mentor: esta partida não vale pontos.';}
+  g._v120back={uci:rec.uci,n:ucis.length,fb:fb,anim:1};
+  Profile.save();App.saveCurrent();App.beginTurn();
+ };
+
+ /* ---------- 2) pergunta da ameaça e 3) oportunidade, depois do lance dele ---------- */
+ V.scan=function(g){
+  if(!V.on(g)||g.pos.turn!==g.human||g.process||g.fbPending)return;
+  var n=g.ucis.length;if(n<=(g._v120seen||0))return;g._v120seen=n;
+  if(g.recs.length<2||Engine.inCheck(g.pos))return;
+  var c=V.cfg();if(!c.T)return;
+  var s=V.st(g),fen=Engine.toFEN(g.pos),lf=g.lastFb;
+  var wantO=s.o<c.mO&&lf&&lf.hasEval;
+  var wantQ=s.q<c.mQ&&(n-s.qply)>=c.gQ*2;
+  if(!wantO&&!wantQ)return;
+  var same=function(){return App.G===g&&g.over==null&&g.pos.turn===g.human&&!g.fbPending&&!g._v120h&&Engine.toFEN(g.pos)===fen;};
+  var lastTo=Engine.nameSq(g.ucis[n-1].slice(2,4));
+  var doQ=function(){
+   if(!wantQ)return;
+   Think.run({cmd:'threats',fen:fen},function(r){
+    if(!same()||!r||!r.sq||!r.sq.length)return;
+    var p=g.pos,fresh=r.sq.filter(function(q){return T(p.board[q])>=2&&Engine.attackerList(p.board,q,-g.human).indexOf(lastTo)>=0;});
+    if(!fresh.length)return;
+    s.q++;s.qply=n;
+    g._v120q={kind:'q',sq:r.sq.filter(function(q){return T(p.board[q])>=2;}),by:lastTo,t0:Date.now(),T:Math.round(c.T*.8),hint:0,wrong:0,done:0,key:'q'+n};
+    V.startTick();App.drawGame();
+   });
+  };
+  if(!wantO){doQ();return;}
+  Think.run({cmd:'eval',fen:fen,nodes:24000,ms:800},function(e){
+   if(!same())return;
+   if(e&&e.uci&&e.score!=null){
+    var before=g.human===1?lf.evalAfter:-lf.evalAfter,sc=e.score,p=g.pos;
+    var to=Engine.nameSq(e.uci.slice(2,4)),cap=col(p.board[to])===-g.human;
+    var mate=sc>=29800&&before<29000;
+    if(mate||(cap&&sc-before>=200&&sc>=150)){
+     s.o++;
+     g._v120o={kind:'o',uci:e.uci,san:e.san,to:to,mate:mate,mn:mate?Math.ceil((30000-sc)/2):0,t0:Date.now(),T:c.T,hint:0,show:0,key:'o'+n};
+     V.startTick();App.drawGame();return;
+    }
+   }
+   doQ();
+  });
+ };
+ V.tapQ=function(s){
+  var g=App.G,Q=g&&g._v120q;if(!Q||Q.done)return;
+  if(Q.sq.indexOf(s)>=0){Q.done=1;Q.at=s;if(!Q.hint&&!Q.wrong)V.st(g).qok++;App.drawGame();return;}
+  var v=g.pos.board[s];Q.wrong++;Q.flash=s;
+  Q.msg=col(v)===g.human?'Essa está segura. Procure outra.':(v?'Essa é dele. Toque na sua peça que ele ataca.':'Toque numa peça sua.');
+  if(Q.wrong>=2&&Q.hint<2)Q.hint=2;
+  App.drawGame();
+  setTimeout(function(){if(App.G===g&&Q.flash===s){Q.flash=null;App.drawGame();}},700);
+ };
+ V.skipQ=function(){var g=App.G;if(g&&g._v120q){g._v120q=null;App.drawGame();}};
+ V.showO=function(){
+  var g=App.G,O=g&&g._v120o;if(!O)return;O.show=1;O.hint=2;
+  if(g.rated){g.rated=false;g.unrated='Dica usada: esta partida não vale pontos.';App.saveCurrent();}
+  App.drawGame();
+ };
+
+ /* ---------- níveis de ajuda ---------- */
+ V.chip=function(par){
+  var x=V.d(),w=E('div','v120-cw',par),b=E('button','v120-chip',w);b.type='button';
+  b.innerHTML='<span>Ajuda</span> '+esc(LV[x.lvl].n)+' <i>▾</i>';b.setAttribute('aria-haspopup','menu');b.setAttribute('aria-label','Nível de ajuda do Mentor: '+LV[x.lvl].n);
+  b.onclick=function(ev){ev.stopPropagation();
+   var card=w.closest('.v120-card')||w.parentNode,old=card.querySelector('.v120-pop');if(old){old.remove();return;}
+   var p=E('div','v120-pop',card);p.setAttribute('role','menu');
+   ORD.forEach(function(k){var o=E('button','v120-pi'+(k===x.lvl?' on':''),p);o.type='button';o.setAttribute('role','menuitemradio');o.setAttribute('aria-checked',k===x.lvl?'true':'false');
+    o.innerHTML='<b>'+esc(LV[k].n)+(k==='acomp'?' <em>padrão</em>':'')+'</b><span>'+esc(LV[k].d)+'</span>';
+    o.onclick=function(e){e.stopPropagation();x.lvl=k;Profile.save();p.remove();try{UiJs.toast('Ajuda do Mentor: '+LV[k].n+'.');}catch(_){}
+     var g=App.G;if(k==='obs'&&g){if(g._v120q)g._v120q=null;if(g._v120o&&!g._v120o.show)g._v120o=null;}App.drawGame();};});
+   setTimeout(function(){var close=function(e){if(!p.contains(e.target)){p.remove();document.removeEventListener('click',close,true);}};document.addEventListener('click',close,true);},0);
+  };
+  return w;
+ };
+
+ /* ---------- desenho ---------- */
+ var AV='<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14.5" fill="rgba(220,181,92,.12)" stroke="#dcb55c" stroke-width="1.3"/><path d="M6.5 13.2 16 9l9.5 4.2L16 17.4z" fill="#dcb55c"/><path d="M10.6 15.2v4.3c0 1.6 2.4 3 5.4 3s5.4-1.4 5.4-3v-4.3L16 17.6z" fill="none" stroke="#dcb55c" stroke-width="1.4" stroke-linejoin="round"/><path d="M24.4 13.8v5.4" stroke="#dcb55c" stroke-width="1.2"/><circle cx="24.4" cy="20" r="1.1" fill="#dcb55c"/></svg>';
+ var lastKey=null;
+ function card(cls,title,sub,key,noChip){
+  var c=E('section','v120-card '+cls);c.setAttribute('role','status');c.setAttribute('aria-live','polite');
+  var h=E('header','',c);E('span','v120-av',h).innerHTML=AV;
+  var t=E('div','v120-tt',h);E('b','',t,title);if(sub)E('small','',t,sub);
+  if(!noChip)V.chip(h);
+  if(key!==lastKey){c.classList.add('v120-in');c._new=1;lastKey=key;}
+  return c;
+ }
+ function bar(c,A,labR){
+  var w=E('div','v120-bw',c),b=E('div','v120-bar',w),i=E('i','',b);
+  i.style.width=(Math.min(1,(Date.now()-A.t0)/A.T)*100).toFixed(1)+'%';
+  var n=A.kind==='q'?[50]:(A.kind==='o'?[33.3,66.6]:[33.3,66.6]);n.forEach(function(x){E('b','',b).style.left=x+'%';});
+  var l=E('div','v120-barl',w);E('span','',l,'Sem pressa: as dicas aparecem aos poucos');E('span','',l,labR);
+ }
+ function place(c){
+  var panel=UiJs.cur;if(!panel)return;
+  panel.insertBefore(c,panel.firstChild);
+  if(c._new)setTimeout(function(){try{var r=c.getBoundingClientRect();if(r.bottom>window.innerHeight-4||r.top<0)c.scrollIntoView({block:'nearest',behavior:'smooth'});}catch(e){}},60);
+ }
+ function hideAnalyzing(){var p=UiJs.cur;if(!p)return;[].forEach.call(p.querySelectorAll('p,.p'),function(x){if(!x.children.length&&/analisando seu lance/.test(x.textContent))x.remove();});}
+
+ V.drawH=function(g,H,b){
+  b.legal=null;b.onMove=null;b.onSel=null;b.hang=null;b.sugg=-1;b.arrows=[];b.marks=[];
+  var p=g.pos,fb=H.fb;
+  if(!H.stage){
+   b.onSquare=V.tapH;
+   if(H.hint>=2&&H.vic!=null)b.marks.push([H.vic,3]);
+   if(H.hint>=2&&H.vic==null)b.marks.push([H.rt,3]);
+   if(H.hint>=3)b.marks.push([H.att,4]);
+   if(H.flash!=null)b.marks.push([H.flash,1]);
+  }else{
+   b.onSquare=function(){};
+   b.arrows=[App.arrow(fb.reply,1)];
+   b.marks.push([H.att,1]);
+  }
+  b.draw();
+  hideAnalyzing();
+  var c;
+  if(!H.stage){
+   c=card('v120-h','Espera!','Antes da resposta dele',H.key);
+   E('p','v120-q',c,'Esse lance tem um problema. Consegue achar?');
+   E('p','v120-how',c,'Toque na peça dele que pune o seu lance.');
+   bar(c,H,H.hint?'dica '+H.hint+' de 3':'');
+   var ht=null,vt=H.vic!=null?T(p.board[H.vic]):0;
+   if(H.hint>=3)ht='É a peça marcada em laranja. Toque nela.';
+   else if(H.hint>=2)ht=H.vic!=null?(vt===6?'Olhe para o seu rei: ele fica exposto.':'Olhe para '+yours(vt)+' em '+sqn(H.vic)+'.'):'Olhe para a casa '+sqn(H.rt)+'.';
+   else if(H.hint>=1)ht='Procure as capturas e os xeques que ele tem agora.';
+   if(ht){var hp=E('p','v120-hint',c);E('b','',hp,'Dica ');hp.appendChild(document.createTextNode(ht));}
+   if(H.msg)E('p','v120-msg',c,H.msg);
+   var a=E('div','v120-acts',c),l=E('button','v120-link',a,'Não achei, mostrar');l.type='button';l.onclick=V.reveal;
+  }else{
+   var at=T(p.board[H.att]);
+   c=card('v120-h v120-done',H.found?(H.hint?'Achou, com ajuda.':'Isso! Você achou.'):'Era esta peça.',theirs(at).replace(/^./,function(x){return x.toUpperCase();})+' em '+sqn(H.att),H.key+'s',1);
+   var pr=fb.problems||[];
+   var wp=E('p','v120-why',c,pr[0]||'');
+   if(pr[1]){wp.appendChild(document.createTextNode(' '));E('span','v120-res',wp,pr[1]);}
+   var w=fb.winAfter!=null?fb.winAfter:50,mate=/xeque-mate/.test(pr[0]||'');
+   var keepTxt=mate?'ele tem xeque-mate; se ele vir, acabou.':(w>=40?'a posição ainda segura, dá para lutar.':(w>=15?'fica difícil, mas ainda há jogo.':'se ele achar a resposta, fica quase perdida.'));
+   var ch=E('div','v120-ch',c);
+   var bb=E('button','v120-b v120-back',ch);bb.type='button';
+   bb.innerHTML='<b><i>↩</i> Voltar e jogar outro</b><span>'+(g.rated?'A partida deixa de valer pontos':'A partida já está sem pontos')+'</span><em>Recomendado</em>';
+   bb.onclick=V.back;
+   var bk=E('button','v120-b v120-keep',ch);bk.type='button';
+   bk.innerHTML='<b><i>⚔</i> Manter o lance</b><span>'+(g.rated?'Continua valendo pontos; só a gafe conta':'Desafio: tente salvar a posição')+'</span>';
+   bk.onclick=V.keep;
+   E('p','v120-pos',c,'Se manter: '+keepTxt);
+  }
+  place(c);
+ };
+ V.drawQ=function(g,Q,b){
+  var c;
+  if(!Q.done){
+   b.onSquare=V.tapQ;b.hang=null;b.sugg=-1;b.onSel=null;
+   if(Q.hint>=2)Q.sq.forEach(function(s){b.marks.push([s,3]);});
+   if(Q.flash!=null)b.marks.push([Q.flash,1]);
+   b.draw();
+   var bt=T(g.pos.board[Q.by]);
+   c=card('v120-ask','Pergunta','Antes de você jogar',Q.key);
+   E('p','v120-q',c,'O que '+theirs(bt)+' está ameaçando?');
+   E('p','v120-how',c,'Toque na sua peça que está em perigo.');
+   bar(c,Q,Q.hint?'dica '+Q.hint+' de 2':'');
+   var ht=Q.hint>=2?'Uma das peças marcadas em dourado.':(Q.hint>=1?'Olhe as casas que '+theirs(bt)+' em '+sqn(Q.by)+' ataca agora.':null);
+   if(ht){var hp=E('p','v120-hint',c);E('b','',hp,'Dica ');hp.appendChild(document.createTextNode(ht));}
+   if(Q.msg)E('p','v120-msg',c,Q.msg);
+   var a=E('div','v120-acts',c),l=E('button','v120-link',a,'Pular a pergunta');l.type='button';l.onclick=V.skipQ;
+  }else{
+   b.marks.push([Q.at,1]);b.draw();
+   var vt=T(g.pos.board[Q.at]);
+   c=card('v120-ask v120-done',Q.hint||Q.wrong?'Achou.':'Isso!',null,Q.key+'d');
+   E('p','v120-why',c,(yours(vt)+' em '+sqn(Q.at)+' está em perigo.').replace(/^./,function(x){return x.toUpperCase();})+(Q.sq.length>1?' E não é a única: confira as outras.':''));
+   E('p','v120-how',c,'Agora resolva: mover, proteger, bloquear ou capturar o atacante.');
+  }
+  place(c);
+ };
+ V.drawO=function(g,O,b){
+  if(O.show)b.arrows.push(App.arrow(O.uci,0));
+  else if(O.hint>=2)b.marks.push([O.to,3]);
+  b.draw();
+  var c=card('v120-opp',O.mate?'Tem xeque-mate aqui!':'Oportunidade!',O.mate?'Mate em '+O.mn:'Ele deixou algo para você',O.key+(O.show?'s':''));
+  if(O.show){E('p','v120-why',c,'O lance é '+O.san+' (seta verde).');}
+  else{
+   E('p','v120-q',c,'Procure. Você pode jogar quando quiser.');
+   bar(c,O,O.hint?'dica '+O.hint+' de 2':'');
+   var vt=T(g.pos.board[O.to]);
+   var ht=O.hint>=2?(O.mate?'O lance termina na casa '+sqn(O.to)+'.':'Olhe para '+theirs(vt)+' em '+sqn(O.to)+'.'):(O.hint>=1?(O.mate?'Comece pelos xeques.':'Alguma peça dele ficou sem defesa? Procure as capturas.'):null);
+   if(ht){var hp=E('p','v120-hint',c);E('b','',hp,'Dica ');hp.appendChild(document.createTextNode(ht));}
+   var a=E('div','v120-acts',c),l=E('button','v120-link',a,'Mostrar o lance');l.type='button';l.onclick=V.showO;
+   if(g.rated)E('span','v120-cost',a,'conta como dica');
+  }
+  place(c);
+ };
+ function strip(txt,cls){var s=E('div','v120-strip'+(cls?' '+cls:''));E('span','v120-sav',s).innerHTML=AV;E('span','',s,txt);place(s);return s;}
+
+ V.after=function(){
+  var g=App.G,b=UiJs.board;if(!g||!b)return;
+  if(g.over!=null){if(g._v120h||g._v120q||g._v120o){g._v120h=g._v120q=g._v120o=null;V.stopTick();}V.lesson(g);return;}
+  if(g.peek!=null)return;
+  var H=g._v120h;
+  if(H){V.drawH(g,H,b);return;}
+  var my=g.busy==null&&!g.fbPending&&g.pos.turn===g.human;
+  if(g._v120q&&my){V.drawQ(g,g._v120q,b);return;}
+  if(g._v120o&&my){V.drawO(g,g._v120o,b);return;}
+  if(!g.coach)return;
+  var B=g._v120back;
+  if(B&&my&&g.ucis.length===B.n){var t=B.fb&&B.fb.tip;strip('Lance voltado. Procure um lance que resolva o problema.'+(t?' '+t:''),'v120-sback');return;}
+  var K=g._v120kept;
+  if(K&&g.lastRec===K.rec){strip(my?'Desafio aceito: o lance ficou. Agora encontre a melhor defesa.':'Desafio aceito: vamos ver se ele encontra a resposta.','v120-skeep');return;}
+  if(g._v120ook&&g.lastRec===g._v120ook){strip('Você aproveitou a oportunidade!','v120-sok');return;}
+  var f=V.d().focus;
+  if(f&&my&&g.recs.length<2&&V.d().lvl!=='obs'){var tx=tip(f);if(tx)strip('Foco desta partida: '+tx,'v120-sfoc');}
+ };
+
+ /* ---------- 4) aula no final ---------- */
+ V.lesson=function(g){
+  if(!g.coach&&!g._v120s)return;
+  var s=V.st(g),x=V.d();
+  if(!g._v120done){
+   g._v120done=1;
+   var wasFade=V.fade();
+   var cc={};for(var k in s.cc)cc[k]=s.cc[k];
+   g.recs.forEach(function(r){var f=r.fb;if(f&&f.concept&&(f.grade==='blunder'||f.grade==='mistake'))cc[f.concept]=(cc[f.concept]||0)+1;});
+   var best=null,bn=0;for(var k2 in cc)if(cc[k2]>bn&&tip(k2)){bn=cc[k2];best=k2;}
+   g._v120prevFocus=x.focus;if(best)x.focus=best;
+   x.games.push({t:Date.now(),g:s.g,f:s.found,b:s.back,k:s.keep,q:s.q,qo:s.qok,o:s.o,oo:s.ook,c:best});
+   if(x.games.length>20)x.games=x.games.slice(-20);
+   g._v120fadeNew=!wasFade&&V.fade();
+   try{Profile.save();}catch(e){}
+  }
+  var panel=UiJs.cur;if(!panel)return;
+  var c=card('v120-les','Aula do Mentor',LV[x.lvl].n==='Só observa'?'O Mentor só observou':'O que aconteceu nesta partida','les'+g.ucis.length);
+  var ul=E('ul','v120-lr',c);
+  function row(ic,t){var li=E('li','',ul);E('i','',li,ic);E('span','',li,t);}
+  if(s.g)row('✋',(s.g===1?'1 gafe parada':s.g+' gafes paradas')+' · você achou o problema em '+s.found+(s.help?' ('+s.help+' com dica)':''));
+  if(s.back||s.keep)row('↩','Voltou '+s.back+' · manteve '+s.keep);
+  if(s.q)row('?','Ameaças: acertou '+s.qok+' de '+s.q+(s.q===1?' pergunta':' perguntas'));
+  if(s.o)row('★','Oportunidades: aproveitou '+s.ook+' de '+s.o);
+  if(!s.g&&!s.q&&!s.o)row('✓',x.lvl==='obs'?'Sem interrupções nesta partida.':'Nenhuma gafe para parar nesta partida.');
+  var fx=x.focus&&tip(x.focus);
+  if(fx){var fp=E('p','v120-foc',c);E('b','',fp,'Foco da próxima partida');E('span','',fp,fx);}
+  if(g._v120fadeNew)E('p','v120-fade',c,'Você está errando menos: o Mentor vai dar mais espaço nas próximas partidas.');
+  var nc=g.crit?g.crit.length:0;
+  if(nc){var a=E('div','v120-acts',c),bt=E('button','v120-go',a,nc===1?'Refazer o momento que mais custou':'Refazer os '+nc+' momentos que mais custaram');bt.type='button';bt.onclick=function(){App.startReview();};}
+  var big=panel.querySelector('p.big');
+  if(big&&big.parentNode===panel)panel.insertBefore(c,big.nextSibling);else panel.insertBefore(c,panel.firstChild);
+ };
+
+ /* ---------- tabuleiro: peça suspensa, toque errado e peça que volta ---------- */
+ function sqEl(b,s){var c=s&7,r=s>>3,vr=b.flip?r:7-r,vc=b.flip?7-c:c,l=b.root?b.root.querySelectorAll(':scope > .sq'):[];return l[vr*8+vc]||null;}
+ V.decor=function(b){
+  var g=App.G;if(!g)return;
+  var H=g._v120h,Q=g._v120q;
+  if(H&&!H.stage){var e=sqEl(b,Engine.nameSq(H.rec.uci.slice(2,4)));if(e)e.classList.add('v120-hold');}
+  var f=H&&!H.stage?H.flash:(Q&&!Q.done?Q.flash:null);
+  if(f!=null){var e2=sqEl(b,f);if(e2)e2.classList.add('v120-no');}
+  if(H&&H.stage){var e3=sqEl(b,H.att);if(e3)e3.classList.add('v120-att');}
+  var B=g._v120back;
+  if(B&&B.anim){B.anim=0;
+   var fr=Engine.nameSq(B.uci.slice(0,2)),to=Engine.nameSq(B.uci.slice(2,4)),pe=sqEl(b,fr),pc=pe&&pe.querySelector('.pc');
+   if(pc){var vc=function(q){return b.flip?7-(q&7):(q&7);},vr=function(q){return b.flip?(q>>3):7-(q>>3);};
+    pc.style.setProperty('--rx',((vc(to)-vc(fr))*100)+'%');pc.style.setProperty('--ry',((vr(to)-vr(fr))*100)+'%');pc.classList.add('v120-ret');}
+  }
+ };
+
+ /* ---------- ganchos ---------- */
+ V.hook=function(){
+  var oRun=Think.run;
+  Think.run=function(q,cb){
+   var g=App.G;
+   if(q&&q.cmd==='fb'&&g&&g.fbPending&&g.lastRec&&g.lastRec.uci===q.uci&&g.lastRec.fen===q.fen&&!g.lastRec._v120c){
+    var rec=g.lastRec;rec._v120c=1;
+    return oRun(q,function(fb){
+     if(App.G===g&&g.lastRec===rec&&g.over==null){try{if(V.intercept(g,rec,fb,cb))return;}catch(e){if(window.console)console.warn('v120',e);}}
+     cb(fb);
+    });
+   }
+   return oRun(q,cb);
+  };
+  var oPU=App.playUser;
+  App.playUser=function(uci){
+   var g=App.G,snap=g&&g.clock?g.clock.slice():null,O=g&&g._v120o;
+   if(g){g._v120q=null;g._v120o=null;g._v120back=null;g._v120kept=null;g._v120ook=null;}
+   var n0=g?g.recs.length:0;
+   var r=oPU.apply(this,arguments);
+   try{if(g&&g.recs.length>n0){var rec=g.recs[g.recs.length-1];rec._v120clock=snap;if(O&&rec.uci===O.uci&&!O.show){V.st(g).ook++;g._v120ook=rec;}}}catch(e){}
+   return r;
+  };
+  var oBT=App.beginTurn;
+  App.beginTurn=function(){var r=oBT.apply(this,arguments);try{V.scan(App.G);}catch(e){if(window.console)console.warn('v120',e);}return r;};
+  var oDG=App.drawGame;
+  App.drawGame=function(){var r=oDG.apply(this,arguments);try{V.after();}catch(e){if(window.console)console.warn('v120',e);}return r;};
+  var oBD=BoardJ.prototype.draw;
+  BoardJ.prototype.draw=function(){var r=oBD.apply(this,arguments);try{if(this===UiJs.board)V.decor(this);}catch(e){}return r;};
+  ['newGame','restoreGame','newGhostGame'].forEach(function(k){var o=App[k];if(typeof o!=='function')return;App[k]=function(){V.stopTick();lastKey=null;return o.apply(this,arguments);};});
+ };
+ if(typeof document!=='undefined'&&typeof Think!=='undefined'&&typeof App!=='undefined')V.hook();
+ return V;
 })();
 
 Main.main();

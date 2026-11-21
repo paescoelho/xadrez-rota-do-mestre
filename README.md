@@ -5,6 +5,19 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v120 — Mentor professor
+
+Com o Mentor ligado ("Comentando cada lance"), o treinador deixa de só comentar e passa a acompanhar a partida.
+
+- **Espera!** Quando o seu lance é uma gafe, a partida para antes da resposta dele. A peça fica suspensa e você procura a peça adversária que pune o lance. As dicas aparecem aos poucos numa barra sem pressa: capturas e xeques, depois a peça em perigo, depois o atacante. Ao achar (ou pedir para mostrar), você escolhe:
+  - **Voltar e jogar outro** (recomendado): a partida deixa de valer pontos e a posição vai para as Revisões.
+  - **Manter o lance**: a partida continua valendo pontos e só a gafe conta. O Mentor diz se ainda dá para lutar.
+  - O aviso é grátis e o relógio fica parado enquanto o Mentor fala.
+- **Pergunta da ameaça:** depois de um lance dele que cria ameaça nova, toque na sua peça em perigo antes de jogar (dá para pular).
+- **Oportunidade:** quando o lance dele deixa material ou mate para você, o Mentor avisa e deixa você procurar. Mostrar o lance conta como dica.
+- **Aula do Mentor** no fim: gafes paradas e achadas, voltas e lances mantidos, ameaças e oportunidades, foco da próxima partida e o botão para refazer os momentos que mais custaram. O foco aparece no começo da partida seguinte.
+- **Níveis de ajuda** (no próprio cartão): Mão na mão, Acompanhando (padrão) e Só observa. Com poucas gafes nas últimas partidas, o Mentor dá mais espaço sozinho.
+
 ## v119 — Só o crédito original (20.11.2026)
 
 Saíram os créditos novos da abertura, do rodapé do menu e de Apoio. Fica só o crédito que já existia no rodapé do menu ("criado por Rodrigo Paes Coelho Santana"), que agora carrega a assinatura da obra e a marca d'água invisível, volta sozinho se for apagado ou trocado e, ao ser tocado, abre os Termos de uso e créditos. Em Apoio ficou só o link "Termos de uso e créditos ›". O crédito nas partidas exportadas em PGN continua.
