@@ -5,6 +5,18 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v122 — Computador de 800 a 3200, de 100 em 100, com força medida
+
+- **Barra de 100 em 100:** cada ponto (800, 900 … 3200) é uma força própria. Antes eram 6 níveis fixos.
+- **Força medida em partidas:** 334 partidas entre as configurações do motor mediram a força real de cada uma. A escala é ancorada no adversário humano de 900 e 1300. Para cada ponto da barra, o jogo usa a configuração cuja força medida é aquele Elo:
+  - 800 a 1600: adversário que erra como humano (motor do jogo), com o parâmetro corrigido. O antigo "1700" jogava como um 1660 real.
+  - 1700 a 2900: Stockfish limitado. O UCI_Elo do Stockfish não é a escala do jogo: o 1500 dele joga como 1670 aqui e o 3190 como 2940.
+  - 3000 a 3200: Stockfish sem limite, com pouco tempo por lance (10, 22 e 55 ms).
+- **Medições** (força real na escala do jogo): humano 900→851, 1300→1349, 1700→1663; Stockfish limitado 1500→1666, 2000→1944, 2600→2272, 3190→2936; Stockfish sem limite 10 ms→3006, 40 ms→3176, 150 ms→3274, 900 ms→3572.
+- **Precisão:** cada ponto medido teve de 20 a 40 partidas (margem de cerca de ±60 a 80 Elo); entre os pontos, a força sobe sempre. O Elo do adversário na partida é o valor escolhido, então o seu rating sobe e desce na medida certa.
+- **3200** agora é o Stockfish calibrado em 3200. O Stockfish sem limite (cerca de 3570 nesta escala) continua jogando pelas Lendas.
+- **Pino alinhado:** as marcas e os números (800, 1600, 2400, 3200) ficam exatamente sob o centro do pino, e o preenchimento da barra acompanha o pino.
+
 ## v121 — Lendas com força de campeão
 
 - **Força real:** fora do repertório das partidas reais, cada lenda joga com o Stockfish em força total (1,1 a 1,6 s por lance, 3 melhores lances analisados). Antes, quem jogava era o motor do jogo imitando o estilo, e isso deixava as lendas fáceis.

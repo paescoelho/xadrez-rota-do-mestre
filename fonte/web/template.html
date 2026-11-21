@@ -15,7 +15,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v121</title>
+<title>Xadrez · Rota do Mestre — v122</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1621,6 +1621,20 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v43-card .v42-balloon{min-height:0!important;border-radius:12px!important}
 .v43-card .v42-balloon:before{left:50%!important;top:-8px!important;transform:translateX(-50%)!important;border-top:0!important;border-left:8px solid transparent!important;border-right:8px solid transparent!important;border-bottom:8px solid #f3ecdf!important}
 }
+/* v122: barra 800 a 3200 de 100 em 100; marcas e números alinhados ao centro do pino */
+.v122-rg{position:relative}
+.v103-lv .v122-rg input{--f:.33;display:block}
+.v103-lv .v122-rg input::-webkit-slider-runnable-track{background:linear-gradient(90deg,#c49434 0,#f3d98c calc(11px + (100% - 22px) * var(--f)),#3a3f47 calc(11px + (100% - 22px) * var(--f)))}
+.v103-lv .v122-rg input::-moz-range-track{background:linear-gradient(90deg,#c49434 0,#f3d98c calc(11px + (100% - 22px) * var(--f)),#3a3f47 calc(11px + (100% - 22px) * var(--f)))}
+.v103-lv:not(.on) .v122-rg input::-webkit-slider-runnable-track{background:linear-gradient(90deg,#6c6450 0,#8a7f63 calc(11px + (100% - 22px) * var(--f)),#33373e calc(11px + (100% - 22px) * var(--f)))}
+.v103-lv .v122-rg input::-webkit-slider-thumb{width:22px;height:22px;margin-top:-8px;box-sizing:border-box}
+.v103-lv .v122-rg input::-moz-range-thumb{width:22px;height:22px;box-sizing:border-box}
+.v122-tk{position:relative;display:block;height:17px;margin:0 11px}
+.v122-tk i{position:absolute;top:0;width:0;height:100%;font-style:normal}
+.v122-tk i:before{content:"";position:absolute;left:-2.5px;top:1px;width:5px;height:5px;border-radius:50%;background:#4a4f57;transition:background .15s}
+.v122-tk i span{position:absolute;top:7px;left:0;transform:translateX(-50%);font-size:9.5px;line-height:1;color:#6f767e;white-space:nowrap;font-variant-numeric:tabular-nums}
+.v103-lv.on .v122-tk i.on:before{background:#c9b27a}
+.v103-lv.on .v122-tk i.on span{color:#c9b27a}
 /* treinador por voz: indisponível por enquanto */
 .v36-card,.v36-hb{display:none!important}
 /* com a nova linha, os temas do tabuleiro crescem quando há altura sobrando */

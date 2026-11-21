@@ -15,7 +15,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v121</title>
+<title>Xadrez · Rota do Mestre — v122</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1762,6 +1762,20 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v43-card .v42-balloon{min-height:0!important;border-radius:12px!important}
 .v43-card .v42-balloon:before{left:50%!important;top:-8px!important;transform:translateX(-50%)!important;border-top:0!important;border-left:8px solid transparent!important;border-right:8px solid transparent!important;border-bottom:8px solid #f3ecdf!important}
 }
+/* v122: barra 800 a 3200 de 100 em 100; marcas e números alinhados ao centro do pino */
+.v122-rg{position:relative}
+.v103-lv .v122-rg input{--f:.33;display:block}
+.v103-lv .v122-rg input::-webkit-slider-runnable-track{background:linear-gradient(90deg,#c49434 0,#f3d98c calc(11px + (100% - 22px) * var(--f)),#3a3f47 calc(11px + (100% - 22px) * var(--f)))}
+.v103-lv .v122-rg input::-moz-range-track{background:linear-gradient(90deg,#c49434 0,#f3d98c calc(11px + (100% - 22px) * var(--f)),#3a3f47 calc(11px + (100% - 22px) * var(--f)))}
+.v103-lv:not(.on) .v122-rg input::-webkit-slider-runnable-track{background:linear-gradient(90deg,#6c6450 0,#8a7f63 calc(11px + (100% - 22px) * var(--f)),#33373e calc(11px + (100% - 22px) * var(--f)))}
+.v103-lv .v122-rg input::-webkit-slider-thumb{width:22px;height:22px;margin-top:-8px;box-sizing:border-box}
+.v103-lv .v122-rg input::-moz-range-thumb{width:22px;height:22px;box-sizing:border-box}
+.v122-tk{position:relative;display:block;height:17px;margin:0 11px}
+.v122-tk i{position:absolute;top:0;width:0;height:100%;font-style:normal}
+.v122-tk i:before{content:"";position:absolute;left:-2.5px;top:1px;width:5px;height:5px;border-radius:50%;background:#4a4f57;transition:background .15s}
+.v122-tk i span{position:absolute;top:7px;left:0;transform:translateX(-50%);font-size:9.5px;line-height:1;color:#6f767e;white-space:nowrap;font-variant-numeric:tabular-nums}
+.v103-lv.on .v122-tk i.on:before{background:#c9b27a}
+.v103-lv.on .v122-tk i.on span{color:#c9b27a}
 /* treinador por voz: indisponível por enquanto */
 .v36-card,.v36-hb{display:none!important}
 /* com a nova linha, os temas do tabuleiro crescem quando há altura sobrando */
@@ -80174,15 +80188,15 @@ V103.build=function(){
  var m=UiJs.el('button','v103-row v103-m'+(mode==='mentor'?' on':''),box);m.type='button';
  m.innerHTML='<span class="v103-ic" aria-hidden="true">🎓</span><span class="v103-tx"><b>Mentor <u>para iniciantes</u></b><i>Comenta cada lance seu, mostra o motivo das jogadas dele e se adapta ao seu nível.</i></span><span class="v103-el"><b>'+ad+'</b><i>se adapta</i></span>';
  m.onclick=function(){O.opp=0;try{V74.sel=null;}catch(e){}O.coach=true;O.process=false;App.setupGame();};
- /* 2. Computador: barra de 800 a 3200 */
- var lv=mode==='lv'?O.opp:V103.last;
+ /* 2. Computador: barra de 800 a 3200, de 100 em 100 (v122: cada ponto da barra é uma força própria) */
  var row=UiJs.el('div','v103-row v103-lv'+(mode==='lv'?' on':''),box);
- row.innerHTML='<span class="v103-ln"><b></b><i></i></span><span class="v103-rg"><input type="range" min="1" max="6" step="1" aria-label="Força do computador"><span class="v103-tk" aria-hidden="true"><i>800</i><i></i><i></i><i>2000</i><i></i><i>3200</i></span></span>';
- var rg=row.querySelector('input'),nb=row.querySelector('.v103-ln b'),ni=row.querySelector('.v103-ln i');
- var show=function(i){nb.textContent=V103.lvName(i);ni.textContent=V103.lvElo(i)+' Elo';row.title=V103.LVTIP[i];rg.style.setProperty('--p',((i-1)/5*100)+'%');
-  [].forEach.call(row.querySelectorAll('.v103-tk i'),function(t,k){t.classList.toggle('on',k<=i-1);});};
- rg.value=lv;show(lv);
- var pick=function(i){O.opp=i;V103.last=i;try{V74.sel=null;}catch(e){}O.coach=false;O.process=false;App.setupGame();};
+ row.innerHTML='<span class="v103-ln"><b></b><i></i></span><span class="v103-rg v122-rg"><input type="range" min="800" max="3200" step="100" aria-label="Força do computador em Elo"><span class="v122-tk" aria-hidden="true"></span></span>';
+ var rg=row.querySelector('input'),tk=row.querySelector('.v122-tk'),nb=row.querySelector('.v103-ln b'),ni=row.querySelector('.v103-ln i');
+ [800,1200,1600,2000,2400,2800,3200].forEach(function(v){var t=UiJs.el('i','',tk);t.style.left=((v-800)/24)+'%';t.setAttribute('data-v',v);if((v-800)%800===0){var sp=document.createElement('span');sp.textContent=v;t.appendChild(sp);}});
+ var show=function(e){nb.textContent=V122.name(e);ni.textContent=e+' Elo';row.title=V122.tip(e);rg.style.setProperty('--f',String((e-800)/2400));rg.setAttribute('aria-valuetext',e+' Elo, '+V122.name(e));
+  [].forEach.call(tk.children,function(t){t.classList.toggle('on',+t.getAttribute('data-v')<=e);});};
+ var e0=V122.get();rg.value=e0;show(e0);
+ var pick=function(e){V122.set(e);V103.last=O.opp;try{V74.sel=null;}catch(_){}O.coach=false;O.process=false;App.setupGame();};
  rg.oninput=function(){show(+rg.value);if(!row.classList.contains('on')){row.classList.add('on');m.classList.remove('on');lg.classList.remove('on');}};
  rg.onchange=function(){pick(+rg.value);};
  row.querySelector('.v103-ln').onclick=function(){if(mode!=='lv')pick(+rg.value);};
@@ -81368,6 +81382,69 @@ var V121=(function(){
   });
  };
  if(typeof V82!=='undefined')V82.engine=V.move;
+ return V;
+})();
+
+/* ======================= v122 · Computador de 800 a 3200, de 100 em 100 =======================
+   Cada ponto da barra é uma força própria, para que 100 pontos de diferença sejam 100 pontos de verdade
+   (um jogador 1500 contra o 1600 deve fazer cerca de 36% dos pontos).
+   · 800 a 1600: adversário que erra como humano (motor do jogo), com a precisão contínua pelo Elo.
+   · 1700 a 2900: Stockfish com força limitada (UCI_Elo), convertida para a escala do jogo pela tabela medida.
+   · 3000 a 3200: Stockfish sem limite, com pouco tempo por lance (também medido).
+   A conversão foi medida em partidas entre os próprios níveis (ver o README, v122). Sem Stockfish, o motor do jogo assume. */
+var V122=(function(){
+ var V={MIN:800,MAX:3200};
+ /* força real medida em 334 partidas entre as configurações (escala ancorada no adversário humano de 900 e 1300).
+    H: adversário humano do motor do jogo (parâmetro → força real); S: Stockfish limitado (UCI_Elo, 400 ms → força real);
+    F: Stockfish sem limite (tempo por lance → força real). Para cada Elo da barra, usa a configuração cuja força medida é esse Elo. */
+ V.CAL={HK:[900,1300,1700],HT:[851,1349,1663],SK:[1500,2000,2600,3190],ST:[1666,1944,2272,2936],FK:[10,40,150,900],FT:[3006,3176,3274,3572]};
+ V.HMAX=1600;V.SMAX=2900;
+ function inv(e,K,Tv,lg){
+  var n=K.length,i=1;
+  if(e<=Tv[0])i=1;else{while(i<n-1&&e>Tv[i])i++;}
+  var f=(e-Tv[i-1])/(Tv[i]-Tv[i-1]);
+  if(lg)return Math.exp(Math.log(K[i-1])+f*(Math.log(K[i])-Math.log(K[i-1])));
+  return K[i-1]+f*(K[i]-K[i-1]);
+ }
+ V.clamp=function(e){e=Math.round((+e||1600)/100)*100;return Math.max(V.MIN,Math.min(V.MAX,e));};
+ V.name=function(e){return e<=1000?'Fácil':(e<=1400?'Médio':(e<=1800?'Difícil':(e<=2300?'Mestre':(e<=2700?'Grande Mestre':(e<3200?'Elite mundial':'Stockfish')))));};
+ V.tip=function(e){return e<=1000?'Aprende as regras jogando':(e<=1400?'Erra de vez em quando':(e<=1800?'Joga sério, pune os erros':(e<=2300?'Forte e paciente':(e<=2700?'Nível de grande mestre':(e<3200?'Nível dos melhores do mundo':'Stockfish calibrado em 3200')))));};
+ V.level=function(e){return e<=1000?1:(e<=1400?2:(e<=1800?3:(e<=2300?4:(e<3200?5:6))));};
+ V.get=function(){var d=Profile.d,v=d.v122&&d.v122.elo;if(!v){var l=(typeof V103!=='undefined'&&V103.last)||3;v=Engine.LEVEL_ELO[l]||1600;}return V.clamp(v);};
+ V.set=function(e){e=V.clamp(e);Profile.d.v122={elo:e};try{Profile.save();}catch(_){}if(App.opts)App.opts.opp=V.level(e);return e;};
+ V.plan=function(e){
+  e=V.clamp(e);var C=V.CAL;
+  if(e<=V.HMAX)return {t:'h',elo:Math.round(inv(e,C.HK,C.HT))};
+  if(e<=V.SMAX)return {t:'sf',elo:Math.max(1320,Math.min(3190,Math.round(inv(e,C.SK,C.ST)))),ms:400,lv:5};
+  return {t:'sf',elo:0,ms:Math.max(10,Math.round(inv(e,C.FK,C.FT,true))),lv:6};
+ };
+ /* partida nova contra o computador: a força escolhida na barra vira o Elo do adversário */
+ if(typeof App!=='undefined'&&App.newGame){
+  var oNG=App.newGame;
+  App.newGame=function(){
+   var O=App.opts;
+   if(!O||!(O.opp>0))return oNG.apply(this,arguments);
+   var e=V.get(),L=V.level(e);O.opp=L;
+   var oe=Engine.LEVEL_ELO[L],on=Engine.LEVEL_NAMES[L];
+   Engine.LEVEL_ELO[L]=e;Engine.LEVEL_NAMES[L]=V.name(e);
+   try{return oNG.apply(this,arguments);}finally{Engine.LEVEL_ELO[L]=oe;Engine.LEVEL_NAMES[L]=on;}
+  };
+ }
+ /* o lance do computador segue o Elo da partida (também nas partidas salvas) */
+ if(typeof Think!=='undefined'){
+  var prev=Think.run;
+  Think.run=function(q,cb){
+   var g=typeof App!=='undefined'?App.G:null;
+   if(q&&q.cmd==='cpu'&&!q.bookOnly&&g&&!g.adaptive&&!g.ghost&&g.level>0&&g.elo&&g.over==null&&q.fen===Engine.toFEN(g.pos)){
+    var P=V.plan(g.elo),qq={};for(var k in q)qq[k]=q[k];
+    if(P.t==='h'){qq.elo=P.elo;delete qq.level;return prev(qq,cb);}
+    delete qq.elo;qq.level=P.lv;
+    var old=V73.LV[P.lv];V73.LV[P.lv]={elo:P.elo,ms:P.ms};
+    try{return prev(qq,cb);}finally{V73.LV[P.lv]=old;}
+   }
+   return prev(q,cb);
+  };
+ }
  return V;
 })();
 
