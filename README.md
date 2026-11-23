@@ -5,6 +5,12 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v126 · Painel do criador: jogadores diferentes
+
+- Novo bloco "Jogadores diferentes" no topo do Painel do criador: total desde o início, novos no mês, quantos foram recontados pelo histórico e gráfico de novos jogadores por mês.
+- Cada aparelho manda um evento anônimo uma única vez: "jogador-novo" no primeiro acesso, ou "jogador-antigo-AAAA-MM" quando já jogava antes (o mês vem da partida mais antiga guardada no aparelho). Nada do histórico do GoatCounter foi apagado.
+- Aparelhos do criador continuam fora da contagem. Celular e computador da mesma pessoa contam como 2.
+
 ## v125 · Locução do Apoio a 85% do volume
 
 - A locução da tela "Apoio ou sugestão" toca sempre a 85% do volume do aparelho; os outros sons do jogo não mudam.

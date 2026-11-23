@@ -37066,5 +37066,61 @@ var V124=(function(){
  return V;
 })();
 
+/* ======================= v126 · Painel do criador: jogadores diferentes =======================
+   Cada aparelho manda, uma única vez na vida, um evento anônimo:
+   · "jogador-novo"             → primeiro acesso (aparelho sem histórico);
+   · "jogador-antigo-AAAA-MM"   → aparelho que já jogava antes desta versão; o mês vem da partida mais antiga guardada nele;
+   · "jogador-antigo-sem-data"  → já usava o jogo, mas sem partida com data.
+   Assim quem já jogava é recontado pelo próprio histórico quando volta, sem apagar nada do GoatCounter.
+   Aparelhos do criador continuam fora. Quem usa celular e computador conta como 2 aparelhos. */
+var V126=(function(){
+ var V={KEY:'rdm-jogador',M0:[2026,8]};/* setembro/2026: antes disso não há partidas */
+ V.mk=function(t){var d=new Date(t);return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2);};
+ V.done=function(){try{return localStorage.getItem(V.KEY);}catch(e){return '1';}};
+ V.path=function(){
+  var d=Profile.d||{},h=d.hist||[],t0=0;
+  h.forEach(function(x){if(x&&x.t>0&&(!t0||x.t<t0))t0=x.t;});
+  var dl=d.daily||{},old=h.length>0||(dl.last>0&&dl.last<Profile.today());
+  if(!old)return 'jogador-novo';
+  return t0?'jogador-antigo-'+V.mk(t0):'jogador-antigo-sem-data';
+ };
+ V.send=function(){
+  if(!V27.active()||V.done())return;
+  var p=V.path(),k=0;
+  (function go(){
+   if(window.goatcounter&&window.goatcounter.count){
+    try{window.goatcounter.count({path:p,title:p,event:true});localStorage.setItem(V.KEY,p);}catch(e){}
+   }else if(k++<30)setTimeout(go,700);
+  })();
+ };
+ V.months=function(){var out=[],n=new Date(),d=new Date(V.M0[0],V.M0[1],1);while(d<=n){out.push(new Date(d));d=new Date(d.getFullYear(),d.getMonth()+1,1);}return out;};
+ V.block=function(cur){
+  var box=UiJs.el('div','v126',cur),ms=V.months(),MN=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  box.innerHTML='<div class="v126-hd">Jogadores diferentes</div><div class="v126-ld">Contando…</div>';
+  var jobs=[function(){return V27.get('jogador-novo','');},function(){return V27.get('jogador-antigo-sem-data','');}];
+  ms.forEach(function(d){jobs.push(function(){return V27.get('jogador-novo','start='+V27.ds(d));});jobs.push(function(){return V27.get('jogador-antigo-'+V.mk(d),'');});});
+  var CK='rdm-pn126',c=null;try{c=JSON.parse(localStorage.getItem(CK)||'null');}catch(e){}
+  var fresh=c&&c.n===jobs.length&&Date.now()-c.t<600000&&!V.force;V.force=false;
+  (fresh?Promise.resolve(c.r):V27.pool(jobs,6).then(function(r){r=r.map(function(x){return x instanceof Error?null:x;});try{localStorage.setItem(CK,JSON.stringify({t:Date.now(),n:jobs.length,r:r}));}catch(e){}return r;})).then(function(r){
+   var ok=r.some(function(x){return x!=null;}),z=function(x){return x||0;};
+   if(!ok){box.querySelector('.v126-ld').textContent='Não foi possível ler agora.';return;}
+   var novoAll=z(r[0]),semData=z(r[1]),cumN=[],ant=[];
+   ms.forEach(function(d,i){cumN.push(z(r[2+2*i]));ant.push(z(r[3+2*i]));});
+   var per=ms.map(function(d,i){var n=i<ms.length-1?Math.max(0,cumN[i]-cumN[i+1]):cumN[i];return n+ant[i];});
+   var antigos=semData+ant.reduce(function(a,b){return a+b;},0),total=novoAll+antigos,mes=per[per.length-1];
+   var f=function(x){return Number(x).toLocaleString('pt-BR');};
+   box.innerHTML='<div class="v126-hd">Jogadores diferentes</div>'+
+    '<div class="v126-cards"><span><b>'+f(total)+'</b>desde o início</span><span><b>'+f(mes)+'</b>novos este mês</span><span><b>'+f(antigos)+'</b>recontados pelo histórico</span></div>';
+   var oc=UiJs.cur;UiJs.cur=box;try{V27.chart(box,'Novos jogadores por mês',ms.map(function(d){return MN[d.getMonth()]+'/'+String(d.getFullYear()).slice(2);}),per);}finally{UiJs.cur=oc;}
+   UiJs.el('p','muted small',box,'Cada aparelho conta uma única vez. Quem já jogava antes desta contagem entra quando volta a abrir o jogo, no mês da partida mais antiga guardada no aparelho (sem partida com data: só no total). Celular e computador da mesma pessoa contam como 2. Os números do GoatCounter levam algumas horas para atualizar.');
+  });
+ };
+ return V;
+})();
+if(typeof document!=='undefined'){
+ (function(){var ol=V27.load;V27.load=function(){var r=ol.apply(this,arguments);try{V126.send();}catch(e){}return r;};})();
+ (function(){var op=V27.panel;V27.panel=function(){var r=op.apply(this,arguments);try{if(V27.GC){var cur=UiJs.cur,dev=cur&&cur.querySelector('.v27-dev');var holder=document.createElement('div');if(dev&&dev.nextSibling)cur.insertBefore(holder,dev.nextSibling);else if(cur)cur.appendChild(holder);V126.block(holder);}}catch(e){}return r;};})();
+}
+
 Main.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
