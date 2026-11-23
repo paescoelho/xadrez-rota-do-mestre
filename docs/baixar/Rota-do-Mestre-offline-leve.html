@@ -1856,6 +1856,9 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 @media (prefers-reduced-motion:reduce){.v128-c.li small s{animation:none}}
 .menu .v71-wrap:has(.v128){margin-top:9px}
 .menu:has(.v128) .mfoot{margin-top:3px!important;padding-top:clamp(3px,.6vh,10px)!important;padding-bottom:clamp(15px,2.3vh,26px)!important}
+.v128-c.cc small.v129{font-style:normal;color:#bdb5a5}
+.v128-c.cc small.v129 s{width:7px;height:7px;border-radius:50%;background:#5fd16f;flex:none}
+.v128-c.cc small.v129 b{font-weight:700;color:#e9f6ea;font-variant-numeric:tabular-nums}
 /* treinador por voz: indisponível por enquanto */
 .v36-card,.v36-hb{display:none!important}
 /* com a nova linha, os temas do tabuleiro crescem quando há altura sobrando */
@@ -81902,6 +81905,44 @@ var V128=(function(){
 })();
 if(typeof document!=='undefined'){(function(){var o=App.menu;App.menu=function(){var r=o.apply(this,arguments);try{V128.apply();}catch(e){}return r;};
  var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(function(){try{if(V128.el())V128.pin();}catch(e){}},120);});})();}
+
+/* ======================= v129 · Chess.com ao vivo =======================
+   Jogadores online e partidas de hoje no Chess.com, lidos pelo Worker do jogo da página pública de rankings de lá.
+   Atualiza a cada 900 s (15 min): o Worker faz no máximo uma leitura a cada 15 min para todos os jogadores juntos,
+   e cada aparelho guarda o número e só pergunta de novo depois de 15 min. Sem número, tudo continua como antes. */
+var V129=(function(){
+ var V={API:V87.API.replace(/\/lichess$/,'/chesscom'),CK:'rdm-cc-cnt',TTL:900000,cnt:null,P:null};
+ V.load=function(){if(V.cnt)return V.cnt;try{var c=JSON.parse(localStorage.getItem(V.CK)||'null');if(c&&c.players>0)V.cnt=c;}catch(e){}return V.cnt;};
+ V.fmt=function(n){return V87.fmt(n);};
+ V.on=function(){return !!(document.querySelector('.v35-home .v35-xb.cc')||document.querySelector('.menu .v128'));};
+ V.paint=function(){
+  var c=V.load();
+  var b=document.querySelector('.v35-home .v35-xb.cc');
+  if(b&&c){var k=b.querySelector('.v87-cnt');var h='<div class="v87-cnt v129-cnt"><div><s class="g"></s><span><b class="pl">'+V.fmt(c.players)+'</b> jogadores</span></div><div><s class="y"></s><span><b class="gm">'+V.fmt(c.games)+'</b> partidas hoje</span></div></div>';
+   if(k)k.outerHTML=h;else b.insertAdjacentHTML('beforeend',h);}
+  var s=document.querySelector('.menu .v128 .v128-c.cc small');
+  if(s&&c&&!s.classList.contains('v129')){s.classList.add('v129');s.innerHTML='<s></s><b>'+V.fmt(c.players)+'</b> online';}
+  else if(s&&c){var bb=s.querySelector('b');if(bb)bb.textContent=V.fmt(c.players);}
+  var bt=document.querySelector('.menu .v128');if(bt&&c){var l=bt.getAttribute('aria-label')||'';bt.setAttribute('aria-label',l.replace(/e Chess\.com \(em breve\)|e Chess\.com \([^)]*\)/,'e Chess.com ('+V.fmt(c.players)+' jogadores online)'));}
+ };
+ V.run=function(){
+  V.load();V.paint();
+  var age=V.cnt?Date.now()-(V.cnt.got||0):Infinity;
+  clearTimeout(V.T);
+  if(age<V.TTL){V.T=setTimeout(function(){if(V.on())V.run();},V.TTL-age+500);return;}
+  if(V.P||document.hidden){V.T=setTimeout(function(){if(V.on())V.run();},60000);return;}
+  V.P=fetch(V.API,{cache:'default'}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){
+   if(j&&j.players>0&&j.games>0){V.cnt={players:j.players,games:j.games,got:Date.now()};try{localStorage.setItem(V.CK,JSON.stringify(V.cnt));}catch(e){}V.paint();}
+   else throw 0;
+  }).catch(function(){V.fail=Date.now();}).then(function(){V.P=null;
+   var wait=V.cnt&&Date.now()-V.cnt.got<V.TTL?V.TTL:V.TTL;V.T=setTimeout(function(){if(V.on())V.run();},wait);});
+ };
+ return V;
+})();
+if(typeof document!=='undefined'){(function(){
+ var oc=V87.counters;V87.counters=function(){var r=oc.apply(this,arguments);try{V129.run();}catch(e){}return r;};
+ var oa=V128.apply;V128.apply=function(){var r=oa.apply(this,arguments);try{V129.run();}catch(e){}return r;};
+})();}
 
 Main.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);

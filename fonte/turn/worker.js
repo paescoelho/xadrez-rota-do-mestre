@@ -11,6 +11,7 @@
  * Segredos (Settings → Variables and Secrets do Worker, tipo "Secret"):
  *   METERED_APP      nome do app na Metered (o começo de <nome>.metered.live)
  *   METERED_API_KEY  chave da API de credenciais da Metered
+ * Rotas públicas (só para o site do jogo): GET /lichess (a cada 20 s) e GET /chesscom (a cada 15 min).
  * (worker_cloudflare.js tem a versão para o TURN da Cloudflare, se um dia houver cartão cadastrado.)
  */
 const PROJECT = 'xadrez-whatsapp';
@@ -65,6 +66,40 @@ async function lichessCounters(cors) {
   if (!liCache) return reply({ error: 'lichess' }, 502, cors);
   return new Response(JSON.stringify(liCache), { status: 200, headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=20' } });
 }
+/* v129: contadores do Chess.com (jogadores agora e partidas hoje), lidos da página pública de rankings
+   (https://www.chess.com/leaderboard, que já mostra esses números a qualquer visitante).
+   No máximo UMA leitura a cada 15 min para o jogo inteiro (cache compartilhado da Cloudflare), com identificação honesta;
+   se a leitura falhar, espera os mesmos 15 min antes de tentar de novo e mantém o último valor bom por até 6 h. */
+const CC_TTL = 900, CC_KEY = 'https://rota-turn.cache/chesscom-v1';
+let ccMem = null;
+function ccNum(txt, label) {
+  const m = new RegExp('([0-9][0-9.,\\u00a0 ]{0,14}[0-9])\\s*' + label, 'i').exec(txt);
+  return m ? +m[1].replace(/[^0-9]/g, '') : 0;
+}
+async function chesscomCounters(cors) {
+  const cache = caches.default, key = new Request(CC_KEY);
+  let hit = await cache.match(key), data = hit ? await hit.json() : ccMem;
+  const fresh = data && Date.now() - (data.tried || data.t) < CC_TTL * 1000;
+  if (!fresh) {
+    let ok = null;
+    try {
+      const r = await fetch('https://www.chess.com/leaderboard', { headers: { 'User-Agent': 'RotaDoMestre/1.0 (+https://paescoelho.github.io/xadrez-rota-do-mestre/; contador publico a cada 15 min)', 'Accept': 'text/html', 'Accept-Language': 'en' } });
+      if (r.ok) {
+        const txt = (await r.text()).replace(/<[^>]+>/g, ' ').replace(/&nbsp;|&#160;/g, ' ').replace(/\s+/g, ' ');
+        const players = ccNum(txt, 'playing now'), games = ccNum(txt, 'games today');
+        if (players > 1000 && games > 1000) ok = { players, games, t: Date.now() };
+      }
+    } catch (e) {}
+    if (ok) data = ok;
+    else if (data && Date.now() - data.t < 6 * 3600 * 1000) data = { ...data, tried: Date.now() };
+    else data = { error: 1, t: 0, tried: Date.now() };
+    ccMem = data;
+    await cache.put(key, new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=' + (CC_TTL * 2) } }));
+  }
+  if (!data || data.error) return reply({ error: 'chesscom' }, 502, cors);
+  const left = Math.max(30, CC_TTL - Math.round((Date.now() - (data.tried || data.t)) / 1000));
+  return new Response(JSON.stringify({ players: data.players, games: data.games, t: data.t }), { status: 200, headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=' + left } });
+}
 function reply(obj, status, cors) {
   return new Response(JSON.stringify(obj), { status, headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
 }
@@ -83,6 +118,7 @@ export default {
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
     if (!allowed) return reply({ error: 'origem' }, 403, cors);
     if (req.method === 'GET' && new URL(req.url).pathname === '/lichess') return lichessCounters(cors);
+    if (req.method === 'GET' && new URL(req.url).pathname === '/chesscom') return chesscomCounters(cors);
     if (req.method !== 'POST') return reply({ error: 'metodo' }, 405, cors);
     const auth = req.headers.get('Authorization') || '';
     try { await verifyFirebase(auth.startsWith('Bearer ') ? auth.slice(7) : ''); }

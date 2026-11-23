@@ -5,6 +5,14 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v129 · Chess.com ao vivo
+
+- Jogar online: o botão do Chess.com mostra jogadores online (verde) e partidas hoje (amarelo), no mesmo estilo do Lichess.
+- Página inicial: abaixo de ♟ Chess.com aparecem os jogadores online.
+- Atualização a cada 900 s (15 min). O Worker (fonte/turn/worker.js, rota GET /chesscom) lê a página pública de rankings do Chess.com no máximo uma vez a cada 15 min para todos os jogadores juntos, com cache compartilhado e identificação honesta; se falhar, espera 15 min e mantém o último valor bom por até 6 h.
+- Sem número disponível, os botões continuam como antes ("Em breve…").
+- Para ligar: publicar o novo worker.js no Worker rota-turn da Cloudflare.
+
 ## v128 · Selo "Integrado com" maior no topo do menu
 
 - Selo maior e mais elegante: "Integrado com" como etiqueta na borda; abaixo de ♞ Lichess, os jogadores online ao vivo; abaixo de ♟ Chess.com, "Em breve…".
