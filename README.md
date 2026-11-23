@@ -5,6 +5,17 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v123 — Perfil na escala do Elo
+
+- **Fim das notas de 0 a 100 no Perfil.** Elas mediam acerto dentro do próprio nível (exercícios da sua faixa, precisão contra adversários do seu nível) e davam 87 para quem tem 340. Agora cada uma das 9 características tem um **Elo estimado**, na mesma régua do "Seu nível".
+- **Parte do seu nível e só se afasta com evidência:** com poucos dados a estimativa fica perto do seu Elo; o peso cresce com partidas e exercícios. Nenhuma passa de 300 pontos acima ou abaixo do nível.
+- **Régua medida:** 84 partidas entre adversários do computador de força conhecida (500 a 2.400) mediram precisão, erros no meio-jogo e erros de atenção em cada nível. Essas medidas separam bem os níveis até ~1.400 e pesam menos acima disso. Exercícios comparam o acerto com o esperado na sua faixa (65%); tempo, visão e processo comparam você com o seu próprio padrão.
+- **Abertura do Perfil explica a régua** ("Medido na escala do seu Elo… 2.500 é nível de grande mestre"), com seu nível e a próxima meta.
+- **Radar novo:** anel tracejado = seu nível, anel dourado = próxima meta. Destaques "Acima do seu nível" e "Prioridade de treino" relativos a você.
+- **Cada característica:** Elo, categoria, barra até a meta, diferença para o seu nível, de onde veio a estimativa e o quanto ela já é confiável.
+- **Painel:** cartão Precisão mostra o típico do seu nível ao lado da sua precisão; cartão Perfil sem notas; "Como é calculado" compara a sua precisão com a do seu nível; Mapa do pensamento mostra a visão de candidatos no Elo.
+- Data da versão: 23.11.2026.
+
 ## v122 — Computador de 800 a 3200, de 100 em 100, com força medida
 
 - **Barra de 100 em 100:** cada ponto (800, 900 … 3200) é uma força própria. Antes eram 6 níveis fixos.

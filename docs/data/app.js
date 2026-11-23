@@ -26286,7 +26286,7 @@ Mestre.placementResult=function(res){
 
 /* Gancho de tela, preservando o roteamento e lógica já existentes. */
 var _mOldMenu=UiJs.menu;
-UiJs.menu=function(items,info){_mOldMenu(items,info);var menu=UiJs.root.querySelector('.menu'),footer=menu&&menu.querySelector('.mfoot');if(footer){var v=UiJs.el('span','menu-version',footer,'Versão: 20.11.2026');v.setAttribute('aria-label','Versão de 20 de novembro de 2026');}};
+UiJs.menu=function(items,info){_mOldMenu(items,info);var menu=UiJs.root.querySelector('.menu'),footer=menu&&menu.querySelector('.mfoot');if(footer){var v=UiJs.el('span','menu-version',footer,'Versão: 23.11.2026');v.setAttribute('aria-label','Versão de 20 de novembro de 2026');}};
 var _mOldTraining=App.training;
 App.training=function(){_mOldTraining();var g=UiJs.root.querySelector('.menu.hub .mgrid');if(g){UiJs.mitem(g,{t:'Laboratório de alto rendimento',d:'Desafios progressivos · cálculo profundo · biblioteca dos mestres',f:Mestre.hub,wide:true,hl:true,ico:'ct'});}};
 Mestre.training=function(){var base=Mestre.clamp(Profile.d.pzElo||1200,650,2650),seen=Profile.seenMap(),tasks=[];for(var i=0;i<18;i++){var rating=Mestre.clamp(base-180+i*65,500,2900),tags=i%4===0?["endgame"]:i%3===0?["long","veryLong"]:null,ps=Puzzles.pick(tags,rating-100,rating+120,1,seen,i%3===0?4:0);if(!ps.length)continue;var p=ps[0];seen.h[p.id]=true;tasks.push(Study.pzTask(p,i%3===0,i%4===0?"finais":i%3===0?"calculo":"tatica"));}Drills.run('Treino de alto rendimento',tasks,{back:App.training});};
@@ -36802,6 +36802,194 @@ var V122=(function(){
  }
  return V;
 })();
+
+/* ======================= v123 · Perfil na escala do Elo =======================
+   As 9 características deixam de ser notas de 0 a 100 (que mediam acerto dentro do próprio nível e davam 87 para
+   quem tem 340) e passam a ser um Elo estimado, na mesma régua do nível do jogador.
+   · Cada característica parte do seu nível e só se afasta dele com evidência (encolhimento pela amostra).
+   · Precisão, erros no meio-jogo e erros de atenção usam tabelas medidas em 84 partidas entre adversários do
+     computador de força conhecida (500 a 2400). Essas medidas separam bem os níveis até ~1.400; acima disso quase não
+     separam, então limitam o quanto podem empurrar a estimativa.
+   · Exercícios (tática, cálculo, finais, aberturas) já vêm na sua faixa: o acerto é comparado com o esperado (65%).
+   · Tempo, visão e o treino do processo são comparações com o seu próprio padrão.
+   · Faixas e metas: as mesmas do "Seu nível" (Iniciante, Amador, Jogador de clube…; metas 800, 1.000, 1.200…). */
+var V123=(function(){
+ var V={};
+ /* tabelas medidas (valor da métrica → Elo), monotônicas */
+ V.ACC_SF=[[70,150],[75,300],[79,500],[82.5,800],[88.6,1250],[91.6,1700],[94.4,2000],[95.6,2400],[97,2700]];
+ V.ACC_HX=[[78,150],[84.2,500],[87.2,800],[91.5,1400]];
+ V.MID=[[0.32,150],[0.27,300],[0.195,500],[0.101,800],[0.077,1500]];
+ V.ATT=[[0.05,150],[0.035,300],[0.022,650],[0.013,1500]];
+ function lerp(T,x,desc){
+  /* T: [[métrica, elo]...]; desc: métrica maior = pior */
+  var P=T.slice();if(desc)P=P.slice();
+  var xs=P.map(function(p){return p[0];}),inc=xs[xs.length-1]>xs[0];
+  if(inc){if(x<=xs[0])return P[0][1];if(x>=xs[xs.length-1])return P[P.length-1][1];}
+  else{if(x>=xs[0])return P[0][1];if(x<=xs[xs.length-1])return P[P.length-1][1];}
+  for(var i=1;i<P.length;i++){var a=P[i-1],b=P[i];if((inc&&x<=b[0])||(!inc&&x>=b[0]))return a[1]+(b[1]-a[1])*(x-a[0])/(b[0]-a[0]);}
+  return P[P.length-1][1];
+ }
+ V.lerp=lerp;
+ /* Elo → precisão típica (para comparar a sua precisão com a do seu nível) */
+ V.accAt=function(e){var T=V.ACC_SF;if(e<=T[0][1])return T[0][0];for(var i=1;i<T.length;i++)if(e<=T[i][1]){var a=T[i-1],b=T[i];return a[0]+(b[0]-a[0])*(e-a[1])/(b[1]-a[1]);}return T[T.length-1][0];};
+ V.ref=function(){try{return V116.elo()[0]||0;}catch(e){return 0;}};
+ function sums(){var o=[];(Profile.d.hist||[]).forEach(function(h){if(h&&h.s)o.push(h.s);});return o.slice(-30);}
+ function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+ function logit(p){p=clamp(p,0.05,0.97);return Math.log(p/(1-p))/Math.LN10;}
+ var LABEL={tat:'Tática',calc:'Cálculo',fin:'Finais',abe:'Aberturas',est:'Estratégia',tem:'Tempo',pre:'Precisão',ate:'Atenção',vis:'Visão'};
+ var DIM={tat:'tatica',calc:'calculo',fin:'finais',abe:'abertura'};
+ V.ORDER=['tat','calc','fin','abe','est','tem','pre','ate','vis'];
+ /* evidência de cada característica: {e: Elo equivalente, w: peso 0..1, src: de onde veio} */
+ V.evidence=function(ref){
+  var E={},ss=sums(),d=Profile.d;
+  Object.keys(DIM).forEach(function(k){
+   var p=-1;try{p=Profile.dimPct(DIM[k]);}catch(e){}
+   if(p<0){E[k]=null;return;}
+   var a=(d.dims&&d.dims[DIM[k]])||[0,0],c=(a[1]|0)+((d.place&&d.place.dims&&d.place.dims[DIM[k]]!=null)?8:0);
+   E[k]={e:ref+clamp(400*(logit(p/100)-logit(0.65)),-350,350),w:c/(c+25),src:c+' exercícios na sua faixa · '+p+'% de acerto (o esperado é 65%)'};
+  });
+  /* precisão: análise do Stockfish (a mesma do seu Elo); sem ela, a do treinador */
+  var ac=d.v29acc;
+  if(ac&&ac.n){E.pre={e:lerp(V.ACC_SF,ac.acc),w:ac.n/(ac.n+30),src:String(ac.acc).replace('.',',')+'% de precisão em '+ac.n+(ac.n===1?' partida':' partidas')+' · no seu nível o típico é '+Math.round(V.accAt(ref))+'%'};}
+  else{var h=d.hist||[],s=0,k=0;for(var i=h.length-1;i>=0&&k<10;i--)if(h[i].acc!=null){s+=h[i].acc;k++;}
+   E.pre=k?{e:Math.min(1400,lerp(V.ACC_HX,s/k)),w:k/(k+15),src:'Precisão do treinador em '+k+(k===1?' partida':' partidas')}:null;}
+  /* estratégia: erros no meio-jogo + "Adivinhe o lance" */
+  var mb=0,mn=0;ss.forEach(function(s){if(s.ph&&s.ph[1]){mb+=s.ph[1][0];mn+=s.ph[1][1];}});
+  var parts=[];if(mn>=15)parts.push([Math.min(1500,lerp(V.MID,mb/mn)),mn/(mn+150)]);
+  var md=d.model||[],mk=0,msum=0;for(var j=md.length-1;j>=0&&mk<5;j--)if(md[j].perf!=null){msum+=md[j].perf;mk++;}
+  if(mk){var mp=msum/mk;try{mp=V28.toGame(mp);}catch(e){}parts.push([mp,mk/(mk+8)]);}
+  E.est=parts.length?mixP(parts,mn>=15?Math.round(mb*100/mn)+'% de erros no meio-jogo ('+mn+' lances)'+(mk?' · Adivinhe o lance':''):'Adivinhe o lance'):null;
+  /* atenção: peças deixadas soltas e ameaças ignoradas + treino do processo */
+  var n=0,at=0,bad=0;ss.forEach(function(s){n+=s.n;bad+=s.bad;var c=s.con||{};at+=(c.threat|0)+(c.hanging|0);});
+  var ap=[];if(n>=30)ap.push([Math.min(1500,lerp(V.ATT,at/n)),n/(n+300)]);
+  var pr=d.proc||[0,0];if(pr[1]>=6)ap.push([ref+clamp((pr[0]*100/pr[1]-60)*5,-250,250),pr[1]/(pr[1]+20)]);
+  E.ate=ap.length?mixP(ap,n>=30?at+' peças soltas ou ameaças ignoradas em '+n+' lances':'Treino do processo de pensamento'):null;
+  /* tempo: erros com o relógio apertado ou jogando rápido, comparados com o seu normal */
+  var lw=[0,0],fs=[0,0];ss.forEach(function(s){if(s.low){lw[0]+=s.low[0];lw[1]+=s.low[1];}if(s.fast){fs[0]+=s.fast[0];fs[1]+=s.fast[1];}});
+  var np=lw[1]+fs[1],to=0,hh=d.hist||[];for(var q=hh.length-1,c2=0;q>=0&&c2<20;q--,c2++)if(hh[q].how==='tempo esgotado')to++;
+  if(np>=8&&n>0){var r0=bad/n,rp=(lw[0]+fs[0])/np;E.tem={e:ref+clamp((r0-rp)/Math.max(0.03,r0)*250,-250,200)-60*to,w:Math.max(to?0.3:0,np/(np+30)),src:Math.round(rp*100)+'% de erros sob pressão contra '+Math.round(r0*100)+'% no seu normal'+(to?' · '+to+' derrota(s) no tempo':'')};}
+  else E.tem=null;
+  /* visão de candidatos (Mapa do pensamento) */
+  var vs=-1;try{vs=Mind.vision(d.hist);}catch(e){}
+  E.vis=vs>=0?{e:ref+clamp((vs-55)*6,-300,300),w:0.5,src:'Mapa do pensamento: visão '+vs+' (em relação ao seu padrão)'}:null;
+  return E;
+ };
+ function mixP(parts,src){var sw=0,se=0;parts.forEach(function(p){sw+=p[1];se+=p[0]*p[1];});return {e:se/sw,w:Math.min(0.85,sw),src:src};}
+ /* estimativa final de cada característica */
+ V.skills=function(){
+  var ref=V.ref();if(!(ref>0))return null;
+  var E=V.evidence(ref);
+  return V.ORDER.map(function(k){
+   var ev=E[k];
+   if(!ev)return {k:k,label:LABEL[k],elo:null,ref:ref,conf:0,src:'Ainda sem dados'};
+   var v=ref+ev.w*(ev.e-ref);v=clamp(v,Math.max(100,ref-300),ref+300);v=Math.round(v/10)*10;
+   return {k:k,label:LABEL[k],elo:v,ref:ref,d:v-ref,conf:ev.w,src:ev.src,cat:Profile.category(v),goal:Profile.nextGoal(v)};
+  });
+ };
+ V.confTxt=function(w){return w<0.35?'estimativa inicial':(w<0.65?'em formação':'consistente');};
+ V.fmt=function(v){return Math.round(v).toLocaleString('pt-BR');};
+ V.dTxt=function(d){return d===0?'no seu nível':(d>0?'+'+d+' acima do seu nível':Math.abs(d)+' abaixo do seu nível');};
+ /* destaques relativos ao seu próprio nível */
+ V.highlights=function(S){
+  var ok=(S||[]).filter(function(s){return s.elo!=null;});
+  var st=ok.filter(function(s){return s.d>=40;}).sort(function(a,b){return b.d-a.d;}).slice(0,2);
+  var wk=ok.filter(function(s){return s.d<=-40;}).sort(function(a,b){return a.d-b.d;}).slice(0,2);
+  return {st:st,wk:wk,ok:ok};
+ };
+ /* radar na escala do Elo: anel tracejado = seu nível, anel dourado = próxima meta */
+ V.radar=function(par,S,ref){
+  var ok=S.filter(function(s){return s.elo!=null;}),goal=Profile.nextGoal(ref);
+  var mx=Math.max.apply(null,[goal].concat(ok.map(function(s){return s.elo;})))+60;
+  var mn=Math.min.apply(null,[ref].concat(ok.map(function(s){return s.elo;})));
+  var lo=Math.max(0,mn-260),hi=mx,W=320,C=160,R=112;
+  var rr=function(v){return R*clamp((v-lo)/(hi-lo),0.04,1);};
+  var pt=function(i,r){var a=-Math.PI/2+i*2*Math.PI/S.length;return [C+r*Math.cos(a),C+r*Math.sin(a)];};
+  var s='<svg viewBox="0 0 '+W+' '+W+'" class="v123-rd" role="img" aria-label="Radar do perfil na escala do Elo">';
+  for(var i=0;i<S.length;i++){var p=pt(i,R);s+='<line x1="'+C+'" y1="'+C+'" x2="'+p[0].toFixed(1)+'" y2="'+p[1].toFixed(1)+'" class="ax"/>';}
+  s+='<circle cx="'+C+'" cy="'+C+'" r="'+rr(goal).toFixed(1)+'" class="goal"/>';
+  s+='<circle cx="'+C+'" cy="'+C+'" r="'+rr(ref).toFixed(1)+'" class="ref"/>';
+  var poly=S.map(function(x,i){return pt(i,rr(x.elo!=null?x.elo:ref)).map(function(v){return v.toFixed(1);}).join(',');}).join(' ');
+  s+='<polygon points="'+poly+'" class="shape"/>';
+  S.forEach(function(x,i){var p=pt(i,rr(x.elo!=null?x.elo:ref));s+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="4" class="dot'+(x.elo==null?' nd':(x.d>=40?' up':(x.d<=-40?' dn':'')))+'"/>';
+   var q=pt(i,R+22),anc=Math.abs(q[0]-C)<8?'middle':(q[0]>C?'start':'end');
+   s+='<text x="'+q[0].toFixed(1)+'" y="'+(q[1]+4).toFixed(1)+'" text-anchor="'+anc+'" class="lb'+(x.elo==null?' nd':'')+'">'+x.label+'</text>';});
+  s+='</svg>';
+  var w=UiJs.el('div','v123-rw',par);w.innerHTML=s+'<div class="v123-lg"><span><i class="r"></i>Seu nível '+V.fmt(ref)+'</span><span><i class="g"></i>Próxima meta '+V.fmt(goal)+'</span></div>';
+ };
+ /* página do perfil */
+ V.page=function(){
+  UiJs.page('Seu perfil enxadrístico',Pages.profile);
+  var cur=UiJs.cur;cur.classList.add('v123');
+  var ref=V.ref(),S=V.skills();
+  var intro=UiJs.el('div','v123-intro',cur);
+  intro.innerHTML='<b>Medido na escala do seu Elo</b><p>Cada característica tem um Elo estimado, na mesma régua do seu nível. Não é nota de prova: 2.500 é nível de grande mestre. Com poucos dados, a estimativa fica perto do seu nível e só se afasta quando partidas e treinos mostram diferença.</p>';
+  if(!S){UiJs.p('Para montar o perfil, o jogo precisa primeiro do seu nível. Faça o Nivelamento ou jogue partidas valendo pontos.','gold');UiJs.btns([['Fazer o Nivelamento',Pages.placementIntro,'pri'],['Voltar ao Painel',Pages.profile]]);return;}
+  var goal=Profile.nextGoal(ref);
+  var ch=UiJs.el('div','v123-chips',intro);ch.innerHTML='<span>Seu nível <b>'+V.fmt(ref)+'</b> · '+V116.esc(Profile.category(ref))+'</span><span>Próxima meta <b>'+V.fmt(goal)+'</b></span>';
+  V.radar(cur,S,ref);
+  var H=V.highlights(S);
+  var hl=UiJs.el('div','v123-hl',cur);
+  var box=function(cls,t,arr,empty){var b=UiJs.el('div','v123-hb '+cls,hl);b.innerHTML='<i>'+t+'</i>'+(arr.length?arr.map(function(s){return '<b>'+s.label+'</b><span>'+V.fmt(s.elo)+' · '+(s.d>0?'+':'−')+Math.abs(s.d)+'</span>';}).join(''):'<em>'+empty+'</em>');};
+  box('up','Acima do seu nível',H.st,'Nenhuma característica se destaca ainda.');
+  box('dn','Prioridade de treino',H.wk,'Nenhuma fica muito abaixo do seu nível.');
+  UiJs.el('div','v116-h',cur,'Característica por característica');
+  var list=UiJs.el('div','v123-list',cur);
+  S.slice().sort(function(a,b){var x=a.elo==null?9999:a.d,y=b.elo==null?9999:b.d;return x-y;}).forEach(function(s){
+   var t=V116.mget(Evo.TIPS,s.k)||['','Treinar',App.training];
+   var r=UiJs.el('div','v123-row'+(s.elo==null?' nd':''),list);
+   if(s.elo==null){r.innerHTML='<div class="v123-rh"><b>'+s.label+'</b><span class="v123-v">sem dados</span></div><div class="v123-src">'+V116.esc(t[0])+'</div>';}
+   else{
+    var lo=Math.max(0,Math.min(s.elo,ref)-200),hi=Math.max(s.goal,ref)+50,pc=function(v){return clamp((v-lo)*100/(hi-lo),0,100).toFixed(1);};
+    r.innerHTML='<div class="v123-rh"><b>'+s.label+'</b><span class="v123-v">'+V.fmt(s.elo)+'<small>'+V116.esc(s.cat)+'</small></span></div>'+
+     '<div class="v123-bar"><i style="width:'+pc(s.elo)+'%"></i><s style="left:'+pc(ref)+'%" title="Seu nível"></s><u style="left:'+pc(s.goal)+'%" title="Meta"></u></div>'+
+     '<div class="v123-meta"><span class="'+(s.d>=40?'up':(s.d<=-40?'dn':''))+'">'+V.dTxt(s.d)+'</span><span>meta '+V.fmt(s.goal)+' · faltam '+V.fmt(s.goal-s.elo)+'</span></div>'+
+     '<div class="v123-src">'+V116.esc(s.src)+' · '+V.confTxt(s.conf)+'</div>';
+   }
+   var a=UiJs.el('button','v123-go',r,(t[1]||'Treinar')+' ›');a.type='button';a.onclick=V116.go(t[2]||App.training);
+  });
+  /* tendências do jogo (estilo, aberturas, fase) */
+  try{var rd=Evo.reading(Evo.axes()).slice(2);if(rd.length){UiJs.el('div','v116-h',cur,'Leitura do seu jogo');rd.forEach(function(sec){var items=sec[1];UiJs.group('rsec',function(){UiJs.p(sec[0],'gold');if(items.length)UiJs.ul(items,'small');else UiJs.p(sec[2],'muted');});});}}catch(e){}
+  var det=document.createElement('details');det.className='v34-more v123-how';cur.appendChild(det);
+  det.innerHTML='<summary><span>Como as estimativas são feitas</span></summary><div class="v34-mb"><p>Todas partem do seu nível e só se afastam dele com evidência: quanto mais partidas e exercícios, mais a estimativa pode subir ou descer.</p><p><b>Precisão, meio-jogo e atenção</b> são comparados com tabelas medidas em 84 partidas entre adversários do computador de força conhecida (500 a 2.400). Essas medidas separam bem os níveis até cerca de 1.400; acima disso, pesam menos.</p><p><b>Tática, cálculo, finais e aberturas</b> vêm dos exercícios, que já são da sua faixa: acertar mais que 65% puxa para cima, menos puxa para baixo.</p><p><b>Tempo, visão e processo</b> comparam você com o seu próprio padrão.</p><p>Nenhuma característica passa de 300 pontos acima ou abaixo do seu nível.</p></div>';
+  UiJs.btns([['Voltar ao Painel',Pages.profile,'pri']]);
+ };
+ /* Painel: cartões Perfil e Precisão com a mesma régua */
+ V.perfDesc=function(){var S=V.skills();if(!S)return 'Seu jogo em 9 características';var H=V.highlights(S);if(H.ok.length<2)return 'Seu jogo em 9 características';
+  var st=H.st[0],wk=H.wk[0];if(!st&&!wk)return 'Tudo perto do seu nível · '+V.fmt(V.ref());
+  return (st?'Forte: '+st.label.toLowerCase():'')+(st&&wk?' · ':'')+(wk?'treinar: '+wk.label.toLowerCase():'');};
+ V.accDesc=function(ac){if(!(ac&&ac.n))return null;var ref=V.ref();return String(ac.acc).replace('.',',')+'% · no seu nível, o típico é '+Math.round(V.accAt(ref>0?ref:800))+'%';};
+ return V;
+})();
+if(typeof V116!=='undefined'){
+ V116.perfil=V123.page;
+ (function(){
+  var oPage=V116.page;
+  V116.page=function(){
+   var r=oPage.apply(this,arguments);
+   try{
+    var cur=UiJs.cur;
+    var tl=[].filter.call(cur.querySelectorAll('.v116-tile'),function(b){return b.querySelector('.v116-th b');});
+    tl.forEach(function(b){var t=b.querySelector('.v116-th b').textContent,d=b.querySelector('.v116-td');if(!d||b.classList.contains('lock'))return;
+     if(t==='Perfil'){d.textContent=V123.perfDesc();b.querySelector('.v116-why').textContent='Cada característica no seu Elo';}
+     if(t==='Precisão'){var x=V123.accDesc(Profile.d.v29acc);if(x)d.textContent=x;}});
+   }catch(e){}
+   return r;
+  };
+  if(typeof Pages!=='undefined')Pages.profile=V116.page;
+  /* Como é calculado: a precisão comparada com o típico do nível, sem um número solto */
+  var oCalc=V116.calc;
+  V116.calc=function(){
+   var r=oCalc.apply(this,arguments);
+   try{var ac=Profile.d.v29acc;if(ac&&ac.n){var ps=[].slice.call(UiJs.cur.querySelectorAll('p,.p'));ps.forEach(function(p){if(/% em \d+ partida/.test(p.textContent)&&/cerca de/.test(p.textContent)){var ref=V123.ref();p.textContent=String(ac.acc).replace('.',',')+'% em '+ac.n+(ac.n===1?' partida analisada':' partidas analisadas')+'. Jogadores de cerca de '+V123.fmt(ref>0?ref:800)+' costumam ter '+Math.round(V123.accAt(ref>0?ref:800))+'%. '+(ac.n>=10?'Já é a parte de maior peso do seu nível.':'Com 10 partidas analisadas passa a ser a parte de maior peso.');}});}}catch(e){}
+   return r;
+  };
+ })();
+}
+/* Mapa do pensamento: a "visão de candidatos" também na escala do Elo */
+if(typeof Mind!=='undefined'&&Mind.page){
+ (function(){var o=Mind.page;Mind.page=function(){var r=o.apply(this,arguments);try{var S=V123.skills();var v=S&&S.filter(function(s){return s.k==='vis';})[0];
+  [].forEach.call(UiJs.cur.querySelectorAll('*'),function(e){if(e.children.length===0&&e.textContent==='visão de candidatos'){var box=e.parentNode,num=box&&box.firstElementChild;if(num&&num!==e){num.textContent=v&&v.elo!=null?V123.fmt(v.elo):'—';e.textContent='visão de candidatos (Elo estimado)';}}});}catch(e){}return r;};})();
+}
 
 Main.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);

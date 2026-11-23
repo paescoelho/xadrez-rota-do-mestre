@@ -15,7 +15,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v122</title>
+<title>Xadrez · Rota do Mestre — v123</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1776,6 +1776,48 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v122-tk i span{position:absolute;top:7px;left:0;transform:translateX(-50%);font-size:9.5px;line-height:1;color:#6f767e;white-space:nowrap;font-variant-numeric:tabular-nums}
 .v103-lv.on .v122-tk i.on:before{background:#c9b27a}
 .v103-lv.on .v122-tk i.on span{color:#c9b27a}
+/* v123: perfil na escala do Elo */
+.v123-intro{margin:4px 0 14px;padding:13px 14px;border-radius:14px;border:1px solid rgba(220,181,92,.45);background:linear-gradient(180deg,rgba(43,35,18,.9),rgba(22,19,12,.9))}
+.v123-intro>b{display:block;font-family:Cinzel,Georgia,serif;font-size:17px;color:#f0cf7a;letter-spacing:.02em}
+.v123-chips span{white-space:nowrap}
+.v123-intro p{margin:6px 0 0;font-size:14px;line-height:1.45;color:#e6dbc2}
+.v123-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.v123-chips span{padding:5px 11px;border-radius:999px;background:rgba(220,181,92,.12);border:1px solid rgba(220,181,92,.35);font-size:13px;color:#e8d6a6}
+.v123-chips b{color:#f6dd96}
+.v123-rw{display:flex;flex-direction:column;align-items:center;margin:2px 0 8px}
+.v123-rd{width:min(100%,340px);height:auto;overflow:visible}
+.v123-rd .ax{stroke:rgba(255,255,255,.1);stroke-width:1}
+.v123-rd .ref{fill:none;stroke:rgba(230,220,190,.55);stroke-width:1.4;stroke-dasharray:4 4}
+.v123-rd .goal{fill:rgba(220,181,92,.05);stroke:#dcb55c;stroke-width:1.6}
+.v123-rd .shape{fill:rgba(220,181,92,.22);stroke:#f0cf7a;stroke-width:2;stroke-linejoin:round}
+.v123-rd .dot{fill:#f0cf7a;stroke:#1a160e;stroke-width:1.5}.v123-rd .dot.up{fill:#6fd197}.v123-rd .dot.dn{fill:#e86a5f}.v123-rd .dot.nd{fill:#555;stroke:#888}
+.v123-rd .lb{fill:#d9ccae;font-size:11.5px;font-family:inherit}.v123-rd .lb.nd{fill:#777}
+.v123-lg{display:flex;gap:16px;font-size:12px;color:#b9ad92;margin-top:2px}
+.v123-lg i{display:inline-block;width:18px;height:0;vertical-align:middle;margin-right:6px;border-top:2px dashed rgba(230,220,190,.6)}.v123-lg i.g{border-top:2px solid #dcb55c}
+.v123-hl{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0 4px}
+.v123-hb{padding:10px 11px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:3px}
+.v123-hb i{font-style:normal;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:#a99c80;margin-bottom:2px}
+.v123-hb b{font-size:14.5px;color:#f1e6cb}.v123-hb span{font-size:12.5px;margin-top:-2px}
+.v123-hb.up{border-color:rgba(84,190,120,.35)}.v123-hb.up span{color:#8fdcaa}
+.v123-hb.dn{border-color:rgba(217,83,79,.35)}.v123-hb.dn span{color:#ef9a90}
+.v123-hb em{font-style:normal;font-size:12.5px;color:#9c9076;line-height:1.35}
+.v123-list{display:flex;flex-direction:column;gap:8px}
+.v123-row{padding:11px 12px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08)}
+.v123-row.nd{opacity:.75}
+.v123-rh{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.v123-rh b{font-size:15px;color:#f1e6cb}
+.v123-v{font-size:17px;font-weight:700;color:#f0cf7a;font-variant-numeric:tabular-nums;text-align:right}
+.v123-v small{display:block;font-size:11.5px;font-weight:500;color:#a99c80}
+.v123-row.nd .v123-v{font-size:13px;color:#8d8370;font-weight:500}
+.v123-bar{position:relative;height:6px;border-radius:6px;background:rgba(255,255,255,.08);margin:8px 0 6px}
+.v123-bar i{position:absolute;left:0;top:0;bottom:0;border-radius:inherit;background:linear-gradient(90deg,#8a6a2a,#dcb55c)}
+.v123-bar s{position:absolute;top:-4px;width:2px;height:14px;margin-left:-1px;background:rgba(240,230,205,.75)}
+.v123-bar u{position:absolute;top:-5px;width:10px;height:10px;margin-left:-5px;margin-top:3px;border-radius:50%;border:2px solid #dcb55c;background:#1a160e}
+.v123-meta{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:#b9ad92}
+.v123-meta .up{color:#8fdcaa}.v123-meta .dn{color:#ef9a90}
+.v123-src{font-size:12px;color:#8f846c;margin-top:4px;line-height:1.35}
+.v123-go{margin-top:7px;background:none;border:0;padding:0;color:#dcb55c;font-size:13px;cursor:pointer;font-family:inherit}
+.v123-how{margin-top:14px}.v123-how p{font-size:13px;line-height:1.45;color:#cfc3a6;margin:0 0 8px}
 /* treinador por voz: indisponível por enquanto */
 .v36-card,.v36-hb{display:none!important}
 /* com a nova linha, os temas do tabuleiro crescem quando há altura sobrando */
@@ -2215,7 +2257,7 @@ window.XHD=(function(){
 <script>
 /* carregador do site: baixa (ou pega do cache offline) os arquivos do jogo, mostra o progresso e inicia o app */
 (function(){
- var F={"res":[["res_content","data/content.json?v=facebd0421"],["res_lpuzzles","data/lpuzzles.txt?v=6a7f7438c2"],["res_openings","data/openings.txt?v=0433d98604"],["res_explorer","data/explorer.txt?v=a49e3a075b"],["res_models","data/models.txt?v=d4b717e2fe"],["res_sfjs","data/sf.js?v=81cc4511ff"]],"intro":[["introfr","data/introfr.json?v=361b412139"],["introau","data/introau.txt?v=ce6089d3a7"],["introhdx","data/introhdx.json?v=efe43de4ba"]],"hd":"data/intro_hd.bin?v=2f137ab566","hd16":"data/intro_hd16.bin?v=873ca44d34","hdx16":"data/introhdx16.json?v=ffb050a168","histau":"data/historia.mp3?v=87e853c025","apoioau":"data/apoio.mp3?v=a67289dc4c","lichau":"data/lichess.mp3?v=420a0f7dec","wasm":"data/sf.wasm?v=c56761eebb","app":"data/app.js?v=e6a00dde0b"};
+ var F={"res":[["res_content","data/content.json?v=facebd0421"],["res_lpuzzles","data/lpuzzles.txt?v=6a7f7438c2"],["res_openings","data/openings.txt?v=0433d98604"],["res_explorer","data/explorer.txt?v=a49e3a075b"],["res_models","data/models.txt?v=d4b717e2fe"],["res_sfjs","data/sf.js?v=81cc4511ff"]],"intro":[["introfr","data/introfr.json?v=361b412139"],["introau","data/introau.txt?v=ce6089d3a7"],["introhdx","data/introhdx.json?v=efe43de4ba"]],"hd":"data/intro_hd.bin?v=2f137ab566","hd16":"data/intro_hd16.bin?v=873ca44d34","hdx16":"data/introhdx16.json?v=ffb050a168","histau":"data/historia.mp3?v=87e853c025","apoioau":"data/apoio.mp3?v=a67289dc4c","lichau":"data/lichess.mp3?v=420a0f7dec","wasm":"data/sf.wasm?v=c56761eebb","app":"data/app.js?v=2fd23dfbbd"};
  var c=navigator.connection||{},slow=!!(c.saveData||/(^|-)2g|3g/.test(c.effectiveType||''));
  var box=document.createElement('div');box.id='boot';box.innerHTML='<div class="bt">Rota do Mestre</div><div class="bb"><i></i></div><div class="bs">Preparando o tabuleiro…</div>';document.body.appendChild(box);
  var bar=box.querySelector('i'),msg=box.querySelector('.bs'),done=0,total=F.res.length+(slow?0:F.intro.length+1)+1;
