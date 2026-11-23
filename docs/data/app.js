@@ -37119,5 +37119,64 @@ if(typeof document!=='undefined'){
  (function(){var ol=V27.load;V27.load=function(){var r=ol.apply(this,arguments);try{V126.send();}catch(e){}return r;};})();
 }
 
+/* ======================= v128 · Selo "Integrado com" no topo do menu =======================
+   Selo maior: Lichess com os jogadores online ao vivo (mesmo número e mesmo ritmo da tela "Jogar online":
+   o real é buscado a cada 20 s e o texto oscila de leve a cada 1 s em volta dele) e Chess.com "Em breve…".
+   Tocar no selo abre a Conta Google. */
+var V128=(function(){
+ var V={};
+ V.el=function(){return document.querySelector('.menu .v128');};
+ V.html=function(){
+  if(!V87.cnt)V87.load();var c=V87.cnt,d=V87.disp||c;
+  return '<span class="v128-hd">Integrado com</span>'+
+   '<span class="v128-row">'+
+    '<span class="v128-c li"><em>♞ Lichess</em><small class="'+(d?'':'v128-wait')+'"><s></s><b>'+(d?V87.fmt(d.players):'…')+'</b> online</small></span>'+
+    '<span class="v128-sep" aria-hidden="true"></span>'+
+    '<span class="v128-c cc"><em>♟ Chess.com</em><small>Em breve…</small></span>'+
+   '</span>';
+ };
+ V.paint=function(){var b=V.el();if(!b)return;var d=V87.disp||V87.cnt;var s=b.querySelector('.v128-c.li small');if(!s)return;
+  if(d){s.classList.remove('v128-wait');s.querySelector('b').textContent=V87.fmt(d.players);}
+  b.setAttribute('aria-label','Integrado com Lichess'+(d?' ('+V87.fmt((V87.cnt||d).players)+' jogadores online)':'')+' e Chess.com (em breve). Abrir Conta Google');};
+ V.tick=function(){
+  if(!V.el()){clearInterval(V.tI);V.tI=null;clearTimeout(V.fT);V.fT=null;return;}
+  if(!V87.cnt||document.hidden)return;
+  if(!V87.disp)V87.disp={players:V87.cnt.players,games:V87.cnt.games};
+  V87.disp.players=V87.step(V87.cnt.players,V87.disp.players,40,6);
+  V87.disp.games=V87.step(V87.cnt.games,V87.disp.games,20,4);
+  V.paint();
+ };
+ V.fetch=function(){
+  clearTimeout(V.fT);V.fT=setTimeout(function(){if(V.el())V.fetch();},20000);
+  if(document.hidden||Date.now()-V87.cntAt<19000||V87.cntP)return;
+  V87.cntP=fetch(V87.API,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){
+   if(j&&j.players>0){V87.cnt={players:j.players,games:j.games};V87.cntAt=Date.now();V87.disp={players:j.players,games:j.games};try{localStorage.setItem(V87.CK,JSON.stringify(V87.cnt));}catch(e){}V.paint();}
+  }).catch(function(){}).then(function(){V87.cntP=null;});
+ };
+ V.OLD='Integrado com <span class="v71-li">♞ Lichess</span><i>·</i><span class="v71-cc">♟ Chess.com</span>';
+ /* mede a grade como ela era com o selo antigo (troca e destroca no mesmo quadro, sem piscar) e fixa essa altura */
+ V.pin=function(){
+  var b=V.el(),g=document.querySelector('.menu .mgrid');if(!b||!g)return false;
+  g.style.flex='';var nw=b.innerHTML;b.classList.remove('v128');b.innerHTML=V.OLD;
+  var h0=g.getBoundingClientRect().height;b.classList.add('v128');b.innerHTML=nw;
+  if(!h0)return false;
+  var hn=g.getBoundingClientRect().height;if(h0>hn+0.5)g.style.flex='0 0 '+h0.toFixed(1)+'px';
+  return true;
+ };
+ V.apply=function(){
+  var b=document.querySelector('.menu .v71-int');if(!b||b.classList.contains('v128'))return;
+  b.classList.add('v128');b.innerHTML=V.html();
+  /* o selo cresceu: a grade de botões não encolhe; o espaço extra sai do rodapé e, se faltar, a tela rola um pouco */
+  var k=0;(function fix(){if(!V.el())return;if(!V.pin()&&k++<60)requestAnimationFrame(fix);})();
+  b.onclick=function(){try{UiJs.sfx&&UiJs.sfx('tap');}catch(e){}try{V27.ev('evento-integrado');}catch(e){}V23.account();};
+  V.paint();
+  if(!V.tI)V.tI=setInterval(V.tick,1000);
+  V.fetch();
+ };
+ return V;
+})();
+if(typeof document!=='undefined'){(function(){var o=App.menu;App.menu=function(){var r=o.apply(this,arguments);try{V128.apply();}catch(e){}return r;};
+ var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(function(){try{if(V128.el())V128.pin();}catch(e){}},120);});})();}
+
 Main.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);

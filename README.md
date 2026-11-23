@@ -5,6 +5,13 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v128 · Selo "Integrado com" maior no topo do menu
+
+- Selo maior e mais elegante: "Integrado com" como etiqueta na borda; abaixo de ♞ Lichess, os jogadores online ao vivo; abaixo de ♟ Chess.com, "Em breve…".
+- O número segue o mesmo ritmo da tela "Jogar online": valor real buscado a cada 20 s e oscilação leve a cada 1 s em volta dele.
+- Tocar no selo abre a Conta Google.
+- Os botões do menu continuam do mesmo tamanho: a grade guarda a altura que tinha e o espaço extra sai das folgas do rodapé.
+
 ## v127 · Painel do criador reorganizado
 
 - Aviso do aparelho resumido em uma linha, com o botão ao lado.

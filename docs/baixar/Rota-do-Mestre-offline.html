@@ -1838,6 +1838,24 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v126-dev.on .v126-dt i{display:block;background:#7fd18b;box-shadow:0 0 0 3px rgba(127,209,139,.15)}
 .v126-dev .btn{flex:none;margin:0;padding:6px 12px;font-size:12.5px;min-height:0;width:auto}
 .v126-cards{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.v71-int.v128{position:relative;display:inline-flex;flex-direction:column;align-items:center;gap:0;padding:6px 6px 4px;border-radius:16px;min-width:min(310px,86vw);background:linear-gradient(180deg,rgba(20,22,27,.78),rgba(10,11,14,.72));border:1px solid rgba(220,181,92,.55);box-shadow:0 6px 18px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.05);letter-spacing:0;cursor:pointer;transition:border-color .2s,box-shadow .2s,transform .15s}
+.v71-int.v128:hover,.v71-int.v128:focus-visible{border-color:#f3d98c;box-shadow:0 6px 22px rgba(243,217,140,.18),inset 0 1px 0 rgba(255,255,255,.06)}
+.v71-int.v128:active{transform:scale(.985)}
+.v128-hd{position:absolute;left:50%;top:0;transform:translate(-50%,-55%);padding:0 8px;border-radius:99px;background:#101114;border:1px solid rgba(220,181,92,.45);font:600 8.5px/14px system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#cbbd9a;white-space:nowrap}
+.v128-row{display:flex;align-items:stretch;width:100%}
+.v128-c{flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0;padding:0 8px}
+.v128-c em{font:700 14px system-ui,sans-serif;font-style:normal;white-space:nowrap}
+.v128-c.li em{color:#f4efe4}.v128-c.cc em{color:#81b64c}
+.v128-c small{display:flex;align-items:center;gap:5px;font:500 11px system-ui,sans-serif;color:#bdb5a5;white-space:nowrap}
+.v128-c.li small b{font-weight:700;color:#e9f6ea;font-variant-numeric:tabular-nums;min-width:4.2ch;text-align:right}
+.v128-c.li small s{width:7px;height:7px;border-radius:50%;background:#5fd16f;box-shadow:0 0 0 0 rgba(95,209,111,.6);animation:v128p 2s infinite}
+.v128-c.li small.v128-wait b{min-width:0}
+.v128-c.cc small{color:#8f9a84;font-style:italic}
+.v128-sep{flex:none;width:1px;margin:2px 0;background:linear-gradient(transparent,rgba(220,181,92,.45),transparent)}
+@keyframes v128p{0%{box-shadow:0 0 0 0 rgba(95,209,111,.55)}70%{box-shadow:0 0 0 6px rgba(95,209,111,0)}100%{box-shadow:0 0 0 0 rgba(95,209,111,0)}}
+@media (prefers-reduced-motion:reduce){.v128-c.li small s{animation:none}}
+.menu .v71-wrap:has(.v128){margin-top:9px}
+.menu:has(.v128) .mfoot{margin-top:3px!important;padding-top:clamp(3px,.6vh,10px)!important;padding-bottom:clamp(15px,2.3vh,26px)!important}
 /* treinador por voz: indisponível por enquanto */
 .v36-card,.v36-hb{display:none!important}
 /* com a nova linha, os temas do tabuleiro crescem quando há altura sobrando */
@@ -81838,6 +81856,65 @@ var V126=(function(){
 if(typeof document!=='undefined'){
  (function(){var ol=V27.load;V27.load=function(){var r=ol.apply(this,arguments);try{V126.send();}catch(e){}return r;};})();
 }
+
+/* ======================= v128 · Selo "Integrado com" no topo do menu =======================
+   Selo maior: Lichess com os jogadores online ao vivo (mesmo número e mesmo ritmo da tela "Jogar online":
+   o real é buscado a cada 20 s e o texto oscila de leve a cada 1 s em volta dele) e Chess.com "Em breve…".
+   Tocar no selo abre a Conta Google. */
+var V128=(function(){
+ var V={};
+ V.el=function(){return document.querySelector('.menu .v128');};
+ V.html=function(){
+  if(!V87.cnt)V87.load();var c=V87.cnt,d=V87.disp||c;
+  return '<span class="v128-hd">Integrado com</span>'+
+   '<span class="v128-row">'+
+    '<span class="v128-c li"><em>♞ Lichess</em><small class="'+(d?'':'v128-wait')+'"><s></s><b>'+(d?V87.fmt(d.players):'…')+'</b> online</small></span>'+
+    '<span class="v128-sep" aria-hidden="true"></span>'+
+    '<span class="v128-c cc"><em>♟ Chess.com</em><small>Em breve…</small></span>'+
+   '</span>';
+ };
+ V.paint=function(){var b=V.el();if(!b)return;var d=V87.disp||V87.cnt;var s=b.querySelector('.v128-c.li small');if(!s)return;
+  if(d){s.classList.remove('v128-wait');s.querySelector('b').textContent=V87.fmt(d.players);}
+  b.setAttribute('aria-label','Integrado com Lichess'+(d?' ('+V87.fmt((V87.cnt||d).players)+' jogadores online)':'')+' e Chess.com (em breve). Abrir Conta Google');};
+ V.tick=function(){
+  if(!V.el()){clearInterval(V.tI);V.tI=null;clearTimeout(V.fT);V.fT=null;return;}
+  if(!V87.cnt||document.hidden)return;
+  if(!V87.disp)V87.disp={players:V87.cnt.players,games:V87.cnt.games};
+  V87.disp.players=V87.step(V87.cnt.players,V87.disp.players,40,6);
+  V87.disp.games=V87.step(V87.cnt.games,V87.disp.games,20,4);
+  V.paint();
+ };
+ V.fetch=function(){
+  clearTimeout(V.fT);V.fT=setTimeout(function(){if(V.el())V.fetch();},20000);
+  if(document.hidden||Date.now()-V87.cntAt<19000||V87.cntP)return;
+  V87.cntP=fetch(V87.API,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){
+   if(j&&j.players>0){V87.cnt={players:j.players,games:j.games};V87.cntAt=Date.now();V87.disp={players:j.players,games:j.games};try{localStorage.setItem(V87.CK,JSON.stringify(V87.cnt));}catch(e){}V.paint();}
+  }).catch(function(){}).then(function(){V87.cntP=null;});
+ };
+ V.OLD='Integrado com <span class="v71-li">♞ Lichess</span><i>·</i><span class="v71-cc">♟ Chess.com</span>';
+ /* mede a grade como ela era com o selo antigo (troca e destroca no mesmo quadro, sem piscar) e fixa essa altura */
+ V.pin=function(){
+  var b=V.el(),g=document.querySelector('.menu .mgrid');if(!b||!g)return false;
+  g.style.flex='';var nw=b.innerHTML;b.classList.remove('v128');b.innerHTML=V.OLD;
+  var h0=g.getBoundingClientRect().height;b.classList.add('v128');b.innerHTML=nw;
+  if(!h0)return false;
+  var hn=g.getBoundingClientRect().height;if(h0>hn+0.5)g.style.flex='0 0 '+h0.toFixed(1)+'px';
+  return true;
+ };
+ V.apply=function(){
+  var b=document.querySelector('.menu .v71-int');if(!b||b.classList.contains('v128'))return;
+  b.classList.add('v128');b.innerHTML=V.html();
+  /* o selo cresceu: a grade de botões não encolhe; o espaço extra sai do rodapé e, se faltar, a tela rola um pouco */
+  var k=0;(function fix(){if(!V.el())return;if(!V.pin()&&k++<60)requestAnimationFrame(fix);})();
+  b.onclick=function(){try{UiJs.sfx&&UiJs.sfx('tap');}catch(e){}try{V27.ev('evento-integrado');}catch(e){}V23.account();};
+  V.paint();
+  if(!V.tI)V.tI=setInterval(V.tick,1000);
+  V.fetch();
+ };
+ return V;
+})();
+if(typeof document!=='undefined'){(function(){var o=App.menu;App.menu=function(){var r=o.apply(this,arguments);try{V128.apply();}catch(e){}return r;};
+ var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(function(){try{if(V128.el())V128.pin();}catch(e){}},120);});})();}
 
 Main.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
