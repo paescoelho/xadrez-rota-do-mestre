@@ -1773,30 +1773,23 @@ var V126=(function(){
   })();
  };
  V.months=function(){var out=[],n=new Date(),d=new Date(V.M0[0],V.M0[1],1);while(d<=n){out.push(new Date(d));d=new Date(d.getFullYear(),d.getMonth()+1,1);}return out;};
- V.block=function(cur){
-  var box=UiJs.el('div','v126',cur),ms=V.months(),MN=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
-  box.innerHTML='<div class="v126-hd">Jogadores diferentes</div><div class="v126-ld">Contando…</div>';
-  var jobs=[function(){return V27.get('jogador-novo','');},function(){return V27.get('jogador-antigo-sem-data','');}];
-  ms.forEach(function(d){jobs.push(function(){return V27.get('jogador-novo','start='+V27.ds(d));});jobs.push(function(){return V27.get('jogador-antigo-'+V.mk(d),'');});});
-  var CK='rdm-pn126',c=null;try{c=JSON.parse(localStorage.getItem(CK)||'null');}catch(e){}
-  var fresh=c&&c.n===jobs.length&&Date.now()-c.t<600000&&!V.force;V.force=false;
-  (fresh?Promise.resolve(c.r):V27.pool(jobs,6).then(function(r){r=r.map(function(x){return x instanceof Error?null:x;});try{localStorage.setItem(CK,JSON.stringify({t:Date.now(),n:jobs.length,r:r}));}catch(e){}return r;})).then(function(r){
-   var ok=r.some(function(x){return x!=null;}),z=function(x){return x||0;};
-   if(!ok){box.querySelector('.v126-ld').textContent='Não foi possível ler agora.';return;}
-   var novoAll=z(r[0]),semData=z(r[1]),cumN=[],ant=[];
-   ms.forEach(function(d,i){cumN.push(z(r[2+2*i]));ant.push(z(r[3+2*i]));});
-   var per=ms.map(function(d,i){var n=i<ms.length-1?Math.max(0,cumN[i]-cumN[i+1]):cumN[i];return n+ant[i];});
-   var antigos=semData+ant.reduce(function(a,b){return a+b;},0),total=novoAll+antigos,mes=per[per.length-1];
-   var f=function(x){return Number(x).toLocaleString('pt-BR');};
-   box.innerHTML='<div class="v126-hd">Jogadores diferentes</div>'+
-    '<div class="v126-cards"><span><b>'+f(total)+'</b>desde o início</span><span><b>'+f(mes)+'</b>novos este mês</span><span><b>'+f(antigos)+'</b>recontados pelo histórico</span></div>';
-   var oc=UiJs.cur;UiJs.cur=box;try{V27.chart(box,'Novos jogadores por mês',ms.map(function(d){return MN[d.getMonth()]+'/'+String(d.getFullYear()).slice(2);}),per);}finally{UiJs.cur=oc;}
-   UiJs.el('p','muted small',box,'Cada aparelho conta uma única vez. Quem já jogava antes desta contagem entra quando volta a abrir o jogo, no mês da partida mais antiga guardada no aparelho (sem partida com data: só no total). Celular e computador da mesma pessoa contam como 2. Os números do GoatCounter levam algumas horas para atualizar.');
-  });
+ V.jobs=function(){var ms=V.months(),j=[function(){return V27.get('jogador-novo','');},function(){return V27.get('jogador-antigo-sem-data','');}];
+  ms.forEach(function(d){j.push(function(){return V27.get('jogador-novo','start='+V27.ds(d));});j.push(function(){return V27.get('jogador-antigo-'+V.mk(d),'');});});return j;};
+ V.render=function(cur,r){
+  var ms=V.months(),MN=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'],z=function(x){return x instanceof Error||x==null?0:x;};
+  if(!r.some(function(x){return x!=null&&!(x instanceof Error);}))return;
+  var novoAll=z(r[0]),semData=z(r[1]),cumN=[],ant=[];
+  ms.forEach(function(d,i){cumN.push(z(r[2+2*i]));ant.push(z(r[3+2*i]));});
+  var per=ms.map(function(d,i){var n=i<ms.length-1?Math.max(0,cumN[i]-cumN[i+1]):cumN[i];return n+ant[i];});
+  var antigos=semData+ant.reduce(function(a,b){return a+b;},0),total=novoAll+antigos,f=function(x){return Number(x).toLocaleString('pt-BR');};
+  UiJs.h('Jogadores diferentes');
+  var c=UiJs.el('div','v27-cards v126-cards',cur);
+  c.innerHTML='<span><b>'+f(total)+'</b>Desde o início</span><span><b>'+f(per[per.length-1])+'</b>Novos no mês</span><span><b>'+f(antigos)+'</b>Pelo histórico</span>';
+  V27.chart(cur,'Novos jogadores por mês',ms.map(function(d){return MN[d.getMonth()]+'/'+String(d.getFullYear()).slice(2);}),per);
+  UiJs.p('Cada aparelho conta uma vez. Quem já jogava entra ao voltar, no mês da partida mais antiga guardada nele. Celular e computador da mesma pessoa contam como 2.','muted small');
  };
  return V;
 })();
 if(typeof document!=='undefined'){
  (function(){var ol=V27.load;V27.load=function(){var r=ol.apply(this,arguments);try{V126.send();}catch(e){}return r;};})();
- (function(){var op=V27.panel;V27.panel=function(){var r=op.apply(this,arguments);try{if(V27.GC){var cur=UiJs.cur,dev=cur&&cur.querySelector('.v27-dev');var holder=document.createElement('div');if(dev&&dev.nextSibling)cur.insertBefore(holder,dev.nextSibling);else if(cur)cur.appendChild(holder);V126.block(holder);}}catch(e){}return r;};})();
 }

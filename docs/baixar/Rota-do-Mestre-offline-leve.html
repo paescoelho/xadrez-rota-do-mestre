@@ -1832,13 +1832,12 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v34-aeb.v124-pre{animation:v124pre 1.1s ease-in-out .35s 1}
 @keyframes v124pre{0%,100%{box-shadow:0 0 0 0 rgba(240,207,122,0)}50%{box-shadow:0 0 0 6px rgba(240,207,122,.35),0 0 26px rgba(240,207,122,.45)}}
 @keyframes v124land{0%{box-shadow:0 0 0 0 rgba(240,207,122,.75)}40%{box-shadow:0 0 0 7px rgba(240,207,122,.25)}100%{box-shadow:0 0 0 0 rgba(240,207,122,0)}}
-.v126{margin:6px 0 14px;padding:12px;border:1px solid rgba(243,217,140,.35);border-radius:14px;background:linear-gradient(180deg,rgba(243,217,140,.07),rgba(243,217,140,.02))}
-.v126-hd{font-family:Georgia,serif;color:var(--gold2);font-size:17px;margin-bottom:8px}
-.v126-ld{color:var(--mu);font-size:13px}
-.v126-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;text-align:center;font-size:11px;color:var(--mu);margin-bottom:4px}
-.v126-cards span{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 2px}
-.v126-cards b{display:block;font-family:Georgia,serif;font-size:22px;color:var(--gold2);font-weight:normal}
-.v126 p{margin:6px 0 0}
+.v126-dev{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px 8px 12px}
+.v126-dev .v126-dt{margin:0;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mu);line-height:1.3;min-width:0}
+.v126-dev .v126-dt i{display:block;position:static;top:auto;transform:none;align-self:center;flex:none;width:8px;height:8px;padding:0;margin:0;border-radius:50%;background:var(--gold2);box-shadow:0 0 0 3px rgba(243,217,140,.15)}
+.v126-dev.on .v126-dt i{display:block;background:#7fd18b;box-shadow:0 0 0 3px rgba(127,209,139,.15)}
+.v126-dev .btn{flex:none;margin:0;padding:6px 12px;font-size:12.5px;min-height:0;width:auto}
+.v126-cards{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 /* treinador por voz: indisponível por enquanto */
 .v36-card,.v36-hb{display:none!important}
 /* com a nova linha, os temas do tabuleiro crescem quando há altura sobrando */
@@ -75682,8 +75681,8 @@ V27.panel=function(){
  var cur=UiJs.cur;cur.classList.add('v27-pn');
  if(first)UiJs.toast('Este aparelho não entra mais na contagem de acessos.');
  var dev=UiJs.el('div','v27-dev',cur);
- function devTxt(){dev.innerHTML='<b>'+(V27.mine()?'Este aparelho é seu: não entra na contagem':'Este aparelho está sendo contado')+'</b><span>Abra este painel uma vez no seu celular e uma vez no seu computador: cada aparelho onde ele é aberto deixa de ser contado.</span>';
-  var b=UiJs.el('button','btn',dev,V27.mine()?'Voltar a contar este aparelho':'Não contar este aparelho');b.onclick=function(){V27.setMine(!V27.mine());devTxt();};}
+ function devTxt(){var m=V27.mine();dev.className='v27-dev v126-dev'+(m?'':' on');dev.innerHTML='<span class="v126-dt"><i></i>'+(m?'Seu aparelho: fora da contagem':'Este aparelho está sendo contado')+'</span>';
+  var b=UiJs.el('button','btn',dev,m?'Voltar a contar':'Não contar');b.type='button';b.title='Abra o painel uma vez em cada aparelho seu para deixá-lo fora da contagem';b.onclick=function(){V27.setMine(!V27.mine());devTxt();};}
  devTxt();
  if(!V27.GC){
   UiJs.h('Contador ainda não ligado');
@@ -75699,6 +75698,7 @@ V27.panel=function(){
  dd.forEach(function(d){jobs.push(function(){return V27.get('TOTAL','start='+V27.ds(d));});});
  months.forEach(function(d){jobs.push(function(){return V27.get('TOTAL','start='+V27.ds(d));});});
  V27.EV.forEach(function(e){jobs.push(function(){return V27.get(e[0],'start=month');});jobs.push(function(){return V27.get(e[0],'');});});
+ var J126=(typeof V126!=='undefined'&&V126.jobs)?V126.jobs():[];J126.forEach(function(f){jobs.push(f);});
  /* v88: guarda os números por 10 minutos (o GoatCounter só atualiza a cada poucas horas) e busca 6 por vez */
  var CK='rdm-pn-cache',cache=null;try{cache=JSON.parse(localStorage.getItem(CK)||'null');}catch(e){}
  var fresh=cache&&cache.n===jobs.length&&cache.day===V27.ds(now)&&Date.now()-cache.t<600000&&!V27.force;V27.force=false;
@@ -75713,10 +75713,13 @@ V27.panel=function(){
   var per=P.map(function(p){return [p[0],v()];});
   var cum=dd.map(function(){return v();}),cumM=months.map(function(){return v();});
   var evs=V27.EV.map(function(e){return {e:e,m:v(),t:v()};});
+  var r126=J126.map(function(){return v();});
   var old=UiJs.cur;UiJs.cur=cur;
+  UiJs.h('Visitantes do site');
   var cards=UiJs.el('div','v27-cards',cur);
   per.forEach(function(p){cards.innerHTML+='<span><b>'+(p[1]==null?'—':p[1].toLocaleString('pt-BR'))+'</b>'+p[0]+'</span>';});
-  UiJs.p('Visitantes do site. Os números do GoatCounter são atualizados a cada poucas horas, então os acessos mais recentes podem demorar a aparecer.','muted small');
+  UiJs.p('O GoatCounter atualiza a cada poucas horas: acessos recentes podem demorar a aparecer.','muted small');
+  if(J126.length)try{V126.render(cur,r126);}catch(e){}
   /* histórico por dia: diferença entre "desde o dia d" e "desde o dia seguinte" */
   var daily=[];for(var i=0;i<dd.length-1;i++){var a=cum[i],b=cum[i+1];daily.push(a!=null&&b!=null?Math.max(0,a-b):null);}daily.push(cum[dd.length-1]);
   V27.chart(cur,'Últimos 31 dias',dd.map(function(d){return d.getDate()+'/'+(d.getMonth()+1);}),daily);
@@ -81802,32 +81805,25 @@ var V126=(function(){
   })();
  };
  V.months=function(){var out=[],n=new Date(),d=new Date(V.M0[0],V.M0[1],1);while(d<=n){out.push(new Date(d));d=new Date(d.getFullYear(),d.getMonth()+1,1);}return out;};
- V.block=function(cur){
-  var box=UiJs.el('div','v126',cur),ms=V.months(),MN=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
-  box.innerHTML='<div class="v126-hd">Jogadores diferentes</div><div class="v126-ld">Contando…</div>';
-  var jobs=[function(){return V27.get('jogador-novo','');},function(){return V27.get('jogador-antigo-sem-data','');}];
-  ms.forEach(function(d){jobs.push(function(){return V27.get('jogador-novo','start='+V27.ds(d));});jobs.push(function(){return V27.get('jogador-antigo-'+V.mk(d),'');});});
-  var CK='rdm-pn126',c=null;try{c=JSON.parse(localStorage.getItem(CK)||'null');}catch(e){}
-  var fresh=c&&c.n===jobs.length&&Date.now()-c.t<600000&&!V.force;V.force=false;
-  (fresh?Promise.resolve(c.r):V27.pool(jobs,6).then(function(r){r=r.map(function(x){return x instanceof Error?null:x;});try{localStorage.setItem(CK,JSON.stringify({t:Date.now(),n:jobs.length,r:r}));}catch(e){}return r;})).then(function(r){
-   var ok=r.some(function(x){return x!=null;}),z=function(x){return x||0;};
-   if(!ok){box.querySelector('.v126-ld').textContent='Não foi possível ler agora.';return;}
-   var novoAll=z(r[0]),semData=z(r[1]),cumN=[],ant=[];
-   ms.forEach(function(d,i){cumN.push(z(r[2+2*i]));ant.push(z(r[3+2*i]));});
-   var per=ms.map(function(d,i){var n=i<ms.length-1?Math.max(0,cumN[i]-cumN[i+1]):cumN[i];return n+ant[i];});
-   var antigos=semData+ant.reduce(function(a,b){return a+b;},0),total=novoAll+antigos,mes=per[per.length-1];
-   var f=function(x){return Number(x).toLocaleString('pt-BR');};
-   box.innerHTML='<div class="v126-hd">Jogadores diferentes</div>'+
-    '<div class="v126-cards"><span><b>'+f(total)+'</b>desde o início</span><span><b>'+f(mes)+'</b>novos este mês</span><span><b>'+f(antigos)+'</b>recontados pelo histórico</span></div>';
-   var oc=UiJs.cur;UiJs.cur=box;try{V27.chart(box,'Novos jogadores por mês',ms.map(function(d){return MN[d.getMonth()]+'/'+String(d.getFullYear()).slice(2);}),per);}finally{UiJs.cur=oc;}
-   UiJs.el('p','muted small',box,'Cada aparelho conta uma única vez. Quem já jogava antes desta contagem entra quando volta a abrir o jogo, no mês da partida mais antiga guardada no aparelho (sem partida com data: só no total). Celular e computador da mesma pessoa contam como 2. Os números do GoatCounter levam algumas horas para atualizar.');
-  });
+ V.jobs=function(){var ms=V.months(),j=[function(){return V27.get('jogador-novo','');},function(){return V27.get('jogador-antigo-sem-data','');}];
+  ms.forEach(function(d){j.push(function(){return V27.get('jogador-novo','start='+V27.ds(d));});j.push(function(){return V27.get('jogador-antigo-'+V.mk(d),'');});});return j;};
+ V.render=function(cur,r){
+  var ms=V.months(),MN=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'],z=function(x){return x instanceof Error||x==null?0:x;};
+  if(!r.some(function(x){return x!=null&&!(x instanceof Error);}))return;
+  var novoAll=z(r[0]),semData=z(r[1]),cumN=[],ant=[];
+  ms.forEach(function(d,i){cumN.push(z(r[2+2*i]));ant.push(z(r[3+2*i]));});
+  var per=ms.map(function(d,i){var n=i<ms.length-1?Math.max(0,cumN[i]-cumN[i+1]):cumN[i];return n+ant[i];});
+  var antigos=semData+ant.reduce(function(a,b){return a+b;},0),total=novoAll+antigos,f=function(x){return Number(x).toLocaleString('pt-BR');};
+  UiJs.h('Jogadores diferentes');
+  var c=UiJs.el('div','v27-cards v126-cards',cur);
+  c.innerHTML='<span><b>'+f(total)+'</b>Desde o início</span><span><b>'+f(per[per.length-1])+'</b>Novos no mês</span><span><b>'+f(antigos)+'</b>Pelo histórico</span>';
+  V27.chart(cur,'Novos jogadores por mês',ms.map(function(d){return MN[d.getMonth()]+'/'+String(d.getFullYear()).slice(2);}),per);
+  UiJs.p('Cada aparelho conta uma vez. Quem já jogava entra ao voltar, no mês da partida mais antiga guardada nele. Celular e computador da mesma pessoa contam como 2.','muted small');
  };
  return V;
 })();
 if(typeof document!=='undefined'){
  (function(){var ol=V27.load;V27.load=function(){var r=ol.apply(this,arguments);try{V126.send();}catch(e){}return r;};})();
- (function(){var op=V27.panel;V27.panel=function(){var r=op.apply(this,arguments);try{if(V27.GC){var cur=UiJs.cur,dev=cur&&cur.querySelector('.v27-dev');var holder=document.createElement('div');if(dev&&dev.nextSibling)cur.insertBefore(holder,dev.nextSibling);else if(cur)cur.appendChild(holder);V126.block(holder);}}catch(e){}return r;};})();
 }
 
 Main.main();

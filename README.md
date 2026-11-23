@@ -5,6 +5,12 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v127 · Painel do criador reorganizado
+
+- Aviso do aparelho resumido em uma linha, com o botão ao lado.
+- Caixa de sugestões logo abaixo do aviso.
+- Visitantes do site e Jogadores diferentes agora carregam juntos, numa única busca, e aparecem com a mesma organização.
+
 ## v126 · Painel do criador: jogadores diferentes
 
 - Novo bloco "Jogadores diferentes" no topo do Painel do criador: total desde o início, novos no mês, quantos foram recontados pelo histórico e gráfico de novos jogadores por mês.

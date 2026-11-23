@@ -60,8 +60,8 @@ V27.panel=function(){
  var cur=UiJs.cur;cur.classList.add('v27-pn');
  if(first)UiJs.toast('Este aparelho não entra mais na contagem de acessos.');
  var dev=UiJs.el('div','v27-dev',cur);
- function devTxt(){dev.innerHTML='<b>'+(V27.mine()?'Este aparelho é seu: não entra na contagem':'Este aparelho está sendo contado')+'</b><span>Abra este painel uma vez no seu celular e uma vez no seu computador: cada aparelho onde ele é aberto deixa de ser contado.</span>';
-  var b=UiJs.el('button','btn',dev,V27.mine()?'Voltar a contar este aparelho':'Não contar este aparelho');b.onclick=function(){V27.setMine(!V27.mine());devTxt();};}
+ function devTxt(){var m=V27.mine();dev.className='v27-dev v126-dev'+(m?'':' on');dev.innerHTML='<span class="v126-dt"><i></i>'+(m?'Seu aparelho: fora da contagem':'Este aparelho está sendo contado')+'</span>';
+  var b=UiJs.el('button','btn',dev,m?'Voltar a contar':'Não contar');b.type='button';b.title='Abra o painel uma vez em cada aparelho seu para deixá-lo fora da contagem';b.onclick=function(){V27.setMine(!V27.mine());devTxt();};}
  devTxt();
  if(!V27.GC){
   UiJs.h('Contador ainda não ligado');
@@ -77,6 +77,7 @@ V27.panel=function(){
  dd.forEach(function(d){jobs.push(function(){return V27.get('TOTAL','start='+V27.ds(d));});});
  months.forEach(function(d){jobs.push(function(){return V27.get('TOTAL','start='+V27.ds(d));});});
  V27.EV.forEach(function(e){jobs.push(function(){return V27.get(e[0],'start=month');});jobs.push(function(){return V27.get(e[0],'');});});
+ var J126=(typeof V126!=='undefined'&&V126.jobs)?V126.jobs():[];J126.forEach(function(f){jobs.push(f);});
  /* v88: guarda os números por 10 minutos (o GoatCounter só atualiza a cada poucas horas) e busca 6 por vez */
  var CK='rdm-pn-cache',cache=null;try{cache=JSON.parse(localStorage.getItem(CK)||'null');}catch(e){}
  var fresh=cache&&cache.n===jobs.length&&cache.day===V27.ds(now)&&Date.now()-cache.t<600000&&!V27.force;V27.force=false;
@@ -91,10 +92,13 @@ V27.panel=function(){
   var per=P.map(function(p){return [p[0],v()];});
   var cum=dd.map(function(){return v();}),cumM=months.map(function(){return v();});
   var evs=V27.EV.map(function(e){return {e:e,m:v(),t:v()};});
+  var r126=J126.map(function(){return v();});
   var old=UiJs.cur;UiJs.cur=cur;
+  UiJs.h('Visitantes do site');
   var cards=UiJs.el('div','v27-cards',cur);
   per.forEach(function(p){cards.innerHTML+='<span><b>'+(p[1]==null?'—':p[1].toLocaleString('pt-BR'))+'</b>'+p[0]+'</span>';});
-  UiJs.p('Visitantes do site. Os números do GoatCounter são atualizados a cada poucas horas, então os acessos mais recentes podem demorar a aparecer.','muted small');
+  UiJs.p('O GoatCounter atualiza a cada poucas horas: acessos recentes podem demorar a aparecer.','muted small');
+  if(J126.length)try{V126.render(cur,r126);}catch(e){}
   /* histórico por dia: diferença entre "desde o dia d" e "desde o dia seguinte" */
   var daily=[];for(var i=0;i<dd.length-1;i++){var a=cum[i],b=cum[i+1];daily.push(a!=null&&b!=null?Math.max(0,a-b):null);}daily.push(cum[dd.length-1]);
   V27.chart(cur,'Últimos 31 dias',dd.map(function(d){return d.getDate()+'/'+(d.getMonth()+1);}),daily);
