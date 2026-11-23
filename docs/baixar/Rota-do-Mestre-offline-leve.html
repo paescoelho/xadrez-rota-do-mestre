@@ -15,7 +15,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v124</title>
+<title>Xadrez · Rota do Mestre — v125</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -77604,6 +77604,18 @@ V95.src=function(){
  try{var bin=atob(e.textContent.trim()),u=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);V95.url=URL.createObjectURL(new Blob([u],{type:'audio/mpeg'}));}catch(err){return null;}
  return V95.url;
 };
+/* v125: a locução do Apoio toca sempre a 85% do volume do aparelho.
+   O volume comum vale no Android e no computador; o Safari do iPhone ignora esse ajuste, então ali o áudio passa por um ganho do Web Audio. */
+V95.VOL=0.85;
+V95.vol=function(a){
+ try{a.volume=V95.VOL;}catch(e){}
+ if(Math.abs(a.volume-V95.VOL)<0.01||V95.gn===false)return;
+ try{
+  if(!V95.gn){var C=window.AudioContext||window.webkitAudioContext;if(!C){V95.gn=false;return;}
+   var ctx=new C(),src=ctx.createMediaElementSource(a),g=ctx.createGain();g.gain.value=V95.VOL;src.connect(g);g.connect(ctx.destination);V95.gn=g;V95.ctx=ctx;}
+  if(V95.ctx.state!=='running')V95.ctx.resume();
+ }catch(e){V95.gn=false;}
+};
 V95.stop=function(){cancelAnimationFrame(V95.raf);V95.raf=0;if(V95.a){try{V95.a.pause();}catch(e){}}};
 V95.now=function(){/* posição na locução: o relógio do áudio quando ele está tocando, senão o relógio da tela */
  var a=V95.a;if(a&&!a.paused&&a.currentTime>0)return a.currentTime;return (performance.now()-V95.t0)/1000;};
@@ -77616,7 +77628,7 @@ V95.frase=function(cur,again){
  V95.stop();V95.done=false;V95.t0=performance.now();
  var u=V95.src();
  if(u&&UiJs.soundOn!==false){
-  try{if(!V95.a){V95.a=new Audio();V95.a.preload='auto';}V95.a.src=u;V95.a.currentTime=0;
+  try{if(!V95.a){V95.a=new Audio();V95.a.preload='auto';}V95.a.src=u;V95.a.currentTime=0;V95.vol(V95.a);
    var p=V95.a.play();if(p&&p.catch)p.catch(function(){});}catch(e){}
  }
  var end=V95.L[V95.L.length-1].t1+0.15;

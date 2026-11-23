@@ -5,6 +5,11 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v125 · Locução do Apoio a 85% do volume
+
+- A locução da tela "Apoio ou sugestão" toca sempre a 85% do volume do aparelho; os outros sons do jogo não mudam.
+- No Android e no computador usa o volume do próprio áudio; no iPhone (onde o Safari ignora esse ajuste) passa por um ganho do Web Audio.
+
 ## v124 · Metas de 400 em 400, perfil em teia e Centro de Treino reorganizado
 
 - **Metas:** a primeira meta é 800; depois 1.200, 1.600, 2.000… (soma 400 a cada meta alcançada). Vale para o cartão "Seu nível", o menu e o Perfil.
