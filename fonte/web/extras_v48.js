@@ -609,7 +609,7 @@ V116.page=function(){
   {k:'raiox',t:'Raio-X',ic:'⌕',need:1,why:'Onde você mais erra',d:rx||'Pronto: veja o que mais custa pontos',f:function(){V24.xray();}},
   {k:'revisoes',t:'Revisões',ic:'↻',need:0,why:'Seus erros voltam para fixar',d:ss[2]+' hoje · '+ss[1]+' dominadas',hl:ss[2]>0,f:function(){if(ss[2]>0)Drills.run('Revisões do dia',Study.srsTasks(30),{back:Pages.profile});else Pages.tactics();}},
   {k:'precisao',t:'Precisão',ic:'◎',need:10,why:'Qualidade média dos seus lances',d:ac&&ac.n?String(ac.acc).replace('.',',')+'% em '+ac.n+' partidas':'Pronta com as próximas análises',f:V116.calc},
-  {k:'perfil',t:'Perfil',ic:'✶',need:MIN,why:'Pontos fortes e o que treinar',d:perfDesc(),f:V116.perfil}
+  {k:'perfil',t:'Perfil',ic:'✶',need:0,why:'Pontos fortes e o que treinar',d:n>=MIN?perfDesc():'Teia pronta · detalhes com '+MIN+' partidas (faltam '+(MIN-n)+')',f:function(){V116.perfil();}}
  ];
  tiles.forEach(function(x){
   var open=n>=x.need,isNew=open&&x.need>0&&!S.seen[x.k];
@@ -1603,14 +1603,14 @@ var V123=(function(){
   s+=web(rr(ref),'ref');
   var poly=S.map(function(x,i){return pt(i,rr(x.elo!=null?x.elo:ref)).map(function(v){return v.toFixed(1);}).join(',');}).join(' ');
   s+='<polygon points="'+poly+'" class="shape"/>';
-  S.forEach(function(x,i){var p=pt(i,rr(x.elo!=null?x.elo:ref));s+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="4" class="dot'+(x.elo==null?' nd':(x.d>=40?' up':(x.d<=-40?' dn':'')))+'"/>';
+  S.forEach(function(x,i){var p=pt(i,rr(x.elo!=null?x.elo:ref));s+='<circle style="--i:'+i+'" cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="4" class="dot'+(x.elo==null?' nd':(x.d>=40?' up':(x.d<=-40?' dn':'')))+'"/>';
    var q=pt(i,R+26),anc=Math.abs(q[0]-C)<8?'middle':(q[0]>C?'start':'end');
    s+='<text x="'+q[0].toFixed(1)+'" y="'+(q[1]+4).toFixed(1)+'" text-anchor="'+anc+'" class="lb'+(x.elo==null?' nd':'')+'">'+x.label+'</text>';});
   /* escala no fio vertical: 25%, 50%, 75% e a meta */
-  [0.25,0.5,0.75].forEach(function(q){s+='<text x="'+(C+4)+'" y="'+(C-R*q+3).toFixed(1)+'" class="sc">'+V.fmt(Math.round(goal*q))+'</text>';});
+  [0.25,0.5,0.75].forEach(function(q){var p=pt(0.5,R*q*0.93);s+='<text x="'+p[0].toFixed(1)+'" y="'+(p[1]+3).toFixed(1)+'" text-anchor="middle" class="sc">'+V.fmt(Math.round(goal*q))+'</text>';});
   s+='<text x="'+(C+9)+'" y="'+(C-R-6).toFixed(1)+'" class="sc g">'+V.fmt(goal)+' · meta</text>';
   s+='</svg>';
-  var w=UiJs.el('div','v123-rw',par);w.innerHTML=s+'<div class="v123-lg"><span><i class="r"></i>Seu nível '+V.fmt(ref)+'</span><span><i class="g"></i>Meta '+V.fmt(goal)+'</span></div>';
+  var w=UiJs.el('div','v123-rw v130-anim',par);w.innerHTML=s+'<div class="v123-lg"><span><i class="r"></i>Seu nível '+V.fmt(ref)+'</span><span><i class="g"></i>Meta '+V.fmt(goal)+'</span></div>';
  };
  /* página do perfil */
  V.page=function(){
@@ -1623,6 +1623,13 @@ var V123=(function(){
   var goal=Profile.nextGoal(ref);
   var ch=UiJs.el('div','v123-chips',intro);ch.innerHTML='<span>Seu nível <b>'+V.fmt(ref)+'</b> · '+V116.esc(Profile.category(ref))+'</span><span>Faltam <b>'+V.fmt(goal-ref)+'</b> para '+V.fmt(goal)+'</span>';
   V.radar(cur,S,ref);
+  var n0=V116.n(),M0=V116.MIN();
+  if(n0<M0){
+   var lk=UiJs.el('div','v130-lock',cur);
+   lk.innerHTML='<div class="v130-lk"><span>🔒</span><b>Destaques e detalhes de cada característica</b></div><p>Aparecem com '+M0+' partidas analisadas. A teia já mostra a estimativa atual e fica mais precisa a cada partida.</p><div class="v116-bar v130-pb"><i style="width:'+Math.max(3,Math.round(n0*100/M0))+'%"></i></div><div class="v130-pn"><span>'+n0+' de '+M0+' partidas</span><span>faltam '+(M0-n0)+'</span></div>';
+   UiJs.btns([['Jogar uma partida',App.setupGame,'pri'],['Voltar ao Painel',Pages.profile]]);
+   return;
+  }
   var H=V.highlights(S);
   var hl=UiJs.el('div','v123-hl',cur);
   var box=function(cls,t,arr,empty){var b=UiJs.el('div','v123-hb '+cls,hl);b.innerHTML='<i>'+t+'</i>'+(arr.length?arr.map(function(s){return '<b>'+s.label+'</b><span>'+V.fmt(s.elo)+' · '+(s.d>0?'+':'−')+Math.abs(s.d)+'</span>';}).join(''):'<em>'+empty+'</em>');};
@@ -1666,7 +1673,7 @@ if(typeof V116!=='undefined'){
     var cur=UiJs.cur;
     var tl=[].filter.call(cur.querySelectorAll('.v116-tile'),function(b){return b.querySelector('.v116-th b');});
     tl.forEach(function(b){var t=b.querySelector('.v116-th b').textContent,d=b.querySelector('.v116-td');if(!d||b.classList.contains('lock'))return;
-     if(t==='Perfil'){d.textContent=V123.perfDesc();b.querySelector('.v116-why').textContent='Cada característica no seu Elo';}
+     if(t==='Perfil'){if(V116.n()>=V116.MIN())d.textContent=V123.perfDesc();b.querySelector('.v116-why').textContent='Cada característica no seu Elo';}
      if(t==='Precisão'){var x=V123.accDesc(Profile.d.v29acc);if(x)d.textContent=x;}});
    }catch(e){}
    return r;
@@ -1889,4 +1896,41 @@ var V129=(function(){
 if(typeof document!=='undefined'){(function(){
  var oc=V87.counters;V87.counters=function(){var r=oc.apply(this,arguments);try{V129.run();}catch(e){}return r;};
  var oa=V128.apply;V128.apply=function(){var r=oa.apply(this,arguments);try{V129.run();}catch(e){}return r;};
+})();}
+
+
+/* ======================= v130 · Painel de evolução: "Seu nível" e a teia num único bloco =======================
+   O primeiro cartão do Painel junta o nível, a barra até a meta e a teia do perfil (antes só dentro do Perfil).
+   A teia aparece para qualquer jogador com nível; os destaques e o detalhe de cada característica continuam
+   pedindo 20 partidas analisadas, dentro do Perfil. Entrada com animação discreta (desligada com "reduzir movimento"). */
+var V130=(function(){
+ var V={};
+ V.calm=function(){try{return window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}};
+ V.count=function(el,to){if(!el)return;if(V.calm()){el.textContent=to.toLocaleString('pt-BR');return;}
+  var t0=0,D=900;el.textContent='0';
+  var st=function(t){if(!t0)t0=t;var k=Math.min(1,(t-t0)/D),e=1-Math.pow(1-k,3);el.textContent=Math.round(to*e).toLocaleString('pt-BR');if(k<1&&el.isConnected)requestAnimationFrame(st);};
+  requestAnimationFrame(st);};
+ V.build=function(cur){
+  var lv=cur.querySelector('.v116-lv');if(!lv||lv.classList.contains('v130'))return;
+  var ref=V123.ref();if(!(ref>0))return;
+  var S=V123.skills();if(!S)return;
+  var goal=Profile.nextGoal(ref),n=V116.n(),MIN=V116.MIN();
+  lv.classList.add('v130','v130-in');
+  var hint=lv.querySelector('.v116-hint');if(hint)hint.remove();
+  var sec=UiJs.el('div','v130-web',lv);
+  sec.innerHTML='<div class="v130-hd"><b>Gráfico referente à meta '+V123.fmt(goal)+'</b><p>O gráfico mostra o quanto falta em cada característica para atingir Elo '+V123.fmt(goal)+'.</p></div>';
+  V123.radar(sec,S,ref);
+  var ft=UiJs.el('div','v130-ft',sec);
+  if(n<MIN)ft.innerHTML='<span class="v130-st"><i>🔒</i>Destaques com '+MIN+' partidas · faltam '+(MIN-n)+'</span><a>Abrir perfil ›</a>';
+  else ft.innerHTML='<span class="v130-st">'+V116.esc(V123.perfDesc())+'</span><a>Ver perfil completo ›</a>';
+  ft.querySelector('a').onclick=V116.go(V116.perfil);
+  V.count(lv.querySelector('.v116-big b'),ref);
+  setTimeout(function(){lv.classList.remove('v130-in');},2600);
+ };
+ return V;
+})();
+if(typeof V116!=='undefined'){(function(){
+ var o=V116.page;
+ V116.page=function(){var r=o.apply(this,arguments);try{V130.build(UiJs.cur);}catch(e){if(window.console)console.error(e);}return r;};
+ if(typeof Pages!=='undefined')Pages.profile=V116.page;
 })();}

@@ -5,6 +5,14 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v130 · Painel de evolução: nível e teia num único bloco
+
+- O primeiro cartão do Painel junta "Seu nível", a barra até a meta e a teia do perfil ("Gráfico referente à meta X"), com rodapé para abrir o perfil.
+- A teia aparece para qualquer jogador com nível, sem esperar 20 partidas. Dentro do Perfil, destaques e o detalhe de cada característica continuam pedindo 20 partidas analisadas (com barra de progresso).
+- O cartão Perfil do Painel fica sempre aberto.
+- Entrada com animação discreta: o cartão sobe, a barra enche, o número conta até o nível, a teia cresce do centro e os pontos aparecem em sequência (desligada com "reduzir movimento").
+- Números da escala da teia saíram de cima do ponto de Tática.
+
 ## v129 · Chess.com ao vivo
 
 - Jogar online: o botão do Chess.com mostra jogadores online (verde) e partidas hoje (amarelo), no mesmo estilo do Lichess.
