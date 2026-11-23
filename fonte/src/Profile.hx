@@ -357,8 +357,8 @@ class Profile {
     var val = sw > 0 ? Std.int(Math.round(sv / sw)) : 0;
     return [val, parts];
   }
-  public static var GOALS = [800, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400];
-  public static function nextGoal(v:Int):Int { for (g in GOALS) if (g > v) return g; return 2600; }
+  public static var GOALS = [800, 1200, 1600, 2000, 2400, 2800, 3200];
+  public static function nextGoal(v:Int):Int { if (v < 800) return 800; return 800 + 400 * (Std.int((v - 800) / 400) + 1); }
 
   public static function category(r:Int):String {
     if (r <= 0) return "Sem pontuação";

@@ -15,7 +15,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v123</title>
+<title>Xadrez · Rota do Mestre — v124</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1786,9 +1786,11 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v123-chips b{color:#f6dd96}
 .v123-rw{display:flex;flex-direction:column;align-items:center;margin:2px 0 8px}
 .v123-rd{width:min(100%,340px);height:auto;overflow:visible}
-.v123-rd .ax{stroke:rgba(255,255,255,.1);stroke-width:1}
-.v123-rd .ref{fill:none;stroke:rgba(230,220,190,.55);stroke-width:1.4;stroke-dasharray:4 4}
-.v123-rd .goal{fill:rgba(220,181,92,.05);stroke:#dcb55c;stroke-width:1.6}
+.v123-rd .ax{stroke:rgba(230,215,180,.18);stroke-width:1}
+.v123-rd .ring{fill:none;stroke:rgba(230,215,180,.16);stroke-width:1}
+.v123-rd .ref{fill:none;stroke:rgba(235,225,200,.7);stroke-width:1.3;stroke-dasharray:3 4}
+.v123-rd .goal{fill:rgba(220,181,92,.06);stroke:#dcb55c;stroke-width:1.8}
+.v123-rd .sc{fill:rgba(220,205,170,.55);font-size:9.5px;font-family:inherit}.v123-rd .sc.g{fill:#f0cf7a;font-weight:700;font-size:10.5px}
 .v123-rd .shape{fill:rgba(220,181,92,.22);stroke:#f0cf7a;stroke-width:2;stroke-linejoin:round}
 .v123-rd .dot{fill:#f0cf7a;stroke:#1a160e;stroke-width:1.5}.v123-rd .dot.up{fill:#6fd197}.v123-rd .dot.dn{fill:#e86a5f}.v123-rd .dot.nd{fill:#555;stroke:#888}
 .v123-rd .lb{fill:#d9ccae;font-size:11.5px;font-family:inherit}.v123-rd .lb.nd{fill:#777}
@@ -1818,6 +1820,18 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 .v123-src{font-size:12px;color:#8f846c;margin-top:4px;line-height:1.35}
 .v123-go{margin-top:7px;background:none;border:0;padding:0;color:#dcb55c;font-size:13px;cursor:pointer;font-family:inherit}
 .v123-how{margin-top:14px}.v123-how p{font-size:13px;line-height:1.45;color:#cfc3a6;margin:0 0 8px}
+/* v124: Analisar jogadas como seção 6 do Centro de Treino */
+.v124-sec .v124-slot{display:block}
+.v124-sec .v34-aeb{width:100%;margin:0}
+.v124-gap{overflow:hidden}
+.v34-aeb.v124-fly{position:relative;z-index:30;box-shadow:0 18px 40px rgba(0,0,0,.55),0 0 0 2px rgba(240,207,122,.6)!important;scale:1.03;transition-property:transform,scale}
+.v34-aeb.v124-land{animation:v124land 1.6s ease-out 1}
+.v124-sec.v124-anim,.v124-sec.v124-anim *{animation-delay:0s!important}
+.v124-sec.v124-anim{animation:none!important;opacity:1!important;transform:none!important}
+.v124-sec .v34-aeb:not(.v124-land){animation:none!important;opacity:1!important}
+.v34-aeb.v124-pre{animation:v124pre 1.1s ease-in-out .35s 1}
+@keyframes v124pre{0%,100%{box-shadow:0 0 0 0 rgba(240,207,122,0)}50%{box-shadow:0 0 0 6px rgba(240,207,122,.35),0 0 26px rgba(240,207,122,.45)}}
+@keyframes v124land{0%{box-shadow:0 0 0 0 rgba(240,207,122,.75)}40%{box-shadow:0 0 0 7px rgba(240,207,122,.25)}100%{box-shadow:0 0 0 0 rgba(240,207,122,0)}}
 /* treinador por voz: indisponível por enquanto */
 .v36-card,.v36-hb{display:none!important}
 /* com a nova linha, os temas do tabuleiro crescem quando há altura sobrando */
@@ -70973,7 +70987,7 @@ Mestre.placementResult=function(res){
 
 /* Gancho de tela, preservando o roteamento e lógica já existentes. */
 var _mOldMenu=UiJs.menu;
-UiJs.menu=function(items,info){_mOldMenu(items,info);var menu=UiJs.root.querySelector('.menu'),footer=menu&&menu.querySelector('.mfoot');if(footer){var v=UiJs.el('span','menu-version',footer,'Versão: 23.11.2026');v.setAttribute('aria-label','Versão de 20 de novembro de 2026');}};
+UiJs.menu=function(items,info){_mOldMenu(items,info);var menu=UiJs.root.querySelector('.menu'),footer=menu&&menu.querySelector('.mfoot');if(footer){var v=UiJs.el('span','menu-version',footer,'Versão: 23.11.2026');v.setAttribute('aria-label','Versão de 23 de novembro de 2026');}};
 var _mOldTraining=App.training;
 App.training=function(){_mOldTraining();var g=UiJs.root.querySelector('.menu.hub .mgrid');if(g){UiJs.mitem(g,{t:'Laboratório de alto rendimento',d:'Desafios progressivos · cálculo profundo · biblioteca dos mestres',f:Mestre.hub,wide:true,hl:true,ico:'ct'});}};
 Mestre.training=function(){var base=Mestre.clamp(Profile.d.pzElo||1200,650,2650),seen=Profile.seenMap(),tasks=[];for(var i=0;i<18;i++){var rating=Mestre.clamp(base-180+i*65,500,2900),tags=i%4===0?["endgame"]:i%3===0?["long","veryLong"]:null,ps=Puzzles.pick(tags,rating-100,rating+120,1,seen,i%3===0?4:0);if(!ps.length)continue;var p=ps[0];seen.h[p.id]=true;tasks.push(Study.pzTask(p,i%3===0,i%4===0?"finais":i%3===0?"calculo":"tatica"));}Drills.run('Treino de alto rendimento',tasks,{back:App.training});};
@@ -81499,7 +81513,7 @@ var V122=(function(){
      separam, então limitam o quanto podem empurrar a estimativa.
    · Exercícios (tática, cálculo, finais, aberturas) já vêm na sua faixa: o acerto é comparado com o esperado (65%).
    · Tempo, visão e o treino do processo são comparações com o seu próprio padrão.
-   · Faixas e metas: as mesmas do "Seu nível" (Iniciante, Amador, Jogador de clube…; metas 800, 1.000, 1.200…). */
+   · Faixas e metas: as mesmas do "Seu nível" (Iniciante, Amador, Jogador de clube…; metas 800, 1.200, 1.600… de 400 em 400). */
 var V123=(function(){
  var V={};
  /* tabelas medidas (valor da métrica → Elo), monotônicas */
@@ -81583,25 +81597,30 @@ var V123=(function(){
   var wk=ok.filter(function(s){return s.d<=-40;}).sort(function(a,b){return a.d-b.d;}).slice(0,2);
   return {st:st,wk:wk,ok:ok};
  };
- /* radar na escala do Elo: anel tracejado = seu nível, anel dourado = próxima meta */
+ /* radar em teia: o anel de fora é a próxima meta (a teia é recalculada a cada meta alcançada);
+    os anéis de dentro marcam 25%, 50% e 75% da meta; o tracejado é o seu nível */
  V.radar=function(par,S,ref){
-  var ok=S.filter(function(s){return s.elo!=null;}),goal=Profile.nextGoal(ref);
-  var mx=Math.max.apply(null,[goal].concat(ok.map(function(s){return s.elo;})))+60;
-  var mn=Math.min.apply(null,[ref].concat(ok.map(function(s){return s.elo;})));
-  var lo=Math.max(0,mn-260),hi=mx,W=320,C=160,R=112;
-  var rr=function(v){return R*clamp((v-lo)/(hi-lo),0.04,1);};
-  var pt=function(i,r){var a=-Math.PI/2+i*2*Math.PI/S.length;return [C+r*Math.cos(a),C+r*Math.sin(a)];};
-  var s='<svg viewBox="0 0 '+W+' '+W+'" class="v123-rd" role="img" aria-label="Radar do perfil na escala do Elo">';
-  for(var i=0;i<S.length;i++){var p=pt(i,R);s+='<line x1="'+C+'" y1="'+C+'" x2="'+p[0].toFixed(1)+'" y2="'+p[1].toFixed(1)+'" class="ax"/>';}
-  s+='<circle cx="'+C+'" cy="'+C+'" r="'+rr(goal).toFixed(1)+'" class="goal"/>';
-  s+='<circle cx="'+C+'" cy="'+C+'" r="'+rr(ref).toFixed(1)+'" class="ref"/>';
+  var goal=Profile.nextGoal(ref),N=S.length,W=340,C=170,R=112;
+  var rr=function(v){return R*clamp(v/goal,0.03,1.12);};
+  var pt=function(i,r){var a=-Math.PI/2+i*2*Math.PI/N;return [C+r*Math.cos(a),C+r*Math.sin(a)];};
+  var f=function(p){return p[0].toFixed(1)+' '+p[1].toFixed(1);};
+  /* fio da teia entre dois raios, levemente curvado para dentro */
+  var web=function(r,cls){var d='';for(var i=0;i<N;i++){var a=pt(i,r),b=pt((i+1)%N,r),m=pt(i+0.5,r*0.9);d+=(i?'':'M'+f(a))+' Q'+f(m)+' '+f(b);}return '<path d="'+d+' Z" class="'+cls+'"/>';};
+  var s='<svg viewBox="0 0 '+W+' '+W+'" class="v123-rd" role="img" aria-label="Teia do perfil até a meta de '+goal+'">';
+  for(var i=0;i<N;i++){var p=pt(i,R*1.06);s+='<line x1="'+C+'" y1="'+C+'" x2="'+p[0].toFixed(1)+'" y2="'+p[1].toFixed(1)+'" class="ax"/>';}
+  [0.25,0.5,0.75].forEach(function(q){s+=web(R*q,'ring');});
+  s+=web(R,'goal');
+  s+=web(rr(ref),'ref');
   var poly=S.map(function(x,i){return pt(i,rr(x.elo!=null?x.elo:ref)).map(function(v){return v.toFixed(1);}).join(',');}).join(' ');
   s+='<polygon points="'+poly+'" class="shape"/>';
   S.forEach(function(x,i){var p=pt(i,rr(x.elo!=null?x.elo:ref));s+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="4" class="dot'+(x.elo==null?' nd':(x.d>=40?' up':(x.d<=-40?' dn':'')))+'"/>';
-   var q=pt(i,R+22),anc=Math.abs(q[0]-C)<8?'middle':(q[0]>C?'start':'end');
+   var q=pt(i,R+26),anc=Math.abs(q[0]-C)<8?'middle':(q[0]>C?'start':'end');
    s+='<text x="'+q[0].toFixed(1)+'" y="'+(q[1]+4).toFixed(1)+'" text-anchor="'+anc+'" class="lb'+(x.elo==null?' nd':'')+'">'+x.label+'</text>';});
+  /* escala no fio vertical: 25%, 50%, 75% e a meta */
+  [0.25,0.5,0.75].forEach(function(q){s+='<text x="'+(C+4)+'" y="'+(C-R*q+3).toFixed(1)+'" class="sc">'+V.fmt(Math.round(goal*q))+'</text>';});
+  s+='<text x="'+(C+9)+'" y="'+(C-R-6).toFixed(1)+'" class="sc g">'+V.fmt(goal)+' · meta</text>';
   s+='</svg>';
-  var w=UiJs.el('div','v123-rw',par);w.innerHTML=s+'<div class="v123-lg"><span><i class="r"></i>Seu nível '+V.fmt(ref)+'</span><span><i class="g"></i>Próxima meta '+V.fmt(goal)+'</span></div>';
+  var w=UiJs.el('div','v123-rw',par);w.innerHTML=s+'<div class="v123-lg"><span><i class="r"></i>Seu nível '+V.fmt(ref)+'</span><span><i class="g"></i>Meta '+V.fmt(goal)+'</span></div>';
  };
  /* página do perfil */
  V.page=function(){
@@ -81609,10 +81628,10 @@ var V123=(function(){
   var cur=UiJs.cur;cur.classList.add('v123');
   var ref=V.ref(),S=V.skills();
   var intro=UiJs.el('div','v123-intro',cur);
-  intro.innerHTML='<b>Medido na escala do seu Elo</b><p>Cada característica tem um Elo estimado, na mesma régua do seu nível. Não é nota de prova: 2.500 é nível de grande mestre. Com poucos dados, a estimativa fica perto do seu nível e só se afasta quando partidas e treinos mostram diferença.</p>';
-  if(!S){UiJs.p('Para montar o perfil, o jogo precisa primeiro do seu nível. Faça o Nivelamento ou jogue partidas valendo pontos.','gold');UiJs.btns([['Fazer o Nivelamento',Pages.placementIntro,'pri'],['Voltar ao Painel',Pages.profile]]);return;}
+  intro.innerHTML='<b>Escala do Elo · meta '+V.fmt(Profile.nextGoal(ref>0?ref:0))+'</b><p>A teia vai até a sua próxima meta. Ao alcançá-la, ela se recalcula para a meta seguinte.</p>';
+  if(!S){intro.querySelector('b').textContent='Perfil na escala do Elo';intro.querySelector('p').textContent='Cada característica ganha um Elo estimado, medido até a sua próxima meta.';UiJs.p('Para montar o perfil, o jogo precisa primeiro do seu nível. Faça o Nivelamento ou jogue partidas valendo pontos.','gold');UiJs.btns([['Fazer o Nivelamento',Pages.placementIntro,'pri'],['Voltar ao Painel',Pages.profile]]);return;}
   var goal=Profile.nextGoal(ref);
-  var ch=UiJs.el('div','v123-chips',intro);ch.innerHTML='<span>Seu nível <b>'+V.fmt(ref)+'</b> · '+V116.esc(Profile.category(ref))+'</span><span>Próxima meta <b>'+V.fmt(goal)+'</b></span>';
+  var ch=UiJs.el('div','v123-chips',intro);ch.innerHTML='<span>Seu nível <b>'+V.fmt(ref)+'</b> · '+V116.esc(Profile.category(ref))+'</span><span>Faltam <b>'+V.fmt(goal-ref)+'</b> para '+V.fmt(goal)+'</span>';
   V.radar(cur,S,ref);
   var H=V.highlights(S);
   var hl=UiJs.el('div','v123-hl',cur);
@@ -81677,6 +81696,64 @@ if(typeof Mind!=='undefined'&&Mind.page){
  (function(){var o=Mind.page;Mind.page=function(){var r=o.apply(this,arguments);try{var S=V123.skills();var v=S&&S.filter(function(s){return s.k==='vis';})[0];
   [].forEach.call(UiJs.cur.querySelectorAll('*'),function(e){if(e.children.length===0&&e.textContent==='visão de candidatos'){var box=e.parentNode,num=box&&box.firstElementChild;if(num&&num!==e){num.textContent=v&&v.elo!=null?V123.fmt(v.elo):'—';e.textContent='visão de candidatos (Elo estimado)';}}});}catch(e){}return r;};})();
 }
+
+/* ======================= v124 · metas de 400 em 400 =======================
+   Primeira meta 800; depois 1.200, 1.600, 2.000… (soma 400 a cada meta alcançada). */
+(function(){
+ Profile.GOALS=[800,1200,1600,2000,2400,2800,3200];
+ Profile.nextGoal=function(v){v=+v||0;if(v<800)return 800;return 800+400*(Math.floor((v-800)/400)+1);};
+})();
+
+/* ======================= v124 · Centro de Treino: "Analisar jogadas" vira a seção 6 =======================
+   O botão do Lichess e Chess.com fica no fim, como seção 6.
+   Para quem já importou partidas, nas seis primeiras entradas o botão sai do topo e desliza até a seção 6. */
+var V124=(function(){
+ var V={MAX:6};
+ V.d=function(){var d=Profile.d;if(!d.v124||typeof d.v124!=='object')d.v124={n:0};return d.v124;};
+ V.hasImp=function(){
+  try{var a=V32.acc();if(a&&(a.lichess||a.chesscom))return true;}catch(e){}
+  try{var ac=Profile.d.v29acc;if(ac&&ac.imp>0)return true;}catch(e){}
+  return !!V.d().imp;
+ };
+ V.scroller=function(el){for(var e=el;e&&e!==document.body;e=e.parentElement){var cs=getComputedStyle(e);if(/(auto|scroll)/.test(cs.overflowY)&&e.scrollHeight>e.clientHeight+2)return e;}return document.scrollingElement||document.documentElement;};
+ V.glide=function(sc,toF,ms){if(!sc)return;var from=sc.scrollTop,t0=performance.now();var ease=function(x){return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;};
+  (function step(now){var k=Math.min(1,(now-t0)/ms),to=toF(sc);sc.scrollTop=from+(to-from)*ease(k);if(k<1)requestAnimationFrame(step);})(t0);};
+ V.apply=function(){
+  var m=document.querySelector('.menu.hub.v34-ct');if(!m)return;
+  var btn=m.querySelector('.v34-aeb');if(!btn||btn.closest('.v124-sec'))return;
+  var w=document.createElement('div');w.className='v34-sec v124-sec';
+  w.innerHTML='<div class="v34-sh"><i>6</i><span>Suas partidas de outros sites</span></div>';
+  var slot=document.createElement('div');slot.className='v124-slot';w.appendChild(slot);
+  m.appendChild(w);
+  var st=V.d(),anim=V.hasImp()&&st.n<V.MAX&&!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+  if(!anim){slot.appendChild(btn);return;}
+  st.n++;try{Profile.save();}catch(e){}
+  /* 1º o botão aparece no topo e brilha; 2º desliza até a seção 6 (FLIP), com a tela acompanhando; 3º volta ao topo */
+  w.classList.add('v124-anim');btn.classList.add('v124-pre');
+  var lift=function(){
+   if(!document.body.contains(btn))return;
+   var r0=btn.getBoundingClientRect(),ghost=document.createElement('div');ghost.className='v124-gap';ghost.style.height=r0.height+'px';
+   btn.parentNode.insertBefore(ghost,btn);
+   slot.appendChild(btn);btn.classList.remove('v124-pre');
+   var r1=btn.getBoundingClientRect(),dy=r0.top-r1.top,dx=r0.left-r1.left;
+   btn.classList.add('v124-fly');btn.style.transition='none';btn.style.transform='translate('+dx+'px,'+dy+'px)';
+   requestAnimationFrame(function(){requestAnimationFrame(function(){
+    btn.style.transition='transform 1.3s cubic-bezier(.65,0,.35,1)';btn.style.transform='translate(0,0)';
+    ghost.style.transition='height .55s ease .35s';ghost.style.height='0px';
+    /* a rolagem segue a mesma curva do botão: ele atravessa a tela sem sumir */
+    V.glide(V.scroller(m),function(sc){return Math.max(0,sc.scrollHeight-sc.clientHeight);},1300);
+    setTimeout(function(){ghost.remove();btn.classList.remove('v124-fly');btn.style.transform='';btn.style.transition='';btn.classList.add('v124-land');},1350);
+    setTimeout(function(){V.glide(V.scroller(m),function(){return 0;},900);},2900);
+    setTimeout(function(){btn.classList.remove('v124-land');w.classList.remove('v124-anim');},3400);
+   });});
+  };
+  setTimeout(lift,1500);
+ };
+ if(typeof App!=='undefined'&&App.training){var o=App.training;App.training=function(){var r=o.apply(this,arguments);try{V.apply();}catch(e){if(window.console)console.warn('v124',e);}return r;};}
+ /* quem já importou fica marcado (a contagem aparece em "Analisar jogadas") */
+ if(typeof V34!=='undefined'&&V34.stats){var os=V34.stats;V34.stats=function(st,cr,all){var imp=os.apply(this,arguments);try{if(imp&&imp.length&&!V.d().imp){V.d().imp=1;Profile.save();}}catch(e){}return imp;};}
+ return V;
+})();
 
 Main.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
