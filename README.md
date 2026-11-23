@@ -8,7 +8,7 @@ Roda no navegador (celular e computador), pode ser instalado como aplicativo e f
 ## v124 · Metas de 400 em 400, perfil em teia e Centro de Treino reorganizado
 
 - **Metas:** a primeira meta é 800; depois 1.200, 1.600, 2.000… (soma 400 a cada meta alcançada). Vale para o cartão "Seu nível", o menu e o Perfil.
-- **Perfil:** abertura resumida ("Escala do Elo · meta X"). O gráfico virou uma teia de aranha que vai de 0 até a próxima meta, com anéis de referência (25%, 50%, 75%), o anel dourado da meta e o tracejado do seu nível. Ao alcançar a meta, a teia se recalcula para a seguinte.
+- **Perfil:** abertura resumida ("Gráfico referente à meta X · O gráfico mostra o quanto falta em cada característica para atingir Elo X"). O gráfico virou uma teia de aranha que vai de 0 até a próxima meta, com anéis de referência (25%, 50%, 75%), o anel dourado da meta e o tracejado do seu nível. Ao alcançar a meta, a teia se recalcula para a seguinte.
 - **Centro de Treino:** "Analisar jogadas" (Lichess e Chess.com) passa a ser a seção 6, no fim. Para quem já importou partidas, nas 6 primeiras entradas o botão aparece no topo e desliza até a seção 6, com a tela acompanhando; depois fica direto no fim.
 - Versão: 23.11.2026.
 

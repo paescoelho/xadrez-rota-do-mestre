@@ -36927,7 +36927,7 @@ var V123=(function(){
   var cur=UiJs.cur;cur.classList.add('v123');
   var ref=V.ref(),S=V.skills();
   var intro=UiJs.el('div','v123-intro',cur);
-  intro.innerHTML='<b>Escala do Elo · meta '+V.fmt(Profile.nextGoal(ref>0?ref:0))+'</b><p>A teia vai até a sua próxima meta. Ao alcançá-la, ela se recalcula para a meta seguinte.</p>';
+  var g0=V.fmt(Profile.nextGoal(ref>0?ref:0));intro.innerHTML='<b>Gráfico referente à meta '+g0+'</b><p>O gráfico mostra o quanto falta em cada característica para atingir Elo '+g0+'.</p>';
   if(!S){intro.querySelector('b').textContent='Perfil na escala do Elo';intro.querySelector('p').textContent='Cada característica ganha um Elo estimado, medido até a sua próxima meta.';UiJs.p('Para montar o perfil, o jogo precisa primeiro do seu nível. Faça o Nivelamento ou jogue partidas valendo pontos.','gold');UiJs.btns([['Fazer o Nivelamento',Pages.placementIntro,'pri'],['Voltar ao Painel',Pages.profile]]);return;}
   var goal=Profile.nextGoal(ref);
   var ch=UiJs.el('div','v123-chips',intro);ch.innerHTML='<span>Seu nível <b>'+V.fmt(ref)+'</b> · '+V116.esc(Profile.category(ref))+'</span><span>Faltam <b>'+V.fmt(goal-ref)+'</b> para '+V.fmt(goal)+'</span>';
