@@ -15,7 +15,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0b0d10">
-<title>Xadrez · Rota do Mestre — v132</title>
+<title>Xadrez · Rota do Mestre — v133</title>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin><link rel="dns-prefetch" href="https://identitytoolkit.googleapis.com">
 <meta property="og:title" content="Xadrez · Rota do Mestre">
 <meta property="og:description" content="Sua vez! Toque para ver a posição e responder a partida.">
@@ -1891,23 +1891,37 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 }
 .v131{position:absolute;inset:0;overflow:hidden;border-radius:inherit;pointer-events:none;--T:5.6s;--E:cubic-bezier(.45,.05,.25,1)}
 .v131 i,.v131 b,.v131 svg{position:absolute;display:block}
-.v131 .qkn,.v131 .qpw{left:2%;top:2%;width:46%;height:46%;background-position:center;background-size:contain,100% 100%;background-repeat:no-repeat;will-change:transform,opacity;backface-visibility:hidden;transform:translateZ(0)}
+.v131 .qkn,.v131 .qpw{left:2%;top:2%;width:46%;height:46%;will-change:transform;backface-visibility:hidden;transform:translateZ(0)}
+.v131 .qki,.v131 .qpw{background-position:center;background-size:contain,100% 100%;background-repeat:no-repeat}
+.v131 .qki{inset:0;will-change:transform;backface-visibility:hidden}
+.v131 .qpw{will-change:transform,opacity}
 .v131 .qkn{z-index:3}
 .v131 .qpw{left:52%;top:52%;z-index:2}
 .theme-tile .theme-check{z-index:5}
 @media (prefers-reduced-motion:no-preference){
- .v131 .qkn{animation:v131hop var(--T) var(--E) var(--d,0s) infinite}
+ .v131 .qkn{animation:v131mv var(--T) linear var(--d,0s) infinite}
+ .v131 .qki{animation:v131lift var(--T) linear var(--d,0s) infinite}
  .v131 .qpw{animation:v131cap var(--T) ease-in-out var(--d,0s) infinite}
  .v131 b,.v131 svg{opacity:0;animation-duration:var(--T);animation-delay:var(--d,0s);animation-iteration-count:infinite;animation-timing-function:cubic-bezier(.25,.6,.3,1);will-change:transform,opacity;backface-visibility:hidden}
 }
-/* o cavalo salta na diagonal com um arco leve, pousa com um assentar suave e volta */
-@keyframes v131hop{
- 0%,24%{transform:translate(0,0) scale(1)}
- 32%{transform:translate(52%,30%) scale(1.09)}
- 39%{transform:translate(108.7%,108.7%) scale(.97)}
- 42%,78%{transform:translate(108.7%,108.7%) scale(1)}
- 86%{transform:translate(54%,40%) scale(1.05)}
- 94%,100%{transform:translate(0,0) scale(1)}}
+/* o cavalo desliza na diagonal num único trecho contínuo (sem paradas no meio); o arco vem do elemento de dentro,
+   que sobe desacelerando e desce acelerando, como um salto de verdade, e assenta de leve ao pousar */
+@keyframes v131mv{
+ 0%,24%{transform:translate(0,0);animation-timing-function:cubic-bezier(.65,0,.35,1)}
+ 40%,78%{transform:translate(108.7%,108.7%);animation-timing-function:cubic-bezier(.65,0,.35,1)}
+ 94%,100%{transform:translate(0,0)}}
+@keyframes v131lift{
+ 0%,24%{transform:translateY(0) scale(1);animation-timing-function:cubic-bezier(.33,1,.68,1)}
+ 32%{transform:translateY(-20%) scale(1.06);animation-timing-function:cubic-bezier(.32,0,.67,0)}
+ 40%{transform:translateY(0) scale(1);animation-timing-function:cubic-bezier(.33,1,.68,1)}
+ 43%{transform:translateY(0) scale(1.03,.97);animation-timing-function:cubic-bezier(.33,1,.68,1)}
+ 47%,78%{transform:translateY(0) scale(1);animation-timing-function:cubic-bezier(.33,1,.68,1)}
+ 86%{transform:translateY(-14%) scale(1.04);animation-timing-function:cubic-bezier(.32,0,.67,0)}
+ 94%,100%{transform:translateY(0) scale(1)}}
+@keyframes v131mvfold{
+ 0%,24%{transform:translate(0,0) perspective(90px) rotateY(0deg);animation-timing-function:cubic-bezier(.65,0,.35,1)}
+ 40%,78%{transform:translate(108.7%,108.7%) perspective(90px) rotateY(360deg);animation-timing-function:cubic-bezier(.65,0,.35,1)}
+ 94%,100%{transform:translate(0,0) perspective(90px) rotateY(720deg)}}
 @keyframes v131cap{0%,37%{opacity:1;transform:none}44%,84%{opacity:0;transform:scale(.7)}93%,100%{opacity:1;transform:none}}
 
 /* Turquesa: dois anéis de água abrem onde a peça pousa */
@@ -1918,18 +1932,9 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 
 /* Pixel art: sprites 8-bit, tabuleiro em grade, movimento em quadros e explosão de pixels com "+1" */
 .fx-pixel{image-rendering:pixelated;background:repeating-linear-gradient(0deg,rgba(0,0,0,.07) 0 1px,transparent 1px 3px)}
-.fx-pixel .qkn,.fx-pixel .qpw{image-rendering:pixelated;background-size:contain}
+.fx-pixel .qki,.fx-pixel .qpw{image-rendering:pixelated;background-size:contain}
+.fx-pixel .qki{inset:9%}
 
-@keyframes v131hoppx{
- 0%,24%{transform:translate(0,0)}
- 27%{transform:translate(0,-12%)}
- 30%{transform:translate(36%,10%)}
- 33%{transform:translate(72%,46%)}
- 36%,78%{transform:translate(108.7%,108.7%)}
- 82%{transform:translate(72%,72%)}
- 86%{transform:translate(36%,36%)}
- 90%,100%{transform:translate(0,0)}}
-@keyframes v131cappx{0%,35%{opacity:1}36%,38%{opacity:0}39%,40%{opacity:1}41%,88%{opacity:0}90%,100%{opacity:1}}
 .fx-pixel .qfl{left:52%;top:52%;width:46%;height:46%;background:#fff1e8;animation-name:v131flash}
 @keyframes v131flash{0%,37%{opacity:0}39%{opacity:.75}45%,100%{opacity:0}}
 .fx-pixel .qpx{left:70%;top:70%;width:10%;height:10%;box-shadow:0 0 0 1px #1d2b53;z-index:4}
@@ -1967,12 +1972,7 @@ button.genealogy-mini:hover .mini-icon,button.genealogy-mini:focus-visible .mini
 @keyframes v131dst2{0%,41%{opacity:0;transform:scale(.3)}49%{opacity:.85}80%,100%{opacity:0;transform:scale(2.2) translateY(-75%)}}
 
 /* Origami: a peça gira como papel; a capturada vira passarinho e sai voando */
-@media (prefers-reduced-motion:no-preference){.fx-origami .qkn{animation-name:v131fold}}
-@keyframes v131fold{
- 0%,24%{transform:translate(0,0) perspective(80px) rotateY(0)}
- 32%{transform:translate(52%,30%) perspective(80px) rotateY(180deg) scale(1.08)}
- 40%,78%{transform:translate(108.7%,108.7%) perspective(80px) rotateY(360deg)}
- 94%,100%{transform:translate(0,0) perspective(80px) rotateY(360deg)}}
+@media (prefers-reduced-motion:no-preference){.fx-origami .qkn{animation-name:v131mvfold}}
 .fx-origami .qbd{left:58%;top:60%;width:34%;height:24%;animation-name:v131bird;animation-timing-function:cubic-bezier(.35,.1,.35,1)}
 @keyframes v131bird{0%,40%{opacity:0;transform:none}45%{opacity:1;transform:translate(0,-12%) rotate(-8deg)}62%{transform:translate(60%,-120%) rotate(-18deg)}80%,100%{opacity:0;transform:translate(130%,-240%) rotate(-25deg) scale(.8)}}
 
@@ -2434,7 +2434,7 @@ window.XHD=(function(){
 <script>
 /* carregador do site: baixa (ou pega do cache offline) os arquivos do jogo, mostra o progresso e inicia o app */
 (function(){
- var F={"res":[["res_content","data/content.json?v=facebd0421"],["res_lpuzzles","data/lpuzzles.txt?v=6a7f7438c2"],["res_openings","data/openings.txt?v=0433d98604"],["res_explorer","data/explorer.txt?v=a49e3a075b"],["res_models","data/models.txt?v=d4b717e2fe"],["res_sfjs","data/sf.js?v=81cc4511ff"]],"intro":[["introfr","data/introfr.json?v=361b412139"],["introau","data/introau.txt?v=ce6089d3a7"],["introhdx","data/introhdx.json?v=efe43de4ba"]],"hd":"data/intro_hd.bin?v=2f137ab566","hd16":"data/intro_hd16.bin?v=873ca44d34","hdx16":"data/introhdx16.json?v=ffb050a168","histau":"data/historia.mp3?v=87e853c025","apoioau":"data/apoio.mp3?v=a67289dc4c","lichau":"data/lichess.mp3?v=420a0f7dec","wasm":"data/sf.wasm?v=c56761eebb","app":"data/app.js?v=766ed4b271"};
+ var F={"res":[["res_content","data/content.json?v=facebd0421"],["res_lpuzzles","data/lpuzzles.txt?v=6a7f7438c2"],["res_openings","data/openings.txt?v=0433d98604"],["res_explorer","data/explorer.txt?v=a49e3a075b"],["res_models","data/models.txt?v=d4b717e2fe"],["res_sfjs","data/sf.js?v=81cc4511ff"]],"intro":[["introfr","data/introfr.json?v=361b412139"],["introau","data/introau.txt?v=ce6089d3a7"],["introhdx","data/introhdx.json?v=efe43de4ba"]],"hd":"data/intro_hd.bin?v=2f137ab566","hd16":"data/intro_hd16.bin?v=873ca44d34","hdx16":"data/introhdx16.json?v=ffb050a168","histau":"data/historia.mp3?v=87e853c025","apoioau":"data/apoio.mp3?v=a67289dc4c","lichau":"data/lichess.mp3?v=420a0f7dec","wasm":"data/sf.wasm?v=c56761eebb","app":"data/app.js?v=e49012daa8"};
  var c=navigator.connection||{},slow=!!(c.saveData||/(^|-)2g|3g/.test(c.effectiveType||''));
  var box=document.createElement('div');box.id='boot';box.innerHTML='<div class="bt">Rota do Mestre</div><div class="bb"><i></i></div><div class="bs">Preparando o tabuleiro…</div>';document.body.appendChild(box);
  var bar=box.querySelector('i'),msg=box.querySelector('.bs'),done=0,total=F.res.length+(slow?0:F.intro.length+1)+1;

@@ -5,6 +5,12 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v133 · Deslize contínuo das peças nas prévias dos tabuleiros
+
+- O cavalo agora desliza em um único trecho contínuo na ida e outro na volta, com aceleração e frenagem suaves (sem paradas no meio do caminho). O arco do salto fica num elemento interno, que sobe desacelerando e desce acelerando, e a peça assenta de leve ao pousar.
+- Origami: o giro de papel acompanha o mesmo deslize contínuo.
+- Pixel art: cavalo redesenhado (orelhas, crina, focinho e base) e um pouco menor dentro da casa.
+
 ## v132 · Prévias dos tabuleiros mais fluidas e Pixel art legível
 
 - As miniaturas animadas agora rodam só com transform e opacidade (na GPU): sem filtros, sem clip-path e sem traço de SVG animado. Sombra das peças embutida no fundo; o círculo de caneta do Caderno Bic aparece em partes por opacidade. No teste com o processador 4× mais lento: nenhuma repintura por quadro, nenhum quadro perdido e um quarto do trabalho anterior no processador.
