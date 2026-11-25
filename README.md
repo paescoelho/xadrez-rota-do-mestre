@@ -5,6 +5,12 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v134 · Uma peça para cada tabuleiro nas prévias
+
+- Cada tema ganhou a sua peça, sempre com um lance legal dentro do 2×2: bispo (Turquesa, Nanquim), dama (Pelourinho, Praia, Caderno Bic), rei (Origami, Praça) na diagonal; torre (Pixel art, Sertão, Daltônico) deslizando na horizontal.
+- Pixel art: torre 8-bit 16×16 desenhada pixel a pixel.
+- Daltônico: cores fortes e seguras para daltonismo (azul #0072B2 e laranja #E69F00) com formas diferentes: origem em moldura tracejada azul com ponto; destino laranja listrado com borda preta.
+
 ## v133 · Deslize contínuo das peças nas prévias dos tabuleiros
 
 - O cavalo agora desliza em um único trecho contínuo na ida e outro na volta, com aceleração e frenagem suaves (sem paradas no meio do caminho). O arco do salto fica num elemento interno, que sobe desacelerando e desce acelerando, e a peça assenta de leve ao pousar.
