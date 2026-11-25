@@ -5,6 +5,11 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v132 · Prévias dos tabuleiros mais fluidas e Pixel art legível
+
+- As miniaturas animadas agora rodam só com transform e opacidade (na GPU): sem filtros, sem clip-path e sem traço de SVG animado. Sombra das peças embutida no fundo; o círculo de caneta do Caderno Bic aparece em partes por opacidade. No teste com o processador 4× mais lento: nenhuma repintura por quadro, nenhum quadro perdido e um quarto do trabalho anterior no processador.
+- Pixel art: peças 16×16 redesenhadas (cavalo com crina e olho, peão com cabeça redonda e base amarela) e movimento contínuo, sem pular em quadros.
+
 ## v131 · Prévia animada de cada tabuleiro
 
 - No seletor "Tabuleiro" (Jogar), cada miniatura tem um cavalo com as peças do próprio tema que salta na diagonal e repete, em pequeno, o efeito daquele tabuleiro: anéis de água (Turquesa), sprites 8-bit com explosão de pixels e "+1" (Pixel art), fitinhas do Bonfim (Pelourinho), faixa de espuma (Praia), peça afundando com poeira (Sertão), giro de papel e passarinho (Origami), círculo de caneta (Caderno Bic), mancha de tinta (Nanquim), pombo pousando (Praça) e marcação por forma (Daltônico).
