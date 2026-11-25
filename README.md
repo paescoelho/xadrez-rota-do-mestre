@@ -5,6 +5,11 @@
 Treinador de xadrez em português: jogue contra o Aprendiz, resolva mais de 17 mil problemas reais e acompanhe como você pensa.
 Roda no navegador (celular e computador), pode ser instalado como aplicativo e funciona sem internet depois da primeira visita.
 
+## v131 · Prévia animada de cada tabuleiro
+
+- No seletor "Tabuleiro" (Jogar), cada miniatura tem um cavalo com as peças do próprio tema que salta na diagonal e repete, em pequeno, o efeito daquele tabuleiro: anéis de água (Turquesa), sprites 8-bit com explosão de pixels e "+1" (Pixel art), fitinhas do Bonfim (Pelourinho), faixa de espuma (Praia), peça afundando com poeira (Sertão), giro de papel e passarinho (Origami), círculo de caneta (Caderno Bic), mancha de tinta (Nanquim), pombo pousando (Praça) e marcação por forma (Daltônico).
+- Ciclo suave de 5,6 s; as miniaturas entram em sequência, em onda. Com "reduzir movimento", fica só o cavalo parado.
+
 ## v130 · Painel de evolução: nível e teia num único bloco
 
 - O primeiro cartão do Painel junta "Seu nível", a barra até a meta e a teia do perfil ("Gráfico referente à meta X"), com rodapé para abrir o perfil.
